@@ -16,13 +16,14 @@ export default class SimpleTimeTrackerPlugin extends Plugin {
 		this.addSettingTab(new SimpleTimeTrackerSettingsTab(this.app, this));
 
 		this.registerMarkdownCodeBlockProcessor("timekeep", (s, e, i) => {
+			const reactWrapper = e.createDiv({});
+			const root = createRoot(reactWrapper);
+
 			const loadResult = load(s);
 
 			if (loadResult.success) {
 				const timekeep = loadResult.timekeep;
 
-				const reactWrapper = e.createDiv({});
-				const root = createRoot(reactWrapper);
 				root.render(
 					<SettingsContext.Provider value={this.settings}>
 						<Timesheet
@@ -35,6 +36,12 @@ export default class SimpleTimeTrackerPlugin extends Plugin {
 						/>
 					</SettingsContext.Provider>,
 				);
+			} else {
+				root.render(
+					<p className="timekeep-container">
+						Failed to load timekeep: {loadResult.error}
+					</p>,
+				);
 			}
 		});
 
@@ -42,7 +49,7 @@ export default class SimpleTimeTrackerPlugin extends Plugin {
 			id: `insert`,
 			name: `Insert Timekeep`,
 			editorCallback: (e, _) => {
-				e.replaceSelection("```timekeep\n```\n");
+				e.replaceSelection('```timekeep\n{"entries": []}\n```\n');
 			},
 		});
 	}
