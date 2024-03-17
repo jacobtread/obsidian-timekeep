@@ -37,7 +37,7 @@ const groupEntrySchema: z.ZodType<
 	BaseTimeEntryGroup
 > = baseGroupEntrySchema.extend({
 	subEntries: z.lazy(() =>
-		z.array(z.union([singleEntrySchema, groupEntrySchema])),
+		z.array(z.union([singleEntrySchema, groupEntrySchema]))
 	),
 });
 
@@ -57,7 +57,7 @@ export interface SaveDetails {
 
 export function createMarkdownTable(
 	keep: Timekeep,
-	settings: TimekeepSettings,
+	settings: TimekeepSettings
 ): string {
 	const table = [["Block", "Start time", "End time", "Duration"]];
 	for (const entry of getEntriesOrdered(keep.entries, settings))
@@ -72,7 +72,7 @@ export function createMarkdownTable(
 	let output = "";
 	// calculate the width every column needs to look neat when monospaced
 	const widths = Array.from(Array(4).keys()).map((i) =>
-		Math.max(...table.map((a) => a[i].length)),
+		Math.max(...table.map((a) => a[i].length))
 	);
 	for (let rowIndex = 0; rowIndex < table.length; rowIndex++) {
 		// add separators after first row
@@ -88,7 +88,7 @@ export function createMarkdownTable(
 		const row: string[] = [];
 		for (let columnIndex = 0; columnIndex < 4; columnIndex++) {
 			row.push(
-				table[rowIndex][columnIndex].padEnd(widths[columnIndex], " "),
+				table[rowIndex][columnIndex].padEnd(widths[columnIndex], " ")
 			);
 		}
 		output += "| " + row.join(" | ") + " |\n";
@@ -102,7 +102,7 @@ export function createCsv(keep: Timekeep, settings: TimekeepSettings): string {
 	if (settings.csvTitle) {
 		output +=
 			["Block", "Start time", "End time", "Duration"].join(
-				settings.csvDelimiter,
+				settings.csvDelimiter
 			) + "\n";
 	}
 
@@ -116,7 +116,7 @@ export function createCsv(keep: Timekeep, settings: TimekeepSettings): string {
 
 function createTableRows(
 	entry: TimeEntry,
-	settings: TimekeepSettings,
+	settings: TimekeepSettings
 ): string[][] {
 	const rows = [
 		[
@@ -137,12 +137,12 @@ function createTableRows(
 
 export async function save(
 	keep: Timekeep,
-	saveDetails: SaveDetails,
+	saveDetails: SaveDetails
 ): Promise<void> {
 	const section = saveDetails.getSectionInfo();
 	if (section === null) return;
 	const file = saveDetails.app.vault.getAbstractFileByPath(
-		saveDetails.fileName,
+		saveDetails.fileName
 	) as TFile | null;
 
 	if (file === null) return;
@@ -216,12 +216,12 @@ export function createEntry(name: string): TimeEntry {
 export function getUniqueEntryHash(entry: TimeEntry): number {
 	if (entry.subEntries === null) {
 		return strHash(
-			`${entry.name}${entry.startTime.valueOf()}${entry.endTime?.valueOf()}`,
+			`${entry.name}${entry.startTime.valueOf()}${entry.endTime?.valueOf()}`
 		);
 	} else {
 		const subEntriesHash = entry.subEntries.reduce(
 			(acc, subEntry) => acc + getUniqueEntryHash(subEntry),
-			0,
+			0
 		);
 		return strHash(`${entry.name}${subEntriesHash}`);
 	}
@@ -249,13 +249,13 @@ function strHash(str: string): number {
  */
 export function removeEntry(
 	entries: TimeEntry[],
-	target: TimeEntry,
+	target: TimeEntry
 ): TimeEntry[] {
 	if (entries.contains(target)) {
 		return entries.filter((entry) => entry !== target);
 	} else {
 		return entries.map((entry) =>
-			entry.subEntries !== null ? removeSubEntry(entry, target) : entry,
+			entry.subEntries !== null ? removeSubEntry(entry, target) : entry
 		);
 	}
 }
@@ -289,7 +289,7 @@ export function stopRunningEntries(entries: TimeEntry[]): TimeEntry[] {
 export function updateEntry(
 	entries: TimeEntry[],
 	previousEntry: TimeEntry,
-	newEntry: TimeEntry,
+	newEntry: TimeEntry
 ): TimeEntry[] {
 	return entries.map((entry) => {
 		if (entry === previousEntry) {
@@ -300,7 +300,7 @@ export function updateEntry(
 				subEntries: updateEntry(
 					entry.subEntries,
 					previousEntry,
-					newEntry,
+					newEntry
 				),
 			};
 		} else {
@@ -318,7 +318,7 @@ export function updateEntry(
  */
 export function removeSubEntry(
 	parent: TimeEntry,
-	target: TimeEntry,
+	target: TimeEntry
 ): TimeEntry {
 	// Parent has no children
 	if (parent.subEntries === null) return parent;
@@ -327,7 +327,7 @@ export function removeSubEntry(
 		.filter((entry) => entry !== target)
 		// Remove any matching sub entries recursively
 		.map((entry) =>
-			entry.subEntries !== null ? removeSubEntry(entry, target) : entry,
+			entry.subEntries !== null ? removeSubEntry(entry, target) : entry
 		);
 
 	if (filtered.length > 1) {
@@ -475,7 +475,7 @@ export function getTotalDuration(entries: TimeEntry[]): number {
 
 export function getEntriesOrdered(
 	entries: TimeEntry[],
-	settings: TimekeepSettings,
+	settings: TimekeepSettings
 ): TimeEntry[] {
 	return settings.reverseSegmentOrder ? entries.slice().reverse() : entries;
 }

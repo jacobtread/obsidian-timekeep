@@ -1,4 +1,5 @@
-const esbuild = require("esbuild");
+/* eslint-disable */
+
 const process = require("process");
 const builtins = require("builtin-modules");
 

@@ -7,21 +7,21 @@ export function isEmptyString(value: string): boolean {
 
 export function formatTimestamp(
 	timestamp: moment.Moment,
-	settings: TimekeepSettings,
+	settings: TimekeepSettings
 ): string {
 	return moment(timestamp).format(settings.timestampFormat);
 }
 
 export function formatEditableTimestamp(
 	timestamp: moment.Moment | string,
-	settings: TimekeepSettings,
+	settings: TimekeepSettings
 ): string {
 	return moment(timestamp).format(settings.editableTimestampFormat);
 }
 
 export function unformatEditableTimestamp(
 	formatted: string,
-	settings: TimekeepSettings,
+	settings: TimekeepSettings
 ): moment.Moment {
 	return moment(formatted, settings.editableTimestampFormat, true);
 }

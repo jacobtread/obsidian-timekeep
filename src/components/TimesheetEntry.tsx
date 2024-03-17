@@ -1,14 +1,5 @@
-import React, {
-	ChangeEvent,
-	ChangeEventHandler,
-	FormEvent,
-	useMemo,
-	useState,
-} from "react";
-
+import React, { ChangeEvent, useMemo, useState } from "react";
 import {
-	TimeEntryGroup,
-	SaveDetails,
 	getEntriesOrdered,
 	isEntryRunning,
 	getEntryDuration,
@@ -21,7 +12,6 @@ import {
 import TimesheetEntry from "./TimesheetEntry";
 import { useSettings } from "src/hooks/use-settings-context";
 import {
-	ArrowRight,
 	CheckIcon,
 	ChevronRight,
 	EditIcon,
@@ -73,7 +63,7 @@ export default function TimesheetEntryGroup({ entry, indent }: Props) {
 			entries: updateEntry(
 				timekeep.entries,
 				entry,
-				withSubEntry(entry, ""),
+				withSubEntry(entry, "")
 			),
 		}));
 	};
@@ -86,7 +76,7 @@ export default function TimesheetEntryGroup({ entry, indent }: Props) {
 			if (newEntry.subEntries === null) {
 				const startTime = unformatEditableTimestamp(
 					editing.startTime,
-					settings,
+					settings
 				);
 				if (startTime.isValid()) {
 					newEntry.startTime = startTime;
@@ -94,7 +84,7 @@ export default function TimesheetEntryGroup({ entry, indent }: Props) {
 
 				const endTime = unformatEditableTimestamp(
 					editing.startTime,
-					settings,
+					settings
 				);
 				if (endTime.isValid()) {
 					newEntry.endTime = endTime;
@@ -230,15 +220,13 @@ export default function TimesheetEntryGroup({ entry, indent }: Props) {
 						<button
 							disabled={isTimekeepRunning}
 							onClick={onClickStart}
-							className="timekeep-action"
-						>
+							className="timekeep-action">
 							<PlayIcon width="1em" height="1em" />
 						</button>
 						<button
 							disabled={isRunning || !isEditable}
 							onClick={onClickEdit}
-							className="timekeep-action"
-						>
+							className="timekeep-action">
 							{editing.editing ? (
 								<CheckIcon width="1em" height="1em" />
 							) : (
@@ -247,8 +235,7 @@ export default function TimesheetEntryGroup({ entry, indent }: Props) {
 						</button>
 						<button
 							onClick={onClickDelete}
-							className="timekeep-action"
-						>
+							className="timekeep-action">
 							<TrashIcon width="1em" height="1em" />
 						</button>
 					</div>

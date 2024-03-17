@@ -38,7 +38,7 @@ export default function Timesheet({ initialState, saveDetails }: Props) {
 	// Handle saving timekeep changes
 	useEffect(() => {
 		updatePdfInstance(
-			<TimesheetPdf data={timekeep} title={settings.pdfTitle} />,
+			<TimesheetPdf data={timekeep} title={settings.pdfTitle} />
 		);
 	}, [timekeep]);
 
@@ -110,14 +110,12 @@ export default function Timesheet({ initialState, saveDetails }: Props) {
 				timekeep,
 				setTimekeep,
 				isTimekeepRunning: isRunning,
-			}}
-		>
+			}}>
 			<div className="timekeep-container">
 				<button
 					onClick={onClickStart}
 					title={isRunning ? "Stop" : "Start"}
-					className="timekeep-start"
-				>
+					className="timekeep-start">
 					{isRunning ? (
 						<StopCircleIcon width="1em" height="1em" />
 					) : (
@@ -152,7 +150,7 @@ export default function Timesheet({ initialState, saveDetails }: Props) {
 									key={getUniqueEntryHash(entry)}
 									indent={0}
 								/>
-							),
+							)
 						)}
 					</tbody>
 				</table>

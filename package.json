@@ -6,7 +6,9 @@
 	"scripts": {
 		"dev": "obsidian-plugin dev --esbuild-config=esbuild.config.js --vault-path=test-vault --with-stylesheet src/styles.css src/main.tsx",
 		"build": "obsidian-plugin build --esbuild-config=esbuild.config.js --with-stylesheet src/styles.css src/main.tsx",
-		"version": "node version-bump.mjs && git add manifest.json versions.json"
+		"version": "node version-bump.mjs && git add manifest.json versions.json",
+		"lint": "eslint src",
+		"format": "prettier -w src"
 	},
 	"keywords": [],
 	"author": "Jacobtread",
@@ -19,6 +21,7 @@
 		"@typescript-eslint/parser": "5.29.0",
 		"builtin-modules": "3.3.0",
 		"esbuild": "^0.20.2",
+		"eslint-config-prettier": "^9.1.0",
 		"obsidian": "latest",
 		"obsidian-plugin-cli": "^0.9.0",
 		"prettier": "^3.2.5",

@@ -7,15 +7,17 @@
 		"eslint:recommended",
 		"plugin:@typescript-eslint/eslint-recommended",
 		"plugin:@typescript-eslint/recommended",
+		"prettier"
 	],
 	"parserOptions": {
-		"sourceType": "module",
+		"sourceType": "module"
 	},
 	"rules": {
-		"no-unused-vars": "off",
+		"no-unused-vars": "warn",
 		"@typescript-eslint/no-unused-vars": ["warn", { "args": "none" }],
 		"@typescript-eslint/ban-ts-comment": "off",
 		"no-prototype-builtins": "off",
 		"@typescript-eslint/no-empty-function": "off",
-	},
+		"@typescript-eslint/no-non-null-assertion": "off"
+	}
 }

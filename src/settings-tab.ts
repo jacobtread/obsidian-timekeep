@@ -1,11 +1,11 @@
 import { App, PluginSettingTab, Setting } from "obsidian";
-import SimpleTimeTrackerPlugin from "./main";
+import TimekeepPlugin from "./main";
 import { defaultSettings } from "./settings";
 
-export class SimpleTimeTrackerSettingsTab extends PluginSettingTab {
-	plugin: SimpleTimeTrackerPlugin;
+export class TimekeepSettingsTab extends PluginSettingTab {
+	plugin: TimekeepPlugin;
 
-	constructor(app: App, plugin: SimpleTimeTrackerPlugin) {
+	constructor(app: App, plugin: TimekeepPlugin) {
 		super(app, plugin);
 		this.plugin = plugin;
 	}
@@ -26,7 +26,7 @@ export class SimpleTimeTrackerSettingsTab extends PluginSettingTab {
 						href: "https://momentjs.com/docs/#/parsing/string-format/",
 					});
 					f.createSpan({ text: " syntax." });
-				}),
+				})
 			)
 			.addText((t) => {
 				t.setValue(String(this.plugin.settings.timestampFormat));
@@ -54,7 +54,7 @@ export class SimpleTimeTrackerSettingsTab extends PluginSettingTab {
 		new Setting(this.containerEl)
 			.setName("CSV Heading Row")
 			.setDesc(
-				"Whether to use the first row of generated CSV as a title row",
+				"Whether to use the first row of generated CSV as a title row"
 			)
 			.addToggle((t) => {
 				t.setValue(this.plugin.settings.csvTitle);
@@ -67,7 +67,7 @@ export class SimpleTimeTrackerSettingsTab extends PluginSettingTab {
 		new Setting(this.containerEl)
 			.setName("CSV Delimiter")
 			.setDesc(
-				"The delimiter character that should be used when copying a tracker table as CSV. For example, some languages use a semicolon instead of a comma.",
+				"The delimiter character that should be used when copying a tracker table as CSV. For example, some languages use a semicolon instead of a comma."
 			)
 			.addText((t) => {
 				t.setValue(String(this.plugin.settings.csvDelimiter));
@@ -82,7 +82,7 @@ export class SimpleTimeTrackerSettingsTab extends PluginSettingTab {
 		new Setting(this.containerEl)
 			.setName("Timestamp Durations")
 			.setDesc(
-				"Whether durations should be displayed in a timestamp format (12:15:01) rather than the default duration format (12h 15m 1s).",
+				"Whether durations should be displayed in a timestamp format (12:15:01) rather than the default duration format (12h 15m 1s)."
 			)
 			.addToggle((t) => {
 				t.setValue(this.plugin.settings.timestampDurations);
@@ -95,7 +95,7 @@ export class SimpleTimeTrackerSettingsTab extends PluginSettingTab {
 		new Setting(this.containerEl)
 			.setName("Display Segments in Reverse Order")
 			.setDesc(
-				"Whether older tracker segments should be displayed towards the bottom of the tracker, rather than the top.",
+				"Whether older tracker segments should be displayed towards the bottom of the tracker, rather than the top."
 			)
 			.addToggle((t) => {
 				t.setValue(this.plugin.settings.reverseSegmentOrder);

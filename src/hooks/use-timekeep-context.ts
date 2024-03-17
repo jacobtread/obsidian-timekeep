@@ -1,6 +1,4 @@
-import React, { Dispatch, SetStateAction, useContext, useState } from "react";
-
-import { TimekeepSettings } from "../settings";
+import React, { Dispatch, SetStateAction, useContext } from "react";
 import { Timekeep } from "src/timekeep";
 
 type TimekeepContext = {

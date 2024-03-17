@@ -218,8 +218,10 @@ export default function TimesheetPdf({ data, title }: Props) {
 						/>
 
 						<Text
-							style={[styles.tableCell, styles.tableCellDuration]}
-						>
+							style={[
+								styles.tableCell,
+								styles.tableCellDuration,
+							]}>
 							{formatDuration(duration)}
 						</Text>
 					</View>

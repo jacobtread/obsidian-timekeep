@@ -1,19 +1,19 @@
 import { Plugin } from "obsidian";
 import { TimekeepSettings, defaultSettings } from "./settings";
-import { SimpleTimeTrackerSettingsTab } from "./settings-tab";
+import { TimekeepSettingsTab } from "./settings-tab";
 import { load } from "./timekeep";
 import Timesheet from "./components/Timesheet";
 import React from "react";
 import { createRoot } from "react-dom/client";
 import { SettingsContext } from "./hooks/use-settings-context";
 
-export default class SimpleTimeTrackerPlugin extends Plugin {
+export default class TimekeepPlugin extends Plugin {
 	settings: TimekeepSettings;
 
 	async onload(): Promise<void> {
 		await this.loadSettings();
 
-		this.addSettingTab(new SimpleTimeTrackerSettingsTab(this.app, this));
+		this.addSettingTab(new TimekeepSettingsTab(this.app, this));
 
 		this.registerMarkdownCodeBlockProcessor("timekeep", (s, e, i) => {
 			const reactWrapper = e.createDiv({});
@@ -34,13 +34,13 @@ export default class SimpleTimeTrackerPlugin extends Plugin {
 								getSectionInfo: () => i.getSectionInfo(e),
 							}}
 						/>
-					</SettingsContext.Provider>,
+					</SettingsContext.Provider>
 				);
 			} else {
 				root.render(
 					<p className="timekeep-container">
 						Failed to load timekeep: {loadResult.error}
-					</p>,
+					</p>
 				);
 			}
 		});
@@ -48,7 +48,7 @@ export default class SimpleTimeTrackerPlugin extends Plugin {
 		this.addCommand({
 			id: `insert`,
 			name: `Insert Timekeep`,
-			editorCallback: (e, _) => {
+			editorCallback: (e) => {
 				e.replaceSelection('```timekeep\n{"entries": []}\n```\n');
 			},
 		});
@@ -58,7 +58,7 @@ export default class SimpleTimeTrackerPlugin extends Plugin {
 		this.settings = Object.assign(
 			{},
 			defaultSettings,
-			await this.loadData(),
+			await this.loadData()
 		);
 	}
 

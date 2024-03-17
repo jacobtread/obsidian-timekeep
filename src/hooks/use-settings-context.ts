@@ -1,8 +1,9 @@
 import React, { useContext } from "react";
 
-import { TimekeepSettings } from "../settings";
+import { TimekeepSettings, defaultSettings } from "../settings";
 
-export const SettingsContext = React.createContext<TimekeepSettings>(null!);
+export const SettingsContext =
+	React.createContext<TimekeepSettings>(defaultSettings);
 
 export function useSettings(): TimekeepSettings {
 	return useContext(SettingsContext);
