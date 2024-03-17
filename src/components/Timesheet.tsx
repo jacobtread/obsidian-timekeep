@@ -101,7 +101,6 @@ export default function Timesheet({ initialState, saveDetails }: Props) {
 			value={{ timekeep, setTimekeep, isTimekeepRunning: isRunning }}
 		>
 			<div className="timekeep-container">
-				<h1>Timekeep</h1>
 				<button
 					onClick={onClickStart}
 					title={isRunning ? "Stop" : "Start"}
@@ -145,7 +144,7 @@ export default function Timesheet({ initialState, saveDetails }: Props) {
 						)}
 					</tbody>
 				</table>
-				<div>
+				<div className="timekeep-actions">
 					<button onClick={onCopyMarkdown}>Copy Markdown</button>
 					<button onClick={onCopyCSV}>Copy CSV</button>
 					<button onClick={onCopyJSON}>Copy JSON</button>
