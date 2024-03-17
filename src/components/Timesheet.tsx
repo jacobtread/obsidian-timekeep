@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { SetStateAction, useEffect, useState } from "react";
 import React from "react";
 
 import {
@@ -28,26 +28,34 @@ type Props = {
 };
 
 export default function Timesheet({ initialState, saveDetails }: Props) {
-	const [timekeep, setTimekeep] = useState(initialState);
+	const [timekeep, setTimekeepInternal] = useState(initialState);
 	const settings = useSettings();
 	const [pdfInstance, updatePdfInstance] = usePDF({});
 
 	const [name, setName] = useState("");
-
 	const [isRunning, setRunning] = useState(false);
 
 	// Handle saving timekeep changes
 	useEffect(() => {
-		save(timekeep, saveDetails);
 		updatePdfInstance(
 			<TimesheetPdf data={timekeep} title={settings.pdfTitle} />,
 		);
-	}, [timekeep, saveDetails]);
+	}, [timekeep]);
 
 	// Update the running state and total time when the keep changes
 	useEffect(() => {
 		setRunning(isKeepRunning(timekeep));
 	}, [timekeep, setRunning]);
+
+	// Wrapper around setTimekeep state to persist
+	const setTimekeep = (value: SetStateAction<Timekeep>) => {
+		setTimekeepInternal((storedValue) => {
+			const updatedValue =
+				value instanceof Function ? value(storedValue) : value;
+			save(updatedValue, saveDetails);
+			return updatedValue;
+		});
+	};
 
 	const onClickStart = () => {
 		if (isRunning) {
@@ -98,7 +106,11 @@ export default function Timesheet({ initialState, saveDetails }: Props) {
 
 	return (
 		<TimekeepContext.Provider
-			value={{ timekeep, setTimekeep, isTimekeepRunning: isRunning }}
+			value={{
+				timekeep,
+				setTimekeep,
+				isTimekeepRunning: isRunning,
+			}}
 		>
 			<div className="timekeep-container">
 				<button
