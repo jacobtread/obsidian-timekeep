@@ -1,7 +1,7 @@
 {
 	"name": "obsidian-timekeep",
 	"version": "1.0.0",
-	"description": "This is a sample plugin for Obsidian (https://obsidian.md)",
+	"description": "Obsidian plugin for time tracking",
 	"main": "main.js",
 	"scripts": {
 		"dev": "obsidian-plugin dev --esbuild-config=esbuild.config.js --vault-path=test-vault --with-stylesheet src/styles.css src/main.tsx",
@@ -9,7 +9,7 @@
 		"version": "node version-bump.mjs && git add manifest.json versions.json"
 	},
 	"keywords": [],
-	"author": "",
+	"author": "Jacobtread",
 	"license": "MIT",
 	"devDependencies": {
 		"@types/node": "^16.11.6",
