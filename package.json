@@ -1,11 +1,11 @@
 {
-	"name": "obsidian-sample-plugin",
+	"name": "obsidian-timekeep",
 	"version": "1.0.0",
 	"description": "This is a sample plugin for Obsidian (https://obsidian.md)",
 	"main": "main.js",
 	"scripts": {
-		"dev": "node esbuild.config.mjs",
-		"build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production",
+		"dev": "obsidian-plugin dev --esbuild-config=esbuild.config.js --vault-path=test-vault --with-stylesheet src/styles.css src/main.tsx",
+		"build": "obsidian-plugin build --esbuild-config=esbuild.config.js --with-stylesheet src/styles.css src/main.tsx",
 		"version": "node version-bump.mjs && git add manifest.json versions.json"
 	},
 	"keywords": [],
@@ -13,12 +13,24 @@
 	"license": "MIT",
 	"devDependencies": {
 		"@types/node": "^16.11.6",
+		"@types/react": "^18.2.66",
+		"@types/react-dom": "^18.2.22",
 		"@typescript-eslint/eslint-plugin": "5.29.0",
 		"@typescript-eslint/parser": "5.29.0",
 		"builtin-modules": "3.3.0",
-		"esbuild": "0.17.3",
+		"esbuild": "^0.20.2",
 		"obsidian": "latest",
+		"obsidian-plugin-cli": "^0.9.0",
+		"prettier": "^3.2.5",
 		"tslib": "2.4.0",
 		"typescript": "4.7.4"
+	},
+	"dependencies": {
+		"@react-pdf/renderer": "^3.4.0",
+		"lucide-react": "^0.358.0",
+		"react": "^18.2.0",
+		"react-datetime-picker": "^5.6.0",
+		"react-dom": "^18.2.0",
+		"zod": "^3.22.4"
 	}
 }

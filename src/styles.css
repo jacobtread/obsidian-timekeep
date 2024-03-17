@@ -1,0 +1,104 @@
+/*
+
+This CSS file will be included with your plugin, and
+available in the app when your plugin is enabled.
+
+If your plugin does not need CSS, delete this file.
+
+*/
+
+.timekeep-container {
+	width: 100%;
+	display: flex;
+	flex-flow: column;
+	gap: 1rem;
+}
+
+.timekeep-table {
+	width: 100%;
+	overflow: auto;
+}
+
+.timekeep-row {
+	width: 100%;
+}
+
+.timekeep-col {
+	vertical-align: middle;
+}
+
+.timekeep-col--name {
+	width: 40%;
+}
+
+.timekeep-name {
+	padding: 0.5rem;
+}
+
+.timekeep-col--time {
+	width: 15%;
+}
+
+.timekeep-col--duration {
+	width: 10%;
+}
+
+.timekeep-input {
+	width: 100%;
+}
+
+.timekeep-time {
+	font-size: 0.8rem;
+}
+
+.timekeep-col--actions {
+	width: 10%;
+	position: relative;
+}
+
+.timekeep-actions-wrapper {
+	display: flex;
+	flex-flow: row;
+	gap: 0.5rem;
+	flex: auto;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	height: 100%;
+}
+
+.timekeep-action {
+	padding: 0.5rem;
+	font-size: 0.8rem;
+}
+
+.timekeep-timers {
+	display: flex;
+	flex-flow: row;
+	gap: 1rem;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+}
+
+.timekeep-timer {
+	display: flex;
+	flex-flow: column;
+	gap: 0rem;
+	justify-content: center;
+	align-items: center;
+	padding: 1rem;
+}
+
+.timekeep-timer-value {
+	font-size: 3rem;
+	font-weight: bolder;
+}
+
+.timekeep-start {
+	align-self: center;
+	font-size: 2rem;
+	max-height: none;
+	height: auto;
+	padding: 1rem;
+}
