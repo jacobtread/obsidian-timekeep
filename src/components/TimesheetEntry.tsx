@@ -83,7 +83,7 @@ export default function TimesheetEntryGroup({ entry, indent }: Props) {
 				}
 
 				const endTime = unformatEditableTimestamp(
-					editing.startTime,
+					editing.endTime,
 					settings
 				);
 				if (endTime.isValid()) {
