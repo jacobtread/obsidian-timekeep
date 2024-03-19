@@ -186,7 +186,9 @@ export default function TimesheetPdf({ data, title }: Props) {
 				</View>
 				<View style={styles.tableContainer}>
 					{/* Table Header */}
-					<View style={[styles.tableRow, styles.tableRowHeader]}>
+					<View
+						style={[styles.tableRow, styles.tableRowHeader]}
+						wrap={false}>
 						<Text style={[styles.tableCell, styles.tableCellBlock]}>
 							Block Name
 						</Text>
@@ -205,7 +207,9 @@ export default function TimesheetPdf({ data, title }: Props) {
 						<TimesheetEntry entry={entry} key={index} />
 					))}
 
-					<View style={[styles.tableRow, styles.tableRowHeader]}>
+					<View
+						style={[styles.tableRow, styles.tableRowHeader]}
+						wrap={false}>
 						<Text style={[styles.tableCell, styles.tableCellBlock]}>
 							Total
 						</Text>
@@ -227,7 +231,7 @@ export default function TimesheetPdf({ data, title }: Props) {
 					</View>
 				</View>
 
-				<Text style={styles.footNote}>
+				<Text style={styles.footNote} wrap={false}>
 					Information present in this timesheet should be considered
 					Commercial in Confidence.
 				</Text>
