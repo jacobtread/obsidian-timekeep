@@ -37,3 +37,11 @@ export function formatDuration(totalTime: number): string {
 
 	return ret;
 }
+
+export function formatDurationHoursTrunc(totalTime: number): string {
+	const duration = moment.duration(totalTime);
+
+	const hours = duration.asHours();
+
+	return hours.toFixed(2) + "h ";
+}

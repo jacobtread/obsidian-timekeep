@@ -98,6 +98,11 @@ If your plugin does not need CSS, delete this file.
 	font-weight: bolder;
 }
 
+.timekeep-timer-value-small {
+	font-size: 0.9rem;
+	font-weight: bolder;
+}
+
 .timekeep-start {
 	align-self: center;
 	font-size: 2rem;

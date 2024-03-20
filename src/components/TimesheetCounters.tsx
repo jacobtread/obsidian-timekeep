@@ -7,7 +7,7 @@ import {
 	getRunningEntry,
 	getEntryDuration,
 } from "../timekeep";
-import { formatDuration } from "../utils";
+import { formatDuration, formatDurationHoursTrunc } from "../utils";
 
 type Props = {
 	timekeep: Timekeep;
@@ -17,6 +17,7 @@ type Props = {
 export default function TimesheetCounters({ timekeep, isRunning }: Props) {
 	const [current, setCurrent] = useState("0s");
 	const [total, setTotal] = useState("0s");
+	const [totalShort, setTotalShort] = useState("0.00h");
 
 	// Update the current timings every second
 	useEffect(() => {
@@ -24,6 +25,7 @@ export default function TimesheetCounters({ timekeep, isRunning }: Props) {
 		if (!isRunning) {
 			const total = getTotalDuration(timekeep.entries);
 			setTotal(formatDuration(total));
+			setTotalShort(formatDurationHoursTrunc(total));
 			return;
 		}
 
@@ -36,6 +38,7 @@ export default function TimesheetCounters({ timekeep, isRunning }: Props) {
 
 			setCurrent(formatDuration(current));
 			setTotal(formatDuration(total));
+			setTotalShort(formatDurationHoursTrunc(total));
 		};
 
 		update();
@@ -57,6 +60,7 @@ export default function TimesheetCounters({ timekeep, isRunning }: Props) {
 			)}
 			<div className="timekeep-timer">
 				<span className="timekeep-timer-value">{total}</span>
+				<span className="timekeep-timer-value-small">{totalShort}</span>
 				<span>Total</span>
 			</div>
 		</div>
