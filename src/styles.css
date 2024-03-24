@@ -34,10 +34,6 @@ If your plugin does not need CSS, delete this file.
 	width: 40%;
 }
 
-.timekeep-name {
-	padding: 0.5rem;
-}
-
 .timekeep-col--time {
 	width: 15%;
 }
@@ -109,6 +105,11 @@ If your plugin does not need CSS, delete this file.
 	max-height: none;
 	height: auto;
 	padding: 1rem;
+}
+
+.timekeep-name {
+	padding: 0.5rem;
+	align-self: center;
 }
 
 .timekeep-actions {

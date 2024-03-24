@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 import {
 	getTotalDuration,
@@ -7,60 +6,72 @@ import {
 	getEntryDuration,
 } from "../timekeep";
 import { formatDuration, formatDurationHoursTrunc } from "../utils";
-import { Timekeep } from "../schema";
+import { useTimekeep } from "src/hooks/use-timekeep-context";
+import { Timekeep } from "src/schema";
 
-type Props = {
-	timekeep: Timekeep;
-	isRunning: boolean;
+type TimingState = {
+	running: boolean;
+	current: string;
+	total: string;
+	totalShort: string;
 };
 
-export default function TimesheetCounters({ timekeep, isRunning }: Props) {
-	const [current, setCurrent] = useState("0s");
-	const [total, setTotal] = useState("0s");
-	const [totalShort, setTotalShort] = useState("0.00h");
+/**
+ * Gets the timing state for the provided timekeep
+ *
+ * @param timekeep The timekeep to get the state for
+ * @returns The timing state
+ */
+function getTimingState(timekeep: Timekeep): TimingState {
+	const total = getTotalDuration(timekeep.entries);
+	const runningEntry = getRunningEntry(timekeep.entries);
+	const current = runningEntry ? getEntryDuration(runningEntry) : 0;
+
+	return {
+		running: runningEntry !== null,
+		current: formatDuration(current),
+		total: formatDuration(total),
+		totalShort: formatDurationHoursTrunc(total),
+	};
+}
+
+export default function TimesheetCounters() {
+	const { timekeep, isTimekeepRunning } = useTimekeep();
+	const [timing, setTiming] = useState<TimingState>(getTimingState(timekeep));
 
 	// Update the current timings every second
 	useEffect(() => {
-		// If we aren't running only update the total initially
-		if (!isRunning) {
-			const total = getTotalDuration(timekeep.entries);
-			setTotal(formatDuration(total));
-			setTotalShort(formatDurationHoursTrunc(total));
-			return;
+		const updateTiming = () => setTiming(getTimingState(timekeep));
+
+		// Initial update
+		updateTiming();
+
+		// Only schedule further updates if we are running
+		if (isTimekeepRunning) {
+			const intervalID = window.setInterval(updateTiming, 1000);
+
+			return () => {
+				clearInterval(intervalID);
+			};
 		}
-
-		const update = () => {
-			const runningEntry = getRunningEntry(timekeep.entries);
-			if (runningEntry === null) return;
-
-			const current = getEntryDuration(runningEntry);
-			const total = getTotalDuration(timekeep.entries);
-
-			setCurrent(formatDuration(current));
-			setTotal(formatDuration(total));
-			setTotalShort(formatDurationHoursTrunc(total));
-		};
-
-		update();
-
-		const intervalID = window.setInterval(update, 1000);
-
-		return () => {
-			clearInterval(intervalID);
-		};
-	}, [timekeep, isRunning, setTotal, setCurrent]);
+	}, [timekeep, isTimekeepRunning]);
 
 	return (
 		<div className="timekeep-timers">
-			{isRunning && (
+			{timing.running && (
 				<div className="timekeep-timer">
-					<span className="timekeep-timer-value">{current}</span>
+					<span className="timekeep-timer-value">
+						{timing.current}
+					</span>
 					<span>Current</span>
 				</div>
 			)}
+
 			<div className="timekeep-timer">
-				<span className="timekeep-timer-value">{total}</span>
-				<span className="timekeep-timer-value-small">{totalShort}</span>
+				<span className="timekeep-timer-value">{timing.total}</span>
+				<span className="timekeep-timer-value-small">
+					{timing.totalShort}
+				</span>
 				<span>Total</span>
 			</div>
 		</div>
