@@ -1,92 +1,13 @@
-import { formatDuration, formatTimestamp, isEmptyString } from "./utils";
+import { isEmptyString } from "./utils";
 import { App, MarkdownSectionInformation, TFile, moment } from "obsidian";
 import { TimekeepSettings } from "./settings";
 import { TIMEKEEP, TimeEntry, Timekeep } from "./schema";
+import { strHash } from "./utils/text";
 
 export interface SaveDetails {
 	app: App;
 	fileName: string;
 	getSectionInfo: () => MarkdownSectionInformation | null;
-}
-
-export function createMarkdownTable(
-	keep: Timekeep,
-	settings: TimekeepSettings
-): string {
-	const table = [["Block", "Start time", "End time", "Duration"]];
-	for (const entry of getEntriesOrdered(keep.entries, settings))
-		table.push(...createTableRows(entry, settings));
-	table.push([
-		"**Total**",
-		"",
-		"",
-		`**${formatDuration(getTotalDuration(keep.entries))}**`,
-	]);
-
-	let output = "";
-	// calculate the width every column needs to look neat when monospaced
-	const widths = Array.from(Array(4).keys()).map((i) =>
-		Math.max(...table.map((a) => a[i].length))
-	);
-	for (let rowIndex = 0; rowIndex < table.length; rowIndex++) {
-		// add separators after first row
-		if (rowIndex == 1) {
-			output +=
-				"| " +
-				Array.from(Array(4).keys())
-					.map((i) => "-".repeat(widths[i]))
-					.join(" | ") +
-				" |\n";
-		}
-
-		const row: string[] = [];
-		for (let columnIndex = 0; columnIndex < 4; columnIndex++) {
-			row.push(
-				table[rowIndex][columnIndex].padEnd(widths[columnIndex], " ")
-			);
-		}
-		output += "| " + row.join(" | ") + " |\n";
-	}
-
-	return output;
-}
-
-export function createCsv(keep: Timekeep, settings: TimekeepSettings): string {
-	let output = "";
-	if (settings.csvTitle) {
-		output +=
-			["Block", "Start time", "End time", "Duration"].join(
-				settings.csvDelimiter
-			) + "\n";
-	}
-
-	for (const entry of getEntriesOrdered(keep.entries, settings)) {
-		for (const row of createTableRows(entry, settings)) {
-			output += row.join(settings.csvDelimiter) + "\n";
-		}
-	}
-	return output;
-}
-
-function createTableRows(
-	entry: TimeEntry,
-	settings: TimekeepSettings
-): string[][] {
-	const rows = [
-		[
-			entry.name,
-			entry.startTime ? formatTimestamp(entry.startTime, settings) : "",
-			entry.endTime ? formatTimestamp(entry.endTime, settings) : "",
-			entry.endTime || entry.subEntries
-				? formatDuration(getEntryDuration(entry))
-				: "",
-		],
-	];
-	if (entry.subEntries) {
-		for (const subEntry of getEntriesOrdered(entry.subEntries, settings))
-			rows.push(...createTableRows(subEntry, settings));
-	}
-	return rows;
 }
 
 export async function save(
@@ -179,19 +100,6 @@ export function getUniqueEntryHash(entry: TimeEntry): number {
 		);
 		return strHash(`${entry.name}${subEntriesHash}`);
 	}
-}
-
-function strHash(str: string): number {
-	let hash = 0;
-	if (str.length === 0) return hash;
-
-	for (let i = 0; i < str.length; i++) {
-		const char = str.charCodeAt(i);
-		hash = (hash << 5) - hash + char;
-		hash |= 0;
-	}
-
-	return hash;
 }
 
 /**

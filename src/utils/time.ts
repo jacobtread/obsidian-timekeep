@@ -1,9 +1,5 @@
 import { moment } from "obsidian";
-import { TimekeepSettings } from "./settings";
-
-export function isEmptyString(value: string): boolean {
-	return value.trim().length === 0;
-}
+import { TimekeepSettings } from "../settings";
 
 export function formatTimestamp(
 	timestamp: moment.Moment,

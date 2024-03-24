@@ -9,8 +9,6 @@ import {
 	stopRunningEntries,
 	createEntry,
 	getUniqueEntryHash,
-	createCsv,
-	createMarkdownTable,
 } from "../timekeep";
 import { Timekeep } from "../schema";
 import TimesheetEntry from "./TimesheetEntry";
@@ -21,6 +19,7 @@ import { isEmptyString } from "src/utils";
 import { TimekeepContext } from "src/hooks/use-timekeep-context";
 import { PlayIcon, StopCircleIcon } from "lucide-react";
 import { usePDF } from "node_modules/@react-pdf/renderer/lib/react-pdf.browser.cjs";
+import { createCSV, createMarkdownTable } from "../export";
 
 type Props = {
 	initialState: Timekeep;
@@ -87,7 +86,7 @@ export default function Timesheet({ initialState, saveDetails }: Props) {
 	};
 
 	const onCopyCSV = () => {
-		navigator.clipboard.writeText(createCsv(timekeep, settings));
+		navigator.clipboard.writeText(createCSV(timekeep, settings));
 	};
 
 	const onCopyJSON = () => {
