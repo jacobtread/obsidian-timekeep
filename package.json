@@ -4,8 +4,8 @@
 	"description": "Obsidian plugin for time tracking",
 	"main": "main.js",
 	"scripts": {
-		"dev": "obsidian-plugin dev --esbuild-config=esbuild.config.js --vault-path=test-vault --with-stylesheet src/styles.css src/main.tsx",
-		"build": "obsidian-plugin build --esbuild-config=esbuild.config.js --with-stylesheet src/styles.css src/main.tsx",
+		"dev": "obsidian-plugin dev --esbuild-config=esbuild.config.js --vault-path=test-vault --with-stylesheet src/styles.css src/main.ts",
+		"build": "obsidian-plugin build --esbuild-config=esbuild.config.js --with-stylesheet src/styles.css src/main.ts",
 		"version": "node version-bump.mjs && git add manifest.json versions.json",
 		"lint": "eslint src",
 		"format": "prettier -w src"
