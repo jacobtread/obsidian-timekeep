@@ -1,40 +1,31 @@
-import { App, MarkdownSectionInformation, TFile, moment } from "obsidian";
+import { moment } from "obsidian";
 import { TIMEKEEP, TimeEntry, Timekeep } from "@/schema";
 import { TimekeepSettings } from "@/settings";
 import { isEmptyString } from "@/utils";
 import { strHash } from "@/utils/text";
 
-export interface SaveDetails {
-	app: App;
-	fileName: string;
-	getSectionInfo: () => MarkdownSectionInformation | null;
-}
+/**
+ * Replaces the contents of a specific timekeep codeblock within
+ * a file returning the modified contents to be saved
+ */
+export function replaceTimekeepCodeblock(
+	timekeep: Timekeep,
+	content: string,
+	lineStart: number,
+	lineEnd: number
+): string {
+	const timekeepJSON = JSON.stringify(timekeep);
 
-export async function save(
-	keep: Timekeep,
-	saveDetails: SaveDetails
-): Promise<void> {
-	const section = saveDetails.getSectionInfo();
-	if (section === null) return;
-	const file = saveDetails.app.vault.getAbstractFileByPath(
-		saveDetails.fileName
-	) as TFile | null;
+	// The actual JSON is the line after the code block start
+	const contentStart = lineStart + 1;
+	const contentLength = lineEnd - contentStart;
 
-	if (file === null) return;
-	let content = await saveDetails.app.vault.read(file);
+	// Split the content into lines
+	const lines = content.split("\n");
+	// Splice the new JSON content in between the codeblock, removing the old codeblock lines
+	lines.splice(contentStart, contentLength, timekeepJSON);
 
-	// figure out what part of the content we have to edit
-	const lines: string[] = content.split("\n");
-	const prev: string = lines
-		.filter((_, i) => i <= section.lineStart)
-		.join("\n");
-	const next: string = lines
-		.filter((_, i) => i >= section.lineEnd)
-		.join("\n");
-	// edit only the code block content, leave the rest untouched
-	content = `${prev}\n${JSON.stringify(keep)}\n${next}`;
-
-	await saveDetails.app.vault.modify(file, content);
+	return lines.join("\n");
 }
 
 type LoadResult =

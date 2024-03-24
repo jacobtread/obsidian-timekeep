@@ -1,7 +1,7 @@
 import React, { SetStateAction, useCallback, useState } from "react";
 
 import { Timekeep } from "@/schema";
-import { SaveDetails, isKeepRunning, save } from "@/timekeep";
+import { isKeepRunning } from "@/timekeep";
 import { TimekeepSettings } from "@/settings";
 
 import { SettingsContext } from "@/hooks/use-settings-context";
@@ -15,10 +15,10 @@ import TimesheetExportActions from "@/components/TimesheetExportActions";
 export type AppProps = {
 	// Initial state loaded from the document
 	initialState: Timekeep;
-	// Details required for saving to the Vault
-	saveDetails: SaveDetails;
 	// The timekeep settings
 	settings: TimekeepSettings;
+	// Function to save the timekeep data
+	save: (timekeep: Timekeep) => void;
 };
 
 /**
@@ -28,7 +28,7 @@ export type AppProps = {
  * Wraps the state updates for `setTimekeep` with logic that
  * saves the changes to the vault
  */
-export default function App({ initialState, saveDetails, settings }: AppProps) {
+export default function App({ initialState, save, settings }: AppProps) {
 	const [timekeep, setTimekeep] = useState(initialState);
 
 	// Wrapper around setTimekeep state to save the file on changes
@@ -37,7 +37,7 @@ export default function App({ initialState, saveDetails, settings }: AppProps) {
 			setTimekeep((storedValue) => {
 				const updatedValue =
 					value instanceof Function ? value(storedValue) : value;
-				save(updatedValue, saveDetails);
+				save(updatedValue);
 				return updatedValue;
 			});
 		},

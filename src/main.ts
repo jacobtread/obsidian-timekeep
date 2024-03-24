@@ -1,10 +1,11 @@
 import React from "react";
-import { Plugin } from "obsidian";
+import { MarkdownPostProcessorContext, Plugin, TFile } from "obsidian";
 import { createRoot } from "react-dom/client";
 import { TimekeepSettings, defaultSettings } from "@/settings";
 import { TimekeepSettingsTab } from "@/settings-tab";
-import { load } from "@/timekeep";
+import { load, replaceTimekeepCodeblock } from "@/timekeep";
 import App from "@/App";
+import { Timekeep } from "./schema";
 
 export default class TimekeepPlugin extends Plugin {
 	settings: TimekeepSettings;
@@ -16,7 +17,11 @@ export default class TimekeepPlugin extends Plugin {
 
 		this.registerMarkdownCodeBlockProcessor(
 			"timekeep",
-			(source, el, context) => {
+			(
+				source: string,
+				el: HTMLElement,
+				context: MarkdownPostProcessorContext
+			) => {
 				const reactWrapper = el.createDiv({});
 				const root = createRoot(reactWrapper);
 
@@ -25,16 +30,44 @@ export default class TimekeepPlugin extends Plugin {
 				if (loadResult.success) {
 					const timekeep = loadResult.timekeep;
 
+					const app = this.app;
+					const fileName = context.sourcePath;
+
+					const saveTimekeep = async (timekeep: Timekeep) => {
+						const vault = app.vault;
+						const sectionInfo = context.getSectionInfo(el);
+
+						// Ensure we actually have a section to write to
+						if (sectionInfo === null) return;
+
+						const file = vault.getAbstractFileByPath(
+							fileName
+						) as TFile | null;
+
+						// Ensure the file still exists
+						if (file === null) return;
+
+						try {
+							const content = await vault.read(file);
+
+							const newContent = replaceTimekeepCodeblock(
+								timekeep,
+								content,
+								sectionInfo.lineStart,
+								sectionInfo.lineEnd
+							);
+
+							await vault.modify(file, newContent);
+						} catch (e) {
+							console.error("Failed to save timekeep", e);
+						}
+					};
+
 					root.render(
 						React.createElement(App, {
 							initialState: timekeep,
-							saveDetails: {
-								app: this.app,
-								fileName: context.sourcePath,
-								getSectionInfo: () =>
-									context.getSectionInfo(el),
-							},
 							settings: this.settings,
+							save: saveTimekeep,
 						})
 					);
 				} else {
