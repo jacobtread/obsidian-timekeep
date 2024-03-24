@@ -1,5 +1,5 @@
 import React, { Dispatch, SetStateAction, useContext } from "react";
-import { Timekeep } from "src/timekeep";
+import { Timekeep } from "../schema";
 
 type TimekeepContext = {
 	timekeep: Timekeep;

@@ -2,7 +2,6 @@ import { SetStateAction, useEffect, useState } from "react";
 import React from "react";
 
 import {
-	Timekeep,
 	SaveDetails,
 	getEntriesOrdered,
 	isKeepRunning,
@@ -13,6 +12,7 @@ import {
 	createCsv,
 	createMarkdownTable,
 } from "../timekeep";
+import { Timekeep } from "../schema";
 import TimesheetEntry from "./TimesheetEntry";
 import TimesheetCounters from "./TimesheetCounters";
 import TimesheetPdf from "./TimesheetPdf";

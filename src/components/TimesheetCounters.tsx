@@ -2,12 +2,12 @@ import { useEffect, useState } from "react";
 import React from "react";
 
 import {
-	Timekeep,
 	getTotalDuration,
 	getRunningEntry,
 	getEntryDuration,
 } from "../timekeep";
 import { formatDuration, formatDurationHoursTrunc } from "../utils";
+import { Timekeep } from "../schema";
 
 type Props = {
 	timekeep: Timekeep;

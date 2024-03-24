@@ -3,13 +3,9 @@ import { Page, Text, View, Document, StyleSheet } from "@react-pdf/renderer";
 import React from "react";
 import { moment } from "obsidian";
 
-import {
-	Timekeep,
-	TimeEntry,
-	getTotalDuration,
-	getEntryDuration,
-} from "../timekeep";
+import { getTotalDuration, getEntryDuration } from "../timekeep";
 import { formatDuration } from "../utils";
+import { Timekeep, TimeEntry } from "../schema";
 
 type Props = {
 	title: string;

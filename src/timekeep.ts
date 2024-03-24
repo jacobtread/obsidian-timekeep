@@ -1,53 +1,7 @@
-import { z } from "zod";
 import { formatDuration, formatTimestamp, isEmptyString } from "./utils";
 import { App, MarkdownSectionInformation, TFile, moment } from "obsidian";
 import { TimekeepSettings } from "./settings";
-
-type BaseTimeEntryGroup = z.output<typeof baseGroupEntrySchema>;
-export type TimeEntrySingle = z.output<typeof singleEntrySchema>;
-export type TimeEntryGroup = BaseTimeEntryGroup & { subEntries: TimeEntry[] };
-export type TimeEntry = TimeEntrySingle | TimeEntryGroup;
-export type Timekeep = z.output<typeof timekeepSchema>;
-
-const singleEntrySchema = z.object({
-	// Name of the entry
-	name: z.string(),
-	// Start time for this entry
-	startTime: z.string().transform((value) => moment(value)),
-	// End time for this entry, null when this entry is not finished
-	endTime: z
-		.string()
-		.nullable()
-		.transform((value) => (value === null ? null : moment(value))),
-	// Single entries have no children
-	subEntries: z.null(),
-});
-
-// Schema for a group entry without its children
-const baseGroupEntrySchema = z.object({
-	name: z.string(),
-	startTime: z.null(),
-	endTime: z.null(),
-});
-
-// Complete schema for a group with its children
-const groupEntrySchema: z.ZodType<
-	TimeEntryGroup,
-	z.ZodTypeDef,
-	BaseTimeEntryGroup
-> = baseGroupEntrySchema.extend({
-	subEntries: z.lazy(() =>
-		z.array(z.union([singleEntrySchema, groupEntrySchema]))
-	),
-});
-
-// Schema for entries
-const entrySchema = z.union([singleEntrySchema, groupEntrySchema]);
-
-// Schema for an entire timekeep
-const timekeepSchema = z.object({
-	entries: z.array(entrySchema),
-});
+import { TIMEKEEP, TimeEntry, Timekeep } from "./schema";
 
 export interface SaveDetails {
 	app: App;
@@ -188,7 +142,7 @@ export function load(value: string): LoadResult {
 	}
 
 	// Parse the data against the schema
-	const timekeepResult = timekeepSchema.safeParse(parsedValue);
+	const timekeepResult = TIMEKEEP.safeParse(parsedValue);
 	if (!timekeepResult.success) {
 		return { success: false, error: timekeepResult.error.toString() };
 	}

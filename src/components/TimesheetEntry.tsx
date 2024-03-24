@@ -7,7 +7,6 @@ import {
 	updateEntry,
 	withSubEntry,
 	getUniqueEntryHash,
-	TimeEntry,
 } from "../timekeep";
 import TimesheetEntry from "./TimesheetEntry";
 import { useSettings } from "src/hooks/use-settings-context";
@@ -25,6 +24,7 @@ import {
 	unformatEditableTimestamp,
 } from "src/utils";
 import { useTimekeep } from "src/hooks/use-timekeep-context";
+import { TimeEntry } from "../schema";
 
 type Props = {
 	entry: TimeEntry;
