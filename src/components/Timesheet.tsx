@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import React from "react";
 
 import {
@@ -14,23 +14,15 @@ import { useSettings } from "src/hooks/use-settings-context";
 import { isEmptyString } from "src/utils";
 import { useTimekeep } from "src/hooks/use-timekeep-context";
 import { PlayIcon, StopCircleIcon } from "lucide-react";
-import { usePDF } from "node_modules/@react-pdf/renderer/lib/react-pdf.browser.cjs";
+import { pdf } from "node_modules/@react-pdf/renderer/lib/react-pdf.browser.cjs";
 import { createCSV, createMarkdownTable } from "../export";
 
 export default function Timesheet() {
 	const { timekeep, setTimekeep, isTimekeepRunning } = useTimekeep();
 
 	const settings = useSettings();
-	const [pdfInstance, updatePdfInstance] = usePDF({});
 
 	const [name, setName] = useState("");
-
-	// Handle saving timekeep changes
-	useEffect(() => {
-		updatePdfInstance(
-			<TimesheetPdf data={timekeep} title={settings.pdfTitle} />
-		);
-	}, [timekeep]);
 
 	const onClickStart = () => {
 		if (isTimekeepRunning) {
@@ -70,9 +62,20 @@ export default function Timesheet() {
 	};
 
 	const onSavePDF = async () => {
-		if (pdfInstance.url === null) return;
+		// Create the PDF
+		const createdPdf = pdf(
+			<TimesheetPdf data={timekeep} title={settings.pdfTitle} />
+		);
+
+		// Create a blob from the PDF
+		const blob = await createdPdf.toBlob();
+
+		// Create an object URL from the PDF
+		const url = URL.createObjectURL(blob);
+
+		// Create and click a download link for the file
 		const a = document.createElement("a");
-		a.href = pdfInstance.url;
+		a.href = url;
 		a.download = "Timesheet.pdf";
 		document.body.appendChild(a);
 		a.click();
