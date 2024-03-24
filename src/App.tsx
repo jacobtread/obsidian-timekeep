@@ -18,6 +18,7 @@ export type AppProps = {
 	// The timekeep settings
 	settings: TimekeepSettings;
 	// Function to save the timekeep data
+	// eslint-disable-next-line no-unused-vars
 	save: (timekeep: Timekeep) => void;
 };
 
