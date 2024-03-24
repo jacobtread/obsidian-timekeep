@@ -6,8 +6,8 @@ import {
 	updateEntry,
 	withSubEntry,
 	isKeepRunning,
-} from "../timekeep";
-import { useSettings } from "src/hooks/use-settings-context";
+} from "@/timekeep";
+import { useSettings } from "@/hooks/use-settings-context";
 import {
 	CheckIcon,
 	ChevronRight,
@@ -21,8 +21,8 @@ import {
 	formatTimestamp,
 	unformatEditableTimestamp,
 } from "src/utils";
-import { useTimekeep } from "src/hooks/use-timekeep-context";
-import { TimeEntry } from "../schema";
+import { useTimekeep } from "@/hooks/use-timekeep-context";
+import { TimeEntry } from "@/schema";
 
 type Props = {
 	entry: TimeEntry;

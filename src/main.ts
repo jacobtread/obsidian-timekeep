@@ -1,10 +1,10 @@
-import { Plugin } from "obsidian";
-import { TimekeepSettings, defaultSettings } from "./settings";
-import { TimekeepSettingsTab } from "./settings-tab";
-import { load } from "./timekeep";
 import React from "react";
+import { Plugin } from "obsidian";
 import { createRoot } from "react-dom/client";
-import App from "./App";
+import { TimekeepSettings, defaultSettings } from "@/settings";
+import { TimekeepSettingsTab } from "@/settings-tab";
+import { load } from "@/timekeep";
+import App from "@/App";
 
 export default class TimekeepPlugin extends Plugin {
 	settings: TimekeepSettings;

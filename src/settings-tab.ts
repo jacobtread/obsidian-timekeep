@@ -1,6 +1,6 @@
 import { App, PluginSettingTab, Setting } from "obsidian";
-import TimekeepPlugin from "./main";
-import { defaultSettings } from "./settings";
+import { defaultSettings } from "@/settings";
+import TimekeepPlugin from "@/main";
 
 export class TimekeepSettingsTab extends PluginSettingTab {
 	plugin: TimekeepPlugin;

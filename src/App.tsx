@@ -1,14 +1,16 @@
 import React, { SetStateAction, useCallback, useState } from "react";
-import { Timekeep } from "./schema";
-import { SaveDetails, isKeepRunning, save } from "./timekeep";
-import { TimekeepSettings } from "./settings";
-import { SettingsContext } from "./hooks/use-settings-context";
-import { TimekeepContext } from "./hooks/use-timekeep-context";
 
-import TimesheetCounters from "./components/TimesheetCounters";
-import TimesheetStart from "./components/TimesheetStart";
-import TimesheetTable from "./components/TimesheetTable";
-import TimesheetExportActions from "./components/TimesheetExportActions";
+import { Timekeep } from "@/schema";
+import { SaveDetails, isKeepRunning, save } from "@/timekeep";
+import { TimekeepSettings } from "@/settings";
+
+import { SettingsContext } from "@/hooks/use-settings-context";
+import { TimekeepContext } from "@/hooks/use-timekeep-context";
+
+import TimesheetCounters from "@/components/TimesheetCounters";
+import TimesheetStart from "@/components/TimesheetStart";
+import TimesheetTable from "@/components/TimesheetTable";
+import TimesheetExportActions from "@/components/TimesheetExportActions";
 
 export type AppProps = {
 	// Initial state loaded from the document

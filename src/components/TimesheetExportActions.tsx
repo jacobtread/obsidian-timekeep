@@ -1,12 +1,11 @@
 import React from "react";
 
-// Must be directly imported from the browser module, otherwise incorrectly used the nodejs version
-import { pdf } from "../../node_modules/@react-pdf/renderer/lib/react-pdf.browser.cjs";
+import { pdf } from "@/pdf";
+import { createCSV, createMarkdownTable } from "@/export";
+import { useSettings } from "@/hooks/use-settings-context";
+import { useTimekeep } from "@/hooks/use-timekeep-context";
 
-import { createCSV, createMarkdownTable } from "../export";
-import { useSettings } from "../hooks/use-settings-context";
-import { useTimekeep } from "../hooks/use-timekeep-context";
-import TimesheetPdf from "./TimesheetPdf";
+import TimesheetPdf from "@/components/TimesheetPdf";
 
 export default function TimekeepExportActions() {
 	const { timekeep } = useTimekeep();

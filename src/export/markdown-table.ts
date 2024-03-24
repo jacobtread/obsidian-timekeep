@@ -1,8 +1,8 @@
-import { TimeEntry, Timekeep } from "src/schema";
-import { RawTableRow, TOTAL_COLUMNS, createRawTable } from ".";
-import { formatDuration } from "src/utils";
-import { getTotalDuration } from "src/timekeep";
-import { TimekeepSettings } from "src/settings";
+import { TimeEntry, Timekeep } from "@/schema";
+import { RawTableRow, TOTAL_COLUMNS, createRawTable } from "@/export";
+import { formatDuration } from "@/utils";
+import { getTotalDuration } from "@/timekeep";
+import { TimekeepSettings } from "@/settings";
 
 /**
  * Creates the table header row

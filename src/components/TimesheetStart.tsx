@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import { isEmptyString } from "../utils";
-import { useTimekeep } from "../hooks/use-timekeep-context";
+import { isEmptyString } from "@/utils";
+import { useTimekeep } from "@/hooks/use-timekeep-context";
 import { PlayIcon, StopCircleIcon } from "lucide-react";
-import { stopRunningEntries, createEntry, isKeepRunning } from "../timekeep";
+import { stopRunningEntries, createEntry, isKeepRunning } from "@/timekeep";
 
 /**
  * Component for the timekeep start button and "name" field isolating

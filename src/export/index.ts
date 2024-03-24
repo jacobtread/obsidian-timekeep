@@ -1,7 +1,7 @@
-import { formatDuration, formatTimestamp } from "src/utils";
-import { TimeEntry } from "../schema";
-import { TimekeepSettings } from "../settings";
-import { getEntriesOrdered, getEntryDuration } from "src/timekeep";
+import { formatDuration, formatTimestamp } from "@/utils";
+import { TimeEntry } from "@/schema";
+import { TimekeepSettings } from "@/settings";
+import { getEntriesOrdered, getEntryDuration } from "@/timekeep";
 
 export const TOTAL_COLUMNS = 4;
 

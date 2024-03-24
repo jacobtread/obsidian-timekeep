@@ -1,5 +1,5 @@
 import { moment } from "obsidian";
-import { TimekeepSettings } from "../settings";
+import { TimekeepSettings } from "@/settings";
 
 export function formatTimestamp(
 	timestamp: moment.Moment,

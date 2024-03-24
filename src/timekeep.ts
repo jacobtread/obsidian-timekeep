@@ -1,8 +1,8 @@
-import { isEmptyString } from "./utils";
 import { App, MarkdownSectionInformation, TFile, moment } from "obsidian";
-import { TimekeepSettings } from "./settings";
-import { TIMEKEEP, TimeEntry, Timekeep } from "./schema";
-import { strHash } from "./utils/text";
+import { TIMEKEEP, TimeEntry, Timekeep } from "@/schema";
+import { TimekeepSettings } from "@/settings";
+import { isEmptyString } from "@/utils";
+import { strHash } from "@/utils/text";
 
 export interface SaveDetails {
 	app: App;

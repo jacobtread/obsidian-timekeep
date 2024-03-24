@@ -4,10 +4,10 @@ import {
 	getTotalDuration,
 	getRunningEntry,
 	getEntryDuration,
-} from "../timekeep";
-import { formatDuration, formatDurationHoursTrunc } from "../utils";
-import { useTimekeep } from "src/hooks/use-timekeep-context";
-import { Timekeep } from "src/schema";
+} from "@/timekeep";
+import { formatDuration, formatDurationHoursTrunc } from "@/utils";
+import { useTimekeep } from "@/hooks/use-timekeep-context";
+import { Timekeep } from "@/schema";
 
 type TimingState = {
 	running: boolean;
