@@ -116,19 +116,4 @@ function renderTimekeep(
 			)
 		);
 	}
-
-	const observer = new MutationObserver((_, observer) => {
-		if (!reactWrapper.isConnected) {
-			// Unmount the react component
-			root.unmount();
-			// Disconnect the observer
-			observer.disconnect();
-		}
-	});
-
-	// Observe the document for changes
-	observer.observe(document.body, {
-		childList: true,
-		subtree: true,
-	});
 }
