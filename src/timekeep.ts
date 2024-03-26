@@ -79,66 +79,15 @@ export function createEntry(name: string): TimeEntry {
 	};
 }
 
-export function getUniqueEntryHash(entry: TimeEntry): number {
-	if (entry.subEntries === null) {
-		return strHash(
-			`${entry.name}${entry.startTime.valueOf()}${entry.endTime?.valueOf()}`
-		);
-	} else {
-		const subEntriesHash = entry.subEntries.reduce(
-			(acc, subEntry) => acc + getUniqueEntryHash(subEntry),
-			0
-		);
-		return strHash(`${entry.name}${subEntriesHash}`);
-	}
-}
-
 /**
- * Removes a time entry from the provided list returning
- * the new list
+ * Recursively updates a collection of entries, finding a possibly deeply nested
+ * old entry by reference replacing it with a new entry
  *
- * @param entries
- * @param target
+ * @param entries The entries to make the update within
+ * @param previousEntry The old entry to update
+ * @param newEntry The new entry to take its place
+ * @returns The collection with the updated entry
  */
-export function removeEntry(
-	entries: TimeEntry[],
-	target: TimeEntry
-): TimeEntry[] {
-	if (entries.contains(target)) {
-		return entries.filter((entry) => entry !== target);
-	} else {
-		return entries.map((entry) =>
-			entry.subEntries !== null ? removeSubEntry(entry, target) : entry
-		);
-	}
-}
-
-/**
- * Stops any entries in the provided list that are running
- * returning a list of the new non running entries
- *
- * @param entries
- */
-export function stopRunningEntries(entries: TimeEntry[]): TimeEntry[] {
-	return entries.map((entry) => {
-		if (entry.subEntries) {
-			return {
-				name: entry.name,
-				startTime: null,
-				endTime: null,
-				subEntries: stopRunningEntries(entry.subEntries),
-			};
-		} else {
-			return {
-				name: entry.name,
-				startTime: entry.startTime,
-				endTime: entry.endTime ?? moment(),
-				subEntries: null,
-			};
-		}
-	});
-}
-
 export function updateEntry(
 	entries: TimeEntry[],
 	previousEntry: TimeEntry,
@@ -163,11 +112,60 @@ export function updateEntry(
 }
 
 /**
+ * Removes a time entry from the provided list returning
+ * the new list
+ *
+ * @param entries
+ * @param target
+ */
+export function removeEntry(
+	entries: TimeEntry[],
+	target: TimeEntry
+): TimeEntry[] {
+	if (entries.contains(target)) {
+		return entries.filter((entry) => entry !== target);
+	}
+
+	return entries.map((entry) =>
+		entry.subEntries !== null ? removeSubEntry(entry, target) : entry
+	);
+}
+
+/**
+ * Stops any entries in the provided list that are running
+ * returning a list of the new non running entries
+ *
+ * @param entries
+ */
+export function stopRunningEntries(entries: TimeEntry[]): TimeEntry[] {
+	return entries.map((entry) => {
+		if (entry.subEntries) {
+			return {
+				...entry,
+				subEntries: stopRunningEntries(entry.subEntries),
+			};
+		}
+
+		return {
+			...entry,
+			endTime: entry.endTime ?? moment(),
+		};
+	});
+}
+
+/**
  * Removes a sub entry from the provided parent, returning
  * the new parent entry
  *
- * @param parent The parent to alter
- * @param target The removal target
+ * Removes the `target` element from the children of the provided `parent`.
+ *
+ * If only one item remains after removing the item will be collapsed into
+ * the parent. When collapsed the sub entry will inherit the name of the parent entry
+ *
+ *
+ * @param parent The parent to remove from
+ * @param target The entry to remove
+ * @returns The new parent entry
  */
 export function removeSubEntry(
 	parent: TimeEntry,
@@ -175,6 +173,7 @@ export function removeSubEntry(
 ): TimeEntry {
 	// Parent has no children
 	if (parent.subEntries === null) return parent;
+
 	// Filter out the target value
 	const filtered = parent.subEntries
 		.filter((entry) => entry !== target)
@@ -183,38 +182,36 @@ export function removeSubEntry(
 			entry.subEntries !== null ? removeSubEntry(entry, target) : entry
 		);
 
-	if (filtered.length > 1) {
+	// Too many/little items to collapse
+	if (filtered.length != 1) {
 		return {
-			name: parent.name,
+			...parent,
 			subEntries: filtered,
-			startTime: null,
-			endTime: null,
 		};
 	}
 
 	const item = filtered[0];
 
-	// We can only collapse if the item is not a group
 	if (item.subEntries === null) {
 		return {
+			...item,
 			name: parent.name,
-			subEntries: null,
-			startTime: item.startTime,
-			endTime: item.endTime,
-		};
-	} else {
-		return {
-			name: parent.name,
-			subEntries: item.subEntries,
-			startTime: null,
-			endTime: null,
 		};
 	}
+
+	return {
+		name: parent.name,
+		subEntries: item.subEntries,
+		startTime: null,
+		endTime: null,
+	};
 }
 
 /**
- * Starts a new sub entry within the provided entry
- * using the provided name
+ * Creates a new sub-entry within the provided `parent`. If the parent
+ * is a group then a new sub-entry will be added, otherwise the entry
+ * will be converted to a group and the parent will become a child of the
+ * group.
  *
  * @param parent The parent entry
  * @param name The name of the new entry
@@ -228,10 +225,8 @@ export function withSubEntry(parent: TimeEntry, name: string): TimeEntry {
 		}
 
 		return {
-			name: parent.name,
+			...parent,
 			subEntries: [...parent.subEntries, createEntry(name)],
-			startTime: null,
-			endTime: null,
 		};
 	}
 
@@ -250,7 +245,24 @@ export function withSubEntry(parent: TimeEntry, name: string): TimeEntry {
 }
 
 /**
- * Determines whether the provided timekeep is running
+ * Extends the provided list of entries with a new entry
+ * of the provided name
+ *
+ * @param entries The collection of entries
+ * @param name The name for the new entry
+ */
+export function withEntry(entries: TimeEntry[], name: string): TimeEntry[] {
+	// Assign a name automatically if not provided
+	if (isEmptyString(name)) {
+		name = `Block ${entries.length + 1}`;
+	}
+
+	return [...entries, createEntry(name)];
+}
+
+/**
+ * Determines whether any of the entries in the provided timekeep
+ * are actively running
  *
  * @param timekeep The timekeep to check
  * @returns Whether the timekeep is running
@@ -260,17 +272,18 @@ export function isKeepRunning(timekeep: Timekeep): boolean {
 }
 
 /**
- * Checks whether the provided entry is still running
+ * Checks whether the provided entry is still running. For groups
+ * this will check all of the sub-entries for running
  *
- * @param entry
- * @returns
+ * @param entry The entry to check
+ * @returns Whether the entry or any sub-entries are running
  */
 export function isEntryRunning(entry: TimeEntry) {
 	if (entry.subEntries !== null) {
 		return getRunningEntry(entry.subEntries) !== null;
-	} else {
-		return entry.endTime === null;
 	}
+
+	return entry.endTime === null;
 }
 
 /**
@@ -278,14 +291,13 @@ export function isEntryRunning(entry: TimeEntry) {
  * searching for an entry that hasn't been stopped yet
  *
  * @param entries The entries to search
- * @return The found entry or null
+ * @return The running entry if found or null
  */
 export function getRunningEntry(entries: TimeEntry[]): TimeEntry | null {
-	for (let i = 0; i < entries.length; i++) {
-		const entry = entries[i];
-		// Search sub entries if they are present
+	for (const entry of entries) {
 		if (entry.subEntries !== null) {
 			const activeEntry = getRunningEntry(entry.subEntries);
+
 			if (activeEntry !== null) {
 				return activeEntry;
 			}
@@ -298,9 +310,11 @@ export function getRunningEntry(entries: TimeEntry[]): TimeEntry | null {
 }
 
 /**
+ * Gets the duration in milliseconds of the entry
+ * and the entry children if it is a group
  *
- * @param entry
- * @returns
+ * @param entry The entry to get the duration from
+ * @returns The duration in milliseconds
  */
 export function getEntryDuration(entry: TimeEntry): number {
 	if (entry.subEntries !== null) {
@@ -313,22 +327,58 @@ export function getEntryDuration(entry: TimeEntry): number {
 }
 
 /**
+ * Gets the total duration of all the provided entries
+ * in milliseconds
  *
- * @param entries
- * @returns
+ * @param entries The entries
+ * @returns The total duration in milliseconds
  */
 export function getTotalDuration(entries: TimeEntry[]): number {
-	let duration = 0;
-	for (let i = 0; i < entries.length; i++) {
-		const entry = entries[i];
-		duration += getEntryDuration(entry);
-	}
-	return duration;
+	return entries.reduce(
+		(totalDuration, entry) => totalDuration + getEntryDuration(entry),
+		0
+	);
 }
 
+/**
+ * Provides a new list of time entires re-ordered to match
+ * the current timekeep settings ordering
+ *
+ * @param entries The collection of entries
+ * @param settings The timekeep settings
+ * @returns The entries in the timekeep order
+ */
 export function getEntriesOrdered(
 	entries: TimeEntry[],
 	settings: TimekeepSettings
 ): TimeEntry[] {
-	return settings.reverseSegmentOrder ? entries.slice().reverse() : entries;
+	// Reverse ordered entries
+	if (settings.reverseSegmentOrder) {
+		return entries.slice().reverse();
+	}
+
+	return entries;
+}
+
+/**
+ * Creates a semi-unique hash for the provided `entry` used on
+ * the React side as keys to reduce re-rendering for entries
+ * that haven't changed
+ *
+ * @param entry The entry to hash
+ * @returns The hash value
+ */
+export function getUniqueEntryHash(entry: TimeEntry): number {
+	if (entry.subEntries === null) {
+		return strHash(
+			`${entry.name}${entry.startTime.valueOf()}${entry.endTime?.valueOf()}`
+		);
+	}
+
+	const subEntriesHash = entry.subEntries.reduce(
+		(acc, subEntry) => acc + getUniqueEntryHash(subEntry),
+		0
+	);
+
+	return strHash(`${entry.name}${subEntriesHash}`);
 }

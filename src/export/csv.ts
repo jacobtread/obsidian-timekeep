@@ -31,8 +31,8 @@ export function createCSV(
 
 	let output = "";
 
-	for (let rowIndex = 0; rowIndex < rawTable.length; rowIndex += 1) {
-		output += rawTable[rowIndex].join(settings.csvDelimiter) + "\n";
+	for (const row of rawTable) {
+		output += row.join(settings.csvDelimiter) + "\n";
 	}
 
 	return output;

@@ -1,8 +1,7 @@
 import React, { useState } from "react";
-import { isEmptyString } from "@/utils";
 import { useTimekeep } from "@/hooks/use-timekeep-context";
 import { PlayIcon, StopCircleIcon } from "lucide-react";
-import { stopRunningEntries, createEntry, isKeepRunning } from "@/timekeep";
+import { stopRunningEntries, isKeepRunning, withEntry } from "@/timekeep";
 
 /**
  * Component for the timekeep start button and "name" field isolating
@@ -22,20 +21,11 @@ export default function TimekeepStart() {
 			if (isKeepRunning(timekeep)) {
 				// Stop the running entry
 				return { entries: stopRunningEntries(timekeep.entries) };
+			} else {
+				/// Clear the name input
+				setName("");
+				return { entries: withEntry(timekeep.entries, name) };
 			}
-
-			let entryName = name;
-			// Assign a name automatically if not provided
-			if (isEmptyString(entryName)) {
-				entryName = `Block ${timekeep.entries.length + 1}`;
-			}
-
-			/// Clear the name input
-			setName("");
-
-			return {
-				entries: [...timekeep.entries, createEntry(entryName)],
-			};
 		});
 	};
 

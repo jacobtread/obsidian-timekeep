@@ -24,8 +24,7 @@ export function createRawTable(
 ): RawTableRow[] {
 	const rows: RawTableRow[] = [];
 
-	for (let i = 0; i < entries.length; i++) {
-		const entry = entries[i];
+	for (const entry of entries) {
 		rows.push(...createRawTableEntries(entry, settings));
 	}
 
@@ -59,8 +58,8 @@ export function createRawTableEntries(
 
 	if (entry.subEntries) {
 		const entries = getEntriesOrdered(entry.subEntries, settings);
-		for (let i = 0; i < entries.length; i++) {
-			const entry = entries[i];
+
+		for (const entry of entries) {
 			rows.push(...createRawTableEntries(entry, settings));
 		}
 	}

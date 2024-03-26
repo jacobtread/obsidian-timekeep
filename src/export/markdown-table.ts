@@ -36,8 +36,8 @@ function createFooter(entries: TimeEntry[]): RawTableRow {
 function getColumnMaxWidth(table: RawTableRow[], columnIndex: number): number {
 	let maxWidth = 0;
 
-	for (let rowIndex = 0; rowIndex < table.length; rowIndex += 1) {
-		const column: string = table[rowIndex][columnIndex];
+	for (const row of table) {
+		const column: string = row[columnIndex];
 		maxWidth = Math.max(column.length, maxWidth);
 	}
 
