@@ -133,26 +133,6 @@ export function updateEntry(
 }
 
 /**
- * Removes a time entry from the provided list returning
- * the new list
- *
- * @param entries
- * @param target
- */
-export function removeEntry(
-	entries: TimeEntry[],
-	target: TimeEntry
-): TimeEntry[] {
-	if (entries.includes(target)) {
-		return entries.filter((entry) => entry !== target);
-	}
-
-	return entries.map((entry) =>
-		entry.subEntries !== null ? removeSubEntry(entry, target) : entry
-	);
-}
-
-/**
  * Stops any entries in the provided list that are running
  * returning a list of the new non running entries
  *
@@ -178,56 +158,75 @@ export function stopRunningEntries(
 }
 
 /**
- * Removes a sub entry from the provided parent, returning
- * the new parent entry
+ * Recursively removes the `target` entry from the provided
+ * list of entries.
  *
- * Removes the `target` element from the children of the provided `parent`.
+ * Collapses entries after removing elements from the list
  *
- * If only one item remains after removing the item will be collapsed into
- * the parent. When collapsed the sub entry will inherit the name of the parent entry
- *
- *
- * @param parent The parent to remove from
- * @param target The entry to remove
- * @returns The new parent entry
+ * @param entries The entries to remove from
+ * @param target The target entry to remove
+ * @returns The new list with the entry removed
  */
-export function removeSubEntry(
-	parent: TimeEntry,
-	target: TimeEntry
-): TimeEntry {
-	// Parent has no children
-	if (parent.subEntries === null) return parent;
+export function removeEntry(entries: TimeEntry[], target: TimeEntry) {
+	return (
+		entries
+			// Filter out matching entries
+			.filter((entry) => entry !== target)
+			// Filter sub entries for matching entries
+			.map(mapRemoveSubEntry(target))
+			// Collapse any entries that need to be
+			.map(collapseEntry)
+			// Remove any empty groups
+			.filter(
+				(entry) =>
+					entry.subEntries === null || entry.subEntries.length > 0
+			)
+	);
+}
 
-	// Filter out the target value
-	const filtered = parent.subEntries
-		.filter((entry) => entry !== target)
-		// Remove any matching sub entries recursively
-		.map((entry) =>
-			entry.subEntries !== null ? removeSubEntry(entry, target) : entry
-		);
+/**
+ * Creates a mapping function that captures the `target`
+ * to produce a map function that will remove sub entries
+ * containing the provided `target`
+ *
+ * @param target The target to remove
+ * @returns The map function
+ */
+function mapRemoveSubEntry(target: TimeEntry) {
+	return (entry: TimeEntry): TimeEntry => {
+		// Ignore non groups
+		if (entry.subEntries === null) return entry;
 
-	// Too many/little items to collapse
-	if (filtered.length != 1) {
+		// Remove the entry from the children
 		return {
-			...parent,
-			subEntries: filtered,
+			...entry,
+			subEntries: removeEntry(entry.subEntries, target),
 		};
-	}
+	};
+}
 
-	const item = filtered[0];
+/**
+ * Collapses the provided entry returning the collapsed entry
+ *
+ * Only collapses the entry if its a group, if the entry has only
+ * one sub entry in it then the group becomes just a single entry
+ * inheriting the timing from the one child entry
+ *
+ * @param target
+ * @returns The collapsed entry
+ */
+function collapseEntry(target: TimeEntry): TimeEntry {
+	// Target has no entries to collapse
+	if (target.subEntries === null) return target;
 
-	if (item.subEntries === null) {
-		return {
-			...item,
-			name: parent.name,
-		};
-	}
+	// Don't collapse if more than 1 entry
+	if (target.subEntries.length > 1) return target;
+
+	const firstEntry = target.subEntries[0];
 
 	return {
-		name: parent.name,
-		subEntries: item.subEntries,
-		startTime: null,
-		endTime: null,
+		...firstEntry,
+		name: target.name,
 	};
 }
 
@@ -245,31 +244,26 @@ export function withSubEntry(
 	name: string,
 	startTime: moment.Moment
 ): TimeEntry {
-	// Parent already has children, append to existing
-	if (parent.subEntries !== null) {
-		// Assign a name automatically if not provided
-		if (isEmptyString(name)) {
-			name = `Part ${parent.subEntries.length + 1}`;
-		}
+	let entries: TimeEntry[];
 
-		return {
-			...parent,
-			subEntries: [...parent.subEntries, createEntry(name, startTime)],
-		};
+	// Collect the entries
+	if (parent.subEntries !== null) {
+		entries = parent.subEntries;
+	} else {
+		// If there are no existing entries we convert ourself into a group
+		entries = [{ ...parent, name: "Part 1" }];
 	}
 
 	// Assign a name automatically if not provided
 	if (isEmptyString(name)) {
-		name = `Part 2`;
+		name = `Part ${entries.length + 1}`;
 	}
+
+	const newEntry = createEntry(name, startTime);
 
 	return {
 		name: parent.name,
-		// Move the parent into its first sub entry
-		subEntries: [
-			{ ...parent, name: "Part 1" },
-			createEntry(name, startTime),
-		],
+		subEntries: [...entries, newEntry],
 		startTime: null,
 		endTime: null,
 	};

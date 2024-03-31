@@ -13,7 +13,6 @@ import {
 	isKeepRunning,
 	load,
 	removeEntry,
-	removeSubEntry,
 	replaceTimekeepCodeblock,
 	stopRunningEntries,
 	updateEntry,
@@ -264,8 +263,8 @@ describe("manipulating entries", () => {
 				subEntries: null,
 			};
 
-			const output = removeSubEntry(parent, entryToRemove);
-			expect(output).toEqual(parent);
+			const output = removeEntry([parent], entryToRemove);
+			expect(output).toEqual([parent]);
 		});
 
 		it("remove on single entry should stay same if not target", () => {
