@@ -16,7 +16,8 @@
 		"allowSyntheticDefaultImports": true,
 		"paths": {
 			"@/*": ["src/*"]
-		}
+		},
+		"esModuleInterop": true
 	},
 	"include": ["**/*.ts", "src/timekeep.ts", "src/main.ts"]
 }

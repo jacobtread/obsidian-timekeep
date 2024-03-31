@@ -23,6 +23,7 @@ import {
 } from "src/utils";
 import { useTimekeep } from "@/hooks/use-timekeep-context";
 import { TimeEntry } from "@/schema";
+import moment from "moment";
 
 type Props = {
 	entry: TimeEntry;
@@ -52,10 +53,11 @@ export default function TimesheetRow({ entry, indent }: Props) {
 	);
 
 	// Persist the duration to prevent it updating real-time
-	const duration = useMemo(
-		() => formatDuration(getEntryDuration(entry)),
-		[entry]
-	);
+	const duration = useMemo(() => {
+		const currentTime = moment();
+
+		return formatDuration(getEntryDuration(entry, currentTime));
+	}, [entry]);
 
 	const isEditable = entry.subEntries !== null || entry.endTime !== null;
 
@@ -66,11 +68,13 @@ export default function TimesheetRow({ entry, indent }: Props) {
 				return timekeep;
 			}
 
+			const startTime = moment();
+
 			return {
 				entries: updateEntry(
 					timekeep.entries,
 					entry,
-					withSubEntry(entry, "")
+					withSubEntry(entry, "", startTime)
 				),
 			};
 		});

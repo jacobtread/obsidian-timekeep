@@ -2,7 +2,7 @@ import { formatDuration, formatTimestamp } from "@/utils";
 import { TimeEntry } from "@/schema";
 import { TimekeepSettings } from "@/settings";
 import { getEntriesOrdered, getEntryDuration } from "@/timekeep";
-
+import moment from "moment";
 export const TOTAL_COLUMNS = 4;
 
 export type RawTableRow = [string, string, string, string];
@@ -16,16 +16,18 @@ export { createMarkdownTable } from "./markdown-table";
  *
  * @param entries The entries to flatten
  * @param settings The settings to use while flattening
+ * @param currentTime The current time to use for unfinished entries
  * @returns The flattened rows
  */
 export function createRawTable(
 	entries: TimeEntry[],
-	settings: TimekeepSettings
+	settings: TimekeepSettings,
+	currentTime: moment.Moment
 ): RawTableRow[] {
 	const rows: RawTableRow[] = [];
 
 	for (const entry of entries) {
-		rows.push(...createRawTableEntries(entry, settings));
+		rows.push(...createRawTableEntries(entry, settings, currentTime));
 	}
 
 	return rows;
@@ -37,11 +39,13 @@ export function createRawTable(
  *
  * @param entry The entry to flatten
  * @param settings The settings to use while flattening
+ * @param currentTime The current time to use for unfinished entries
  * @returns The flattened rows
  */
 export function createRawTableEntries(
 	entry: TimeEntry,
-	settings: TimekeepSettings
+	settings: TimekeepSettings,
+	currentTime: moment.Moment
 ): RawTableRow[] {
 	const rows: RawTableRow[] = [
 		[
@@ -51,7 +55,7 @@ export function createRawTableEntries(
 			entry.endTime ? formatTimestamp(entry.endTime, settings) : "",
 			// Include duration for entries that are finished
 			entry.endTime !== null || entry.subEntries !== null
-				? formatDuration(getEntryDuration(entry))
+				? formatDuration(getEntryDuration(entry, currentTime))
 				: "",
 		],
 	];
@@ -60,7 +64,7 @@ export function createRawTableEntries(
 		const entries = getEntriesOrdered(entry.subEntries, settings);
 
 		for (const entry of entries) {
-			rows.push(...createRawTableEntries(entry, settings));
+			rows.push(...createRawTableEntries(entry, settings, currentTime));
 		}
 	}
 

@@ -119,7 +119,8 @@ function formatDate(value: moment.Moment): string {
 }
 
 function TimesheetEntry({ entry }: { entry: TimeEntry }) {
-	const duration = getEntryDuration(entry);
+	const currentTime = moment();
+	const duration = getEntryDuration(entry, currentTime);
 
 	return (
 		<Fragment>
@@ -157,7 +158,8 @@ function TimesheetEntry({ entry }: { entry: TimeEntry }) {
 }
 
 export default function TimesheetPdf({ data, title }: Props) {
-	const duration = getTotalDuration(data.entries);
+	const currentTime = moment();
+	const duration = getTotalDuration(data.entries, currentTime);
 
 	return (
 		<Document>

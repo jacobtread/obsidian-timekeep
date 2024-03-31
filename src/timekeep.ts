@@ -1,8 +1,8 @@
-import { moment } from "obsidian";
 import { TIMEKEEP, TimeEntry, Timekeep } from "@/schema";
 import { TimekeepSettings } from "@/settings";
 import { isEmptyString } from "@/utils";
 import { strHash } from "@/utils/text";
+import moment from "moment";
 
 /**
  * Replaces the contents of a specific timekeep codeblock within
@@ -22,15 +22,32 @@ export function replaceTimekeepCodeblock(
 
 	// Split the content into lines
 	const lines = content.split("\n");
+
+	// Sanity checks to prevent overriding content
+	if (!lines[lineStart].startsWith("```")) {
+		throw new Error(
+			"Content timekeep out of sync, line number for codeblock start doesn't match: " +
+				content[lineStart]
+		);
+	}
+
+	if (!lines[lineEnd].startsWith("```")) {
+		throw new Error(
+			"Content timekeep out of sync, line number for codeblock end doesn't match" +
+				content[lineEnd]
+		);
+	}
+
 	// Splice the new JSON content in between the codeblock, removing the old codeblock lines
 	lines.splice(contentStart, contentLength, timekeepJSON);
 
 	return lines.join("\n");
 }
 
-type LoadResult =
-	| { success: true; timekeep: Timekeep }
-	| { success: false; error: string };
+export type LoadResult = LoadSuccess | LoadError;
+
+export type LoadSuccess = { success: true; timekeep: Timekeep };
+export type LoadError = { success: false; error: string };
 
 /**
  * Attempts to load a {@see Timekeep} from the provided
@@ -49,14 +66,19 @@ export function load(value: string): LoadResult {
 	try {
 		parsedValue = JSON.parse(value);
 	} catch (e) {
-		console.error("Failed to parse timekeep JSON", e);
-		return { success: false, error: "Failed to parse timekeep JSON" };
+		return {
+			success: false,
+			error: "Failed to parse timekeep JSON",
+		};
 	}
 
 	// Parse the data against the schema
 	const timekeepResult = TIMEKEEP.safeParse(parsedValue);
 	if (!timekeepResult.success) {
-		return { success: false, error: timekeepResult.error.toString() };
+		return {
+			success: false,
+			error: timekeepResult.error.toString(),
+		};
 	}
 
 	const timekeep = timekeepResult.data;
@@ -69,8 +91,7 @@ export function load(value: string): LoadResult {
  * @param name The name for the entry
  * @returns The created entry
  */
-export function createEntry(name: string): TimeEntry {
-	const startTime = moment();
+export function createEntry(name: string, startTime: moment.Moment): TimeEntry {
 	return {
 		name,
 		startTime,
@@ -122,7 +143,7 @@ export function removeEntry(
 	entries: TimeEntry[],
 	target: TimeEntry
 ): TimeEntry[] {
-	if (entries.contains(target)) {
+	if (entries.includes(target)) {
 		return entries.filter((entry) => entry !== target);
 	}
 
@@ -137,18 +158,21 @@ export function removeEntry(
  *
  * @param entries
  */
-export function stopRunningEntries(entries: TimeEntry[]): TimeEntry[] {
+export function stopRunningEntries(
+	entries: TimeEntry[],
+	endTime: moment.Moment
+): TimeEntry[] {
 	return entries.map((entry) => {
 		if (entry.subEntries) {
 			return {
 				...entry,
-				subEntries: stopRunningEntries(entry.subEntries),
+				subEntries: stopRunningEntries(entry.subEntries, endTime),
 			};
 		}
 
 		return {
 			...entry,
-			endTime: entry.endTime ?? moment(),
+			endTime: entry.endTime ?? endTime,
 		};
 	});
 }
@@ -216,7 +240,11 @@ export function removeSubEntry(
  * @param parent The parent entry
  * @param name The name of the new entry
  */
-export function withSubEntry(parent: TimeEntry, name: string): TimeEntry {
+export function withSubEntry(
+	parent: TimeEntry,
+	name: string,
+	startTime: moment.Moment
+): TimeEntry {
 	// Parent already has children, append to existing
 	if (parent.subEntries !== null) {
 		// Assign a name automatically if not provided
@@ -226,7 +254,7 @@ export function withSubEntry(parent: TimeEntry, name: string): TimeEntry {
 
 		return {
 			...parent,
-			subEntries: [...parent.subEntries, createEntry(name)],
+			subEntries: [...parent.subEntries, createEntry(name, startTime)],
 		};
 	}
 
@@ -238,7 +266,10 @@ export function withSubEntry(parent: TimeEntry, name: string): TimeEntry {
 	return {
 		name: parent.name,
 		// Move the parent into its first sub entry
-		subEntries: [{ ...parent, name: "Part 1" }, createEntry(name)],
+		subEntries: [
+			{ ...parent, name: "Part 1" },
+			createEntry(name, startTime),
+		],
 		startTime: null,
 		endTime: null,
 	};
@@ -250,14 +281,19 @@ export function withSubEntry(parent: TimeEntry, name: string): TimeEntry {
  *
  * @param entries The collection of entries
  * @param name The name for the new entry
+ * @param startTime The start time of the new entry
  */
-export function withEntry(entries: TimeEntry[], name: string): TimeEntry[] {
+export function withEntry(
+	entries: TimeEntry[],
+	name: string,
+	startTime: moment.Moment
+): TimeEntry[] {
 	// Assign a name automatically if not provided
 	if (isEmptyString(name)) {
 		name = `Block ${entries.length + 1}`;
 	}
 
-	return [...entries, createEntry(name)];
+	return [...entries, createEntry(name, startTime)];
 }
 
 /**
@@ -314,15 +350,19 @@ export function getRunningEntry(entries: TimeEntry[]): TimeEntry | null {
  * and the entry children if it is a group
  *
  * @param entry The entry to get the duration from
+ * @param currentTime The current time to use for unfinished entries
  * @returns The duration in milliseconds
  */
-export function getEntryDuration(entry: TimeEntry): number {
+export function getEntryDuration(
+	entry: TimeEntry,
+	currentTime: moment.Moment
+): number {
 	if (entry.subEntries !== null) {
-		return getTotalDuration(entry.subEntries);
+		return getTotalDuration(entry.subEntries, currentTime);
 	}
 
 	// Get the end time or use current time if not ended
-	const endTime = entry.endTime ?? moment();
+	const endTime = entry.endTime ?? currentTime;
 	return endTime.diff(entry.startTime);
 }
 
@@ -331,11 +371,16 @@ export function getEntryDuration(entry: TimeEntry): number {
  * in milliseconds
  *
  * @param entries The entries
+ * @param currentTime The current time to use for unfinished entries
  * @returns The total duration in milliseconds
  */
-export function getTotalDuration(entries: TimeEntry[]): number {
+export function getTotalDuration(
+	entries: TimeEntry[],
+	currentTime: moment.Moment
+): number {
 	return entries.reduce(
-		(totalDuration, entry) => totalDuration + getEntryDuration(entry),
+		(totalDuration, entry) =>
+			totalDuration + getEntryDuration(entry, currentTime),
 		0
 	);
 }

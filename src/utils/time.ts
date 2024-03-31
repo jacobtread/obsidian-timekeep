@@ -1,4 +1,4 @@
-import { moment } from "obsidian";
+import moment from "moment";
 import { TimekeepSettings } from "@/settings";
 
 export function formatTimestamp(
@@ -31,7 +31,7 @@ export function formatDuration(totalTime: number): string {
 	if (duration.minutes() > 0) ret += duration.minutes() + "m ";
 	ret += duration.seconds() + "s";
 
-	return ret;
+	return ret.trim();
 }
 
 export function formatDurationHoursTrunc(totalTime: number): string {
@@ -39,5 +39,5 @@ export function formatDurationHoursTrunc(totalTime: number): string {
 
 	const hours = duration.asHours();
 
-	return hours.toFixed(2) + "h ";
+	return hours.toFixed(2) + "h";
 }

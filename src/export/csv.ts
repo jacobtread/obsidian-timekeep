@@ -1,6 +1,7 @@
 import { Timekeep } from "@/schema";
 import { RawTableRow, createRawTable } from "@/export";
 import { TimekeepSettings } from "@/settings";
+import moment from "moment";
 
 /**
  * Creates the CSV header row
@@ -22,11 +23,13 @@ export function createCSV(
 	timekeep: Timekeep,
 	settings: TimekeepSettings
 ): string {
+	const currentTime = moment();
+
 	const rawTable: RawTableRow[] = [
 		// CSV header row
 		createHeader(),
 		// CSV raw table contents
-		...createRawTable(timekeep.entries, settings),
+		...createRawTable(timekeep.entries, settings, currentTime),
 	];
 
 	let output = "";

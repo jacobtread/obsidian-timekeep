@@ -8,6 +8,7 @@ import {
 import { formatDuration, formatDurationHoursTrunc } from "@/utils";
 import { useTimekeep } from "@/hooks/use-timekeep-context";
 import { Timekeep } from "@/schema";
+import moment from "moment";
 
 type TimingState = {
 	running: boolean;
@@ -23,9 +24,12 @@ type TimingState = {
  * @returns The timing state
  */
 function getTimingState(timekeep: Timekeep): TimingState {
-	const total = getTotalDuration(timekeep.entries);
+	const currentTime = moment();
+	const total = getTotalDuration(timekeep.entries, currentTime);
 	const runningEntry = getRunningEntry(timekeep.entries);
-	const current = runningEntry ? getEntryDuration(runningEntry) : 0;
+	const current = runningEntry
+		? getEntryDuration(runningEntry, currentTime)
+		: 0;
 
 	return {
 		running: runningEntry !== null,
