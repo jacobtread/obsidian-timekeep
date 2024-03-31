@@ -1,4 +1,4 @@
-import { TIMEKEEP, TimeEntry, Timekeep } from "@/schema";
+import { TIMEKEEP, TimeEntry, TimeEntryGroup, Timekeep } from "@/schema";
 import { TimekeepSettings } from "@/settings";
 import { isEmptyString } from "@/utils";
 import { strHash } from "@/utils/text";
@@ -231,39 +231,22 @@ function collapseEntry(target: TimeEntry): TimeEntry {
 }
 
 /**
- * Creates a new sub-entry within the provided `parent`. If the parent
- * is a group then a new sub-entry will be added, otherwise the entry
- * will be converted to a group and the parent will become a child of the
- * group.
+ * Makes the provided `entry` into a group. If the entry
+ * is already a group no change is made.
  *
- * @param parent The parent entry
- * @param name The name of the new entry
+ * If the entry is not a group, the entry will be converted to a
+ * group, the start and end times from the entry will be moved into
+ * the group as its first entry titled "Part 1".
+ *
+ * @param entry The entry to create a group from
+ * @returns The group entry
  */
-export function withSubEntry(
-	parent: TimeEntry,
-	name: string,
-	startTime: moment.Moment
-): TimeEntry {
-	let entries: TimeEntry[];
-
-	// Collect the entries
-	if (parent.subEntries !== null) {
-		entries = parent.subEntries;
-	} else {
-		// If there are no existing entries we convert ourself into a group
-		entries = [{ ...parent, name: "Part 1" }];
-	}
-
-	// Assign a name automatically if not provided
-	if (isEmptyString(name)) {
-		name = `Part ${entries.length + 1}`;
-	}
-
-	const newEntry = createEntry(name, startTime);
+function makeGroupEntry(entry: TimeEntry): TimeEntryGroup {
+	if (entry.subEntries !== null) return entry;
 
 	return {
-		name: parent.name,
-		subEntries: [...entries, newEntry],
+		name: entry.name,
+		subEntries: [{ ...entry, name: "Part 1" }],
 		startTime: null,
 		endTime: null,
 	};
@@ -288,6 +271,35 @@ export function withEntry(
 	}
 
 	return [...entries, createEntry(name, startTime)];
+}
+
+/**
+ * Creates a new sub entry within the provided `parent`. The parent
+ * will be converted to a group if its not already one
+ *
+ * @param parent The parent entry
+ * @param name The name for the new entry
+ * @param startTime The start time for the new entry
+ * @returns The updated/created entry
+ */
+export function withSubEntry(
+	parent: TimeEntry,
+	name: string,
+	startTime: moment.Moment
+): TimeEntry {
+	const groupEntry = makeGroupEntry(parent);
+
+	// Assign a name automatically if not provided
+	if (isEmptyString(name)) {
+		name = `Part ${groupEntry.subEntries.length + 1}`;
+	}
+
+	const newEntry = createEntry(name, startTime);
+
+	return {
+		...groupEntry,
+		subEntries: [...groupEntry.subEntries, newEntry],
+	};
 }
 
 /**
