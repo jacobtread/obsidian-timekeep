@@ -1,4 +1,4 @@
-import React from "react";
+import React, { StrictMode } from "react";
 import {
 	MarkdownPostProcessorContext,
 	MarkdownRenderChild,
@@ -97,11 +97,15 @@ class TimekeepComponent extends MarkdownRenderChild {
 			const timekeep = this.loadResult.timekeep;
 
 			this.root.render(
-				React.createElement(App, {
-					initialState: timekeep,
-					settings: this.settings,
-					save: this.save.bind(this),
-				})
+				React.createElement(
+					StrictMode,
+					{},
+					React.createElement(App, {
+						initialState: timekeep,
+						settings: this.settings,
+						save: this.save.bind(this),
+					})
+				)
 			);
 		} else {
 			this.root.render(
