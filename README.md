@@ -15,6 +15,12 @@ This plugin provides a command for inserting time trackers `Obsidian Timekeep: I
 ```
 ````
 
+## Editing & Deleting
+
+If you accidentally gave a block an incorrect name or started the timer late you can use the editing feature to update the stored data or delete the entry 
+
+![Editing](images/editing.png)
+
 ## 👀 How its stored
 
 This plugin is heavily inspired by [ObsidianSimpleTimeTracker](https://github.com/Ellpeck/ObsidianSimpleTimeTracker) (Semi backwards compatible some simple-time-tracker blocks can be renamed to timekeep) so the data for time tracking is stored as JSON within the `timekeep` codeblock.
