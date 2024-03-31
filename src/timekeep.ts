@@ -329,21 +329,24 @@ export function isEntryRunning(entry: TimeEntry) {
 }
 
 /**
- * Searches recursively through the list of entires
- * searching for an entry that hasn't been stopped yet
+ * Searches through the nested list of time entries using
+ * a "stack" depth-first search approach attempting to
+ * find an entry that is running
  *
  * @param entries The entries to search
  * @return The running entry if found or null
  */
 export function getRunningEntry(entries: TimeEntry[]): TimeEntry | null {
-	for (const entry of entries) {
-		if (entry.subEntries !== null) {
-			const activeEntry = getRunningEntry(entry.subEntries);
+	const stack: TimeEntry[] = [...entries];
 
-			if (activeEntry !== null) {
-				return activeEntry;
-			}
-		} else if (isEntryRunning(entry)) {
+	while (stack.length > 0) {
+		const entry: TimeEntry = stack.pop()!;
+
+		if (entry.subEntries !== null) {
+			stack.push(...entry.subEntries);
+		}
+
+		if (isEntryRunning(entry)) {
 			return entry;
 		}
 	}
