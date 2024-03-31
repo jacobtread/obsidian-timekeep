@@ -206,21 +206,16 @@ export default function TimesheetRow({ entry, indent }: Props) {
 			<td className="timekeep-col timekeep-col--name">
 				{!editingState.editing && (
 					<>
-						<span
-							style={{
-								display: "inline-block",
-								height: "1rem",
-								width: `${indent * 0.5}em`,
-							}}
-						/>
-
-						{indent > 0 && (
-							<ChevronRight
-								color="#888"
-								width="1em"
-								height="1em"
-							/>
-						)}
+						{Array.from(Array(indent).keys()).map((indent) => (
+							<span
+								style={{
+									display: "inline-block",
+									height: "1rem",
+									width: "0.2rem",
+									backgroundColor: "var(--color-base-40)",
+									marginRight: "0.1rem",
+								}}></span>
+						))}
 					</>
 				)}
 

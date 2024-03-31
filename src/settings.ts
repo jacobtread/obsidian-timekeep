@@ -6,6 +6,7 @@ export const defaultSettings: TimekeepSettings = {
 	csvDelimiter: ",",
 	reverseSegmentOrder: false,
 	timestampDurations: false,
+	limitTableSize: true,
 };
 
 export interface TimekeepSettings {
@@ -16,4 +17,5 @@ export interface TimekeepSettings {
 	csvDelimiter: string;
 	reverseSegmentOrder: boolean;
 	timestampDurations: boolean;
+	limitTableSize: boolean;
 }

@@ -24,3 +24,5 @@ data.json
 dist
 
 coverage
+
+test-vault/.obsidian

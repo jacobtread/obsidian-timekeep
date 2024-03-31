@@ -104,5 +104,18 @@ export class TimekeepSettingsTab extends PluginSettingTab {
 					await this.plugin.saveSettings();
 				});
 			});
+
+		new Setting(this.containerEl)
+			.setName("Limit Table Height")
+			.setDesc(
+				"Whether to limit the height of the table, will clamp the height and make the table scrollable"
+			)
+			.addToggle((t) => {
+				t.setValue(this.plugin.settings.limitTableSize);
+				t.onChange(async (v) => {
+					this.plugin.settings.limitTableSize = v;
+					await this.plugin.saveSettings();
+				});
+			});
 	}
 }

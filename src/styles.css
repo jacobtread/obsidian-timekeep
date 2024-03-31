@@ -18,24 +18,39 @@ If your plugin does not need CSS, delete this file.
 }
 
 .timekeep-table {
+	display: block;
 	width: 100%;
-	overflow: auto;
+}
+
+.timekeep-table-head {
+	background-color: var(--color-base-30);
+	position: sticky;
+	top: -1px;
+	z-index: 1;
 }
 
 .timekeep-row {
 	width: 100%;
 }
 
+.timekeep-row:nth-child(even) {
+	background-color: var(--color-base-20);
+}
+
+.timekeep-row:nth-child(even):hover {
+	background-color: var(--color-base-20);
+}
+
 .timekeep-col {
-	vertical-align: middle;
+	vertical-align: middle !important;
 }
 
 .timekeep-col--name {
-	width: 40%;
+	width: 30%;
 }
 
 .timekeep-col--time {
-	width: 15%;
+	width: 20%;
 }
 
 .timekeep-col--duration {
