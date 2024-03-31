@@ -1,24 +1,24 @@
-import moment from "moment";
+import moment, { Moment } from "moment";
 import { TimekeepSettings } from "@/settings";
 
 export function formatTimestamp(
-	timestamp: moment.Moment,
+	timestamp: Moment,
 	settings: TimekeepSettings
 ): string {
-	return moment(timestamp).format(settings.timestampFormat);
+	return timestamp.format(settings.timestampFormat);
 }
 
 export function formatEditableTimestamp(
-	timestamp: moment.Moment | string,
+	timestamp: Moment,
 	settings: TimekeepSettings
 ): string {
-	return moment(timestamp).format(settings.editableTimestampFormat);
+	return timestamp.format(settings.editableTimestampFormat);
 }
 
 export function unformatEditableTimestamp(
 	formatted: string,
 	settings: TimekeepSettings
-): moment.Moment {
+): Moment {
 	return moment(formatted, settings.editableTimestampFormat, true);
 }
 

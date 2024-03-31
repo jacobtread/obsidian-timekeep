@@ -2,7 +2,7 @@ import { formatDuration, formatTimestamp } from "@/utils";
 import { TimeEntry } from "@/schema";
 import { TimekeepSettings } from "@/settings";
 import { getEntriesOrdered, getEntryDuration } from "@/timekeep";
-import moment from "moment";
+import { Moment } from "moment";
 export const TOTAL_COLUMNS = 4;
 
 export type RawTableRow = [string, string, string, string];
@@ -22,7 +22,7 @@ export { createMarkdownTable } from "./markdown-table";
 export function createRawTable(
 	entries: TimeEntry[],
 	settings: TimekeepSettings,
-	currentTime: moment.Moment
+	currentTime: Moment
 ): RawTableRow[] {
 	const rows: RawTableRow[] = [];
 
@@ -45,7 +45,7 @@ export function createRawTable(
 export function createRawTableEntries(
 	entry: TimeEntry,
 	settings: TimekeepSettings,
-	currentTime: moment.Moment
+	currentTime: Moment
 ): RawTableRow[] {
 	const rows: RawTableRow[] = [
 		[

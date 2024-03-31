@@ -1,8 +1,8 @@
 import { Fragment } from "react";
 import { Page, Text, View, Document, StyleSheet } from "@/pdf";
 import React from "react";
-import { moment } from "obsidian";
 
+import { Moment } from "moment";
 import { getTotalDuration, getEntryDuration } from "@/timekeep";
 import { formatDuration } from "@/utils";
 import { Timekeep, TimeEntry } from "@/schema";
@@ -10,6 +10,7 @@ import { Timekeep, TimeEntry } from "@/schema";
 type Props = {
 	title: string;
 	data: Timekeep;
+	currentTime: Moment;
 };
 
 const styles = StyleSheet.create({
@@ -110,16 +111,21 @@ const styles = StyleSheet.create({
 	},
 });
 
-function formatDateTime(value: moment.Moment): string {
-	return moment(value).format("DD/MM/YYYY HH:mm");
+function formatDateTime(value: Moment): string {
+	return value.format("DD/MM/YYYY HH:mm");
 }
 
-function formatDate(value: moment.Moment): string {
-	return moment(value).format("DD/MM/YYYY");
+function formatDate(value: Moment): string {
+	return value.format("DD/MM/YYYY");
 }
 
-function TimesheetEntry({ entry }: { entry: TimeEntry }) {
-	const currentTime = moment();
+function TimesheetEntry({
+	entry,
+	currentTime,
+}: {
+	entry: TimeEntry;
+	currentTime: Moment;
+}) {
 	const duration = getEntryDuration(entry, currentTime);
 
 	return (
@@ -149,7 +155,11 @@ function TimesheetEntry({ entry }: { entry: TimeEntry }) {
 			{entry.subEntries != null && (
 				<View style={[styles.tableIndent, styles.tableRowWrapper]}>
 					{entry.subEntries.map((entry, index) => (
-						<TimesheetEntry entry={entry} key={index} />
+						<TimesheetEntry
+							entry={entry}
+							key={index}
+							currentTime={currentTime}
+						/>
 					))}
 				</View>
 			)}
@@ -157,8 +167,7 @@ function TimesheetEntry({ entry }: { entry: TimeEntry }) {
 	);
 }
 
-export default function TimesheetPdf({ data, title }: Props) {
-	const currentTime = moment();
+export default function TimesheetPdf({ data, title, currentTime }: Props) {
 	const duration = getTotalDuration(data.entries, currentTime);
 
 	return (
@@ -172,7 +181,7 @@ export default function TimesheetPdf({ data, title }: Props) {
 				<View style={styles.details}>
 					<Text style={styles.detailsField}>
 						<Text style={styles.detailsFieldName}>Date:</Text>{" "}
-						{formatDate(moment())}
+						{formatDate(currentTime)}
 					</Text>
 
 					<Text style={styles.detailsField}>
@@ -202,7 +211,11 @@ export default function TimesheetPdf({ data, title }: Props) {
 					</View>
 					{/* Table Data */}
 					{data.entries.map((entry, index) => (
-						<TimesheetEntry entry={entry} key={index} />
+						<TimesheetEntry
+							entry={entry}
+							key={index}
+							currentTime={currentTime}
+						/>
 					))}
 
 					<View

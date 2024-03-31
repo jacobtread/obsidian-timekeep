@@ -17,19 +17,7 @@ export default class TimekeepPlugin extends Plugin {
 
 		this.registerMarkdownCodeBlockProcessor(
 			"timekeep",
-			(
-				source: string,
-				el: HTMLElement,
-				context: MarkdownPostProcessorContext
-			) => {
-				renderTimekeep(
-					source,
-					el,
-					context,
-					this.app.vault,
-					this.settings
-				);
-			}
+			renderTimekeep(this.app.vault, this.settings)
 		);
 
 		this.addCommand({
@@ -54,66 +42,68 @@ export default class TimekeepPlugin extends Plugin {
 	}
 }
 
-function renderTimekeep(
-	source: string,
-	el: HTMLElement,
-	context: MarkdownPostProcessorContext,
-	vault: Vault,
-	settings: TimekeepSettings
-) {
-	const save = async (timekeep: Timekeep) => {
-		const sectionInfo = context.getSectionInfo(el);
+function renderTimekeep(vault: Vault, settings: TimekeepSettings) {
+	return (
+		source: string,
+		el: HTMLElement,
+		context: MarkdownPostProcessorContext
+	) => {
+		const save = async (timekeep: Timekeep) => {
+			const sectionInfo = context.getSectionInfo(el);
 
-		// Ensure we actually have a section to write to
-		if (sectionInfo === null) return;
+			// Ensure we actually have a section to write to
+			if (sectionInfo === null) return;
 
-		const file = vault.getAbstractFileByPath(
-			context.sourcePath
-		) as TFile | null;
+			const file = vault.getAbstractFileByPath(
+				context.sourcePath
+			) as TFile | null;
 
-		// Ensure the file still exists
-		if (file === null) return;
+			// Ensure the file still exists
+			if (file === null) return;
 
-		try {
-			const content = await vault.read(file);
+			try {
+				const content = await vault.read(file);
 
-			const newContent = replaceTimekeepCodeblock(
-				timekeep,
-				content,
-				sectionInfo.lineStart,
-				sectionInfo.lineEnd
+				const newContent = replaceTimekeepCodeblock(
+					timekeep,
+					content,
+					sectionInfo.lineStart,
+					sectionInfo.lineEnd
+				);
+
+				await vault.modify(file, newContent);
+			} catch (e) {
+				// TODO: ON WRITE FAILURE SAVE TO TEMP FILE
+
+				console.error("Failed to save timekeep", e);
+			}
+		};
+
+		const loadResult = load(source);
+
+		// Create the react root
+		const reactWrapper = el.createDiv({});
+		const root = createRoot(reactWrapper);
+
+		// Render the react content
+		if (loadResult.success) {
+			const timekeep = loadResult.timekeep;
+
+			root.render(
+				React.createElement(App, {
+					initialState: timekeep,
+					settings,
+					save,
+				})
 			);
-
-			await vault.modify(file, newContent);
-		} catch (e) {
-			console.error("Failed to save timekeep", e);
+		} else {
+			root.render(
+				React.createElement(
+					"p",
+					{ className: "timekeep-container" },
+					"Failed to load timekeep: " + loadResult.error
+				)
+			);
 		}
 	};
-
-	const loadResult = load(source);
-
-	// Create the react root
-	const reactWrapper = el.createDiv({});
-	const root = createRoot(reactWrapper);
-
-	// Render the react content
-	if (loadResult.success) {
-		const timekeep = loadResult.timekeep;
-
-		root.render(
-			React.createElement(App, {
-				initialState: timekeep,
-				settings,
-				save,
-			})
-		);
-	} else {
-		root.render(
-			React.createElement(
-				"p",
-				{ className: "timekeep-container" },
-				"Failed to load timekeep: " + loadResult.error
-			)
-		);
-	}
 }

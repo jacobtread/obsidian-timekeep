@@ -4,6 +4,7 @@ import { pdf } from "@/pdf";
 import { createCSV, createMarkdownTable } from "@/export";
 import { useSettings } from "@/hooks/use-settings-context";
 import { useTimekeep } from "@/hooks/use-timekeep-context";
+import moment from "moment";
 
 import TimesheetPdf from "@/components/TimesheetPdf";
 
@@ -12,11 +13,17 @@ export default function TimekeepExportActions() {
 	const settings = useSettings();
 
 	const onCopyMarkdown = () => {
-		navigator.clipboard.writeText(createMarkdownTable(timekeep, settings));
+		const currentTime = moment();
+		navigator.clipboard.writeText(
+			createMarkdownTable(timekeep, settings, currentTime)
+		);
 	};
 
 	const onCopyCSV = () => {
-		navigator.clipboard.writeText(createCSV(timekeep, settings));
+		const currentTime = moment();
+		navigator.clipboard.writeText(
+			createCSV(timekeep, settings, currentTime)
+		);
 	};
 
 	const onCopyJSON = () => {
@@ -24,9 +31,15 @@ export default function TimekeepExportActions() {
 	};
 
 	const onSavePDF = async () => {
+		const currentTime = moment();
+
 		// Create the PDF
 		const createdPdf = pdf(
-			<TimesheetPdf data={timekeep} title={settings.pdfTitle} />
+			<TimesheetPdf
+				data={timekeep}
+				title={settings.pdfTitle}
+				currentTime={currentTime}
+			/>
 		);
 
 		// Create a blob from the PDF

@@ -1,7 +1,7 @@
 import { Timekeep } from "@/schema";
 import { RawTableRow, createRawTable } from "@/export";
 import { TimekeepSettings } from "@/settings";
-import moment from "moment";
+import { Moment } from "moment";
 
 /**
  * Creates the CSV header row
@@ -17,14 +17,14 @@ function createHeader(): RawTableRow {
  *
  * @param timekeep The timekeep data
  * @param settings The timekeep settings
+ * @param currentTime The current time to use for unfinished entries
  * @returns The generated CSV
  */
 export function createCSV(
 	timekeep: Timekeep,
-	settings: TimekeepSettings
+	settings: TimekeepSettings,
+	currentTime: Moment
 ): string {
-	const currentTime = moment();
-
 	const rawTable: RawTableRow[] = [
 		// CSV header row
 		createHeader(),

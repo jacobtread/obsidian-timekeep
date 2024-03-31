@@ -2,7 +2,7 @@ import { TIMEKEEP, TimeEntry, TimeEntryGroup, Timekeep } from "@/schema";
 import { TimekeepSettings } from "@/settings";
 import { isEmptyString } from "@/utils";
 import { strHash } from "@/utils/text";
-import moment from "moment";
+import { Moment } from "moment";
 
 export type LoadResult = LoadSuccess | LoadError;
 
@@ -14,6 +14,7 @@ export type LoadError = { success: false; error: string };
  * JSON string
  *
  * @param value The JSON string to load from
+ * @return The load result
  */
 export function load(value: string): LoadResult {
 	// Empty string should create an empty timekeep
@@ -89,9 +90,10 @@ export function replaceTimekeepCodeblock(
  * Creates a new entry that has just started
  *
  * @param name The name for the entry
+ * @param startTime The start time for the entry
  * @returns The created entry
  */
-export function createEntry(name: string, startTime: moment.Moment): TimeEntry {
+export function createEntry(name: string, startTime: Moment): TimeEntry {
 	return {
 		name,
 		startTime,
@@ -136,13 +138,15 @@ export function updateEntry(
  * Stops any entries in the provided list that are running
  * returning a list of the new non running entries
  *
- * @param entries
+ * @param entries The entries to stop
+ * @returns The new list of stopped entries
  */
 export function stopRunningEntries(
 	entries: TimeEntry[],
-	endTime: moment.Moment
+	endTime: Moment
 ): TimeEntry[] {
 	return entries.map((entry) => {
+		// Stop the sub entries
 		if (entry.subEntries) {
 			return {
 				...entry,
@@ -150,9 +154,13 @@ export function stopRunningEntries(
 			};
 		}
 
+		// Ignore already stopped entries
+		if (entry.endTime !== null) return entry;
+
+		// Stop the current entry
 		return {
 			...entry,
-			endTime: entry.endTime ?? endTime,
+			endTime,
 		};
 	});
 }
@@ -216,7 +224,7 @@ function removeSubEntry(entry: TimeEntry, target: TimeEntry): TimeEntry {
  * one sub entry in it then the group becomes just a single entry
  * inheriting the timing from the one child entry
  *
- * @param target
+ * @param target The entry to collapse
  * @returns The collapsed entry
  */
 function collapseEntry(target: TimeEntry): TimeEntry {
@@ -263,11 +271,12 @@ function makeGroupEntry(entry: TimeEntry): TimeEntryGroup {
  * @param entries The collection of entries
  * @param name The name for the new entry
  * @param startTime The start time of the new entry
+ * @returns The new collection of entries
  */
 export function withEntry(
 	entries: TimeEntry[],
 	name: string,
-	startTime: moment.Moment
+	startTime: Moment
 ): TimeEntry[] {
 	// Assign a name automatically if not provided
 	if (isEmptyString(name)) {
@@ -289,7 +298,7 @@ export function withEntry(
 export function withSubEntry(
 	parent: TimeEntry,
 	name: string,
-	startTime: moment.Moment
+	startTime: Moment
 ): TimeEntry {
 	const groupEntry = makeGroupEntry(parent);
 
@@ -366,7 +375,7 @@ export function getRunningEntry(entries: TimeEntry[]): TimeEntry | null {
  */
 export function getEntryDuration(
 	entry: TimeEntry,
-	currentTime: moment.Moment
+	currentTime: Moment
 ): number {
 	if (entry.subEntries !== null) {
 		return getTotalDuration(entry.subEntries, currentTime);
@@ -387,7 +396,7 @@ export function getEntryDuration(
  */
 export function getTotalDuration(
 	entries: TimeEntry[],
-	currentTime: moment.Moment
+	currentTime: Moment
 ): number {
 	return entries.reduce(
 		(totalDuration, entry) =>
