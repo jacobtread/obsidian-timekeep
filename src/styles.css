@@ -33,6 +33,28 @@ If your plugin does not need CSS, delete this file.
 	width: 100%;
 }
 
+.timesheet-editing {
+	display: flex;
+	flex-flow: column;
+	gap: 0.5rem;
+	padding: 0.5rem;
+	border: 1px solid var(--color-base-40);
+	margin: 0.25rem 0;
+}
+
+.timesheet-editing-actions {
+	display: flex;
+	flex-flow: row;
+	gap: 0.5rem;
+	margin-top: 0.25rem;
+	margin-bottom: 0.5rem;
+}
+
+.timekeep-input {
+	width: 100%;
+	margin-top: 0.5rem;
+}
+
 .timekeep-row:nth-child(even) {
 	background-color: var(--color-base-20);
 }
@@ -55,10 +77,6 @@ If your plugin does not need CSS, delete this file.
 
 .timekeep-col--duration {
 	width: 10%;
-}
-
-.timekeep-input {
-	width: 100%;
 }
 
 .timekeep-time {
