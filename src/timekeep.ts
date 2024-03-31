@@ -4,46 +4,6 @@ import { isEmptyString } from "@/utils";
 import { strHash } from "@/utils/text";
 import moment from "moment";
 
-/**
- * Replaces the contents of a specific timekeep codeblock within
- * a file returning the modified contents to be saved
- */
-export function replaceTimekeepCodeblock(
-	timekeep: Timekeep,
-	content: string,
-	lineStart: number,
-	lineEnd: number
-): string {
-	const timekeepJSON = JSON.stringify(timekeep);
-
-	// The actual JSON is the line after the code block start
-	const contentStart = lineStart + 1;
-	const contentLength = lineEnd - contentStart;
-
-	// Split the content into lines
-	const lines = content.split("\n");
-
-	// Sanity checks to prevent overriding content
-	if (!lines[lineStart].startsWith("```")) {
-		throw new Error(
-			"Content timekeep out of sync, line number for codeblock start doesn't match: " +
-				content[lineStart]
-		);
-	}
-
-	if (!lines[lineEnd].startsWith("```")) {
-		throw new Error(
-			"Content timekeep out of sync, line number for codeblock end doesn't match" +
-				content[lineEnd]
-		);
-	}
-
-	// Splice the new JSON content in between the codeblock, removing the old codeblock lines
-	lines.splice(contentStart, contentLength, timekeepJSON);
-
-	return lines.join("\n");
-}
-
 export type LoadResult = LoadSuccess | LoadError;
 
 export type LoadSuccess = { success: true; timekeep: Timekeep };
@@ -83,6 +43,46 @@ export function load(value: string): LoadResult {
 
 	const timekeep = timekeepResult.data;
 	return { success: true, timekeep };
+}
+
+/**
+ * Replaces the contents of a specific timekeep codeblock within
+ * a file returning the modified contents to be saved
+ */
+export function replaceTimekeepCodeblock(
+	timekeep: Timekeep,
+	content: string,
+	lineStart: number,
+	lineEnd: number
+): string {
+	const timekeepJSON = JSON.stringify(timekeep);
+
+	// The actual JSON is the line after the code block start
+	const contentStart = lineStart + 1;
+	const contentLength = lineEnd - contentStart;
+
+	// Split the content into lines
+	const lines = content.split("\n");
+
+	// Sanity checks to prevent overriding content
+	if (!lines[lineStart].startsWith("```")) {
+		throw new Error(
+			"Content timekeep out of sync, line number for codeblock start doesn't match: " +
+				content[lineStart]
+		);
+	}
+
+	if (!lines[lineEnd].startsWith("```")) {
+		throw new Error(
+			"Content timekeep out of sync, line number for codeblock end doesn't match" +
+				content[lineEnd]
+		);
+	}
+
+	// Splice the new JSON content in between the codeblock, removing the old codeblock lines
+	lines.splice(contentStart, contentLength, timekeepJSON);
+
+	return lines.join("\n");
 }
 
 /**
