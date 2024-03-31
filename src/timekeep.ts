@@ -167,42 +167,46 @@ export function stopRunningEntries(
  * @param target The target entry to remove
  * @returns The new list with the entry removed
  */
-export function removeEntry(entries: TimeEntry[], target: TimeEntry) {
-	return (
-		entries
-			// Filter out matching entries
-			.filter((entry) => entry !== target)
+export function removeEntry(
+	entries: TimeEntry[],
+	target: TimeEntry
+): TimeEntry[] {
+	return entries.reduce((acc: TimeEntry[], entry: TimeEntry) => {
+		if (entry !== target) {
 			// Filter sub entries for matching entries
-			.map(mapRemoveSubEntry(target))
+			const updatedEntry = removeSubEntry(entry, target);
 			// Collapse any entries that need to be
-			.map(collapseEntry)
-			// Remove any empty groups
-			.filter(
-				(entry) =>
-					entry.subEntries === null || entry.subEntries.length > 0
-			)
-	);
+			const collapsedEntry = collapseEntry(updatedEntry);
+
+			// Add non-empty entries to the accumulator
+			if (
+				collapsedEntry.subEntries === null ||
+				collapsedEntry.subEntries.length > 0
+			) {
+				acc.push(collapsedEntry);
+			}
+		}
+
+		return acc;
+	}, []);
 }
 
 /**
- * Creates a mapping function that captures the `target`
- * to produce a map function that will remove sub entries
- * containing the provided `target`
+ * Removes the provided `target` from the entry and its
+ * children if present
  *
+ * @param entry The entry to remove from
  * @param target The target to remove
  * @returns The map function
  */
-function mapRemoveSubEntry(target: TimeEntry) {
-	return (entry: TimeEntry): TimeEntry => {
-		// Ignore non groups
-		if (entry.subEntries === null) return entry;
+function removeSubEntry(entry: TimeEntry, target: TimeEntry): TimeEntry {
+	// Ignore non groups
+	if (entry.subEntries === null) return entry;
 
-		// Remove the entry from the children
-		return {
-			...entry,
-			subEntries: removeEntry(entry.subEntries, target),
-		};
-	};
+	// Remove the entry from the children
+	const subEntries = removeEntry(entry.subEntries, target);
+
+	return { ...entry, subEntries };
 }
 
 /**
@@ -344,9 +348,7 @@ export function getRunningEntry(entries: TimeEntry[]): TimeEntry | null {
 
 		if (entry.subEntries !== null) {
 			stack.push(...entry.subEntries);
-		}
-
-		if (isEntryRunning(entry)) {
+		} else if (entry.endTime === null) {
 			return entry;
 		}
 	}
