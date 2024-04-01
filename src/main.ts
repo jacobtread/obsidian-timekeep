@@ -128,12 +128,10 @@ class TimekeepComponent extends MarkdownRenderChild {
 		// Ensure we actually have a section to write to
 		if (sectionInfo === null) return;
 
-		const file = this.vault.getAbstractFileByPath(
-			this.context.sourcePath
-		) as TFile | null;
+		const file = this.vault.getAbstractFileByPath(this.context.sourcePath);
 
 		// Ensure the file still exists
-		if (file === null) return;
+		if (file === null || !(file instanceof TFile)) return;
 
 		try {
 			const content = await this.vault.read(file);
