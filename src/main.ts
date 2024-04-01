@@ -44,7 +44,7 @@ export default class TimekeepPlugin extends Plugin {
 
 		this.addCommand({
 			id: `insert`,
-			name: `Insert Timekeep`,
+			name: `Insert Tracker`,
 			editorCallback: (e) => {
 				e.replaceSelection('```timekeep\n{"entries": []}\n```\n');
 			},
