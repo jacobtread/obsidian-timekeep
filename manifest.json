@@ -1,7 +1,7 @@
 {
 	"id": "timekeep",
 	"name": "Timekeep",
-	"version": "1.2.0",
+	"version": "1.2.1",
 	"minAppVersion": "0.15.0",
 	"description": "Time tracking within Obsidian",
 	"author": "Jacobtread",
