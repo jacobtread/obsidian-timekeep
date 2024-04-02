@@ -1,18 +1,13 @@
-import React, { useMemo, useState } from "react";
-import {
-	isEntryRunning,
-	getEntryDuration,
-	updateEntry,
-	withSubEntry,
-	isKeepRunning,
-} from "@/timekeep";
+import React, { useState } from "react";
+import { updateEntry, withSubEntry, isKeepRunning } from "@/timekeep";
 import { useSettings } from "@/hooks/use-settings-context";
 import { EditIcon, PlayIcon } from "lucide-react";
-import { formatDuration, formatTimestamp } from "src/utils";
+import { formatTimestamp } from "src/utils";
 import { useTimekeep } from "@/hooks/use-timekeep-context";
 import { TimeEntry } from "@/schema";
 import moment from "moment";
 import TimesheetRowEditing from "@/components/TimesheetRowEditing";
+import TimesheetRowDuration from "@/components/TimesheetRowDuration";
 
 type Props = {
 	entry: TimeEntry;
@@ -24,13 +19,6 @@ export default function TimesheetRow({ entry, indent }: Props) {
 	const { setTimekeep, isTimekeepRunning } = useTimekeep();
 
 	const [editing, setEditing] = useState(false);
-
-	// Persist the duration to prevent it updating real-time
-	const duration = useMemo(() => {
-		const currentTime = moment();
-
-		return formatDuration(getEntryDuration(entry, currentTime));
-	}, [entry]);
 
 	const isEditable = entry.subEntries !== null || entry.endTime !== null;
 
@@ -103,7 +91,7 @@ export default function TimesheetRow({ entry, indent }: Props) {
 				)}
 			</td>
 			<td className="timekeep-col timekeep-col--duration">
-				<span className="timekeep-time">{duration}</span>
+				<TimesheetRowDuration entry={entry} />
 			</td>
 			<td className="timekeep-col timekeep-col--actions">
 				<div className="timekeep-actions-wrapper">
