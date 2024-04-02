@@ -21,7 +21,6 @@ type Props = {
 
 export default function TimesheetRow({ entry, indent }: Props) {
 	const settings = useSettings();
-	const isRunning = isEntryRunning(entry);
 	const { setTimekeep, isTimekeepRunning } = useTimekeep();
 
 	const [editing, setEditing] = useState(false);
@@ -115,7 +114,7 @@ export default function TimesheetRow({ entry, indent }: Props) {
 						<PlayIcon width="1em" height="1em" />
 					</button>
 					<button
-						disabled={isRunning || !isEditable}
+						disabled={!isEditable}
 						onClick={() => setEditing(true)}
 						className="timekeep-action">
 						<EditIcon width="1em" height="1em" />
