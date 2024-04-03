@@ -7,7 +7,7 @@ This plugin provides a way to simply and easily track time spent on various task
 ![Tracker](images/tracker.png)
 
 
-This plugin provides a command for inserting time trackers `Obsidian Timekeep: Insert Timekeep` alternatively a timekeep can be created by creating a codeblock like the following:
+This plugin provides a command for inserting time trackers `Timekeep: Insert Tracker` alternatively a timekeep can be created by creating a codeblock like the following:
 
 ````
 ```timekeep
