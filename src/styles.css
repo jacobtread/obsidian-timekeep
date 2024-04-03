@@ -7,6 +7,14 @@ If your plugin does not need CSS, delete this file.
 
 */
 
+.timekeep-indent {
+	display: inline-block;
+	height: 1rem;
+	width: 0.2rem;
+	border-left: 0.1rem solid var(--color-base-40);
+	margin-right: 0.1rem;
+}
+
 .timekeep-container {
 	width: 100%;
 	display: flex;

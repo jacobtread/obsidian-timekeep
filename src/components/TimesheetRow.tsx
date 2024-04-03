@@ -53,18 +53,7 @@ export default function TimesheetRow({ entry, indent }: Props) {
 	// Build up a list of indent lines for each level
 	const indentItems = [];
 	for (let i = 0; i < indent; i++) {
-		indentItems.push(
-			<span
-				key={i}
-				style={{
-					display: "inline-block",
-					height: "1rem",
-					width: "0.2rem",
-					borderLeft: "0.1rem solid var(--color-base-40)",
-					marginRight: "0.1rem",
-				}}
-			/>
-		);
+		indentItems.push(<span key={i} className="timekeep-indent" />);
 	}
 
 	return (
