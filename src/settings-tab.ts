@@ -12,7 +12,7 @@ export class TimekeepSettingsTab extends PluginSettingTab {
 
 	display(): void {
 		this.containerEl.empty();
-		this.containerEl.createEl("h2", { text: "Timekeep Settings" });
+		this.containerEl.createEl("h2", { text: "Settings" });
 
 		new Setting(this.containerEl)
 			.setName("Timestamp Display Format")
