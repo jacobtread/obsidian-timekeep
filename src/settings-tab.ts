@@ -15,7 +15,7 @@ export class TimekeepSettingsTab extends PluginSettingTab {
 		this.containerEl.createEl("h2", { text: "Settings" });
 
 		new Setting(this.containerEl)
-			.setName("Timestamp Display Format")
+			.setName("Timestamp display format")
 			.setDesc(
 				createFragment((f) => {
 					f.createSpan({
@@ -38,7 +38,7 @@ export class TimekeepSettingsTab extends PluginSettingTab {
 				});
 			});
 		new Setting(this.containerEl)
-			.setName("PDF Title")
+			.setName("PDF title")
 			.setDesc("The title to include on generated PDFs")
 
 			.addText((t) => {
@@ -52,7 +52,7 @@ export class TimekeepSettingsTab extends PluginSettingTab {
 			});
 
 		new Setting(this.containerEl)
-			.setName("CSV Heading Row")
+			.setName("CSV heading row")
 			.setDesc(
 				"Whether to use the first row of generated CSV as a title row"
 			)
@@ -65,7 +65,7 @@ export class TimekeepSettingsTab extends PluginSettingTab {
 			});
 
 		new Setting(this.containerEl)
-			.setName("CSV Delimiter")
+			.setName("CSV delimiter")
 			.setDesc(
 				"The delimiter character that should be used when copying a tracker table as CSV. For example, some languages use a semicolon instead of a comma."
 			)
@@ -80,7 +80,7 @@ export class TimekeepSettingsTab extends PluginSettingTab {
 			});
 
 		new Setting(this.containerEl)
-			.setName("Timestamp Durations")
+			.setName("Timestamp durations")
 			.setDesc(
 				"Whether durations should be displayed in a timestamp format (12:15:01) rather than the default duration format (12h 15m 1s)."
 			)
@@ -93,7 +93,7 @@ export class TimekeepSettingsTab extends PluginSettingTab {
 			});
 
 		new Setting(this.containerEl)
-			.setName("Display Segments in Reverse Order")
+			.setName("Display segments in reverse order")
 			.setDesc(
 				"Whether older tracker segments should be displayed towards the bottom of the tracker, rather than the top."
 			)
@@ -106,7 +106,7 @@ export class TimekeepSettingsTab extends PluginSettingTab {
 			});
 
 		new Setting(this.containerEl)
-			.setName("Limit Table Height")
+			.setName("Limit table height")
 			.setDesc(
 				"Whether to limit the height of the table, will clamp the height and make the table scrollable"
 			)
