@@ -48,17 +48,24 @@ export default function TimesheetRowEditing({ entry, onFinishEditing }: Props) {
 
 		// Update the start and end times for non groups
 		if (newEntry.subEntries === null) {
-			const startTimeValue = unformatEditableTimestamp(
-				startTime,
-				settings
-			);
-			if (startTimeValue.isValid()) {
-				newEntry.startTime = startTimeValue;
+			if (entry.startTime !== null) {
+				const startTimeValue = unformatEditableTimestamp(
+					startTime,
+					settings
+				);
+				if (startTimeValue.isValid()) {
+					newEntry.startTime = startTimeValue;
+				}
 			}
 
-			const endTimeValue = unformatEditableTimestamp(endTime, settings);
-			if (endTimeValue.isValid()) {
-				newEntry.endTime = endTimeValue;
+			if (entry.endTime !== null) {
+				const endTimeValue = unformatEditableTimestamp(
+					endTime,
+					settings
+				);
+				if (endTimeValue.isValid()) {
+					newEntry.endTime = endTimeValue;
+				}
 			}
 		}
 

@@ -20,8 +20,6 @@ export default function TimesheetRow({ entry, indent }: Props) {
 
 	const [editing, setEditing] = useState(false);
 
-	const isEditable = entry.subEntries !== null || entry.endTime !== null;
-
 	const onClickStart = () => {
 		setTimekeep((timekeep) => {
 			// Don't start if already running
@@ -91,7 +89,6 @@ export default function TimesheetRow({ entry, indent }: Props) {
 						<PlayIcon width="1em" height="1em" />
 					</button>
 					<button
-						disabled={!isEditable}
 						onClick={() => setEditing(true)}
 						className="timekeep-action">
 						<EditIcon width="1em" height="1em" />
