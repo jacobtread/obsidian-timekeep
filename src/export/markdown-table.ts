@@ -3,7 +3,7 @@ import { RawTableRow, TOTAL_COLUMNS, createRawTable } from "@/export";
 import { formatDuration } from "@/utils";
 import { getTotalDuration } from "@/timekeep";
 import { TimekeepSettings } from "@/settings";
-import { Moment } from "moment";
+import type { Moment } from "moment";
 
 /**
  * Creates the table header row

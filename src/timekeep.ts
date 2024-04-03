@@ -2,7 +2,7 @@ import { TIMEKEEP, TimeEntry, TimeEntryGroup, Timekeep } from "@/schema";
 import { TimekeepSettings } from "@/settings";
 import { isEmptyString } from "@/utils";
 import { strHash } from "@/utils/text";
-import { Moment } from "moment";
+import type { Moment } from "moment";
 
 export type LoadResult = LoadSuccess | LoadError;
 

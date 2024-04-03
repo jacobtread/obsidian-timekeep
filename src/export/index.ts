@@ -2,7 +2,7 @@ import { formatDuration, formatTimestamp } from "@/utils";
 import { TimeEntry } from "@/schema";
 import { TimekeepSettings } from "@/settings";
 import { getEntriesOrdered, getEntryDuration } from "@/timekeep";
-import { Moment } from "moment";
+import type { Moment } from "moment";
 export const TOTAL_COLUMNS = 4;
 
 export type RawTableRow = [string, string, string, string];

@@ -2,7 +2,7 @@ import { Fragment } from "react";
 import { Page, Text, View, Document, StyleSheet } from "@/pdf";
 import React from "react";
 
-import { Moment } from "moment";
+import type { Moment } from "moment";
 import { getTotalDuration, getEntryDuration } from "@/timekeep";
 import { formatDuration } from "@/utils";
 import { Timekeep, TimeEntry } from "@/schema";
