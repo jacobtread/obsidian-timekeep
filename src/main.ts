@@ -3,7 +3,6 @@ import {
 	MarkdownPostProcessorContext,
 	MarkdownRenderChild,
 	Plugin,
-	TFile,
 	Vault,
 } from "obsidian";
 import { Root, createRoot } from "react-dom/client";
@@ -12,6 +11,7 @@ import { TimekeepSettingsTab } from "@/settings-tab";
 import { LoadResult, load, replaceTimekeepCodeblock } from "@/timekeep";
 import App from "@/App";
 import { Timekeep } from "./schema";
+import moment from "moment";
 
 export default class TimekeepPlugin extends Plugin {
 	settings: TimekeepSettings;
@@ -103,7 +103,7 @@ class TimekeepComponent extends MarkdownRenderChild {
 					React.createElement(App, {
 						initialState: timekeep,
 						settings: this.settings,
-						save: this.save.bind(this),
+						save: this.trySave.bind(this),
 					})
 				)
 			);
@@ -122,30 +122,65 @@ class TimekeepComponent extends MarkdownRenderChild {
 		this.root.unmount();
 	}
 
+	/**
+	 * Attempts to save the file normally, if this fails it also attempts
+	 * to save a fallback file
+	 *
+	 * @param timekeep
+	 */
+	async trySave(timekeep: Timekeep): Promise<boolean> {
+		try {
+			await this.save(timekeep);
+
+			return true;
+		} catch (e) {
+			console.error("Failed to save timekeep");
+			this.saveFallback(timekeep);
+
+			return false;
+		}
+	}
+
+	/**
+	 * Attempts to save the timekeep within the current file
+	 *
+	 * @param timekeep The new timekeep data to save
+	 */
 	async save(timekeep: Timekeep) {
 		const sectionInfo = this.context.getSectionInfo(this.containerEl);
 
 		// Ensure we actually have a section to write to
-		if (sectionInfo === null) return;
+		if (sectionInfo === null)
+			throw new Error("Section to write did not exist");
 
-		const file = this.vault.getAbstractFileByPath(this.context.sourcePath);
+		const file = this.vault.getFileByPath(this.context.sourcePath);
 
 		// Ensure the file still exists
-		if (file === null || !(file instanceof TFile)) return;
+		if (file === null) throw new Error("File no longer exists");
 
-		try {
-			// Replace the stored timekeep block with the new one
-			await this.vault.process(file, (data) => {
-				return replaceTimekeepCodeblock(
-					timekeep,
-					data,
-					sectionInfo.lineStart,
-					sectionInfo.lineEnd
-				);
-			});
-		} catch (e) {
-			// TODO: ON WRITE FAILURE SAVE TO TEMP FILE
-			console.error("Failed to save timekeep", e);
-		}
+		// Replace the stored timekeep block with the new one
+		await this.vault.process(file, (data) => {
+			return replaceTimekeepCodeblock(
+				timekeep,
+				data,
+				sectionInfo.lineStart,
+				sectionInfo.lineEnd
+			);
+		});
+	}
+
+	/**
+	 * Fallback saving incase writing back to the timekeep block fails,
+	 * if writing back fails attempt to write to a backup temporary file
+	 * using the current date time
+	 *
+	 * @param timekeep The timekeep to save
+	 */
+	async saveFallback(timekeep: Timekeep) {
+		// Fallback incase of write failure, attempt to write to another file
+		const backupFileName = `timekeep-write-backup-${moment().format("YYYY-MM-DD HH-mm-ss")}.json`;
+
+		// Write to the backup file
+		this.vault.create(backupFileName, JSON.stringify(timekeep));
 	}
 }

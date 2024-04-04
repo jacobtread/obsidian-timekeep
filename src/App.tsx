@@ -1,4 +1,4 @@
-import React, { SetStateAction, useCallback, useState } from "react";
+import React, { SetStateAction, useCallback, useMemo, useState } from "react";
 
 import { Timekeep } from "@/schema";
 import { isKeepRunning } from "@/timekeep";
@@ -19,7 +19,7 @@ export type AppProps = {
 	settings: TimekeepSettings;
 	// Function to save the timekeep data
 	// eslint-disable-next-line no-unused-vars
-	save: (timekeep: Timekeep) => void;
+	save: (timekeep: Timekeep) => Promise<boolean>;
 };
 
 /**
@@ -31,6 +31,13 @@ export type AppProps = {
  */
 export default function App({ initialState, save, settings }: AppProps) {
 	const [timekeep, setTimekeep] = useState(initialState);
+	const [saveError, setSaveError] = useState(false);
+
+	const trySave = (timekeep: Timekeep) => {
+		save(timekeep).then((isSaved) => {
+			setSaveError(!isSaved);
+		});
+	};
 
 	// Wrapper around setTimekeep state to save the file on changes
 	const setTimekeepWrapper = useCallback(
@@ -38,12 +45,38 @@ export default function App({ initialState, save, settings }: AppProps) {
 			setTimekeep((storedValue) => {
 				const updatedValue =
 					value instanceof Function ? value(storedValue) : value;
-				save(updatedValue);
+				trySave(updatedValue);
 				return updatedValue;
 			});
 		},
 		[setTimekeep]
 	);
+
+	const onRetrySave = () => {
+		trySave(timekeep);
+	};
+
+	const onClickCopy = () => {
+		navigator.clipboard.writeText(JSON.stringify(timekeep));
+	};
+
+	// Saving error fallback screen
+	if (saveError) {
+		return (
+			<div>
+				<h1>Warning</h1>
+				<p>Failed to save current timekeep</p>
+				<p>
+					Press "Retry" to try again or "Copy Timekeep" to copy a
+					backup to clipboard, an automated backup JSON file will be
+					generated in the root of this vault
+				</p>
+				<button onClick={onRetrySave}>Retry</button>
+
+				<button onClick={onClickCopy}>Copy Timekeep</button>
+			</div>
+		);
+	}
 
 	return (
 		<SettingsContext.Provider value={settings}>
