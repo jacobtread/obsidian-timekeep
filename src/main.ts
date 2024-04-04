@@ -134,8 +134,13 @@ class TimekeepComponent extends MarkdownRenderChild {
 
 			return true;
 		} catch (e) {
-			console.error("Failed to save timekeep");
-			this.saveFallback(timekeep);
+			console.error("Failed to save timekeep", e);
+
+			try {
+				this.saveFallback(timekeep);
+			} catch (e) {
+				console.error("Couldn't save timekeep fallback", e);
+			}
 
 			return false;
 		}
