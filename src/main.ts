@@ -134,16 +134,15 @@ class TimekeepComponent extends MarkdownRenderChild {
 		if (file === null || !(file instanceof TFile)) return;
 
 		try {
-			const content = await this.vault.read(file);
-
-			const newContent = replaceTimekeepCodeblock(
-				timekeep,
-				content,
-				sectionInfo.lineStart,
-				sectionInfo.lineEnd
-			);
-
-			await this.vault.modify(file, newContent);
+			// Replace the stored timekeep block with the new one
+			await this.vault.process(file, (data) => {
+				return replaceTimekeepCodeblock(
+					timekeep,
+					data,
+					sectionInfo.lineStart,
+					sectionInfo.lineEnd
+				);
+			});
 		} catch (e) {
 			// TODO: ON WRITE FAILURE SAVE TO TEMP FILE
 			console.error("Failed to save timekeep", e);
