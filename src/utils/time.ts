@@ -1,6 +1,13 @@
 import moment, { Moment } from "moment";
 import { TimekeepSettings } from "@/settings";
 
+/**
+ * Formats a timestamp for tables and generated output
+ *
+ * @param timestamp The timestamp to format
+ * @param settings The timekeep settings
+ * @returns The formatted timestamp
+ */
 export function formatTimestamp(
 	timestamp: Moment,
 	settings: TimekeepSettings
@@ -8,6 +15,14 @@ export function formatTimestamp(
 	return timestamp.format(settings.timestampFormat);
 }
 
+/**
+ * Formats the provided timestamp in the way its expected to be
+ * edited by the user
+ *
+ * @param timestamp The timestamp to format
+ * @param settings The timekeep settings
+ * @returns The formatted timestamp
+ */
 export function formatEditableTimestamp(
 	timestamp: Moment,
 	settings: TimekeepSettings
@@ -15,6 +30,13 @@ export function formatEditableTimestamp(
 	return timestamp.format(settings.editableTimestampFormat);
 }
 
+/**
+ * Converts the user edited format back into a timestamp
+ *
+ * @param formatted The user edited formatted timestamp
+ * @param settings The timekeep settings
+ * @returns The timestamp
+ */
 export function unformatEditableTimestamp(
 	formatted: string,
 	settings: TimekeepSettings
@@ -22,6 +44,13 @@ export function unformatEditableTimestamp(
 	return moment(formatted, settings.editableTimestampFormat, true);
 }
 
+/**
+ * Formats the provided duration in the form
+ * of hours, minutes, and seconds
+ *
+ * @param totalTime The duration to format
+ * @returns The formatted duration
+ */
 export function formatDuration(totalTime: number): string {
 	let ret = "";
 	const duration = moment.duration(totalTime);
@@ -34,6 +63,14 @@ export function formatDuration(totalTime: number): string {
 	return ret.trim();
 }
 
+/**
+ * Formats a duration in the form of hours only
+ * minutes will be counted a portions of an hour
+ * (i.e 1h 30m will be 1.5h)
+ *
+ * @param totalTime The duration to format
+ * @returns The formatted duration
+ */
 export function formatDurationHoursTrunc(totalTime: number): string {
 	const duration = moment.duration(totalTime);
 
