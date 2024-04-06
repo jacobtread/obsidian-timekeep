@@ -127,6 +127,7 @@ class TimekeepComponent extends MarkdownRenderChild {
 	 * to save a fallback file
 	 *
 	 * @param timekeep
+	 * @returns Promise of a boolean indicating weather the save was a success
 	 */
 	async trySave(timekeep: Timekeep): Promise<boolean> {
 		try {
