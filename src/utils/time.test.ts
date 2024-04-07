@@ -34,7 +34,7 @@ it("should format editable time", () => {
 
 it("should unformat editable time", () => {
 	const input = "2024-03-31 15:34:45";
-	const expected = moment("2024-03-31T02:34:45.000Z").utc().set("ms", 0);
+	const expected = moment("2024-03-31T02:34:45.000Z").utc();
 
 	const settings: TimekeepSettings = defaultSettings;
 	settings.editableTimestampFormat = "YYYY-MM-DD HH:mm:ss";
