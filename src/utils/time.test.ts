@@ -9,8 +9,8 @@ import {
 import moment from "moment";
 
 it("should format time", () => {
-	const input = moment("2024-03-31T02:34:45.413Z");
-	const expected = "24-03-31 15:34:45";
+	const input = moment("2024-03-31T02:34:45.413Z").utc();
+	const expected = "24-03-31 02:34:45";
 
 	const settings: TimekeepSettings = defaultSettings;
 	settings.timestampFormat = "YY-MM-DD HH:mm:ss";
@@ -21,8 +21,8 @@ it("should format time", () => {
 });
 
 it("should format editable time", () => {
-	const input = moment("2024-03-31T02:34:45.413Z");
-	const expected = "2024-03-31 15:34:45";
+	const input = moment("2024-03-31T02:34:45.413Z").utc();
+	const expected = "2024-03-31 02:34:45";
 
 	const settings: TimekeepSettings = defaultSettings;
 	settings.editableTimestampFormat = "YYYY-MM-DD HH:mm:ss";
@@ -34,7 +34,7 @@ it("should format editable time", () => {
 
 it("should unformat editable time", () => {
 	const input = "2024-03-31 15:34:45";
-	const expected = moment("2024-03-31T02:34:45.413Z").set("ms", 0);
+	const expected = moment("2024-03-31T02:34:45.413Z").utc().set("ms", 0);
 
 	const settings: TimekeepSettings = defaultSettings;
 	settings.editableTimestampFormat = "YYYY-MM-DD HH:mm:ss";
