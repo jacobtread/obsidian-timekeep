@@ -4,7 +4,7 @@
 
 ![License](https://img.shields.io/github/license/jacobtread/obsidian-timekeep?style=for-the-badge)
 ![Build](https://img.shields.io/github/actions/workflow/status/jacobtread/obsidian-timekeep/build.yml?style=for-the-badge)
-![Tests](https://img.shields.io/github/actions/workflow/status/jacobtread/obsidian-timekeep/tests.yml?style=for-the-badge)
+![Tests](https://img.shields.io/github/actions/workflow/status/jacobtread/obsidian-timekeep/tests.yml?style=for-the-badge&label=Tests)
 
 
 This plugin provides a way to simply and easily track time spent on various tasks. After tracking your time you can export the tracked time as a **Markdown Table**, **CSV**, **JSON**, or **PDF** 

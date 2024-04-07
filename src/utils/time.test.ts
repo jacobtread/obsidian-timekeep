@@ -33,15 +33,15 @@ it("should format editable time", () => {
 });
 
 it("should unformat editable time", () => {
-	const input = "2024-03-31 15:34:45";
-	const expected = moment("2024-03-31T02:34:45.000Z").utc();
+	const input = "2024-03-31 02:34:45";
+	const expected = moment.utc("2024-03-31T02:34:45.000Z");
 
 	const settings: TimekeepSettings = defaultSettings;
 	settings.editableTimestampFormat = "YYYY-MM-DD HH:mm:ss";
 
 	const output = unformatEditableTimestamp(input, settings).utc();
 
-	expect(output.toISOString()).toBe(expected.toISOString());
+	expect(output.toDate()).toStrictEqual(expected.toDate());
 });
 
 describe("format duration", () => {
