@@ -180,14 +180,14 @@ export default function TimesheetPdf({ data, title, currentTime }: Props) {
 
 				<View style={styles.details}>
 					<Text style={styles.detailsField}>
-						<Text style={styles.detailsFieldName}>Date:</Text>{" "}
+						<Text style={styles.detailsFieldName}>Date:</Text>
 						{formatDate(currentTime)}
 					</Text>
 
 					<Text style={styles.detailsField}>
 						<Text style={styles.detailsFieldName}>
 							Total Duration:
-						</Text>{" "}
+						</Text>
 						{formatDuration(duration)}
 					</Text>
 				</View>
@@ -204,7 +204,7 @@ export default function TimesheetPdf({ data, title, currentTime }: Props) {
 						</Text>
 						<Text style={[styles.tableCell, styles.tableCellTime]}>
 							End Time
-						</Text>{" "}
+						</Text>
 						<Text style={[styles.tableCell, styles.tableCellTime]}>
 							Duration
 						</Text>
