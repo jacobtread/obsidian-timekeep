@@ -111,10 +111,7 @@ class TimekeepComponent extends MarkdownRenderChild {
 		this.onRenameEvent = this.vault.on(
 			"rename",
 			(file: TAbstractFile, oldName: string) => {
-				if (
-					file instanceof TFile &&
-					oldName == this.context.sourcePath
-				) {
+				if (file instanceof TFile && oldName == this.fileSourcePath) {
 					this.fileSourcePath = file.path;
 				}
 			}
