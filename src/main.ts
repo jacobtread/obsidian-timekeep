@@ -1,8 +1,11 @@
 import React, { StrictMode } from "react";
 import {
+	EventRef,
 	MarkdownPostProcessorContext,
 	MarkdownRenderChild,
 	Plugin,
+	TAbstractFile,
+	TFile,
 	Vault,
 } from "obsidian";
 import { Root, createRoot } from "react-dom/client";
@@ -75,6 +78,10 @@ class TimekeepComponent extends MarkdownRenderChild {
 	loadResult: LoadResult;
 	// React root
 	root: Root;
+	// Event ref for the file rename event
+	onRenameEvent: EventRef | null;
+	// Path to the file the timekeep is within
+	fileSourcePath: string;
 
 	constructor(
 		containerEl: HTMLElement,
@@ -89,9 +96,30 @@ class TimekeepComponent extends MarkdownRenderChild {
 		this.context = context;
 		this.loadResult = loadResult;
 		this.root = createRoot(containerEl);
+
+		// Set initial file path
+		this.fileSourcePath = context.sourcePath;
 	}
 
 	onload(): void {
+		// Clear existing rename handlers
+		if (this.onRenameEvent !== null) {
+			this.vault.offref(this.onRenameEvent);
+		}
+
+		// Hook file renaming to update the file we are saving to if its renamed
+		this.onRenameEvent = this.vault.on(
+			"rename",
+			(file: TAbstractFile, oldName: string) => {
+				if (
+					file instanceof TFile &&
+					oldName == this.context.sourcePath
+				) {
+					this.fileSourcePath = file.path;
+				}
+			}
+		);
+
 		// Render the react content
 		if (this.loadResult.success) {
 			const timekeep = this.loadResult.timekeep;
@@ -120,6 +148,11 @@ class TimekeepComponent extends MarkdownRenderChild {
 
 	onunload(): void {
 		this.root.unmount();
+
+		// Clear rename event handlers
+		if (this.onRenameEvent !== null) {
+			this.vault.offref(this.onRenameEvent);
+		}
 	}
 
 	/**
@@ -159,7 +192,7 @@ class TimekeepComponent extends MarkdownRenderChild {
 		if (sectionInfo === null)
 			throw new Error("Section to write did not exist");
 
-		const file = this.vault.getFileByPath(this.context.sourcePath);
+		const file = this.vault.getFileByPath(this.fileSourcePath);
 
 		// Ensure the file still exists
 		if (file === null) throw new Error("File no longer exists");
