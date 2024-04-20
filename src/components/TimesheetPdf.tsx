@@ -1,17 +1,33 @@
 import { Fragment } from "react";
-import { Page, Text, View, Document, StyleSheet } from "@/pdf";
+import { Page, Text, View, Document, StyleSheet, Font } from "@/pdf";
 import React from "react";
 
 import type { Moment } from "moment";
 import { getTotalDuration, getEntryDuration } from "@/timekeep";
 import { formatDuration } from "@/utils";
 import { Timekeep, TimeEntry } from "@/schema";
+import RobotoRegular from "@/fonts/Roboto-Regular.ttf";
+import RobotoBold from "@/fonts/Roboto-Bold.ttf";
 
 type Props = {
 	title: string;
 	data: Timekeep;
 	currentTime: Moment;
 };
+
+Font.register({
+	family: "Roboto",
+	fonts: [
+		{
+			src: RobotoRegular,
+			fontWeight: 400,
+		},
+		{
+			src: RobotoBold,
+			fontWeight: 700,
+		},
+	],
+});
 
 const styles = StyleSheet.create({
 	tableContainer: {
@@ -27,7 +43,6 @@ const styles = StyleSheet.create({
 		borderBottomWidth: 1,
 		alignItems: "center",
 		height: 24,
-		fontStyle: "bold",
 		fontSize: 8,
 		width: "100%",
 	},
@@ -38,7 +53,8 @@ const styles = StyleSheet.create({
 	},
 
 	tableRowHeader: {
-		fontFamily: "Helvetica-Bold",
+		fontFamily: "Roboto",
+		fontWeight: 700,
 		backgroundColor: "#ececec",
 	},
 	tableCell: {
@@ -56,7 +72,8 @@ const styles = StyleSheet.create({
 	tableCellDuration: {
 		width: "400px",
 		textAlign: "right",
-		fontWeight: "bold",
+		fontWeight: 700,
+		fontFamily: "Roboto",
 	},
 
 	tableIndent: {
@@ -65,12 +82,13 @@ const styles = StyleSheet.create({
 	},
 
 	page: {
+		fontFamily: "Roboto",
 		padding: 15,
 	},
 
 	title: {
-		fontFamily: "Helvetica-Bold",
-		fontWeight: "bold",
+		fontFamily: "Roboto",
+		fontWeight: 700,
 		fontSize: 12,
 		marginBottom: 5,
 	},
@@ -93,8 +111,8 @@ const styles = StyleSheet.create({
 	},
 
 	detailsFieldName: {
-		fontFamily: "Helvetica-Bold",
-		fontWeight: "bold",
+		fontFamily: "Roboto",
+		fontWeight: 700,
 		fontSize: 8,
 		marginBottom: 5,
 	},
@@ -107,7 +125,8 @@ const styles = StyleSheet.create({
 	footNote: {
 		marginTop: 10,
 		fontSize: 6,
-		fontFamily: "Helvetica-Bold",
+		fontFamily: "Roboto",
+		fontWeight: 700,
 	},
 });
 

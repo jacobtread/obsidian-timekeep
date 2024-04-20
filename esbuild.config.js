@@ -5,6 +5,7 @@ const builtins = require("builtin-modules");
 
 const prod = (process.argv[2] === "production");
 
+
 module.exports = {
 	platform: "browser",
 	bundle: true,
@@ -28,4 +29,5 @@ module.exports = {
 	logLevel: "debug",
 	sourcemap: prod ? false : "inline",
 	treeShaking: true,
+	loader: { '.ttf': 'dataurl' },
 }
