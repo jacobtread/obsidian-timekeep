@@ -37,6 +37,7 @@ export class TimekeepSettingsTab extends PluginSettingTab {
 					await this.plugin.saveSettings();
 				});
 			});
+
 		new Setting(this.containerEl)
 			.setName("PDF title")
 			.setDesc("The title to include on generated PDFs")
@@ -47,6 +48,20 @@ export class TimekeepSettingsTab extends PluginSettingTab {
 					this.plugin.settings.pdfTitle = v.length
 						? v
 						: defaultSettings.pdfTitle;
+					await this.plugin.saveSettings();
+				});
+			});
+
+		new Setting(this.containerEl)
+			.setName("PDF footnote")
+			.setDesc("The footnote to include PDFs")
+
+			.addTextArea((t) => {
+				t.setValue(String(this.plugin.settings.pdfFootnote));
+				t.onChange(async (v) => {
+					this.plugin.settings.pdfFootnote = v.length
+						? v
+						: defaultSettings.pdfFootnote;
 					await this.plugin.saveSettings();
 				});
 			});

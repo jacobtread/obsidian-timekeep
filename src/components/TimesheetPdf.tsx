@@ -11,6 +11,7 @@ import RobotoBold from "@/fonts/Roboto-Bold.ttf";
 
 type Props = {
 	title: string;
+	footnote: string;
 	data: Timekeep;
 	currentTime: Moment;
 };
@@ -186,7 +187,12 @@ function TimesheetEntry({
 	);
 }
 
-export default function TimesheetPdf({ data, title, currentTime }: Props) {
+export default function TimesheetPdf({
+	data,
+	title,
+	footnote,
+	currentTime,
+}: Props) {
 	const duration = getTotalDuration(data.entries, currentTime);
 
 	return (
@@ -262,8 +268,7 @@ export default function TimesheetPdf({ data, title, currentTime }: Props) {
 				</View>
 
 				<Text style={styles.footNote} wrap={false}>
-					Information present in this timesheet should be considered
-					Commercial in Confidence.
+					{footnote}
 				</Text>
 			</Page>
 		</Document>

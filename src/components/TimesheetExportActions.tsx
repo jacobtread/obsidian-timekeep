@@ -38,6 +38,7 @@ export default function TimekeepExportActions() {
 			<TimesheetPdf
 				data={timekeep}
 				title={settings.pdfTitle}
+				footnote={settings.pdfFootnote}
 				currentTime={currentTime}
 			/>
 		);
