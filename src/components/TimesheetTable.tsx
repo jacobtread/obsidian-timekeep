@@ -1,7 +1,7 @@
+import React from "react";
 import TimesheetRows from "@/components/TimesheetRows";
 import { useSettings } from "@/hooks/use-settings-context";
 import { useTimekeep } from "@/hooks/use-timekeep-context";
-import React from "react";
 
 export default function TimesheetTable() {
 	const { timekeep } = useTimekeep();

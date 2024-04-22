@@ -1,8 +1,8 @@
-import React, { Fragment, useMemo } from "react";
-import { getEntriesOrdered, getUniqueEntryHash } from "@/timekeep";
-import { useSettings } from "@/hooks/use-settings-context";
 import { TimeEntry } from "@/schema";
+import React, { useMemo, Fragment } from "react";
 import TimesheetRow from "@/components/TimesheetRow";
+import { useSettings } from "@/hooks/use-settings-context";
+import { getEntriesOrdered, getUniqueEntryHash } from "@/timekeep";
 
 type Props = {
 	// Collection of entries

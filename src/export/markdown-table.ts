@@ -1,9 +1,9 @@
-import { TimeEntry, Timekeep } from "@/schema";
-import { RawTableRow, TOTAL_COLUMNS, createRawTable } from "@/export";
+import type { Moment } from "moment";
 import { formatDuration } from "@/utils";
 import { getTotalDuration } from "@/timekeep";
 import { TimekeepSettings } from "@/settings";
-import type { Moment } from "moment";
+import { Timekeep, TimeEntry } from "@/schema";
+import { RawTableRow, TOTAL_COLUMNS, createRawTable } from "@/export";
 
 /**
  * Creates the table header row

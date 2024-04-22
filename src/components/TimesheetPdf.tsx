@@ -1,13 +1,12 @@
-import { Fragment } from "react";
-import { Page, Text, View, Document, StyleSheet, Font } from "@/pdf";
 import React from "react";
-
+import { Fragment } from "react";
 import type { Moment } from "moment";
-import { getTotalDuration, getEntryDuration } from "@/timekeep";
 import { formatDuration } from "@/utils";
 import { Timekeep, TimeEntry } from "@/schema";
-import RobotoRegular from "@/fonts/Roboto-Regular.ttf";
 import RobotoBold from "@/fonts/Roboto-Bold.ttf";
+import RobotoRegular from "@/fonts/Roboto-Regular.ttf";
+import { getTotalDuration, getEntryDuration } from "@/timekeep";
+import { Page, Text, View, Font, Document, StyleSheet } from "@/pdf";
 
 type Props = {
 	title: string;

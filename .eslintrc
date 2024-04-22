@@ -1,8 +1,13 @@
 {
 	"root": true,
 	"parser": "@typescript-eslint/parser",
-	"env": { "node": true },
-	"plugins": ["@typescript-eslint"],
+	"env": {
+		"node": true
+	},
+	"plugins": [
+		"perfectionist",
+		"@typescript-eslint"
+	],
 	"extends": [
 		"eslint:recommended",
 		"plugin:@typescript-eslint/eslint-recommended",
@@ -14,10 +19,71 @@
 	},
 	"rules": {
 		"no-unused-vars": "warn",
-		"@typescript-eslint/no-unused-vars": ["warn", { "args": "none" }],
+		"@typescript-eslint/no-unused-vars": [
+			"warn",
+			{
+				"args": "none"
+			}
+		],
 		"@typescript-eslint/ban-ts-comment": "off",
 		"no-prototype-builtins": "off",
 		"@typescript-eslint/no-empty-function": "off",
-		"@typescript-eslint/no-non-null-assertion": "off"
+		"@typescript-eslint/no-non-null-assertion": "off",
+		"perfectionist/sort-named-imports": [
+			1,
+			{
+				"order": "asc",
+				"type": "line-length"
+			}
+		],
+		"perfectionist/sort-named-exports": [
+			1,
+			{
+				"order": "asc",
+				"type": "line-length"
+			}
+		],
+		"perfectionist/sort-exports": [
+			1,
+			{
+				"order": "asc",
+				"type": "line-length"
+			}
+		],
+		"perfectionist/sort-imports": [
+			1,
+			{
+				"order": "asc",
+				"type": "line-length",
+				"newlines-between": "always",
+				"groups": [
+					[
+						"builtin",
+						"external"
+					],
+					"custom-hooks",
+					"custom-utils",
+					"internal",
+					"custom-components",
+					[
+						"parent",
+						"sibling",
+						"index"
+					],
+					"object",
+					"unknown"
+				],
+				"custom-groups": {
+					"value": {
+						"custom-hooks": "src/hooks/**",
+						"custom-utils": "src/utils/**",
+						"custom-components": "src/components/**"
+					}
+				},
+				"internal-pattern": [
+					"src/**"
+				]
+			}
+		]
 	}
 }

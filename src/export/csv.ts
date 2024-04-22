@@ -1,7 +1,7 @@
 import { Timekeep } from "@/schema";
-import { RawTableRow, createRawTable } from "@/export";
-import { TimekeepSettings } from "@/settings";
 import type { Moment } from "moment";
+import { TimekeepSettings } from "@/settings";
+import { RawTableRow, createRawTable } from "@/export";
 
 /**
  * Creates the CSV header row

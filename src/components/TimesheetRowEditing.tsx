@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
+import { TimeEntry } from "@/schema";
+import React, { useState, useEffect } from "react";
 import { removeEntry, updateEntry } from "@/timekeep";
 import { useSettings } from "@/hooks/use-settings-context";
-import { CheckIcon, TrashIcon, XIcon } from "lucide-react";
-import { unformatEditableTimestamp, formatEditableTimestamp } from "@/utils";
+import { XIcon, CheckIcon, TrashIcon } from "lucide-react";
 import { useTimekeep } from "@/hooks/use-timekeep-context";
-import { TimeEntry } from "@/schema";
+import { formatEditableTimestamp, unformatEditableTimestamp } from "@/utils";
 
 type Props = {
 	entry: TimeEntry;

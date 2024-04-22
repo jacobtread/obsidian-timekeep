@@ -1,14 +1,13 @@
-import React, { useEffect, useState } from "react";
-
+import moment from "moment";
+import { Timekeep } from "@/schema";
+import React, { useState, useEffect } from "react";
+import { useTimekeep } from "@/hooks/use-timekeep-context";
+import { formatDuration, formatDurationHoursTrunc } from "@/utils";
 import {
-	getTotalDuration,
 	getRunningEntry,
+	getTotalDuration,
 	getEntryDuration,
 } from "@/timekeep";
-import { formatDuration, formatDurationHoursTrunc } from "@/utils";
-import { useTimekeep } from "@/hooks/use-timekeep-context";
-import { Timekeep } from "@/schema";
-import moment from "moment";
 
 type TimingState = {
 	running: boolean;

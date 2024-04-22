@@ -1,12 +1,13 @@
-import { TimekeepSettings, defaultSettings } from "@/settings";
+import moment from "moment";
+import { defaultSettings, TimekeepSettings } from "@/settings";
+
 import {
 	formatDuration,
-	formatDurationHoursTrunc,
-	formatEditableTimestamp,
 	formatTimestamp,
+	formatEditableTimestamp,
+	formatDurationHoursTrunc,
 	unformatEditableTimestamp,
 } from "./time";
-import moment from "moment";
 
 it("should format time", () => {
 	const input = moment("2024-03-31T02:34:45.413Z").utc();

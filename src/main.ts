@@ -1,20 +1,21 @@
+import App from "@/App";
+import moment from "moment";
 import React, { StrictMode } from "react";
+import { Root, createRoot } from "react-dom/client";
+import { TimekeepSettingsTab } from "@/settings-tab";
+import { defaultSettings, TimekeepSettings } from "@/settings";
+import { load, LoadResult, replaceTimekeepCodeblock } from "@/timekeep";
 import {
-	EventRef,
-	MarkdownPostProcessorContext,
-	MarkdownRenderChild,
-	Plugin,
-	TAbstractFile,
 	TFile,
 	Vault,
+	Plugin,
+	EventRef,
+	TAbstractFile,
+	MarkdownRenderChild,
+	MarkdownPostProcessorContext,
 } from "obsidian";
-import { Root, createRoot } from "react-dom/client";
-import { TimekeepSettings, defaultSettings } from "@/settings";
-import { TimekeepSettingsTab } from "@/settings-tab";
-import { LoadResult, load, replaceTimekeepCodeblock } from "@/timekeep";
-import App from "@/App";
+
 import { Timekeep } from "./schema";
-import moment from "moment";
 
 export default class TimekeepPlugin extends Plugin {
 	settings: TimekeepSettings;

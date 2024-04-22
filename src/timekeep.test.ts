@@ -1,25 +1,26 @@
-import { TimeEntry, Timekeep } from "./schema";
-import { TimekeepSettings, defaultSettings } from "./settings";
+import moment from "moment";
+
+import { Timekeep, TimeEntry } from "./schema";
+import { defaultSettings, TimekeepSettings } from "./settings";
 import {
+	load,
 	LoadError,
+	withEntry,
 	LoadSuccess,
 	createEntry,
-	getEntriesOrdered,
-	getEntryDuration,
-	getRunningEntry,
-	getTotalDuration,
-	getUniqueEntryHash,
-	isEntryRunning,
-	isKeepRunning,
-	load,
 	removeEntry,
-	replaceTimekeepCodeblock,
-	stopRunningEntries,
 	updateEntry,
-	withEntry,
 	withSubEntry,
+	isKeepRunning,
+	isEntryRunning,
+	getRunningEntry,
+	getEntryDuration,
+	getTotalDuration,
+	getEntriesOrdered,
+	getUniqueEntryHash,
+	stopRunningEntries,
+	replaceTimekeepCodeblock,
 } from "./timekeep";
-import moment from "moment";
 
 /**
  * Generates a code block surrounding the provided JSON

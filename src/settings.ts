@@ -12,13 +12,13 @@ export const defaultSettings: TimekeepSettings = {
 };
 
 export interface TimekeepSettings {
-	pdfTitle: string;
-	pdfFootnote: string;
-	timestampFormat: string;
-	editableTimestampFormat: string;
-	csvTitle: boolean;
 	csvDelimiter: string;
+	csvTitle: boolean;
+	editableTimestampFormat: string;
+	limitTableSize: boolean;
+	pdfFootnote: string;
+	pdfTitle: string;
 	reverseSegmentOrder: boolean;
 	timestampDurations: boolean;
-	limitTableSize: boolean;
+	timestampFormat: string;
 }

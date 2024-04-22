@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from "react";
-
-import { getEntryDuration, isEntryRunning } from "@/timekeep";
-import { formatDuration } from "@/utils";
 import moment from "moment";
 import { TimeEntry } from "@/schema";
+import { formatDuration } from "@/utils";
+import React, { useState, useEffect } from "react";
+import { isEntryRunning, getEntryDuration } from "@/timekeep";
 
 /**
  * Obtains the formatted duration string for an entry

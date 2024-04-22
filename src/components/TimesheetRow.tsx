@@ -1,13 +1,14 @@
-import React, { useState } from "react";
-import { updateEntry, withSubEntry, isKeepRunning } from "@/timekeep";
-import { useSettings } from "@/hooks/use-settings-context";
-import { EditIcon, PlayIcon } from "lucide-react";
-import { formatTimestamp } from "src/utils";
-import { useTimekeep } from "@/hooks/use-timekeep-context";
-import { TimeEntry } from "@/schema";
 import moment from "moment";
+import { TimeEntry } from "@/schema";
+import React, { useState } from "react";
+import { EditIcon, PlayIcon } from "lucide-react";
+import { useSettings } from "@/hooks/use-settings-context";
+import { useTimekeep } from "@/hooks/use-timekeep-context";
 import TimesheetRowEditing from "@/components/TimesheetRowEditing";
 import TimesheetRowDuration from "@/components/TimesheetRowDuration";
+import { updateEntry, withSubEntry, isKeepRunning } from "@/timekeep";
+
+import { formatTimestamp } from "src/utils";
 
 type Props = {
 	entry: TimeEntry;

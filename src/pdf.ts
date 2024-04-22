@@ -8,7 +8,7 @@ export {
 	Page,
 	Text,
 	View,
+	Font,
 	Document,
 	StyleSheet,
-	Font,
 } from "../node_modules/@react-pdf/renderer/lib/react-pdf.browser.cjs";
