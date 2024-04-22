@@ -204,13 +204,13 @@ export default function TimesheetPdf({
 
 				<View style={styles.details}>
 					<Text style={styles.detailsField}>
-						<Text style={styles.detailsFieldName}>Date:</Text>
+						<Text style={styles.detailsFieldName}>Date: </Text>
 						{formatDate(currentTime)}
 					</Text>
 
 					<Text style={styles.detailsField}>
 						<Text style={styles.detailsFieldName}>
-							Total Duration:
+							Total Duration:{" "}
 						</Text>
 						{formatDuration(duration)}
 					</Text>
