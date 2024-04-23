@@ -9,7 +9,6 @@ import {
 	TFile,
 	Vault,
 	Plugin,
-	EventRef,
 	TAbstractFile,
 	MarkdownRenderChild,
 	MarkdownPostProcessorContext,
@@ -79,8 +78,6 @@ class TimekeepComponent extends MarkdownRenderChild {
 	loadResult: LoadResult;
 	// React root
 	root: Root;
-	// Event ref for the file rename event
-	onRenameEvent: EventRef | null;
 	// Path to the file the timekeep is within
 	fileSourcePath: string;
 
@@ -103,19 +100,13 @@ class TimekeepComponent extends MarkdownRenderChild {
 	}
 
 	onload(): void {
-		// Clear existing rename handlers
-		if (this.onRenameEvent !== null) {
-			this.vault.offref(this.onRenameEvent);
-		}
-
 		// Hook file renaming to update the file we are saving to if its renamed
-		this.onRenameEvent = this.vault.on(
-			"rename",
-			(file: TAbstractFile, oldName: string) => {
+		this.registerEvent(
+			this.vault.on("rename", (file: TAbstractFile, oldName: string) => {
 				if (file instanceof TFile && oldName == this.fileSourcePath) {
 					this.fileSourcePath = file.path;
 				}
-			}
+			})
 		);
 
 		// Render the react content
@@ -146,11 +137,6 @@ class TimekeepComponent extends MarkdownRenderChild {
 
 	onunload(): void {
 		this.root.unmount();
-
-		// Clear rename event handlers
-		if (this.onRenameEvent !== null) {
-			this.vault.offref(this.onRenameEvent);
-		}
 	}
 
 	/**
