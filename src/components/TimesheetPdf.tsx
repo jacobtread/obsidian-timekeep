@@ -1,11 +1,11 @@
 import React from "react";
 import { Fragment } from "react";
 import type { Moment } from "moment";
-import { formatDuration } from "@/utils";
 import { Timekeep, TimeEntry } from "@/schema";
 import RobotoBold from "@/fonts/Roboto-Bold.ttf";
 import RobotoRegular from "@/fonts/Roboto-Regular.ttf";
 import { getTotalDuration, getEntryDuration } from "@/timekeep";
+import { formatDuration, formatDurationHoursTrunc } from "@/utils";
 import { Page, Text, View, Font, Document, StyleSheet } from "@/pdf";
 
 type Props = {
@@ -213,6 +213,13 @@ export default function TimesheetPdf({
 							Total Duration:{" "}
 						</Text>
 						{formatDuration(duration)}
+					</Text>
+
+					<Text style={styles.detailsField}>
+						<Text style={styles.detailsFieldName}>
+							Total Duration (hours):{" "}
+						</Text>
+						{formatDurationHoursTrunc(duration)}
 					</Text>
 				</View>
 				<View style={styles.tableContainer}>
