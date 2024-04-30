@@ -3,12 +3,13 @@ import type { Moment } from "moment";
 import { TimekeepSettings } from "@/settings";
 import { formatDuration, formatTimestamp } from "@/utils";
 import { getEntryDuration, getEntriesOrdered } from "@/timekeep";
-export const TOTAL_COLUMNS = 4;
-
-export type RawTableRow = [string, string, string, string];
 
 export { createCSV } from "./csv";
 export { createMarkdownTable } from "./markdown-table";
+
+export type RawTableRow = [string, string, string, string];
+
+export const TOTAL_COLUMNS = 4;
 
 /**
  * Flattens the nested timekeeping structure into a flat
@@ -24,13 +25,9 @@ export function createRawTable(
 	settings: TimekeepSettings,
 	currentTime: Moment
 ): RawTableRow[] {
-	const rows: RawTableRow[] = [];
-
-	for (const entry of entries) {
-		rows.push(...createRawTableEntries(entry, settings, currentTime));
-	}
-
-	return rows;
+	return entries.flatMap((entry) =>
+		createRawTableEntries(entry, settings, currentTime)
+	);
 }
 
 /**
