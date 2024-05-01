@@ -12,6 +12,7 @@ import {
 type TimingState = {
 	running: boolean;
 	current: string;
+	currentShort: string;
 	total: string;
 	totalShort: string;
 };
@@ -33,6 +34,7 @@ function getTimingState(timekeep: Timekeep): TimingState {
 	return {
 		running: runningEntry !== null,
 		current: formatDuration(current),
+		currentShort: formatDurationHoursTrunc(current),
 		total: formatDuration(total),
 		totalShort: formatDurationHoursTrunc(total),
 	};
@@ -65,6 +67,9 @@ export default function TimesheetCounters() {
 				<div className="timekeep-timer">
 					<span className="timekeep-timer-value">
 						{timing.current}
+					</span>
+					<span className="timekeep-timer-value-small">
+						{timing.currentShort}
 					</span>
 					<span>Current</span>
 				</div>
