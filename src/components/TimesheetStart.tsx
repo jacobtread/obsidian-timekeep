@@ -1,8 +1,15 @@
 import moment from "moment";
-import React, { useState } from "react";
+import { formatTimestamp } from "@/utils";
+import React, { useMemo, useState } from "react";
 import { PlayIcon, StopCircleIcon } from "lucide-react";
 import { useTimekeep } from "@/hooks/use-timekeep-context";
-import { withEntry, isKeepRunning, stopRunningEntries } from "@/timekeep";
+import { useSettings } from "@/hooks/use-settings-context";
+import {
+	withEntry,
+	isKeepRunning,
+	getRunningEntry,
+	stopRunningEntries,
+} from "@/timekeep";
 
 /**
  * Component for the timekeep start button and "name" field isolating
@@ -10,8 +17,13 @@ import { withEntry, isKeepRunning, stopRunningEntries } from "@/timekeep";
  * name field
  */
 export default function TimekeepStart() {
-	const { setTimekeep, isTimekeepRunning } = useTimekeep();
+	const { timekeep, setTimekeep, isTimekeepRunning } = useTimekeep();
 	const [name, setName] = useState("");
+	const settings = useSettings();
+	const currentEntry = useMemo(
+		() => getRunningEntry(timekeep.entries),
+		[timekeep]
+	);
 
 	/**
 	 * Handles the click of the start/stop button
@@ -49,17 +61,35 @@ export default function TimekeepStart() {
 					<PlayIcon width="1em" height="1em" />
 				)}
 			</button>
-			<div className="timekeep-name-wrapper">
-				<label htmlFor="timekeepBlockName">Block Name:</label>
-				<input
-					id="timekeepBlockName"
-					className="timekeep-name"
-					placeholder="Example Block"
-					type="text"
-					value={name}
-					onChange={(event) => setName(event.target.value)}
-				/>
-			</div>
+
+			{currentEntry !== null && currentEntry.startTime !== null ? (
+				<div className="active-entry">
+					<span>
+						<b>Currently Running:</b>
+					</span>
+					<div className="active-entry__details">
+						<span className="active-entry__name">
+							<b>Name: </b> {currentEntry.name}
+						</span>
+						<span className="active-entry__time">
+							<b>Started at</b>:{" "}
+							{formatTimestamp(currentEntry.startTime, settings)}
+						</span>
+					</div>
+				</div>
+			) : (
+				<div className="timekeep-name-wrapper">
+					<label htmlFor="timekeepBlockName">Block Name:</label>
+					<input
+						id="timekeepBlockName"
+						className="timekeep-name"
+						placeholder="Example Block"
+						type="text"
+						value={name}
+						onChange={(event) => setName(event.target.value)}
+					/>
+				</div>
+			)}
 		</div>
 	);
 }
