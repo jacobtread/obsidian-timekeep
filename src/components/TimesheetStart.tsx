@@ -38,7 +38,7 @@ export default function TimekeepStart() {
 	};
 
 	return (
-		<>
+		<div className="timekeep-start-area">
 			<button
 				onClick={onClick}
 				title={isTimekeepRunning ? "Stop" : "Start"}
@@ -49,13 +49,17 @@ export default function TimekeepStart() {
 					<PlayIcon width="1em" height="1em" />
 				)}
 			</button>
-			<input
-				className="timekeep-name"
-				placeholder="Block Name"
-				type="text"
-				value={name}
-				onChange={(event) => setName(event.target.value)}
-			/>
-		</>
+			<div className="timekeep-name-wrapper">
+				<label htmlFor="timekeepBlockName">Block Name:</label>
+				<input
+					id="timekeepBlockName"
+					className="timekeep-name"
+					placeholder="Example Block"
+					type="text"
+					value={name}
+					onChange={(event) => setName(event.target.value)}
+				/>
+			</div>
+		</div>
 	);
 }

@@ -10,8 +10,7 @@
 	width: 100%;
 	display: flex;
 	flex-flow: column;
-	gap: 1rem;
-	padding-bottom: 1rem;
+	border: 1px solid var(--color-base-30);
 }
 
 .timekeep-table {
@@ -115,20 +114,23 @@
 	flex-flow: column;
 	gap: 0rem;
 	justify-content: center;
-	align-items: center;
+	/* align-items: center; */
 	padding: 1rem;
 	flex: auto;
+	border-right: 1px solid var(--color-base-30);
 	border-bottom: 1px solid var(--color-base-30);
 }
 
 .timekeep-timer-value {
 	font-size: 2.5rem;
 	font-weight: bolder;
+	line-height: 1;
+	margin-bottom: 0.5rem;
 }
 
 .timekeep-timer-value-small {
 	font-size: 0.9rem;
-	font-weight: bolder;
+	font-weight: bold;
 }
 
 .timekeep-start {
@@ -141,13 +143,41 @@
 
 .timekeep-name {
 	padding: 0.5rem;
-	align-self: center;
+	flex: auto;
 }
 
 .timekeep-actions {
 	display: flex;
 	flex-flow: row;
 	gap: 1rem;
-	justify-content: center;
 	align-items: center;
+	padding: 1rem;
+}
+
+.active-entry {
+	display: flex;
+	flex-flow: column;
+	gap: 0.5rem;
+	border-bottom: 1px solid var(--color-base-30);
+	padding: 1rem;
+}
+
+.active-entry__details {
+	display: flex;
+	gap: 1rem;
+	font-size: 0.8rem;
+}
+
+.timekeep-start-area {
+	display: flex;
+	gap: 1rem;
+	padding: 1rem;
+	border-bottom: 1px solid var(--color-base-30);
+}
+
+.timekeep-name-wrapper {
+	display: flex;
+	flex-flow: column;
+	flex: auto;
+	gap: 0.5rem;
 }

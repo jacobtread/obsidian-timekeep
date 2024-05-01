@@ -60,7 +60,7 @@ export default function TimesheetRow({ entry, indent }: Props) {
 			<td className="timekeep-col timekeep-col--name">
 				{indentItems}
 
-				<span className="timekeep-name" title={entry.name}>
+				<span className="timekeep-entry-name" title={entry.name}>
 					{entry.name}
 				</span>
 			</td>

@@ -7,6 +7,7 @@ import { SettingsContext } from "@/hooks/use-settings-context";
 import { TimekeepContext } from "@/hooks/use-timekeep-context";
 import TimesheetCounters from "@/components/TimesheetCounters";
 import React, { useState, useCallback, SetStateAction } from "react";
+import TimesheetCurrentEntry from "@/components/TimesheetCurrentEntry";
 import TimesheetExportActions from "@/components/TimesheetExportActions";
 
 export type AppProps = {
@@ -85,6 +86,7 @@ export default function App({ initialState, save, settings }: AppProps) {
 				}}>
 				<div className="timekeep-container">
 					<TimesheetCounters />
+					<TimesheetCurrentEntry />
 					<TimesheetStart />
 					<TimesheetTable />
 					<TimesheetExportActions />
