@@ -11,9 +11,7 @@
 	display: flex;
 	flex-flow: column;
 	gap: 1rem;
-	padding-top: 1rem;
 	padding-bottom: 1rem;
-	margin-top: 3rem;
 }
 
 .timekeep-table {
@@ -105,10 +103,11 @@
 .timekeep-timers {
 	display: flex;
 	flex-flow: row;
-	gap: 1rem;
 	align-items: center;
 	justify-content: center;
 	width: 100%;
+	flex-wrap: wrap;
+	white-space: nowrap;
 }
 
 .timekeep-timer {
@@ -118,10 +117,12 @@
 	justify-content: center;
 	align-items: center;
 	padding: 1rem;
+	flex: auto;
+	border-bottom: 1px solid var(--color-base-30);
 }
 
 .timekeep-timer-value {
-	font-size: 3rem;
+	font-size: 2.5rem;
 	font-weight: bolder;
 }
 
