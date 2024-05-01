@@ -1,6 +1,6 @@
 {
 	"name": "obsidian-timekeep",
-	"version": "1.2.6",
+	"version": "1.2.7",
 	"description": "Obsidian plugin for time tracking",
 	"main": "main.js",
 	"scripts": {
