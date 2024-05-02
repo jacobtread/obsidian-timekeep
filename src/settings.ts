@@ -9,6 +9,7 @@ export const defaultSettings: TimekeepSettings = {
 	reverseSegmentOrder: false,
 	timestampDurations: false,
 	limitTableSize: true,
+	showDecimalHours: true,
 };
 
 export interface TimekeepSettings {
@@ -21,4 +22,5 @@ export interface TimekeepSettings {
 	reverseSegmentOrder: boolean;
 	timestampDurations: boolean;
 	timestampFormat: string;
+	showDecimalHours: boolean;
 }

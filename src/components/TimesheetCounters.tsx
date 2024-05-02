@@ -2,6 +2,7 @@ import moment from "moment";
 import { Timekeep } from "@/schema";
 import React, { useState, useEffect } from "react";
 import { useTimekeep } from "@/hooks/use-timekeep-context";
+import { useSettings } from "@/hooks/use-settings-context";
 import { formatDuration, formatDurationHoursTrunc } from "@/utils";
 import {
 	getRunningEntry,
@@ -43,6 +44,7 @@ function getTimingState(timekeep: Timekeep): TimingState {
 export default function TimesheetCounters() {
 	const { timekeep, isTimekeepRunning } = useTimekeep();
 	const [timing, setTiming] = useState<TimingState>(getTimingState(timekeep));
+	const settings = useSettings();
 
 	// Update the current timings every second
 	useEffect(() => {
@@ -68,18 +70,22 @@ export default function TimesheetCounters() {
 					<span className="timekeep-timer-value">
 						{timing.current}
 					</span>
-					<span className="timekeep-timer-value-small">
-						{timing.currentShort}
-					</span>
+					{settings.showDecimalHours && (
+						<span className="timekeep-timer-value-small">
+							{timing.currentShort}
+						</span>
+					)}
 					<span>Current</span>
 				</div>
 			)}
 
 			<div className="timekeep-timer">
 				<span className="timekeep-timer-value">{timing.total}</span>
-				<span className="timekeep-timer-value-small">
-					{timing.totalShort}
-				</span>
+				{settings.showDecimalHours && (
+					<span className="timekeep-timer-value-small">
+						{timing.totalShort}
+					</span>
+				)}
 				<span>Total</span>
 			</div>
 		</div>

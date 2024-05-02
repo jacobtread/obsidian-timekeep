@@ -106,6 +106,18 @@ export class TimekeepSettingsTab extends PluginSettingTab {
 					await this.plugin.saveSettings();
 				});
 			});
+		new Setting(this.containerEl)
+			.setName("Show decimal hours")
+			.setDesc(
+				"Whether to show the shortened hour only durations under the current and total timers (12h 8m 39s would be shown as 12.14h)"
+			)
+			.addToggle((t) => {
+				t.setValue(this.plugin.settings.showDecimalHours);
+				t.onChange(async (v) => {
+					this.plugin.settings.showDecimalHours = v;
+					await this.plugin.saveSettings();
+				});
+			});
 
 		new Setting(this.containerEl)
 			.setName("Display segments in reverse order")
