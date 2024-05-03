@@ -32,6 +32,13 @@ This plugin is heavily inspired by [ObsidianSimpleTimeTracker](https://github.co
 
 The time block start and stop times are stored as timestamps, this makes it possible for you to start your time tracker then close Obsidian and have the tracking still continuing when you open it again.
 
+Below is an example of how this is stored:
+
+```json
+{"entries":[{"name":"Example Time Block","startTime":"2024-03-17T06:32:36.118Z","endTime":"2024-03-17T06:32:37.012Z","subEntries":null}]}
+```
+
+
 ## Formats
 
 Below are the various formats that timekeeping data can be exported to
@@ -62,6 +69,8 @@ Example Time Block,24-03-17 19:32:36,24-03-17 19:32:37,0s
 ```
 
 ### JSON
+
+The JSON export format simply copies the JSON stored inside the timekeep:
 
 ```json
 {"entries":[{"name":"Example Time Block","startTime":"2024-03-17T06:32:36.118Z","endTime":"2024-03-17T06:32:37.012Z","subEntries":null}]}
