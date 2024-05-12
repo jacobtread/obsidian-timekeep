@@ -1,6 +1,6 @@
 import TimekeepPlugin from "@/main";
-import { defaultSettings } from "@/settings";
 import { App, Setting, PluginSettingTab } from "obsidian";
+import { defaultSettings, PdfExportBehavior } from "@/settings";
 
 export class TimekeepSettingsTab extends PluginSettingTab {
 	plugin: TimekeepPlugin;
@@ -62,6 +62,26 @@ export class TimekeepSettingsTab extends PluginSettingTab {
 					this.plugin.settings.pdfFootnote = v.length
 						? v
 						: defaultSettings.pdfFootnote;
+					await this.plugin.saveSettings();
+				});
+			});
+
+		new Setting(this.containerEl)
+			.setName("PDF export behavior")
+			.setDesc("What to do after a pdf file has been exported")
+
+			.addDropdown((t) => {
+				t.addOptions({
+					[PdfExportBehavior.NONE]: "Do nothing",
+					[PdfExportBehavior.OPEN_FILE]:
+						"Open exported file with default app",
+					[PdfExportBehavior.OPEN_PATH]:
+						"Open directory containing the exported file",
+				});
+				t.setValue(String(this.plugin.settings.pdfExportBehavior));
+				t.onChange(async (v) => {
+					this.plugin.settings.pdfExportBehavior =
+						v as PdfExportBehavior;
 					await this.plugin.saveSettings();
 				});
 			});
