@@ -1,6 +1,12 @@
 import React from "react";
 import { pdf } from "@/pdf";
 import moment from "moment";
+import * as path from "path";
+import { existsSync } from "fs";
+import { Notice } from "obsidian";
+import * as electron from "electron";
+import { mkdir, writeFile } from "fs/promises";
+import { PdfExportBehavior } from "@/settings";
 import TimesheetPdf from "@/components/TimesheetPdf";
 import { createCSV, createMarkdownTable } from "@/export";
 import { useSettings } from "@/hooks/use-settings-context";
@@ -31,6 +37,23 @@ export default function TimekeepExportActions() {
 	const onSavePDF = async () => {
 		const currentTime = moment();
 
+		// Prompt user for save location
+		const result = await electron.remote.dialog.showSaveDialog({
+			title: "Save timesheet",
+			defaultPath: "Timesheet.pdf",
+			filters: [{ extensions: ["pdf"], name: "PDF" }],
+			properties: ["showOverwriteConfirmation", "createDirectory"],
+		});
+
+		if (result.canceled) {
+			return;
+		}
+
+		const outputPath = result.filePath;
+		if (outputPath === undefined) {
+			return;
+		}
+
 		// Create the PDF
 		const createdPdf = pdf(
 			<TimesheetPdf
@@ -42,18 +65,33 @@ export default function TimekeepExportActions() {
 		);
 
 		// Create a blob from the PDF
-		const blob = await createdPdf.toBlob();
+		const buffer = await createdPdf.toBuffer();
 
-		// Create an object URL from the PDF
-		const url = URL.createObjectURL(blob);
+		const fullOutputPath = path.normalize(outputPath);
+		const fullOutputDir = path.dirname(fullOutputPath);
 
-		// Create and click a download link for the file
-		const a = document.createElement("a");
-		a.href = url;
-		a.download = "Timesheet.pdf";
-		document.body.appendChild(a);
-		a.click();
-		document.body.removeChild(a);
+		// Create output directory if missing
+		if (!existsSync(fullOutputDir)) {
+			await mkdir(fullOutputDir);
+		}
+
+		try {
+			await writeFile(outputPath, buffer);
+
+			new Notice("Export successful", 1500);
+
+			// Open the directory using the system explorer
+			if (settings.pdfExportBehavior == PdfExportBehavior.OPEN_PATH) {
+				electron.remote.shell.showItemInFolder(fullOutputPath);
+			}
+
+			// Open the exported file
+			if (settings.pdfExportBehavior == PdfExportBehavior.OPEN_FILE) {
+				await electron.remote.shell.openPath(fullOutputPath);
+			}
+		} catch (error) {
+			console.error("Failed to write pdf file", error);
+		}
 	};
 
 	return (
