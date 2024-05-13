@@ -1,9 +1,9 @@
 import moment from "moment";
 import { formatTimestamp } from "@/utils";
-import React, { useMemo, useState } from "react";
 import { PlayIcon, StopCircleIcon } from "lucide-react";
 import { useTimekeep } from "@/hooks/use-timekeep-context";
 import { useSettings } from "@/hooks/use-settings-context";
+import React, { useMemo, useState, FormEvent } from "react";
 import {
 	withEntry,
 	isKeepRunning,
@@ -28,7 +28,11 @@ export default function TimekeepStart() {
 	/**
 	 * Handles the click of the start/stop button
 	 */
-	const onClick = () => {
+	const onSubmit = (event: FormEvent) => {
+		// Prevent form submission from reloading Obsidian
+		event.preventDefault();
+		event.stopPropagation();
+
 		setTimekeep((timekeep) => {
 			const currentTime = moment();
 
@@ -50,20 +54,9 @@ export default function TimekeepStart() {
 	};
 
 	return (
-		<div className="timekeep-start-area">
-			<button
-				onClick={onClick}
-				title={isTimekeepRunning ? "Stop" : "Start"}
-				className="timekeep-start">
-				{isTimekeepRunning ? (
-					<StopCircleIcon width="1em" height="1em" />
-				) : (
-					<PlayIcon width="1em" height="1em" />
-				)}
-			</button>
-
+		<form className="timekeep-start-area" onSubmitCapture={onSubmit}>
 			{currentEntry !== null && currentEntry.startTime !== null ? (
-				<div className="active-entry">
+				<div className="active-entry timekeep-name-wrapper">
 					<span>
 						<b>Currently Running:</b>
 					</span>
@@ -90,6 +83,16 @@ export default function TimekeepStart() {
 					/>
 				</div>
 			)}
-		</div>
+			<button
+				type="submit"
+				title={isTimekeepRunning ? "Stop" : "Start"}
+				className="timekeep-start">
+				{isTimekeepRunning ? (
+					<StopCircleIcon width="1em" height="1em" />
+				) : (
+					<PlayIcon width="1em" height="1em" />
+				)}
+			</button>
+		</form>
 	);
 }

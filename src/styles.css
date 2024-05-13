@@ -64,6 +64,8 @@
 
 .timekeep-col--name {
 	width: 30%;
+	overflow: hidden;
+	overflow-wrap: anywhere;
 }
 
 .timekeep-col--time {
@@ -180,4 +182,6 @@
 	flex-flow: column;
 	flex: auto;
 	gap: 0.5rem;
+	overflow: hidden;
+	overflow-wrap: anywhere;
 }
