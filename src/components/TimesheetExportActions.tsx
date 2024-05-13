@@ -18,20 +18,31 @@ export default function TimekeepExportActions() {
 
 	const onCopyMarkdown = () => {
 		const currentTime = moment();
-		navigator.clipboard.writeText(
-			createMarkdownTable(timekeep, settings, currentTime)
-		);
+		const output = createMarkdownTable(timekeep, settings, currentTime);
+
+		navigator.clipboard
+			.writeText(output)
+			.then(() => new Notice("Copied markdown to clipboard", 1500))
+			.catch((error) => console.error("Failed to copy export", error));
 	};
 
 	const onCopyCSV = () => {
 		const currentTime = moment();
-		navigator.clipboard.writeText(
-			createCSV(timekeep, settings, currentTime)
-		);
+		const output = createCSV(timekeep, settings, currentTime);
+
+		navigator.clipboard
+			.writeText(output)
+			.then(() => new Notice("Copied CSV to clipboard", 1500))
+			.catch((error) => console.error("Failed to copy export", error));
 	};
 
 	const onCopyJSON = () => {
-		navigator.clipboard.writeText(JSON.stringify(timekeep));
+		const output = JSON.stringify(timekeep);
+
+		navigator.clipboard
+			.writeText(output)
+			.then(() => new Notice("Copied JSON to clipboard", 1500))
+			.catch((error) => console.error("Failed to copy export", error));
 	};
 
 	const onSavePDF = async () => {
