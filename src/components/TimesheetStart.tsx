@@ -1,9 +1,9 @@
 import moment from "moment";
 import { formatTimestamp } from "@/utils";
 import { PlayIcon, StopCircleIcon } from "lucide-react";
-import { useTimekeep } from "@/hooks/use-timekeep-context";
-import { useSettings } from "@/hooks/use-settings-context";
 import React, { useMemo, useState, FormEvent } from "react";
+import { useTimekeep } from "@/contexts/use-timekeep-context";
+import { useSettings } from "@/contexts/use-settings-context";
 import {
 	withEntry,
 	isKeepRunning,

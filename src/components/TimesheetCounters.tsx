@@ -1,8 +1,8 @@
 import moment from "moment";
 import { Timekeep } from "@/schema";
 import React, { useState, useEffect } from "react";
-import { useTimekeep } from "@/hooks/use-timekeep-context";
-import { useSettings } from "@/hooks/use-settings-context";
+import { useTimekeep } from "@/contexts/use-timekeep-context";
+import { useSettings } from "@/contexts/use-settings-context";
 import { formatDuration, formatDurationHoursTrunc } from "@/utils";
 import {
 	getRunningEntry,

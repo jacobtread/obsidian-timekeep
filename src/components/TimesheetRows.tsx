@@ -1,7 +1,7 @@
 import { TimeEntry } from "@/schema";
 import React, { useMemo, Fragment } from "react";
 import TimesheetRow from "@/components/TimesheetRow";
-import { useSettings } from "@/hooks/use-settings-context";
+import { useSettings } from "@/contexts/use-settings-context";
 import { getEntriesOrdered, getUniqueEntryHash } from "@/timekeep";
 
 type Props = {

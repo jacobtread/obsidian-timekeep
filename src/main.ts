@@ -1,13 +1,13 @@
 import App from "@/App";
 import moment from "moment";
 import React, { StrictMode } from "react";
+import { App as ObsidianApp } from "obsidian";
 import { Root, createRoot } from "react-dom/client";
 import { TimekeepSettingsTab } from "@/settings-tab";
 import { defaultSettings, TimekeepSettings } from "@/settings";
 import { load, LoadResult, replaceTimekeepCodeblock } from "@/timekeep";
 import {
 	TFile,
-	Vault,
 	Plugin,
 	TAbstractFile,
 	MarkdownRenderChild,
@@ -36,7 +36,7 @@ export default class TimekeepPlugin extends Plugin {
 				context.addChild(
 					new TimekeepComponent(
 						el,
-						this.app.vault,
+						this.app,
 						this.settings,
 						context,
 						loadResult
@@ -68,8 +68,8 @@ export default class TimekeepPlugin extends Plugin {
 }
 
 class TimekeepComponent extends MarkdownRenderChild {
-	// Vault for saving and loading files
-	vault: Vault;
+	// Obsidian app instance
+	app: ObsidianApp;
 	// Timekeep settings
 	settings: TimekeepSettings;
 	// Markdown context for the current markdown block
@@ -83,13 +83,12 @@ class TimekeepComponent extends MarkdownRenderChild {
 
 	constructor(
 		containerEl: HTMLElement,
-		vault: Vault,
+		app: ObsidianApp,
 		settings: TimekeepSettings,
 		context: MarkdownPostProcessorContext,
 		loadResult: LoadResult
 	) {
 		super(containerEl);
-		this.vault = vault;
 		this.settings = settings;
 		this.context = context;
 		this.loadResult = loadResult;
@@ -102,11 +101,17 @@ class TimekeepComponent extends MarkdownRenderChild {
 	onload(): void {
 		// Hook file renaming to update the file we are saving to if its renamed
 		this.registerEvent(
-			this.vault.on("rename", (file: TAbstractFile, oldName: string) => {
-				if (file instanceof TFile && oldName == this.fileSourcePath) {
-					this.fileSourcePath = file.path;
+			this.app.vault.on(
+				"rename",
+				(file: TAbstractFile, oldName: string) => {
+					if (
+						file instanceof TFile &&
+						oldName == this.fileSourcePath
+					) {
+						this.fileSourcePath = file.path;
+					}
 				}
-			})
+			)
 		);
 
 		// Render the react content
@@ -118,6 +123,7 @@ class TimekeepComponent extends MarkdownRenderChild {
 					StrictMode,
 					{},
 					React.createElement(App, {
+						app: this.app,
 						initialState: timekeep,
 						settings: this.settings,
 						save: this.trySave.bind(this),
@@ -176,13 +182,13 @@ class TimekeepComponent extends MarkdownRenderChild {
 		if (sectionInfo === null)
 			throw new Error("Section to write did not exist");
 
-		const file = this.vault.getFileByPath(this.fileSourcePath);
+		const file = this.app.vault.getFileByPath(this.fileSourcePath);
 
 		// Ensure the file still exists
 		if (file === null) throw new Error("File no longer exists");
 
 		// Replace the stored timekeep block with the new one
-		await this.vault.process(file, (data) => {
+		await this.app.vault.process(file, (data) => {
 			return replaceTimekeepCodeblock(
 				timekeep,
 				data,
@@ -204,6 +210,6 @@ class TimekeepComponent extends MarkdownRenderChild {
 		const backupFileName = `timekeep-write-backup-${moment().format("YYYY-MM-DD HH-mm-ss")}.json`;
 
 		// Write to the backup file
-		this.vault.create(backupFileName, JSON.stringify(timekeep));
+		this.app.vault.create(backupFileName, JSON.stringify(timekeep));
 	}
 }

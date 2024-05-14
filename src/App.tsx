@@ -1,15 +1,19 @@
 import { Timekeep } from "@/schema";
 import { isKeepRunning } from "@/timekeep";
 import { TimekeepSettings } from "@/settings";
+import { App as ObsidianApp } from "obsidian";
 import TimesheetStart from "@/components/TimesheetStart";
 import TimesheetTable from "@/components/TimesheetTable";
-import { SettingsContext } from "@/hooks/use-settings-context";
-import { TimekeepContext } from "@/hooks/use-timekeep-context";
 import TimesheetCounters from "@/components/TimesheetCounters";
+import { SettingsContext } from "@/contexts/use-settings-context";
+import { TimekeepContext } from "@/contexts/use-timekeep-context";
 import React, { useState, useCallback, SetStateAction } from "react";
 import TimesheetExportActions from "@/components/TimesheetExportActions";
 
+import { AppContext } from "./contexts/use-app-context";
+
 export type AppProps = {
+	app: ObsidianApp;
 	// Initial state loaded from the document
 	initialState: Timekeep;
 	// The timekeep settings
@@ -26,7 +30,7 @@ export type AppProps = {
  * Wraps the state updates for `setTimekeep` with logic that
  * saves the changes to the vault
  */
-export default function App({ initialState, save, settings }: AppProps) {
+export default function App({ app, initialState, save, settings }: AppProps) {
 	const [timekeep, setTimekeep] = useState(initialState);
 	const [saveError, setSaveError] = useState(false);
 
@@ -76,20 +80,22 @@ export default function App({ initialState, save, settings }: AppProps) {
 	}
 
 	return (
-		<SettingsContext.Provider value={settings}>
-			<TimekeepContext.Provider
-				value={{
-					timekeep,
-					setTimekeep: setTimekeepWrapper,
-					isTimekeepRunning: isKeepRunning(timekeep),
-				}}>
-				<div className="timekeep-container">
-					<TimesheetCounters />
-					<TimesheetStart />
-					<TimesheetTable />
-					<TimesheetExportActions />
-				</div>
-			</TimekeepContext.Provider>
-		</SettingsContext.Provider>
+		<AppContext.Provider value={app}>
+			<SettingsContext.Provider value={settings}>
+				<TimekeepContext.Provider
+					value={{
+						timekeep,
+						setTimekeep: setTimekeepWrapper,
+						isTimekeepRunning: isKeepRunning(timekeep),
+					}}>
+					<div className="timekeep-container">
+						<TimesheetCounters />
+						<TimesheetStart />
+						<TimesheetTable />
+						<TimesheetExportActions />
+					</div>
+				</TimekeepContext.Provider>
+			</SettingsContext.Provider>
+		</AppContext.Provider>
 	);
 }
