@@ -130,13 +130,10 @@ const styles = StyleSheet.create({
 	},
 });
 
-function formatDateTime(value: Moment): string {
-	return value.format("DD/MM/YYYY HH:mm");
-}
+const formatDateTime = (value: Moment): string =>
+	value.format("DD/MM/YYYY HH:mm");
 
-function formatDate(value: Moment): string {
-	return value.format("DD/MM/YYYY");
-}
+const formatDate = (value: Moment): string => value.format("DD/MM/YYYY");
 
 function TimesheetEntry({
 	entry,
