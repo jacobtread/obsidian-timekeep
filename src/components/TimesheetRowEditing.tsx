@@ -1,7 +1,7 @@
 import { TimeEntry } from "@/schema";
-import React, { useState, useEffect } from "react";
 import { removeEntry, updateEntry } from "@/timekeep";
 import { XIcon, CheckIcon, TrashIcon } from "lucide-react";
+import React, { useState, useEffect, FormEvent } from "react";
 import { useSettings } from "@/contexts/use-settings-context";
 import { useTimekeep } from "@/contexts/use-timekeep-context";
 import { formatEditableTimestamp, unformatEditableTimestamp } from "@/utils";
@@ -43,7 +43,10 @@ export default function TimesheetRowEditing({ entry, onFinishEditing }: Props) {
 		}));
 	};
 
-	const onClickEdit = () => {
+	const onSubmit = (event: FormEvent) => {
+		event.preventDefault();
+		event.stopPropagation();
+
 		const newEntry = { ...entry, name };
 
 		// Update the start and end times for non groups
@@ -80,7 +83,7 @@ export default function TimesheetRowEditing({ entry, onFinishEditing }: Props) {
 	return (
 		<tr>
 			<td colSpan={5}>
-				<div className="timesheet-editing">
+				<form className="timesheet-editing" onSubmitCapture={onSubmit}>
 					<label>
 						Name
 						<input
@@ -117,9 +120,7 @@ export default function TimesheetRowEditing({ entry, onFinishEditing }: Props) {
 						</label>
 					)}
 					<div className="timesheet-editing-actions">
-						<button
-							onClick={onClickEdit}
-							className="timekeep-action">
+						<button type="submit" className="timekeep-action">
 							<CheckIcon
 								width="1em"
 								height="1em"
@@ -128,6 +129,7 @@ export default function TimesheetRowEditing({ entry, onFinishEditing }: Props) {
 							Save
 						</button>
 						<button
+							type="button"
 							onClick={onFinishEditing}
 							className="timekeep-action">
 							<XIcon
@@ -138,6 +140,7 @@ export default function TimesheetRowEditing({ entry, onFinishEditing }: Props) {
 							Cancel
 						</button>
 						<button
+							type="button"
 							onClick={onClickDelete}
 							className="timekeep-action timekeep-action--end">
 							<TrashIcon
@@ -148,7 +151,7 @@ export default function TimesheetRowEditing({ entry, onFinishEditing }: Props) {
 							Delete
 						</button>
 					</div>
-				</div>
+				</form>
 			</td>
 		</tr>
 	);
