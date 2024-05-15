@@ -89,6 +89,7 @@ class TimekeepComponent extends MarkdownRenderChild {
 		loadResult: LoadResult
 	) {
 		super(containerEl);
+		this.app = app;
 		this.settings = settings;
 		this.context = context;
 		this.loadResult = loadResult;
