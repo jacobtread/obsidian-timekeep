@@ -150,16 +150,13 @@ function TimesheetEntry({
 				<Text style={[styles.tableCell, styles.tableCellBlock]}>
 					{entry.name}
 				</Text>
-
-				{entry.startTime !== null && entry.endTime !== null && (
+				{entry.startTime !== null && (
 					<>
 						<Text style={[styles.tableCell, styles.tableCellTime]}>
-							{entry.startTime
-								? formatDateTime(entry.startTime)
-								: ""}
+							{formatDateTime(entry.startTime)}
 						</Text>
 						<Text style={[styles.tableCell, styles.tableCellTime]}>
-							{entry.endTime ? formatDateTime(entry.endTime) : ""}
+							{formatDateTime(entry.endTime ?? currentTime)}
 						</Text>
 					</>
 				)}
@@ -207,14 +204,14 @@ export default function TimesheetPdf({
 
 					<Text style={styles.detailsField}>
 						<Text style={styles.detailsFieldName}>
-							Total Duration:{" "}
+							{"Total Duration: "}
 						</Text>
 						{formatDuration(duration)}
 					</Text>
 
 					<Text style={styles.detailsField}>
 						<Text style={styles.detailsFieldName}>
-							Total Duration (hours):{" "}
+							{"Total Duration (hours): "}
 						</Text>
 						{formatDurationHoursTrunc(duration)}
 					</Text>
