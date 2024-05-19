@@ -4,7 +4,7 @@ import { XIcon, CheckIcon, TrashIcon } from "lucide-react";
 import React, { useState, useEffect, FormEvent } from "react";
 import { useSettings } from "@/contexts/use-settings-context";
 import { useTimekeep } from "@/contexts/use-timekeep-context";
-import { formatEditableTimestamp, unformatEditableTimestamp } from "@/utils";
+import { parseEditableTimestamp, formatEditableTimestamp } from "@/utils";
 
 type Props = {
 	entry: TimeEntry;
@@ -52,7 +52,7 @@ export default function TimesheetRowEditing({ entry, onFinishEditing }: Props) {
 		// Update the start and end times for non groups
 		if (newEntry.subEntries === null) {
 			if (entry.startTime !== null) {
-				const startTimeValue = unformatEditableTimestamp(
+				const startTimeValue = parseEditableTimestamp(
 					startTime,
 					settings
 				);
@@ -62,10 +62,7 @@ export default function TimesheetRowEditing({ entry, onFinishEditing }: Props) {
 			}
 
 			if (entry.endTime !== null) {
-				const endTimeValue = unformatEditableTimestamp(
-					endTime,
-					settings
-				);
+				const endTimeValue = parseEditableTimestamp(endTime, settings);
 				if (endTimeValue.isValid()) {
 					newEntry.endTime = endTimeValue;
 				}

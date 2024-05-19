@@ -37,7 +37,7 @@ export function formatEditableTimestamp(
  * @param settings The timekeep settings
  * @returns The timestamp
  */
-export function unformatEditableTimestamp(
+export function parseEditableTimestamp(
 	formatted: string,
 	settings: TimekeepSettings
 ): Moment {

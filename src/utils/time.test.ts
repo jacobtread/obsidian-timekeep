@@ -4,9 +4,9 @@ import { defaultSettings, TimekeepSettings } from "@/settings";
 import {
 	formatDuration,
 	formatTimestamp,
+	parseEditableTimestamp,
 	formatEditableTimestamp,
 	formatDurationHoursTrunc,
-	unformatEditableTimestamp,
 } from "./time";
 
 it("should format time", () => {
@@ -40,7 +40,7 @@ it("should unformat editable time", () => {
 	const settings: TimekeepSettings = defaultSettings;
 	settings.editableTimestampFormat = "YYYY-MM-DD HH:mm:ss";
 
-	const output = unformatEditableTimestamp(input, settings).utc();
+	const output = parseEditableTimestamp(input, settings).utc();
 
 	expect(output.toDate()).toStrictEqual(expected.toDate());
 });

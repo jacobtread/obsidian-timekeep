@@ -65,7 +65,7 @@ export default function TimekeepStart() {
 							<b>Name: </b> {currentEntry.name}
 						</span>
 						<span className="active-entry__time">
-							<b>Started at</b>:{" "}
+							<b>{"Started at: "}</b>
 							{formatTimestamp(currentEntry.startTime, settings)}
 						</span>
 					</div>
