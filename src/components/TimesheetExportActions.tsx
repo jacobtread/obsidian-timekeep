@@ -1,13 +1,13 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
+
 import React from "react";
-import { pdf } from "@/pdf";
 import moment from "moment";
 import * as path from "path";
 import { existsSync } from "fs";
 import { Notice } from "obsidian";
-import * as electron from "electron";
+import { Platform } from "obsidian";
 import { mkdir, writeFile } from "fs/promises";
 import { PdfExportBehavior } from "@/settings";
-import TimesheetPdf from "@/components/TimesheetPdf";
 import { createCSV, createMarkdownTable } from "@/export";
 import { useSettings } from "@/contexts/use-settings-context";
 import { useTimekeep } from "@/contexts/use-timekeep-context";
@@ -46,6 +46,14 @@ export default function TimekeepExportActions() {
 	};
 
 	const onSavePDF = async () => {
+		// Pdf exports don't work in mobile mode
+		if (Platform.isMobileApp) return;
+
+		// Dynamic imports to prevent them from causing errors when loaded (Because they are unsupported on mobile)
+		const electron = require("electron");
+		const { pdf } = require("@/pdf");
+		const TimesheetPdf = require("@/components/TimesheetPdf");
+
 		const currentTime = moment();
 
 		// Prompt user for save location
@@ -110,7 +118,9 @@ export default function TimekeepExportActions() {
 			<button onClick={onCopyMarkdown}>Copy Markdown</button>
 			<button onClick={onCopyCSV}>Copy CSV</button>
 			<button onClick={onCopyJSON}>Copy JSON</button>
-			<button onClick={onSavePDF}>Save PDF</button>
+			{!Platform.isMobileApp && (
+				<button onClick={onSavePDF}>Save PDF</button>
+			)}
 		</div>
 	);
 }
