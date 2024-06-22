@@ -7,13 +7,13 @@ export default function TimesheetTable() {
 	const { timekeep } = useTimekeep();
 	const settings = useSettings();
 
+	// Max size and scroll for table with "Limit table size" option
+	const limitedSize: React.CSSProperties = settings.limitTableSize
+		? { maxHeight: 600, overflowY: "auto" }
+		: {};
+
 	return (
-		<div
-			style={
-				settings.limitTableSize
-					? { maxHeight: 600, overflowY: "auto" }
-					: {}
-			}>
+		<div style={limitedSize}>
 			<table className="timekeep-table">
 				<thead className="timekeep-table-head">
 					<tr>
