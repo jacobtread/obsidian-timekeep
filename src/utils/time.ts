@@ -78,3 +78,11 @@ export function formatDurationHoursTrunc(totalTime: number): string {
 
 	return hours.toFixed(2) + "h";
 }
+
+export function formatDate(value: Moment): string {
+	return value.format("DD/MM/YYYY");
+}
+
+export function formatDateTime(value: Moment): string {
+	return value.format("DD/MM/YYYY HH:mm");
+}

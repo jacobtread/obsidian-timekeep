@@ -50,7 +50,7 @@ export default function TimekeepExportActions() {
 		// Dynamic imports to prevent them from causing errors when loaded (Because they are unsupported on mobile)
 		const electron = require("electron");
 		const { pdf } = require("@/pdf");
-		const TimesheetPdfModule = require("@/components/TimesheetPdf");
+		const pdfModule = require("@/components/pdf");
 
 		const currentTime = moment();
 
@@ -70,7 +70,7 @@ export default function TimekeepExportActions() {
 		if (outputPath === undefined) {
 			return;
 		}
-		const TimesheetPdf = TimesheetPdfModule.default;
+		const TimesheetPdf = pdfModule.default;
 
 		// Create the PDF
 		const createdPdf = pdf(

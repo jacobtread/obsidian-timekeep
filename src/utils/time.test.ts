@@ -2,7 +2,9 @@ import moment from "moment";
 import { defaultSettings, TimekeepSettings } from "@/settings";
 
 import {
+	formatDate,
 	formatDuration,
+	formatDateTime,
 	formatTimestamp,
 	parseEditableTimestamp,
 	formatEditableTimestamp,
@@ -35,7 +37,7 @@ it("should format editable time", () => {
 
 it("should unformat editable time", () => {
 	const input = "2024-03-31 02:34:45";
-	const expected = moment.utc("2024-03-31T02:34:45.000Z");
+	const expected = moment("2024-03-31 02:34:45", "YYYY-MM-DD HH:mm:ss");
 
 	const settings: TimekeepSettings = defaultSettings;
 	settings.editableTimestampFormat = "YYYY-MM-DD HH:mm:ss";
@@ -74,6 +76,39 @@ describe("format duration short", () => {
 		'for duration "%s" should expected formatted "%s"',
 		(input, expected) => {
 			const output = formatDurationHoursTrunc(input);
+
+			expect(output).toBe(expected);
+		}
+	);
+});
+
+describe("format date", () => {
+	test.each([
+		["2024-03-31 02:34:45", "31/03/2024"],
+		["2024-02-29 02:34:45", "29/02/2024"],
+		["2024-01-12 02:34:45", "12/01/2024"],
+		["2024-01-12 02:34:45", "12/01/2024"],
+		["2024-09-24 02:34:45", "24/09/2024"],
+		["2023-09-24 02:34:45", "24/09/2023"],
+	])('for date "%s" should expected formatted "%s"', (input, expected) => {
+		const output = formatDate(moment(input));
+
+		expect(output).toBe(expected);
+	});
+});
+
+describe("format date time", () => {
+	test.each([
+		["2024-03-31 02:34:45", "31/03/2024 02:34"],
+		["2024-02-29 08:34:45", "29/02/2024 08:34"],
+		["2024-01-12 12:34:45", "12/01/2024 12:34"],
+		["2024-01-12 14:34:45", "12/01/2024 14:34"],
+		["2024-09-24 18:34:45", "24/09/2024 18:34"],
+		["2023-09-24 20:34:45", "24/09/2023 20:34"],
+	])(
+		'for date time "%s" should expected formatted "%s"',
+		(input, expected) => {
+			const output = formatDateTime(moment(input));
 
 			expect(output).toBe(expected);
 		}

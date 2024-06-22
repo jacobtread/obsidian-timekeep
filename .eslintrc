@@ -71,6 +71,7 @@
 						"sibling",
 						"index"
 					],
+					"inline-fonts",
 					"object",
 					"unknown"
 				],
@@ -78,7 +79,8 @@
 					"value": {
 						"custom-hooks": "src/hooks/**",
 						"custom-utils": "src/utils/**",
-						"custom-components": "src/components/**"
+						"custom-components": "src/components/**",
+						"inline-fonts": "src/fonts/**"
 					}
 				},
 				"internal-pattern": [
