@@ -79,10 +79,16 @@ export function formatDurationHoursTrunc(totalTime: number): string {
 	return hours.toFixed(2) + "h";
 }
 
-export function formatDate(value: Moment): string {
-	return value.format("DD/MM/YYYY");
+export function formatPdfDate(
+	value: Moment,
+	settings: TimekeepSettings
+): string {
+	return value.format(settings.pdfDateFormat);
 }
 
-export function formatDateTime(value: Moment): string {
-	return value.format("DD/MM/YYYY HH:mm");
+export function formatPdfRowDate(
+	value: Moment,
+	settings: TimekeepSettings
+): string {
+	return value.format(settings.pdfRowDateFormat);
 }

@@ -2,10 +2,10 @@ import moment from "moment";
 import { defaultSettings, TimekeepSettings } from "@/settings";
 
 import {
-	formatDate,
+	formatPdfDate,
 	formatDuration,
-	formatDateTime,
 	formatTimestamp,
+	formatPdfRowDate,
 	parseEditableTimestamp,
 	formatEditableTimestamp,
 	formatDurationHoursTrunc,
@@ -82,7 +82,7 @@ describe("format duration short", () => {
 	);
 });
 
-describe("format date", () => {
+describe("format pdf date", () => {
 	test.each([
 		["2024-03-31 02:34:45", "31/03/2024"],
 		["2024-02-29 02:34:45", "29/02/2024"],
@@ -91,13 +91,15 @@ describe("format date", () => {
 		["2024-09-24 02:34:45", "24/09/2024"],
 		["2023-09-24 02:34:45", "24/09/2023"],
 	])('for date "%s" should expected formatted "%s"', (input, expected) => {
-		const output = formatDate(moment(input));
+		const settings: TimekeepSettings = defaultSettings;
+		settings.pdfDateFormat = "DD/MM/YYYY";
+		const output = formatPdfDate(moment(input), settings);
 
 		expect(output).toBe(expected);
 	});
 });
 
-describe("format date time", () => {
+describe("format pdf row date", () => {
 	test.each([
 		["2024-03-31 02:34:45", "31/03/2024 02:34"],
 		["2024-02-29 08:34:45", "29/02/2024 08:34"],
@@ -108,7 +110,9 @@ describe("format date time", () => {
 	])(
 		'for date time "%s" should expected formatted "%s"',
 		(input, expected) => {
-			const output = formatDateTime(moment(input));
+			const settings: TimekeepSettings = defaultSettings;
+			settings.pdfRowDateFormat = "DD/MM/YYYY HH:mm";
+			const output = formatPdfRowDate(moment(input), settings);
 
 			expect(output).toBe(expected);
 		}

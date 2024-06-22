@@ -2,8 +2,13 @@ import React from "react";
 import { Timekeep } from "@/schema";
 import type { Moment } from "moment";
 import { getTotalDuration } from "@/timekeep";
+import { TimekeepSettings } from "@/settings";
 import { Page, View, Text, Document, StyleSheet } from "@/pdf";
-import { formatDate, formatDuration, formatDurationHoursTrunc } from "@/utils";
+import {
+	formatPdfDate,
+	formatDuration,
+	formatDurationHoursTrunc,
+} from "@/utils";
 
 import TimesheetPdfTable from "./TimesheetPdfTable";
 
@@ -12,6 +17,7 @@ type Props = {
 	data: Timekeep;
 	currentTime: Moment;
 	footnote: string;
+	settings: TimekeepSettings;
 };
 
 const styles = StyleSheet.create({
@@ -71,11 +77,12 @@ export default function TimesheetPdf({
 	data,
 	currentTime,
 	footnote,
+	settings,
 }: Props) {
 	// Get the total elapsed duration
 	const duration = getTotalDuration(data.entries, currentTime);
 
-	const currentDate = formatDate(currentTime);
+	const currentDate = formatPdfDate(currentTime, settings);
 	const totalDuration = formatDuration(duration);
 	const totalDurationShort = formatDurationHoursTrunc(duration);
 
@@ -108,6 +115,7 @@ export default function TimesheetPdf({
 					data={data}
 					currentTime={currentTime}
 					totalDuration={totalDuration}
+					settings={settings}
 				/>
 
 				<Text style={styles.footNote} wrap={false}>

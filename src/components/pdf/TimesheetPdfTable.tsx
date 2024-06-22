@@ -1,14 +1,16 @@
 import type { Moment } from "moment";
 import React, { Fragment } from "react";
 import { getEntryDuration } from "@/timekeep";
+import { TimekeepSettings } from "@/settings";
 import { Timekeep, TimeEntry } from "@/schema";
 import { View, Text, StyleSheet } from "@/pdf";
-import { formatDateTime, formatDuration } from "@/utils";
+import { formatDuration, formatPdfRowDate } from "@/utils";
 
 type Props = {
 	data: Timekeep;
 	currentTime: Moment;
 	totalDuration: string;
+	settings: TimekeepSettings;
 };
 
 const styles = StyleSheet.create({
@@ -79,6 +81,7 @@ export default function TimesheetPdfTable({
 	data,
 	currentTime,
 	totalDuration,
+	settings,
 }: Props) {
 	// Render the table header
 	const renderHeader = (
@@ -104,6 +107,7 @@ export default function TimesheetPdfTable({
 			entry={entry}
 			key={index}
 			currentTime={currentTime}
+			settings={settings}
 		/>
 	));
 
@@ -133,9 +137,10 @@ export default function TimesheetPdfTable({
 type RowProps = {
 	entry: TimeEntry;
 	currentTime: Moment;
+	settings: TimekeepSettings;
 };
 
-function TimesheetPdfTableRow({ entry, currentTime }: RowProps) {
+function TimesheetPdfTableRow({ entry, currentTime, settings }: RowProps) {
 	const duration = getEntryDuration(entry, currentTime);
 	const durationFormatted = formatDuration(duration);
 
@@ -143,10 +148,10 @@ function TimesheetPdfTableRow({ entry, currentTime }: RowProps) {
 	const renderTiming = entry.startTime !== null && (
 		<>
 			<Text style={[styles.tableCell, styles.tableCellTime]}>
-				{formatDateTime(entry.startTime)}
+				{formatPdfRowDate(entry.startTime, settings)}
 			</Text>
 			<Text style={[styles.tableCell, styles.tableCellTime]}>
-				{formatDateTime(entry.endTime ?? currentTime)}
+				{formatPdfRowDate(entry.endTime ?? currentTime, settings)}
 			</Text>
 		</>
 	);
@@ -159,6 +164,7 @@ function TimesheetPdfTableRow({ entry, currentTime }: RowProps) {
 					entry={entry}
 					key={index}
 					currentTime={currentTime}
+					settings={settings}
 				/>
 			))}
 		</View>

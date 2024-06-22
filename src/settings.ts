@@ -16,6 +16,8 @@ export interface TimekeepSettings {
 	pdfFootnote: string;
 	pdfTitle: string;
 	pdfExportBehavior: PdfExportBehavior;
+	pdfDateFormat: string;
+	pdfRowDateFormat: string;
 	reverseSegmentOrder: boolean;
 	timestampDurations: boolean;
 	timestampFormat: string;
@@ -27,6 +29,8 @@ export const defaultSettings: TimekeepSettings = {
 	pdfFootnote:
 		"Information present in this timesheet should be considered Commercial in Confidence.",
 	pdfExportBehavior: PdfExportBehavior.OPEN_PATH,
+	pdfDateFormat: "DD/MM/YYYY",
+	pdfRowDateFormat: "DD/MM/YYYY HH:mm",
 	timestampFormat: "YY-MM-DD HH:mm:ss",
 	editableTimestampFormat: "YYYY-MM-DD HH:mm:ss",
 	csvTitle: true,

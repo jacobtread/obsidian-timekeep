@@ -87,6 +87,54 @@ export class TimekeepSettingsTab extends PluginSettingTab {
 			});
 
 		new Setting(this.containerEl)
+			.setName("Pdf date format")
+			.setDesc(
+				createFragment((f) => {
+					f.createSpan({
+						text: "The way the date at the top of the pdf is formatted. Uses ",
+					});
+					f.createEl("a", {
+						text: "moment.js",
+						href: "https://momentjs.com/docs/#/parsing/string-format/",
+					});
+					f.createSpan({ text: " syntax." });
+				})
+			)
+			.addText((t) => {
+				t.setValue(String(this.plugin.settings.pdfDateFormat));
+				t.onChange(async (v) => {
+					this.plugin.settings.pdfDateFormat = v.length
+						? v
+						: defaultSettings.pdfDateFormat;
+					await this.plugin.saveSettings();
+				});
+			});
+
+		new Setting(this.containerEl)
+			.setName("Pdf row date format")
+			.setDesc(
+				createFragment((f) => {
+					f.createSpan({
+						text: "The way the date for each row of the pdf is formatted. Uses ",
+					});
+					f.createEl("a", {
+						text: "moment.js",
+						href: "https://momentjs.com/docs/#/parsing/string-format/",
+					});
+					f.createSpan({ text: " syntax." });
+				})
+			)
+			.addText((t) => {
+				t.setValue(String(this.plugin.settings.pdfRowDateFormat));
+				t.onChange(async (v) => {
+					this.plugin.settings.pdfRowDateFormat = v.length
+						? v
+						: defaultSettings.pdfRowDateFormat;
+					await this.plugin.saveSettings();
+				});
+			});
+
+		new Setting(this.containerEl)
 			.setName("CSV heading row")
 			.setDesc(
 				"Whether to use the first row of generated CSV as a title row"

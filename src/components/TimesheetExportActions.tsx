@@ -79,6 +79,7 @@ export default function TimekeepExportActions() {
 				title={settings.pdfTitle}
 				footnote={settings.pdfFootnote}
 				currentTime={currentTime}
+				settings={settings}
 			/>
 		);
 
