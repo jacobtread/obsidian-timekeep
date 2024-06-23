@@ -1,7 +1,7 @@
 /* eslint-disable */
 
 const process = require("process");
-const { builtinModules } = require('node:module');
+const builtins = require("builtin-modules");
 
 const prod = (process.argv[2] === "production");
 
@@ -23,7 +23,7 @@ module.exports = {
 		"@lezer/common",
 		"@lezer/highlight",
 		"@lezer/lr",
-		...builtinModules],
+		...builtins],
 	format: "cjs",
 	target: "es2018",
 	logLevel: "debug",
