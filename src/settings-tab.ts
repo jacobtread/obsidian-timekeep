@@ -14,6 +14,8 @@ export class TimekeepSettingsTab extends PluginSettingTab {
 		this.containerEl.empty();
 		this.containerEl.createEl("h2", { text: "Settings" });
 
+		const settings = this.plugin.settingsStore.getSettings();
+
 		new Setting(this.containerEl)
 			.setName("Timestamp display format")
 			.setDesc(
@@ -29,12 +31,17 @@ export class TimekeepSettingsTab extends PluginSettingTab {
 				})
 			)
 			.addText((t) => {
-				t.setValue(String(this.plugin.settings.timestampFormat));
+				t.setValue(String(settings.timestampFormat));
 				t.onChange(async (v) => {
-					this.plugin.settings.timestampFormat = v.length
+					// Only use a custom format if the value is not blank
+					const newFormat = v.length
 						? v
 						: defaultSettings.timestampFormat;
-					await this.plugin.saveSettings();
+
+					await this.plugin.updateSettings((currentValue) => ({
+						...currentValue,
+						timestampFormat: newFormat,
+					}));
 				});
 			});
 
@@ -43,12 +50,15 @@ export class TimekeepSettingsTab extends PluginSettingTab {
 			.setDesc("The title to include on generated PDFs")
 
 			.addText((t) => {
-				t.setValue(String(this.plugin.settings.pdfTitle));
+				t.setValue(String(settings.pdfTitle));
 				t.onChange(async (v) => {
-					this.plugin.settings.pdfTitle = v.length
-						? v
-						: defaultSettings.pdfTitle;
-					await this.plugin.saveSettings();
+					// Only use a custom format if the value is not blank
+					const newPdfTitle = v.length ? v : defaultSettings.pdfTitle;
+
+					await this.plugin.updateSettings((currentValue) => ({
+						...currentValue,
+						pdfTitle: newPdfTitle,
+					}));
 				});
 			});
 
@@ -57,12 +67,17 @@ export class TimekeepSettingsTab extends PluginSettingTab {
 			.setDesc("The footnote to include PDFs")
 
 			.addTextArea((t) => {
-				t.setValue(String(this.plugin.settings.pdfFootnote));
+				t.setValue(String(settings.pdfFootnote));
 				t.onChange(async (v) => {
-					this.plugin.settings.pdfFootnote = v.length
+					// Only use a custom format if the value is not blank
+					const newPdfFootnote = v.length
 						? v
 						: defaultSettings.pdfFootnote;
-					await this.plugin.saveSettings();
+
+					await this.plugin.updateSettings((currentValue) => ({
+						...currentValue,
+						pdfFootnote: newPdfFootnote,
+					}));
 				});
 			});
 
@@ -78,11 +93,12 @@ export class TimekeepSettingsTab extends PluginSettingTab {
 					[PdfExportBehavior.OPEN_PATH]:
 						"Open directory containing the exported file",
 				});
-				t.setValue(String(this.plugin.settings.pdfExportBehavior));
+				t.setValue(String(settings.pdfExportBehavior));
 				t.onChange(async (v) => {
-					this.plugin.settings.pdfExportBehavior =
-						v as PdfExportBehavior;
-					await this.plugin.saveSettings();
+					await this.plugin.updateSettings((currentValue) => ({
+						...currentValue,
+						pdfExportBehavior: v as PdfExportBehavior,
+					}));
 				});
 			});
 
@@ -101,12 +117,17 @@ export class TimekeepSettingsTab extends PluginSettingTab {
 				})
 			)
 			.addText((t) => {
-				t.setValue(String(this.plugin.settings.pdfDateFormat));
+				t.setValue(String(settings.pdfDateFormat));
 				t.onChange(async (v) => {
-					this.plugin.settings.pdfDateFormat = v.length
+					// Only use a custom format if the value is not blank
+					const newPdfDateFormat = v.length
 						? v
 						: defaultSettings.pdfDateFormat;
-					await this.plugin.saveSettings();
+
+					await this.plugin.updateSettings((currentValue) => ({
+						...currentValue,
+						pdfDateFormat: newPdfDateFormat,
+					}));
 				});
 			});
 
@@ -125,12 +146,17 @@ export class TimekeepSettingsTab extends PluginSettingTab {
 				})
 			)
 			.addText((t) => {
-				t.setValue(String(this.plugin.settings.pdfRowDateFormat));
+				t.setValue(String(settings.pdfRowDateFormat));
 				t.onChange(async (v) => {
-					this.plugin.settings.pdfRowDateFormat = v.length
+					// Only use a custom format if the value is not blank
+					const newPdfRowDateFormat = v.length
 						? v
 						: defaultSettings.pdfRowDateFormat;
-					await this.plugin.saveSettings();
+
+					await this.plugin.updateSettings((currentValue) => ({
+						...currentValue,
+						pdfRowDateFormat: newPdfRowDateFormat,
+					}));
 				});
 			});
 
@@ -140,10 +166,12 @@ export class TimekeepSettingsTab extends PluginSettingTab {
 				"Whether to use the first row of generated CSV as a title row"
 			)
 			.addToggle((t) => {
-				t.setValue(this.plugin.settings.csvTitle);
+				t.setValue(settings.csvTitle);
 				t.onChange(async (v) => {
-					this.plugin.settings.csvTitle = v;
-					await this.plugin.saveSettings();
+					await this.plugin.updateSettings((currentValue) => ({
+						...currentValue,
+						csvTitle: v,
+					}));
 				});
 			});
 
@@ -153,37 +181,31 @@ export class TimekeepSettingsTab extends PluginSettingTab {
 				"The delimiter character that should be used when copying a tracker table as CSV. For example, some languages use a semicolon instead of a comma."
 			)
 			.addText((t) => {
-				t.setValue(String(this.plugin.settings.csvDelimiter));
+				t.setValue(String(settings.csvDelimiter));
 				t.onChange(async (v) => {
-					this.plugin.settings.csvDelimiter = v.length
+					const newCsvDelimiter = v.length
 						? v
 						: defaultSettings.csvDelimiter;
-					await this.plugin.saveSettings();
+
+					await this.plugin.updateSettings((currentValue) => ({
+						...currentValue,
+						csvDelimiter: newCsvDelimiter,
+					}));
 				});
 			});
 
-		new Setting(this.containerEl)
-			.setName("Timestamp durations")
-			.setDesc(
-				"Whether durations should be displayed in a timestamp format (12:15:01) rather than the default duration format (12h 15m 1s)."
-			)
-			.addToggle((t) => {
-				t.setValue(this.plugin.settings.timestampDurations);
-				t.onChange(async (v) => {
-					this.plugin.settings.timestampDurations = v;
-					await this.plugin.saveSettings();
-				});
-			});
 		new Setting(this.containerEl)
 			.setName("Show decimal hours")
 			.setDesc(
 				"Whether to show the shortened hour only durations under the current and total timers (12h 8m 39s would be shown as 12.14h)"
 			)
 			.addToggle((t) => {
-				t.setValue(this.plugin.settings.showDecimalHours);
+				t.setValue(settings.showDecimalHours);
 				t.onChange(async (v) => {
-					this.plugin.settings.showDecimalHours = v;
-					await this.plugin.saveSettings();
+					await this.plugin.updateSettings((currentValue) => ({
+						...currentValue,
+						showDecimalHours: v,
+					}));
 				});
 			});
 
@@ -193,10 +215,12 @@ export class TimekeepSettingsTab extends PluginSettingTab {
 				"Whether older tracker segments should be displayed towards the bottom of the tracker, rather than the top."
 			)
 			.addToggle((t) => {
-				t.setValue(this.plugin.settings.reverseSegmentOrder);
+				t.setValue(settings.reverseSegmentOrder);
 				t.onChange(async (v) => {
-					this.plugin.settings.reverseSegmentOrder = v;
-					await this.plugin.saveSettings();
+					await this.plugin.updateSettings((currentValue) => ({
+						...currentValue,
+						reverseSegmentOrder: v,
+					}));
 				});
 			});
 
@@ -206,10 +230,12 @@ export class TimekeepSettingsTab extends PluginSettingTab {
 				"Whether to limit the height of the table, will clamp the height and make the table scrollable"
 			)
 			.addToggle((t) => {
-				t.setValue(this.plugin.settings.limitTableSize);
+				t.setValue(settings.limitTableSize);
 				t.onChange(async (v) => {
-					this.plugin.settings.limitTableSize = v;
-					await this.plugin.saveSettings();
+					await this.plugin.updateSettings((currentValue) => ({
+						...currentValue,
+						limitTableSize: v,
+					}));
 				});
 			});
 	}

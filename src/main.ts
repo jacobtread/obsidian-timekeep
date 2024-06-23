@@ -15,9 +15,10 @@ import {
 } from "obsidian";
 
 import { Timekeep } from "./schema";
+import { SettingsStore, createSettingsStore } from "./store/settings-store";
 
 export default class TimekeepPlugin extends Plugin {
-	settings: TimekeepSettings;
+	settingsStore: SettingsStore;
 
 	async onload(): Promise<void> {
 		await this.loadSettings();
@@ -37,7 +38,7 @@ export default class TimekeepPlugin extends Plugin {
 					new TimekeepComponent(
 						el,
 						this.app,
-						this.settings,
+						this.settingsStore,
 						context,
 						loadResult
 					)
@@ -55,23 +56,34 @@ export default class TimekeepPlugin extends Plugin {
 	}
 
 	async loadSettings(): Promise<void> {
-		this.settings = Object.assign(
+		const settings = Object.assign(
 			{},
 			defaultSettings,
 			await this.loadData()
 		);
+
+		this.settingsStore = createSettingsStore(settings);
+	}
+
+	async updateSettings(
+		update: (currentValue: TimekeepSettings) => TimekeepSettings
+	): Promise<void> {
+		const newValue = update(this.settingsStore.getSettings());
+
+		this.settingsStore.setSettings(newValue);
+		await this.saveData(newValue);
 	}
 
 	async saveSettings(): Promise<void> {
-		await this.saveData(this.settings);
+		await this.saveData(this.settingsStore.getSettings());
 	}
 }
 
 class TimekeepComponent extends MarkdownRenderChild {
 	// Obsidian app instance
 	app: ObsidianApp;
-	// Timekeep settings
-	settings: TimekeepSettings;
+	// Timekeep settings store
+	settingsStore: SettingsStore;
 	// Markdown context for the current markdown block
 	context: MarkdownPostProcessorContext;
 	// Timekeep load result
@@ -84,13 +96,13 @@ class TimekeepComponent extends MarkdownRenderChild {
 	constructor(
 		containerEl: HTMLElement,
 		app: ObsidianApp,
-		settings: TimekeepSettings,
+		settingsStore: SettingsStore,
 		context: MarkdownPostProcessorContext,
 		loadResult: LoadResult
 	) {
 		super(containerEl);
 		this.app = app;
-		this.settings = settings;
+		this.settingsStore = settingsStore;
 		this.context = context;
 		this.loadResult = loadResult;
 		this.root = createRoot(containerEl);
@@ -126,7 +138,7 @@ class TimekeepComponent extends MarkdownRenderChild {
 					React.createElement(App, {
 						app: this.app,
 						initialState: timekeep,
-						settings: this.settings,
+						settingsStore: this.settingsStore,
 						save: this.trySave.bind(this),
 					})
 				)

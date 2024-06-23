@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 export enum PdfExportBehavior {
 	// Don't do anything after exporting
 	NONE = "NONE",
@@ -19,7 +18,6 @@ export interface TimekeepSettings {
 	pdfDateFormat: string;
 	pdfRowDateFormat: string;
 	reverseSegmentOrder: boolean;
-	timestampDurations: boolean;
 	timestampFormat: string;
 	showDecimalHours: boolean;
 }
@@ -36,7 +34,6 @@ export const defaultSettings: TimekeepSettings = {
 	csvTitle: true,
 	csvDelimiter: ",",
 	reverseSegmentOrder: false,
-	timestampDurations: false,
 	limitTableSize: true,
 	showDecimalHours: true,
 };
