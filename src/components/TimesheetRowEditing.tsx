@@ -1,10 +1,11 @@
 import { TimeEntry } from "@/schema";
 import { removeEntry, updateEntry } from "@/timekeep";
-import { XIcon, CheckIcon, TrashIcon } from "lucide-react";
 import React, { useState, useEffect, FormEvent } from "react";
 import { useSettings } from "@/contexts/use-settings-context";
 import { useTimekeep } from "@/contexts/use-timekeep-context";
 import { parseEditableTimestamp, formatEditableTimestamp } from "@/utils";
+
+import ObsidianIcon from "./ObsidianIcon";
 
 type Props = {
 	entry: TimeEntry;
@@ -118,10 +119,9 @@ export default function TimesheetRowEditing({ entry, onFinishEditing }: Props) {
 					)}
 					<div className="timesheet-editing-actions">
 						<button type="submit" className="timekeep-action">
-							<CheckIcon
-								width="1em"
-								height="1em"
-								style={{ marginRight: "0.25rem" }}
+							<ObsidianIcon
+								icon="edit"
+								className="text-button-icon"
 							/>
 							Save
 						</button>
@@ -129,10 +129,9 @@ export default function TimesheetRowEditing({ entry, onFinishEditing }: Props) {
 							type="button"
 							onClick={onFinishEditing}
 							className="timekeep-action">
-							<XIcon
-								width="1em"
-								height="1em"
-								style={{ marginRight: "0.25rem" }}
+							<ObsidianIcon
+								icon="x"
+								className="text-button-icon"
 							/>
 							Cancel
 						</button>
@@ -140,10 +139,9 @@ export default function TimesheetRowEditing({ entry, onFinishEditing }: Props) {
 							type="button"
 							onClick={onClickDelete}
 							className="timekeep-action timekeep-action--end">
-							<TrashIcon
-								width="1em"
-								height="1em"
-								style={{ marginRight: "0.25rem" }}
+							<ObsidianIcon
+								icon="trash"
+								className="text-button-icon"
 							/>
 							Delete
 						</button>

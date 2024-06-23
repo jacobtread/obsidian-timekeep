@@ -186,3 +186,14 @@
 	overflow: hidden;
 	overflow-wrap: anywhere;
 }
+
+.button-icon {
+	--icon-size: 1em;
+}
+
+.text-button-icon {
+	--icon-size: 1em;
+
+	margin-right: 0.25rem;
+	vertical-align: middle;
+}

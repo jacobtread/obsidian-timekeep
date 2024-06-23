@@ -1,6 +1,5 @@
 import moment from "moment";
 import { formatTimestamp } from "@/utils";
-import { PlayIcon, StopCircleIcon } from "lucide-react";
 import React, { useMemo, useState, FormEvent } from "react";
 import { useTimekeep } from "@/contexts/use-timekeep-context";
 import { useSettings } from "@/contexts/use-settings-context";
@@ -10,6 +9,8 @@ import {
 	getRunningEntry,
 	stopRunningEntries,
 } from "@/timekeep";
+
+import ObsidianIcon from "./ObsidianIcon";
 
 /**
  * Component for the timekeep start button and "name" field isolating
@@ -89,9 +90,9 @@ export default function TimekeepStart() {
 				title={isTimekeepRunning ? "Stop" : "Start"}
 				className="timekeep-start">
 				{isTimekeepRunning ? (
-					<StopCircleIcon width="1em" height="1em" />
+					<ObsidianIcon icon="stop-circle" className="button-icon" />
 				) : (
-					<PlayIcon width="1em" height="1em" />
+					<ObsidianIcon icon="play" className="button-icon" />
 				)}
 			</button>
 		</form>

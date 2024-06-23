@@ -1,7 +1,6 @@
 import moment from "moment";
 import { TimeEntry } from "@/schema";
 import React, { useState } from "react";
-import { EditIcon, PlayIcon } from "lucide-react";
 import { useSettings } from "@/contexts/use-settings-context";
 import { useTimekeep } from "@/contexts/use-timekeep-context";
 import TimesheetRowEditing from "@/components/TimesheetRowEditing";
@@ -9,6 +8,8 @@ import TimesheetRowDuration from "@/components/TimesheetRowDuration";
 import { updateEntry, withSubEntry, isKeepRunning } from "@/timekeep";
 
 import { formatTimestamp } from "src/utils";
+
+import ObsidianIcon from "./ObsidianIcon";
 
 type Props = {
 	entry: TimeEntry;
@@ -87,12 +88,12 @@ export default function TimesheetRow({ entry, indent }: Props) {
 						disabled={isTimekeepRunning}
 						onClick={onClickStart}
 						className="timekeep-action">
-						<PlayIcon width="1em" height="1em" />
+						<ObsidianIcon icon="play" className="button-icon" />
 					</button>
 					<button
 						onClick={() => setEditing(true)}
 						className="timekeep-action">
-						<EditIcon width="1em" height="1em" />
+						<ObsidianIcon icon="edit" className="button-icon" />
 					</button>
 				</div>
 			</td>
