@@ -35,21 +35,22 @@ export default function TimekeepStart() {
 
 		setTimekeep((timekeep) => {
 			const currentTime = moment();
+			let entries;
 
 			// If the timekeep is currently running
 			if (isKeepRunning(timekeep)) {
 				// Stop the running entry
-				return {
-					entries: stopRunningEntries(timekeep.entries, currentTime),
-				};
+				entries = stopRunningEntries(timekeep.entries, currentTime);
 			} else {
 				/// Clear the name input
 				setName("");
-
-				return {
-					entries: withEntry(timekeep.entries, name, currentTime),
-				};
+				entries = withEntry(timekeep.entries, name, currentTime);
 			}
+
+			return {
+				...timekeep,
+				entries,
+			};
 		});
 	};
 
