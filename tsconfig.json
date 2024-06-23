@@ -19,5 +19,5 @@
 		},
 		"esModuleInterop": true
 	},
-	"include": ["**/*.ts", "**/*.tsx", "src/timekeep.ts", "src/main.ts"]
+	"include": ["src/**/*", "types/**/*"]
 }
