@@ -154,8 +154,8 @@ export function stopRunningEntries(
 			};
 		}
 
-		// Ignore already stopped entries
-		if (entry.endTime !== null) return entry;
+		// Ignore already stopped entries and entries that aren't started
+		if (entry.startTime === null || entry.endTime !== null) return entry;
 
 		// Stop the current entry
 		return {
@@ -338,7 +338,7 @@ export function isEntryRunning(entry: TimeEntry) {
 		return getRunningEntry(entry.subEntries) !== null;
 	}
 
-	return entry.endTime === null;
+	return entry.startTime !== null && entry.endTime === null;
 }
 
 /**
@@ -357,7 +357,7 @@ export function getRunningEntry(entries: TimeEntry[]): TimeEntry | null {
 
 		if (entry.subEntries !== null) {
 			stack.push(...entry.subEntries);
-		} else if (entry.endTime === null) {
+		} else if (entry.startTime !== null && entry.endTime === null) {
 			return entry;
 		}
 	}
@@ -379,6 +379,11 @@ export function getEntryDuration(
 ): number {
 	if (entry.subEntries !== null) {
 		return getTotalDuration(entry.subEntries, currentTime);
+	}
+
+	// Entry is not started
+	if (entry.startTime === null) {
+		return 0;
 	}
 
 	// Get the end time or use current time if not ended
@@ -436,7 +441,7 @@ export function getEntriesOrdered(
 export function getUniqueEntryHash(entry: TimeEntry): number {
 	if (entry.subEntries === null) {
 		return strHash(
-			`${entry.name}${entry.startTime.valueOf()}${entry.endTime?.valueOf()}`
+			`${entry.name}${entry.startTime?.valueOf()}${entry.endTime?.valueOf()}`
 		);
 	}
 

@@ -51,7 +51,8 @@ export function createRawTableEntries(
 			entry.startTime ? formatTimestamp(entry.startTime, settings) : "",
 			entry.endTime ? formatTimestamp(entry.endTime, settings) : "",
 			// Include duration for entries that are finished
-			entry.endTime !== null || entry.subEntries !== null
+			(entry.startTime !== null && entry.endTime !== null) ||
+			entry.subEntries !== null
 				? formatDuration(getEntryDuration(entry, currentTime))
 				: "",
 		],
