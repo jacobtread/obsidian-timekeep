@@ -19,7 +19,10 @@ const TIME_ENTRY_SINGLE = z.object({
 	// Name of the entry
 	name: z.string(),
 	// Start time for this entry
-	startTime: z.string().transform((value) => moment(value)),
+	startTime: z
+		.string()
+		.nullable()
+		.transform((value) => (value === null ? null : moment(value))),
 	// End time for this entry, null when this entry is not finished
 	endTime: z
 		.string()

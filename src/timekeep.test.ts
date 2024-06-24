@@ -117,7 +117,7 @@ describe("loading timekeep", () => {
 	});
 
 	it("should load valid timekeep successfully", () => {
-		const data = `{"entries":[{"name":"Block 1","startTime":"2024-03-17T01:33:51.630Z","endTime":"2024-03-17T01:33:55.151Z","subEntries":null},{"name":"Block 2","startTime":"2024-03-17T01:33:51.630Z","endTime":null,"subEntries":null}]}`;
+		const data = `{"entries":[{"name":"Block 1","startTime":"2024-03-17T01:33:51.630Z","endTime":"2024-03-17T01:33:55.151Z","subEntries":null},{"name":"Block 2","startTime":"2024-03-17T01:33:51.630Z","endTime":null,"subEntries":null},{"name":"Non Started Block","startTime":null,"endTime":null,"subEntries":null}]}`;
 		const expected = {
 			entries: [
 				{
@@ -129,6 +129,12 @@ describe("loading timekeep", () => {
 				{
 					name: "Block 2",
 					startTime: moment("2024-03-17T01:33:51.630Z"),
+					endTime: null,
+					subEntries: null,
+				},
+				{
+					name: "Non Started Block",
+					startTime: null,
 					endTime: null,
 					subEntries: null,
 				},
@@ -1296,6 +1302,22 @@ describe("duration", () => {
 			name: "Test",
 			startTime: currentTime,
 			endTime: currentTime.clone().add(durationMs, "ms"),
+			subEntries: null,
+		};
+
+		const output = getEntryDuration(input, currentTime);
+
+		expect(output).toBe(durationMs);
+	});
+
+	it("duration of non started entry should be zero", () => {
+		const currentTime = moment();
+		const durationMs = 0;
+
+		const input: TimeEntry = {
+			name: "Test",
+			startTime: null,
+			endTime: null,
 			subEntries: null,
 		};
 

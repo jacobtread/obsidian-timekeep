@@ -5,7 +5,12 @@ import { useSettings } from "@/contexts/use-settings-context";
 import { useTimekeep } from "@/contexts/use-timekeep-context";
 import TimesheetRowEditing from "@/components/TimesheetRowEditing";
 import TimesheetRowDuration from "@/components/TimesheetRowDuration";
-import { updateEntry, withSubEntry, isKeepRunning } from "@/timekeep";
+import {
+	updateEntry,
+	createEntry,
+	withSubEntry,
+	isKeepRunning,
+} from "@/timekeep";
 
 import { formatTimestamp } from "src/utils";
 
@@ -31,12 +36,27 @@ export default function TimesheetRow({ entry, indent }: Props) {
 
 			const startTime = moment();
 
-			return {
-				entries: updateEntry(
+			let entries;
+
+			if (entry.subEntries !== null || entry.startTime !== null) {
+				// If the entry has been started or is a group create a new child entry
+				entries = updateEntry(
 					timekeep.entries,
 					entry,
 					withSubEntry(entry, "", startTime)
-				),
+				);
+			} else {
+				// If the entry hasn't been started then start it
+				entries = updateEntry(
+					timekeep.entries,
+					entry,
+					createEntry(entry.name, startTime)
+				);
+			}
+
+			return {
+				...timekeep,
+				entries,
 			};
 		});
 	};
