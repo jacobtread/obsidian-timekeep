@@ -79,6 +79,14 @@ export function formatDurationHoursTrunc(totalTime: number): string {
 	return hours.toFixed(2) + "h";
 }
 
+/**
+ * Formats the pdf date field using the date format set in
+ * the provided settings
+ *
+ * @param value The moment value to format
+ * @param settings The settings
+ * @returns The formatted date
+ */
 export function formatPdfDate(
 	value: Moment,
 	settings: TimekeepSettings
@@ -86,6 +94,15 @@ export function formatPdfDate(
 	return value.format(settings.pdfDateFormat);
 }
 
+/**
+ * Formats the timestamp field for each individual row
+ * in a exported pdf using the provided settings for
+ * the format
+ *
+ * @param value The moment value to format
+ * @param settings The settings
+ * @returns The formatted timestamp
+ */
 export function formatPdfRowDate(
 	value: Moment,
 	settings: TimekeepSettings
