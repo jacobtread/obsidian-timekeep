@@ -69,17 +69,21 @@ export default function App({
 	// Saving error fallback screen
 	if (saveError) {
 		return (
-			<div>
-				<h1>Warning</h1>
-				<p>Failed to save current timekeep</p>
-				<p>
-					Press "Retry" to try again or "Copy Timekeep" to copy a
-					backup to clipboard, an automated backup JSON file will be
-					generated in the root of this vault
-				</p>
-				<button onClick={onRetrySave}>Retry</button>
+			<div className="timekeep-container">
+				<div className="timekeep-error">
+					<h1>Warning</h1>
+					<p>Failed to save current timekeep</p>
+					<p>
+						Press "Retry" to try again or "Copy Timekeep" to copy a
+						backup to clipboard, an automated backup JSON file will
+						be generated in the root of this vault
+					</p>
+				</div>
 
-				<button onClick={onClickCopy}>Copy Timekeep</button>
+				<div className="timekeep-actions">
+					<button onClick={onRetrySave}>Retry</button>
+					<button onClick={onClickCopy}>Copy Timekeep</button>
+				</div>
 			</div>
 		);
 	}

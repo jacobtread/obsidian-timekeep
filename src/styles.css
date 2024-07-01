@@ -197,3 +197,7 @@
 	margin-right: 0.25rem;
 	vertical-align: middle;
 }
+
+.timekeep-error {
+	padding: 2rem;
+}
