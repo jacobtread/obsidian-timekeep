@@ -20,6 +20,7 @@ import {
 	getUniqueEntryHash,
 	stopRunningEntries,
 	replaceTimekeepCodeblock,
+	extractTimekeepCodeblocks,
 } from "./timekeep";
 
 /**
@@ -40,7 +41,7 @@ const createCodeBlock = (
 	for (let i = 0; i < linesBefore; i++) {
 		output += "\n";
 	}
-	output += "```\n";
+	output += "```timekeep\n";
 	output += json;
 	output += "\n```";
 	for (let i = 0; i < linesAfter; i++) {
@@ -1442,5 +1443,83 @@ describe("duration", () => {
 		const output = getTotalDuration(input, currentTime);
 
 		expect(output).toBe(expected);
+	});
+});
+
+describe("extracting code blocks", () => {
+	it("should extract codeblock contents", () => {
+		// Input data to find
+		const input1 = createCodeBlock(
+			`{"entries":[{"name":"Block 1","startTime":"2024-03-17T01:33:51.630Z","endTime":"2024-03-17T01:33:55.151Z","subEntries":null}]}`,
+			4,
+			4
+		);
+
+		// Input data to find
+		const input2 = createCodeBlock(
+			`{"entries":[{"name":"Block 2","startTime":"2024-03-17T01:33:51.630Z","endTime":"2024-03-17T01:33:55.151Z","subEntries":null}]}`,
+			4,
+			4
+		);
+
+		// Timekeep with a renamed block
+		const inputTimekeep1: Timekeep = {
+			entries: [
+				{
+					name: "Block 1",
+					startTime: moment("2024-03-17T01:33:51.630Z"),
+					endTime: moment("2024-03-17T01:33:55.151Z"),
+					subEntries: null,
+				},
+			],
+		};
+
+		// Timekeep with a renamed block
+		const inputTimekeep2: Timekeep = {
+			entries: [
+				{
+					name: "Block 2",
+					startTime: moment("2024-03-17T01:33:51.630Z"),
+					endTime: moment("2024-03-17T01:33:55.151Z"),
+					subEntries: null,
+				},
+			],
+		};
+
+		const text = "\n\n\n" + input1 + "\n\n\n\n" + input2;
+
+		const output = extractTimekeepCodeblocks(text);
+
+		expect(output[0]).toStrictEqual(inputTimekeep1);
+		expect(output[1]).toStrictEqual(inputTimekeep2);
+		expect(output.length).toBe(2);
+	});
+
+	it("should ignore codeblocks that are not closed", () => {
+		// Input data to find
+		const input1 = createCodeBlock(
+			`{"entries":[{"name":"Block 1","startTime":"2024-03-17T01:33:51.630Z","endTime":"2024-03-17T01:33:55.151Z","subEntries":null}]}`,
+			4,
+			4
+		);
+
+		// Timekeep with a renamed block
+		const inputTimekeep1: Timekeep = {
+			entries: [
+				{
+					name: "Block 1",
+					startTime: moment("2024-03-17T01:33:51.630Z"),
+					endTime: moment("2024-03-17T01:33:55.151Z"),
+					subEntries: null,
+				},
+			],
+		};
+
+		const text = "\n\n\n" + input1 + "\n\n\n\n```timekeep\n\n";
+
+		const output = extractTimekeepCodeblocks(text);
+
+		expect(output[0]).toStrictEqual(inputTimekeep1);
+		expect(output.length).toBe(1);
 	});
 });
