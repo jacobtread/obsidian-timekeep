@@ -47,6 +47,45 @@ export function load(value: string): LoadResult {
 }
 
 /**
+ * Extracts timekeep codeblocks from the provided file
+ * contents.
+ *
+ * @param value The file text contents
+ * @returns The extracted timekeep blocks
+ */
+export function extractTimekeepCodeblocks(value: string): Timekeep[] {
+	const out: Timekeep[] = [];
+	const lines = value.replace("\n\r", "\n").split("\n");
+
+	for (let i = 0; i < lines.length; i++) {
+		const startLine = lines[i];
+
+		// Skip lines till a timekeep block is found
+		if (!startLine.startsWith("```timekeep")) {
+			continue;
+		}
+
+		// Find end of codeblock
+		const endLineIndex = lines.indexOf("```", i);
+		if (endLineIndex === -1) {
+			continue;
+		}
+
+		let content = "";
+		for (let lineIndex = i + 1; lineIndex < endLineIndex; lineIndex++) {
+			content += lines[lineIndex] + "\n";
+		}
+
+		const result = load(content);
+		if (result.success) {
+			out.push(result.timekeep);
+		}
+	}
+
+	return out;
+}
+
+/**
  * Replaces the contents of a specific timekeep codeblock within
  * a file returning the modified contents to be saved
  */

@@ -1,11 +1,10 @@
 import App from "@/App";
-import moment from "moment";
+import moment, { Moment } from "moment";
 import React, { StrictMode } from "react";
-import { App as ObsidianApp } from "obsidian";
 import { Root, createRoot } from "react-dom/client";
 import { TimekeepSettingsTab } from "@/settings-tab";
+import { PluginManifest, App as ObsidianApp } from "obsidian";
 import { defaultSettings, TimekeepSettings } from "@/settings";
-import { load, LoadResult, replaceTimekeepCodeblock } from "@/timekeep";
 import {
 	TFile,
 	Plugin,
@@ -13,12 +12,42 @@ import {
 	MarkdownRenderChild,
 	MarkdownPostProcessorContext,
 } from "obsidian";
+import {
+	load,
+	LoadResult,
+	isKeepRunning,
+	isEntryRunning,
+	getRunningEntry,
+	getEntryDuration,
+	getTotalDuration,
+	replaceTimekeepCodeblock,
+	extractTimekeepCodeblocks,
+} from "@/timekeep";
 
-import { Timekeep } from "./schema";
+import { Timekeep, TimeEntry } from "./schema";
 import { SettingsStore, createSettingsStore } from "./store/settings-store";
 
 export default class TimekeepPlugin extends Plugin {
 	settingsStore: SettingsStore;
+
+	extractTimekeepCodeblocks: (value: string) => Timekeep[];
+	isKeepRunning: (timekeep: Timekeep) => boolean;
+	isEntryRunning: (entry: TimeEntry) => boolean;
+	getRunningEntry: (entries: TimeEntry[]) => TimeEntry | null;
+	getEntryDuration: (entry: TimeEntry, currentTime: Moment) => number;
+	getTotalDuration: (entries: TimeEntry[], currentTime: Moment) => number;
+
+	constructor(app: ObsidianApp, manifest: PluginManifest) {
+		super(app, manifest);
+
+		// Expose API functions
+		this.extractTimekeepCodeblocks = extractTimekeepCodeblocks;
+		this.isKeepRunning = isKeepRunning;
+		this.isEntryRunning = isEntryRunning;
+		this.getRunningEntry = getRunningEntry;
+		this.getEntryDuration = getEntryDuration;
+		this.getTotalDuration = getTotalDuration;
+	}
 
 	async onload(): Promise<void> {
 		await this.loadSettings();
