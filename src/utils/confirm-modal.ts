@@ -46,7 +46,6 @@ export class ConfirmModal extends Modal {
 
 	onClose(): void {
 		if (!this.picked) {
-			console.log("Fallback");
 			this.callback(false);
 		}
 	}
