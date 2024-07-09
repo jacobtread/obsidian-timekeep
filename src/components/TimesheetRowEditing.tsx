@@ -14,7 +14,7 @@ type Props = {
 
 export default function TimesheetRowEditing({ entry, onFinishEditing }: Props) {
 	const settings = useSettings();
-	const { setTimekeep } = useTimekeep();
+	const { setTimekeep, showConfirm } = useTimekeep();
 
 	const [name, setName] = useState(entry.name);
 	const [startTime, setStartTime] = useState("");
@@ -34,8 +34,13 @@ export default function TimesheetRowEditing({ entry, onFinishEditing }: Props) {
 		);
 	}, [entry]);
 
-	const onClickDelete = () => {
-		if (!confirm("Are you sure you want to delete this entry?")) {
+	const onClickDelete = async () => {
+		const confirmDelete = await showConfirm(
+			"Confirm Delete",
+			"Are you sure you want to delete this entry?"
+		);
+
+		if (!confirmDelete) {
 			return;
 		}
 

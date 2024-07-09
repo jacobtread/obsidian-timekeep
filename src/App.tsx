@@ -9,6 +9,7 @@ import { TimekeepContext } from "@/contexts/use-timekeep-context";
 import React, { useState, useCallback, SetStateAction } from "react";
 import TimesheetExportActions from "@/components/TimesheetExportActions";
 
+import { ConfirmModal } from "./utils/confirm-modal";
 import { AppContext } from "./contexts/use-app-context";
 import { SettingsStore, useSettingsStore } from "./store/settings-store";
 
@@ -66,6 +67,17 @@ export default function App({
 		navigator.clipboard.writeText(JSON.stringify(timekeep));
 	};
 
+	const showConfirm = useCallback(
+		(title: string, message: string): Promise<boolean> => {
+			return new Promise((resolve) => {
+				const modal = new ConfirmModal(app, message, resolve);
+				modal.setTitle(title);
+				modal.open();
+			});
+		},
+		[app]
+	);
+
 	// Saving error fallback screen
 	if (saveError) {
 		return (
@@ -96,6 +108,7 @@ export default function App({
 						timekeep,
 						setTimekeep: setTimekeepWrapper,
 						isTimekeepRunning: isKeepRunning(timekeep),
+						showConfirm,
 					}}>
 					<div className="timekeep-container">
 						<TimesheetCounters />
