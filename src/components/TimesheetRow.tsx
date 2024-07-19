@@ -10,6 +10,7 @@ import {
 	createEntry,
 	withSubEntry,
 	isKeepRunning,
+	isEntryRunning,
 } from "@/timekeep";
 
 import { formatTimestamp } from "src/utils";
@@ -22,6 +23,7 @@ type Props = {
 };
 
 export default function TimesheetRow({ entry, indent }: Props) {
+	const isSelfRunning = entry.subEntries === null && isEntryRunning(entry);
 	const settings = useSettings();
 	const { setTimekeep, isTimekeepRunning } = useTimekeep();
 
@@ -77,7 +79,7 @@ export default function TimesheetRow({ entry, indent }: Props) {
 	}
 
 	return (
-		<tr className="timekeep-row">
+		<tr className="timekeep-row" data-running={isSelfRunning}>
 			<td className="timekeep-col timekeep-col--name">
 				{indentItems}
 

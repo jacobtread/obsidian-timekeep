@@ -58,6 +58,10 @@
 	background-color: var(--color-base-20);
 }
 
+.timekeep-row[data-running="true"] {
+	background-color: var(--color-base-40) !important;
+}
+
 .timekeep-col {
 	vertical-align: middle !important;
 }
