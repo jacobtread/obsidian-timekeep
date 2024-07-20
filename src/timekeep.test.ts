@@ -1,6 +1,6 @@
 import moment from "moment";
 
-import { Timekeep, TimeEntry } from "./schema";
+import { Timekeep, TimeEntry, TimeEntryGroup } from "./schema";
 import { defaultSettings, TimekeepSettings } from "./settings";
 import {
 	load,
@@ -17,6 +17,7 @@ import {
 	getEntryDuration,
 	getTotalDuration,
 	getEntriesOrdered,
+	setEntryCollapsed,
 	getUniqueEntryHash,
 	stopRunningEntries,
 	replaceTimekeepCodeblock,
@@ -1521,5 +1522,47 @@ describe("extracting code blocks", () => {
 
 		expect(output[0]).toStrictEqual(inputTimekeep1);
 		expect(output.length).toBe(1);
+	});
+});
+
+describe("collapse state", () => {
+	it("should update group collapse state", () => {
+		const currentTime = moment();
+
+		const input: TimeEntryGroup = {
+			name: "Test",
+			startTime: null,
+			endTime: null,
+			subEntries: [
+				{
+					name: "Test",
+					startTime: currentTime,
+					endTime: currentTime,
+					subEntries: null,
+				},
+			],
+		};
+
+		const collapsed = setEntryCollapsed(input, true);
+
+		expect(collapsed.subEntries).not.toBeNull();
+		expect((collapsed as TimeEntryGroup).collapsed).toBeDefined();
+		expect((collapsed as TimeEntryGroup).collapsed).toBe(true);
+	});
+
+	it("should not set collapse state on single entry", () => {
+		const currentTime = moment();
+
+		const input: TimeEntry = {
+			name: "Test",
+			startTime: currentTime,
+			endTime: currentTime,
+			subEntries: null,
+		};
+
+		const collapsed = setEntryCollapsed(input, true);
+
+		expect(collapsed.subEntries).toBeNull();
+		expect((collapsed as TimeEntryGroup).collapsed).toBeUndefined();
 	});
 });

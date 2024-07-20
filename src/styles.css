@@ -2,8 +2,7 @@
 	display: inline-block;
 	height: 1rem;
 	width: 0.2rem;
-	border-left: 0.1rem solid var(--color-base-40);
-	margin-right: 0.1rem;
+	border-left: 0.2rem solid var(--color-base-40);
 }
 
 .timekeep-container {
@@ -26,6 +25,10 @@
 
 .timekeep-row {
 	width: 100%;
+}
+
+.timekeep-row[data-sub-entires="true"] {
+	border-bottom: 2px solid var(--color-base-40);
 }
 
 .timesheet-editing {
@@ -204,4 +207,10 @@
 
 .timekeep-error {
 	padding: 2rem;
+}
+
+.timekeep-collapse-icon {
+	margin-left: 0.5rem;
+	cursor: pointer;
+	vertical-align: middle;
 }

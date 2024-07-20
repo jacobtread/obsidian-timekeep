@@ -174,6 +174,24 @@ export function updateEntry(
 }
 
 /**
+ * Updates the collapsed field on a group entry. Normal entries
+ * wont be collapsed since they cannot be
+ *
+ * @param entry The entry to set the collapse state for
+ * @param collapsed The collapse state
+ * @returns The new updated entry
+ */
+export function setEntryCollapsed(
+	entry: TimeEntry,
+	collapsed: boolean
+): TimeEntry {
+	// Entry cannot be collapsed
+	if (entry.subEntries === null) return entry;
+
+	return { ...entry, collapsed };
+}
+
+/**
  * Stops any entries in the provided list that are running
  * returning a list of the new non running entries
  *
