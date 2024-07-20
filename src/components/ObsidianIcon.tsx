@@ -1,18 +1,18 @@
 import { setIcon } from "obsidian";
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, DOMAttributes } from "react";
 
 type Props = {
 	// Obsidian icon
 	icon: string;
 	// Class name to apply to the icon
 	className?: string;
-};
+} & DOMAttributes<HTMLDivElement>;
 
 /**
  * Wrapper around the Obsidian setIcon function to use
  * built-in lucide icons from Obsidian
  */
-export default function ObsidianIcon({ icon, className }: Props) {
+export default function ObsidianIcon({ icon, className, ...props }: Props) {
 	const wrapperRef = useRef<HTMLDivElement | null>(null);
 
 	useEffect(() => {
@@ -36,6 +36,7 @@ export default function ObsidianIcon({ icon, className }: Props) {
 
 	return (
 		<div
+			{...props}
 			style={{
 				display: "inline-block",
 				lineHeight: 1,

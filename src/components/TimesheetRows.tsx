@@ -6,7 +6,7 @@ import { getEntriesOrdered, getUniqueEntryHash } from "@/timekeep";
 
 type Props = {
 	// Collection of entries
-	entries: TimeEntry[] | null;
+	entries: TimeEntry[];
 	// Indentation for the entries
 	indent: number;
 };
@@ -19,17 +19,17 @@ export default function TimesheetRows({ entries, indent }: Props) {
 	const settings = useSettings();
 	// Memoized sub entries
 	const entriesOrdered = useMemo(
-		() => (entries ? getEntriesOrdered(entries, settings) : null),
+		() => getEntriesOrdered(entries, settings),
 		[entries, settings]
 	);
 
-	return (
-		entriesOrdered != null &&
-		entriesOrdered.map((entry) => (
-			<Fragment key={getUniqueEntryHash(entry)}>
-				<TimesheetRow entry={entry} indent={indent} />
+	return entriesOrdered.map((entry) => (
+		<Fragment key={getUniqueEntryHash(entry)}>
+			<TimesheetRow entry={entry} indent={indent} />
+
+			{entry.subEntries !== null && !entry.collapsed && (
 				<TimesheetRows entries={entry.subEntries} indent={indent + 1} />
-			</Fragment>
-		))
-	);
+			)}
+		</Fragment>
+	));
 }

@@ -1,6 +1,6 @@
 import moment from "moment";
 import { TimeEntry } from "@/schema";
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import { useSettings } from "@/contexts/use-settings-context";
 import { useTimekeep } from "@/contexts/use-timekeep-context";
 import TimesheetRowEditing from "@/components/TimesheetRowEditing";
@@ -11,6 +11,7 @@ import {
 	withSubEntry,
 	isKeepRunning,
 	isEntryRunning,
+	setEntryCollapsed,
 } from "@/timekeep";
 
 import { formatTimestamp } from "src/utils";
@@ -63,6 +64,17 @@ export default function TimesheetRow({ entry, indent }: Props) {
 		});
 	};
 
+	// Handles toggling the collapsed state for an entry
+	const handleToggleCollapsed = useCallback(() => {
+		if (entry.subEntries === null) return;
+
+		setTimekeep((timekeep) => {
+			const newEntry = setEntryCollapsed(entry, !entry.collapsed);
+			const entries = updateEntry(timekeep.entries, entry, newEntry);
+			return { ...timekeep, entries };
+		});
+	}, [setTimekeep, entry]);
+
 	if (editing) {
 		return (
 			<TimesheetRowEditing
@@ -72,19 +84,28 @@ export default function TimesheetRow({ entry, indent }: Props) {
 		);
 	}
 
-	// Build up a list of indent lines for each level
-	const indentItems = [];
-	for (let i = 0; i < indent; i++) {
-		indentItems.push(<span key={i} className="timekeep-indent" />);
-	}
-
 	return (
-		<tr className="timekeep-row" data-running={isSelfRunning}>
-			<td className="timekeep-col timekeep-col--name">
-				{indentItems}
-
-				<span className="timekeep-entry-name" title={entry.name}>
+		<tr
+			className="timekeep-row"
+			data-running={isSelfRunning}
+			data-sub-entires={entry.subEntries !== null}>
+			<td
+				className="timekeep-col timekeep-col--name"
+				style={{ paddingLeft: `${(indent + 1) * 15}px` }}>
+				<span
+					className="timekeep-entry-name"
+					title={entry.name}
+					onClick={handleToggleCollapsed}>
 					{entry.name}
+
+					{entry.subEntries !== null && (
+						<ObsidianIcon
+							icon={
+								entry.collapsed ? "chevron-down" : "chevron-up"
+							}
+							className="timekeep-collapse-icon"
+						/>
+					)}
 				</span>
 			</td>
 			<td className="timekeep-col timekeep-col--time">

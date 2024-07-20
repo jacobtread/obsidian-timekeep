@@ -37,6 +37,8 @@ const TIME_ENTRY_GROUP_BASE = z.object({
 	name: z.string(),
 	startTime: z.null(),
 	endTime: z.null(),
+	// Optional field to indicate the entry is collapsed
+	collapsed: z.boolean().optional(),
 });
 
 // Schema for a time entry group
