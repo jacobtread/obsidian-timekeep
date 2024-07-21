@@ -30,14 +30,12 @@ function formatDuration(totalTime) {
 }
 
 for (const timekeep of timekeeps) {
-	let data = [];
-
-	for (const entry of timekeep.entries) {
-		let duration = timekeepPlugin.getEntryDuration(entry, currentTime);
-
-		// Push the entry
-		data.push([entry.name, duration]);
-	}
+	// Create the entries
+	const data = timekeep.entries
+		.map((entry) => {	
+			let duration = timekeepPlugin.getEntryDuration(entry, currentTime);
+			return [entry.name, duration];
+		})
 
 	// Order the data by duration
 	data.sort((a, b) => b[1] - a[1]);
