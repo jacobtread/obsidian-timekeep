@@ -33,17 +33,7 @@ for (const timekeep of timekeeps) {
 	let data = [];
 
 	for (const entry of timekeep.entries) {
-		let duration = 0;
-		if (entry.subEntries !== null) {
-			// Group entry total duration
-			duration = timekeepPlugin.getTotalDuration(
-				entry.subEntries,
-				currentTime
-			);
-		} else {
-			// Single entry duration
-			duration = timekeepPlugin.getEntryDuration(entry, currentTime);
-		}
+		let duration = timekeepPlugin.getEntryDuration(entry, currentTime);
 
 		// Push the entry
 		data.push([entry.name, duration]);
