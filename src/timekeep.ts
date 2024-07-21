@@ -188,7 +188,14 @@ export function setEntryCollapsed(
 	// Entry cannot be collapsed
 	if (entry.subEntries === null) return entry;
 
-	return { ...entry, collapsed };
+	const newEntry: TimeEntry = { ...entry, collapsed };
+
+	// Delete the collapsed field if not collapsed
+	if (!collapsed) {
+		delete newEntry.collapsed;
+	}
+
+	return newEntry;
 }
 
 /**

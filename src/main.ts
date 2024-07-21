@@ -25,6 +25,7 @@ import {
 } from "@/timekeep";
 
 import { Timekeep, TimeEntry } from "./schema";
+import { createTimekeepStore } from "./store/timekeep-store";
 import { SettingsStore, createSettingsStore } from "./store/settings-store";
 
 export default class TimekeepPlugin extends Plugin {
@@ -160,15 +161,20 @@ class TimekeepComponent extends MarkdownRenderChild {
 		if (this.loadResult.success) {
 			const timekeep = this.loadResult.timekeep;
 
+			// Create a store for the timekeep state
+			const timekeepStore = createTimekeepStore(
+				timekeep,
+				this.trySave.bind(this)
+			);
+
 			this.root.render(
 				React.createElement(
 					StrictMode,
 					{},
 					React.createElement(App, {
 						app: this.app,
-						initialState: timekeep,
+						timekeepStore,
 						settingsStore: this.settingsStore,
-						save: this.trySave.bind(this),
 					})
 				)
 			);

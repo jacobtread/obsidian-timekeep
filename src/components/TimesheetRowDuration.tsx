@@ -4,18 +4,6 @@ import { formatDuration } from "@/utils";
 import React, { useState, useEffect } from "react";
 import { isEntryRunning, getEntryDuration } from "@/timekeep";
 
-/**
- * Obtains the formatted duration string for an entry
- *
- * @param entry The entry
- * @returns The formatted duration
- */
-function getDuration(entry: TimeEntry): string {
-	const currentTime = moment();
-	const duration = getEntryDuration(entry, currentTime);
-	return formatDuration(duration);
-}
-
 type Props = {
 	entry: TimeEntry;
 };
@@ -26,11 +14,11 @@ type Props = {
  * latest duration.
  */
 export default function TimesheetRowDuration({ entry }: Props) {
-	const [duration, setDuration] = useState(getDuration(entry));
+	const [duration, setDuration] = useState(getFormattedDuration(entry));
 
 	useEffect(() => {
 		const isRunning = isEntryRunning(entry);
-		const updateTiming = () => setDuration(getDuration(entry));
+		const updateTiming = () => setDuration(getFormattedDuration(entry));
 
 		// Initial update
 		updateTiming();
@@ -47,4 +35,16 @@ export default function TimesheetRowDuration({ entry }: Props) {
 	}, [entry]);
 
 	return <span className="timekeep-time">{duration}</span>;
+}
+
+/**
+ * Obtains the formatted duration string for an entry
+ *
+ * @param entry The entry
+ * @returns The formatted duration
+ */
+function getFormattedDuration(entry: TimeEntry): string {
+	const currentTime = moment();
+	const duration = getEntryDuration(entry, currentTime);
+	return formatDuration(duration);
 }

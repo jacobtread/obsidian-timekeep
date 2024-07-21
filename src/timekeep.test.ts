@@ -1526,7 +1526,7 @@ describe("extracting code blocks", () => {
 });
 
 describe("collapse state", () => {
-	it("should update group collapse state", () => {
+	it("should update group collapse state when set to true", () => {
 		const currentTime = moment();
 
 		const input: TimeEntryGroup = {
@@ -1548,6 +1548,29 @@ describe("collapse state", () => {
 		expect(collapsed.subEntries).not.toBeNull();
 		expect((collapsed as TimeEntryGroup).collapsed).toBeDefined();
 		expect((collapsed as TimeEntryGroup).collapsed).toBe(true);
+	});
+
+	it("collapsed state should be undefined when false", () => {
+		const currentTime = moment();
+
+		const input: TimeEntryGroup = {
+			name: "Test",
+			startTime: null,
+			endTime: null,
+			subEntries: [
+				{
+					name: "Test",
+					startTime: currentTime,
+					endTime: currentTime,
+					subEntries: null,
+				},
+			],
+		};
+
+		const collapsed = setEntryCollapsed(input, false);
+
+		expect(collapsed.subEntries).not.toBeNull();
+		expect((collapsed as TimeEntryGroup).collapsed).toBeUndefined();
 	});
 
 	it("should not set collapse state on single entry", () => {

@@ -1,8 +1,8 @@
 import moment from "moment";
 import { TimeEntry } from "@/schema";
-import React, { useState, useCallback } from "react";
+import React, { useMemo, useState } from "react";
+import { useTimekeepStore } from "@/store/timekeep-store";
 import { useSettings } from "@/contexts/use-settings-context";
-import { useTimekeep } from "@/contexts/use-timekeep-context";
 import TimesheetRowEditing from "@/components/TimesheetRowEditing";
 import TimesheetRowDuration from "@/components/TimesheetRowDuration";
 import {
@@ -21,17 +21,26 @@ import ObsidianIcon from "./ObsidianIcon";
 type Props = {
 	entry: TimeEntry;
 	indent: number;
+	isTimekeepRunning: boolean;
 };
 
-export default function TimesheetRow({ entry, indent }: Props) {
-	const isSelfRunning = entry.subEntries === null && isEntryRunning(entry);
+export default function TimesheetRow({
+	entry,
+	indent,
+	isTimekeepRunning,
+}: Props) {
 	const settings = useSettings();
-	const { setTimekeep, isTimekeepRunning } = useTimekeep();
+	const store = useTimekeepStore();
 
 	const [editing, setEditing] = useState(false);
 
+	const isSelfRunning = useMemo(
+		() => entry.subEntries === null && isEntryRunning(entry),
+		[entry]
+	);
+
 	const onClickStart = () => {
-		setTimekeep((timekeep) => {
+		store.setTimekeep((timekeep) => {
 			// Don't start if already running
 			if (isKeepRunning(timekeep)) {
 				return timekeep;
@@ -65,15 +74,15 @@ export default function TimesheetRow({ entry, indent }: Props) {
 	};
 
 	// Handles toggling the collapsed state for an entry
-	const handleToggleCollapsed = useCallback(() => {
+	const handleToggleCollapsed = () => {
 		if (entry.subEntries === null) return;
 
-		setTimekeep((timekeep) => {
+		store.setTimekeep((timekeep) => {
 			const newEntry = setEntryCollapsed(entry, !entry.collapsed);
 			const entries = updateEntry(timekeep.entries, entry, newEntry);
 			return { ...timekeep, entries };
 		});
-	}, [setTimekeep, entry]);
+	};
 
 	if (editing) {
 		return (

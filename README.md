@@ -99,6 +99,17 @@ If you have frequently used entry names you can define them in your template by 
 This will create an entry that is not yet started which you can click the play button on and start without having to type out the name.
 
 
+## Known issues
+
+### Jumpy rendering behavior on modification
+
+If your lists become longer you will likely see some jumpy/flickery behavior with timekeep when making modifications (add/save/delete/collapse/expand), this is a limitation of how Obsidian re-renders the app.
+
+I am unable to take advantage of the React virtual DOM to only update the changed DOM elements for the entries, because Obsidian re-creates the entire app when the code block changes (Since the timekeep data is stored in the codeblock, modifications cause this to happen. Thus the virtual DOM and real DOM are thrown away causing a full re-render). This issue also means local state will all be lost on modification (Which is why the collapsed state must be persisted to the timekeep)
+
+
+I do not believe this can be fixed but PRs are welcome if you are aware of a way to fix this. 
+
 ## 📄 License
 
 This project is licensed under the [MIT License](./LICENSE.md)

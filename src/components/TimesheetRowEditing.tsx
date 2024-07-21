@@ -1,8 +1,9 @@
 import { TimeEntry } from "@/schema";
+import { useDialog } from "@/contexts/use-dialog";
 import { removeEntry, updateEntry } from "@/timekeep";
-import React, { useState, useEffect, FormEvent } from "react";
+import { useTimekeepStore } from "@/store/timekeep-store";
 import { useSettings } from "@/contexts/use-settings-context";
-import { useTimekeep } from "@/contexts/use-timekeep-context";
+import React, { useState, useEffect, FormEvent } from "react";
 import { parseEditableTimestamp, formatEditableTimestamp } from "@/utils";
 
 import ObsidianIcon from "./ObsidianIcon";
@@ -14,7 +15,8 @@ type Props = {
 
 export default function TimesheetRowEditing({ entry, onFinishEditing }: Props) {
 	const settings = useSettings();
-	const { setTimekeep, showConfirm } = useTimekeep();
+	const { showConfirm } = useDialog();
+	const store = useTimekeepStore();
 
 	const [name, setName] = useState(entry.name);
 	const [startTime, setStartTime] = useState("");
@@ -44,7 +46,7 @@ export default function TimesheetRowEditing({ entry, onFinishEditing }: Props) {
 			return;
 		}
 
-		setTimekeep((timekeep) => ({
+		store.setTimekeep((timekeep) => ({
 			entries: removeEntry(timekeep.entries, entry),
 		}));
 	};
@@ -76,7 +78,7 @@ export default function TimesheetRowEditing({ entry, onFinishEditing }: Props) {
 		}
 
 		// Save the updated entry
-		setTimekeep((timekeep) => ({
+		store.setTimekeep((timekeep) => ({
 			entries: updateEntry(timekeep.entries, entry, newEntry),
 		}));
 

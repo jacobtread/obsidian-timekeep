@@ -1,10 +1,11 @@
 import moment from "moment";
 import { Timekeep } from "@/schema";
 import React, { useState, useEffect } from "react";
-import { useTimekeep } from "@/contexts/use-timekeep-context";
 import { useSettings } from "@/contexts/use-settings-context";
 import { formatDuration, formatDurationHoursTrunc } from "@/utils";
+import { useTimekeep, useTimekeepStore } from "@/store/timekeep-store";
 import {
+	isKeepRunning,
 	getRunningEntry,
 	getTotalDuration,
 	getEntryDuration,
@@ -42,9 +43,11 @@ function getTimingState(timekeep: Timekeep): TimingState {
 }
 
 export default function TimesheetCounters() {
-	const { timekeep, isTimekeepRunning } = useTimekeep();
-	const [timing, setTiming] = useState<TimingState>(getTimingState(timekeep));
 	const settings = useSettings();
+	const store = useTimekeepStore();
+	const timekeep = useTimekeep(store);
+
+	const [timing, setTiming] = useState<TimingState>(getTimingState(timekeep));
 
 	// Update the current timings every second
 	useEffect(() => {
@@ -54,14 +57,14 @@ export default function TimesheetCounters() {
 		updateTiming();
 
 		// Only schedule further updates if we are running
-		if (isTimekeepRunning) {
+		if (isKeepRunning(timekeep)) {
 			const intervalID = window.setInterval(updateTiming, 1000);
 
 			return () => {
 				clearInterval(intervalID);
 			};
 		}
-	}, [timekeep, isTimekeepRunning]);
+	}, [timekeep]);
 
 	return (
 		<div className="timekeep-timers">

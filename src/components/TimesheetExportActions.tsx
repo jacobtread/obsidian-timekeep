@@ -7,14 +7,15 @@ import { Platform } from "obsidian";
 import { mkdir, writeFile } from "fs/promises";
 import { PdfExportBehavior } from "@/settings";
 import { createCSV, createMarkdownTable } from "@/export";
+import { useTimekeepStore } from "@/store/timekeep-store";
 import { useSettings } from "@/contexts/use-settings-context";
-import { useTimekeep } from "@/contexts/use-timekeep-context";
 
 export default function TimekeepExportActions() {
-	const { timekeep } = useTimekeep();
 	const settings = useSettings();
+	const store = useTimekeepStore();
 
 	const onCopyMarkdown = () => {
+		const timekeep = store.getTimekeep();
 		const currentTime = moment();
 		const output = createMarkdownTable(timekeep, settings, currentTime);
 
@@ -25,6 +26,7 @@ export default function TimekeepExportActions() {
 	};
 
 	const onCopyCSV = () => {
+		const timekeep = store.getTimekeep();
 		const currentTime = moment();
 		const output = createCSV(timekeep, settings, currentTime);
 
@@ -35,6 +37,7 @@ export default function TimekeepExportActions() {
 	};
 
 	const onCopyJSON = () => {
+		const timekeep = store.getTimekeep();
 		const output = JSON.stringify(timekeep);
 
 		navigator.clipboard
@@ -44,6 +47,8 @@ export default function TimekeepExportActions() {
 	};
 
 	const onSavePDF = async () => {
+		const timekeep = store.getTimekeep();
+
 		// Pdf exports don't work in mobile mode
 		if (Platform.isMobileApp) return;
 

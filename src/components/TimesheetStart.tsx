@@ -1,8 +1,8 @@
 import moment from "moment";
 import { formatTimestamp } from "@/utils";
 import React, { useMemo, useState, FormEvent } from "react";
-import { useTimekeep } from "@/contexts/use-timekeep-context";
 import { useSettings } from "@/contexts/use-settings-context";
+import { useTimekeep, useTimekeepStore } from "@/store/timekeep-store";
 import {
 	withEntry,
 	isKeepRunning,
@@ -18,13 +18,17 @@ import ObsidianIcon from "./ObsidianIcon";
  * name field
  */
 export default function TimekeepStart() {
-	const { timekeep, setTimekeep, isTimekeepRunning } = useTimekeep();
+	const store = useTimekeepStore();
+	const timekeep = useTimekeep(store);
 	const [name, setName] = useState("");
 	const settings = useSettings();
+
 	const currentEntry = useMemo(
 		() => getRunningEntry(timekeep.entries),
 		[timekeep]
 	);
+
+	const isTimekeepRunning = currentEntry !== null;
 
 	/**
 	 * Handles the click of the start/stop button
@@ -34,7 +38,7 @@ export default function TimekeepStart() {
 		event.preventDefault();
 		event.stopPropagation();
 
-		setTimekeep((timekeep) => {
+		store.setTimekeep((timekeep) => {
 			const currentTime = moment();
 			let entries;
 
