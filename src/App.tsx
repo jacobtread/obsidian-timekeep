@@ -1,8 +1,8 @@
 import React from "react";
 import { Timekeep } from "@/schema";
+import { Store, useStore } from "@/store";
 import { App as ObsidianApp } from "obsidian";
 import { TimekeepSettings } from "@/settings";
-import { Store, useStore } from "@/store";
 import { AppContext } from "@/contexts/use-app-context";
 import TimesheetStart from "@/components/TimesheetStart";
 import TimesheetTable from "@/components/TimesheetTable";
