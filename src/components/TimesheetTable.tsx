@@ -1,12 +1,13 @@
+import { useStore } from "@/store";
 import React, { useMemo } from "react";
 import { isKeepRunning } from "@/timekeep";
 import TimesheetRows from "@/components/TimesheetRows";
 import { useSettings } from "@/contexts/use-settings-context";
-import { useTimekeep, useTimekeepStore } from "@/store/timekeep-store";
+import { useTimekeepStore } from "@/contexts/use-timekeep-store";
 
 export default function TimesheetTable() {
 	const store = useTimekeepStore();
-	const timekeep = useTimekeep(store);
+	const timekeep = useStore(store);
 	const settings = useSettings();
 
 	// Determine whether the keep is running

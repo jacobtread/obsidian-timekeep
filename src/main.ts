@@ -1,4 +1,5 @@
 import { Moment } from "moment";
+import { Store, createStore } from "@/store";
 import { TimekeepSettingsTab } from "@/settings-tab";
 import { PluginManifest, App as ObsidianApp } from "obsidian";
 import { defaultSettings, TimekeepSettings } from "@/settings";
@@ -15,10 +16,9 @@ import {
 
 import { Timekeep, TimeEntry } from "./schema";
 import { TimekeepMarkdownView } from "./views/timekeep-markdown-view";
-import { SettingsStore, createSettingsStore } from "./store/settings-store";
 
 export default class TimekeepPlugin extends Plugin {
-	settingsStore: SettingsStore;
+	settingsStore: Store<TimekeepSettings>;
 
 	extractTimekeepCodeblocks: (value: string) => Timekeep[];
 	isKeepRunning: (timekeep: Timekeep) => boolean;
@@ -30,6 +30,17 @@ export default class TimekeepPlugin extends Plugin {
 	constructor(app: ObsidianApp, manifest: PluginManifest) {
 		super(app, manifest);
 
+		const saveSettings = this.saveData.bind(this);
+
+		const settingsStore = createStore(defaultSettings);
+
+		// Subscribe to settings changes to save them
+		settingsStore.subscribe(() => {
+			saveSettings(settingsStore.getState());
+		});
+
+		this.settingsStore = settingsStore;
+
 		// Expose API functions
 		this.extractTimekeepCodeblocks = extractTimekeepCodeblocks;
 		this.isKeepRunning = isKeepRunning;
@@ -40,7 +51,10 @@ export default class TimekeepPlugin extends Plugin {
 	}
 
 	async onload(): Promise<void> {
-		await this.loadSettings();
+		// Load saved settings and combine with defaults
+		this.settingsStore.setState(
+			Object.assign({}, defaultSettings, await this.loadData())
+		);
 
 		this.addSettingTab(new TimekeepSettingsTab(this.app, this));
 
@@ -72,29 +86,5 @@ export default class TimekeepPlugin extends Plugin {
 				e.replaceSelection('\n```timekeep\n{"entries": []}\n```\n');
 			},
 		});
-	}
-
-	async loadSettings(): Promise<void> {
-		const settings = Object.assign(
-			{},
-			defaultSettings,
-			await this.loadData()
-		);
-
-		this.settingsStore = createSettingsStore(settings);
-	}
-
-	async updateSettings(
-		update: (currentValue: TimekeepSettings) => TimekeepSettings
-	): Promise<void> {
-		const newValue = update(this.settingsStore.getSettings());
-
-		this.settingsStore.setSettings(newValue);
-
-		await this.saveData(newValue);
-	}
-
-	async saveSettings(): Promise<void> {
-		await this.saveData(this.settingsStore.getSettings());
 	}
 }

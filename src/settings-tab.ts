@@ -1,20 +1,26 @@
+import { Store } from "@/store";
 import TimekeepPlugin from "@/main";
 import { App, Setting, PluginSettingTab } from "obsidian";
-import { defaultSettings, PdfExportBehavior } from "@/settings";
+import {
+	defaultSettings,
+	TimekeepSettings,
+	PdfExportBehavior,
+} from "@/settings";
 
 export class TimekeepSettingsTab extends PluginSettingTab {
-	plugin: TimekeepPlugin;
+	settingsStore: Store<TimekeepSettings>;
 
 	constructor(app: App, plugin: TimekeepPlugin) {
 		super(app, plugin);
-		this.plugin = plugin;
+
+		this.settingsStore = plugin.settingsStore;
 	}
 
 	display(): void {
 		this.containerEl.empty();
 		this.containerEl.createEl("h2", { text: "Settings" });
 
-		const settings = this.plugin.settingsStore.getSettings();
+		const settings = this.settingsStore.getState();
 
 		new Setting(this.containerEl)
 			.setName("Timestamp display format")
@@ -32,13 +38,13 @@ export class TimekeepSettingsTab extends PluginSettingTab {
 			)
 			.addText((t) => {
 				t.setValue(String(settings.timestampFormat));
-				t.onChange(async (v) => {
+				t.onChange((v) => {
 					// Only use a custom format if the value is not blank
 					const newFormat = v.length
 						? v
 						: defaultSettings.timestampFormat;
 
-					await this.plugin.updateSettings((currentValue) => ({
+					this.settingsStore.setState((currentValue) => ({
 						...currentValue,
 						timestampFormat: newFormat,
 					}));
@@ -51,11 +57,11 @@ export class TimekeepSettingsTab extends PluginSettingTab {
 
 			.addText((t) => {
 				t.setValue(String(settings.pdfTitle));
-				t.onChange(async (v) => {
+				t.onChange((v) => {
 					// Only use a custom format if the value is not blank
 					const newPdfTitle = v.length ? v : defaultSettings.pdfTitle;
 
-					await this.plugin.updateSettings((currentValue) => ({
+					this.settingsStore.setState((currentValue) => ({
 						...currentValue,
 						pdfTitle: newPdfTitle,
 					}));
@@ -68,13 +74,13 @@ export class TimekeepSettingsTab extends PluginSettingTab {
 
 			.addTextArea((t) => {
 				t.setValue(String(settings.pdfFootnote));
-				t.onChange(async (v) => {
+				t.onChange((v) => {
 					// Only use a custom format if the value is not blank
 					const newPdfFootnote = v.length
 						? v
 						: defaultSettings.pdfFootnote;
 
-					await this.plugin.updateSettings((currentValue) => ({
+					this.settingsStore.setState((currentValue) => ({
 						...currentValue,
 						pdfFootnote: newPdfFootnote,
 					}));
@@ -94,8 +100,8 @@ export class TimekeepSettingsTab extends PluginSettingTab {
 						"Open directory containing the exported file",
 				});
 				t.setValue(String(settings.pdfExportBehavior));
-				t.onChange(async (v) => {
-					await this.plugin.updateSettings((currentValue) => ({
+				t.onChange((v) => {
+					this.settingsStore.setState((currentValue) => ({
 						...currentValue,
 						pdfExportBehavior: v as PdfExportBehavior,
 					}));
@@ -118,13 +124,13 @@ export class TimekeepSettingsTab extends PluginSettingTab {
 			)
 			.addText((t) => {
 				t.setValue(String(settings.pdfDateFormat));
-				t.onChange(async (v) => {
+				t.onChange((v) => {
 					// Only use a custom format if the value is not blank
 					const newPdfDateFormat = v.length
 						? v
 						: defaultSettings.pdfDateFormat;
 
-					await this.plugin.updateSettings((currentValue) => ({
+					this.settingsStore.setState((currentValue) => ({
 						...currentValue,
 						pdfDateFormat: newPdfDateFormat,
 					}));
@@ -147,13 +153,13 @@ export class TimekeepSettingsTab extends PluginSettingTab {
 			)
 			.addText((t) => {
 				t.setValue(String(settings.pdfRowDateFormat));
-				t.onChange(async (v) => {
+				t.onChange((v) => {
 					// Only use a custom format if the value is not blank
 					const newPdfRowDateFormat = v.length
 						? v
 						: defaultSettings.pdfRowDateFormat;
 
-					await this.plugin.updateSettings((currentValue) => ({
+					this.settingsStore.setState((currentValue) => ({
 						...currentValue,
 						pdfRowDateFormat: newPdfRowDateFormat,
 					}));
@@ -167,8 +173,8 @@ export class TimekeepSettingsTab extends PluginSettingTab {
 			)
 			.addToggle((t) => {
 				t.setValue(settings.csvTitle);
-				t.onChange(async (v) => {
-					await this.plugin.updateSettings((currentValue) => ({
+				t.onChange((v) => {
+					this.settingsStore.setState((currentValue) => ({
 						...currentValue,
 						csvTitle: v,
 					}));
@@ -182,12 +188,12 @@ export class TimekeepSettingsTab extends PluginSettingTab {
 			)
 			.addText((t) => {
 				t.setValue(String(settings.csvDelimiter));
-				t.onChange(async (v) => {
+				t.onChange((v) => {
 					const newCsvDelimiter = v.length
 						? v
 						: defaultSettings.csvDelimiter;
 
-					await this.plugin.updateSettings((currentValue) => ({
+					this.settingsStore.setState((currentValue) => ({
 						...currentValue,
 						csvDelimiter: newCsvDelimiter,
 					}));
@@ -201,8 +207,8 @@ export class TimekeepSettingsTab extends PluginSettingTab {
 			)
 			.addToggle((t) => {
 				t.setValue(settings.showDecimalHours);
-				t.onChange(async (v) => {
-					await this.plugin.updateSettings((currentValue) => ({
+				t.onChange((v) => {
+					this.settingsStore.setState((currentValue) => ({
 						...currentValue,
 						showDecimalHours: v,
 					}));
@@ -216,8 +222,8 @@ export class TimekeepSettingsTab extends PluginSettingTab {
 			)
 			.addToggle((t) => {
 				t.setValue(settings.reverseSegmentOrder);
-				t.onChange(async (v) => {
-					await this.plugin.updateSettings((currentValue) => ({
+				t.onChange((v) => {
+					this.settingsStore.setState((currentValue) => ({
 						...currentValue,
 						reverseSegmentOrder: v,
 					}));
@@ -231,8 +237,8 @@ export class TimekeepSettingsTab extends PluginSettingTab {
 			)
 			.addToggle((t) => {
 				t.setValue(settings.limitTableSize);
-				t.onChange(async (v) => {
-					await this.plugin.updateSettings((currentValue) => ({
+				t.onChange((v) => {
+					this.settingsStore.setState((currentValue) => ({
 						...currentValue,
 						limitTableSize: v,
 					}));

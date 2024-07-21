@@ -1,18 +1,24 @@
 import React from "react";
-import { useTimekeepStore } from "@/store/timekeep-store";
+import { Timekeep } from "@/schema";
+import { useTimekeepStore } from "@/contexts/use-timekeep-store";
 
-export default function TimesheetSaveError() {
-	const store = useTimekeepStore();
+type Props = {
+	// Callback to save the timekeep
+	handleSaveTimekeep: (value: Timekeep) => Promise<void>;
+};
+
+export default function TimesheetSaveError({ handleSaveTimekeep }: Props) {
+	const timekeepStore = useTimekeepStore();
 
 	// Attempts to re-save the current timekeep
 	const onRetrySave = () => {
 		// Attempt to save the current timekeep
-		store.saveTimekeep(store.getTimekeep());
+		handleSaveTimekeep(timekeepStore.getState());
 	};
 
 	// Copies the current timekeep state as JSON to clipboard
 	const onClickCopy = () => {
-		navigator.clipboard.writeText(JSON.stringify(store.getTimekeep()));
+		navigator.clipboard.writeText(JSON.stringify(timekeepStore.getState()));
 	};
 
 	return (

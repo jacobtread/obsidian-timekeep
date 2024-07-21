@@ -1,9 +1,10 @@
 import moment from "moment";
+import { useStore } from "@/store";
 import { Timekeep } from "@/schema";
 import React, { useState, useEffect } from "react";
 import { useSettings } from "@/contexts/use-settings-context";
+import { useTimekeepStore } from "@/contexts/use-timekeep-store";
 import { formatDuration, formatDurationHoursTrunc } from "@/utils";
-import { useTimekeep, useTimekeepStore } from "@/store/timekeep-store";
 import {
 	isKeepRunning,
 	getRunningEntry,
@@ -44,8 +45,8 @@ function getTimingState(timekeep: Timekeep): TimingState {
 
 export default function TimesheetCounters() {
 	const settings = useSettings();
-	const store = useTimekeepStore();
-	const timekeep = useTimekeep(store);
+	const timekeepStore = useTimekeepStore();
+	const timekeep = useStore(timekeepStore);
 
 	const [timing, setTiming] = useState<TimingState>(getTimingState(timekeep));
 

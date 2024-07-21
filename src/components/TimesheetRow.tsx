@@ -1,8 +1,8 @@
 import moment from "moment";
 import { TimeEntry } from "@/schema";
 import React, { useMemo, useState } from "react";
-import { useTimekeepStore } from "@/store/timekeep-store";
 import { useSettings } from "@/contexts/use-settings-context";
+import { useTimekeepStore } from "@/contexts/use-timekeep-store";
 import TimesheetRowEditing from "@/components/TimesheetRowEditing";
 import TimesheetRowDuration from "@/components/TimesheetRowDuration";
 import {
@@ -30,7 +30,7 @@ export default function TimesheetRow({
 	isTimekeepRunning,
 }: Props) {
 	const settings = useSettings();
-	const store = useTimekeepStore();
+	const timekeepStore = useTimekeepStore();
 
 	const [editing, setEditing] = useState(false);
 
@@ -40,7 +40,7 @@ export default function TimesheetRow({
 	);
 
 	const onClickStart = () => {
-		store.setTimekeep((timekeep) => {
+		timekeepStore.setState((timekeep) => {
 			// Don't start if already running
 			if (isKeepRunning(timekeep)) {
 				return timekeep;
@@ -77,7 +77,7 @@ export default function TimesheetRow({
 	const handleToggleCollapsed = () => {
 		if (entry.subEntries === null) return;
 
-		store.setTimekeep((timekeep) => {
+		timekeepStore.setState((timekeep) => {
 			const newEntry = setEntryCollapsed(entry, !entry.collapsed);
 			const entries = updateEntry(timekeep.entries, entry, newEntry);
 			return { ...timekeep, entries };

@@ -1,8 +1,9 @@
 import moment from "moment";
+import { useStore } from "@/store";
 import { formatTimestamp } from "@/utils";
 import React, { useMemo, useState, FormEvent } from "react";
 import { useSettings } from "@/contexts/use-settings-context";
-import { useTimekeep, useTimekeepStore } from "@/store/timekeep-store";
+import { useTimekeepStore } from "@/contexts/use-timekeep-store";
 import {
 	withEntry,
 	isKeepRunning,
@@ -19,7 +20,7 @@ import ObsidianIcon from "./ObsidianIcon";
  */
 export default function TimekeepStart() {
 	const store = useTimekeepStore();
-	const timekeep = useTimekeep(store);
+	const timekeep = useStore(store);
 	const [name, setName] = useState("");
 	const settings = useSettings();
 
@@ -38,7 +39,7 @@ export default function TimekeepStart() {
 		event.preventDefault();
 		event.stopPropagation();
 
-		store.setTimekeep((timekeep) => {
+		store.setState((timekeep) => {
 			const currentTime = moment();
 			let entries;
 

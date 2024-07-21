@@ -7,15 +7,15 @@ import { Platform } from "obsidian";
 import { mkdir, writeFile } from "fs/promises";
 import { PdfExportBehavior } from "@/settings";
 import { createCSV, createMarkdownTable } from "@/export";
-import { useTimekeepStore } from "@/store/timekeep-store";
 import { useSettings } from "@/contexts/use-settings-context";
+import { useTimekeepStore } from "@/contexts/use-timekeep-store";
 
 export default function TimekeepExportActions() {
 	const settings = useSettings();
-	const store = useTimekeepStore();
+	const timekeepStore = useTimekeepStore();
 
 	const onCopyMarkdown = () => {
-		const timekeep = store.getTimekeep();
+		const timekeep = timekeepStore.getState();
 		const currentTime = moment();
 		const output = createMarkdownTable(timekeep, settings, currentTime);
 
@@ -26,7 +26,7 @@ export default function TimekeepExportActions() {
 	};
 
 	const onCopyCSV = () => {
-		const timekeep = store.getTimekeep();
+		const timekeep = timekeepStore.getState();
 		const currentTime = moment();
 		const output = createCSV(timekeep, settings, currentTime);
 
@@ -37,7 +37,7 @@ export default function TimekeepExportActions() {
 	};
 
 	const onCopyJSON = () => {
-		const timekeep = store.getTimekeep();
+		const timekeep = timekeepStore.getState();
 		const output = JSON.stringify(timekeep);
 
 		navigator.clipboard
@@ -47,7 +47,7 @@ export default function TimekeepExportActions() {
 	};
 
 	const onSavePDF = async () => {
-		const timekeep = store.getTimekeep();
+		const timekeep = timekeepStore.getState();
 
 		// Pdf exports don't work in mobile mode
 		if (Platform.isMobileApp) return;

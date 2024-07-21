@@ -2,10 +2,10 @@ import App from "@/App";
 import moment from "moment";
 import { Timekeep } from "@/schema";
 import React, { StrictMode } from "react";
+import { Store, createStore } from "@/store";
 import { App as ObsidianApp } from "obsidian";
+import { TimekeepSettings } from "@/settings";
 import { Root, createRoot } from "react-dom/client";
-import { SettingsStore } from "@/store/settings-store";
-import { createTimekeepStore } from "@/store/timekeep-store";
 import { LoadResult, replaceTimekeepCodeblock } from "@/timekeep";
 import {
 	TFile,
@@ -18,7 +18,7 @@ export class TimekeepMarkdownView extends MarkdownRenderChild {
 	// Obsidian app instance
 	app: ObsidianApp;
 	// Timekeep settings store
-	settingsStore: SettingsStore;
+	settingsStore: Store<TimekeepSettings>;
 	// Markdown context for the current markdown block
 	context: MarkdownPostProcessorContext;
 	// Timekeep load result
@@ -31,7 +31,7 @@ export class TimekeepMarkdownView extends MarkdownRenderChild {
 	constructor(
 		containerEl: HTMLElement,
 		app: ObsidianApp,
-		settingsStore: SettingsStore,
+		settingsStore: Store<TimekeepSettings>,
 		context: MarkdownPostProcessorContext,
 		loadResult: LoadResult
 	) {
@@ -66,11 +66,27 @@ export class TimekeepMarkdownView extends MarkdownRenderChild {
 		if (this.loadResult.success) {
 			const timekeep = this.loadResult.timekeep;
 
-			// Create a store for the timekeep state
-			const timekeepStore = createTimekeepStore(
-				timekeep,
-				this.trySave.bind(this)
-			);
+			const timekeepStore = createStore(timekeep);
+			const saveErrorStore = createStore(false);
+
+			const trySave = this.trySave.bind(this);
+
+			const handleSaveTimekeep = async (timekeep: Timekeep) => {
+				// Attempt to save the timekeep changes
+				const result = await trySave(timekeep);
+
+				const saveError = !result;
+
+				// Update the save error state
+				if (saveErrorStore.getState() !== saveError) {
+					saveErrorStore.setState(saveError);
+				}
+			};
+
+			// Subscribe to save when timekeep changes
+			timekeepStore.subscribe(() => {
+				handleSaveTimekeep(timekeepStore.getState());
+			});
 
 			this.root.render(
 				React.createElement(
@@ -79,7 +95,9 @@ export class TimekeepMarkdownView extends MarkdownRenderChild {
 					React.createElement(App, {
 						app: this.app,
 						timekeepStore,
+						saveErrorStore,
 						settingsStore: this.settingsStore,
+						handleSaveTimekeep,
 					})
 				)
 			);
