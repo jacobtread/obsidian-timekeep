@@ -2,10 +2,10 @@ import { Store } from "@/store";
 import TimekeepPlugin from "@/main";
 import { App, Setting, PluginSettingTab } from "obsidian";
 import {
+	DurationFormat,
 	defaultSettings,
 	TimekeepSettings,
 	PdfExportBehavior,
-	DurationFormat,
 } from "@/settings";
 
 export class TimekeepSettingsTab extends PluginSettingTab {

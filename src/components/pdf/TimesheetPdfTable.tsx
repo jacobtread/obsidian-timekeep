@@ -4,7 +4,7 @@ import { getEntryDuration } from "@/timekeep";
 import { TimekeepSettings } from "@/settings";
 import { Timekeep, TimeEntry } from "@/schema";
 import { View, Text, StyleSheet } from "@/pdf";
-import { formatDurationLong, formatPdfRowDate } from "@/utils";
+import { formatPdfRowDate, formatDurationLong } from "@/utils";
 
 type Props = {
 	data: Timekeep;
