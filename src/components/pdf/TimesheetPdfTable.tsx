@@ -4,7 +4,7 @@ import { getEntryDuration } from "@/timekeep";
 import { TimekeepSettings } from "@/settings";
 import { Timekeep, TimeEntry } from "@/schema";
 import { View, Text, StyleSheet } from "@/pdf";
-import { formatDuration, formatPdfRowDate } from "@/utils";
+import { formatDurationLong, formatPdfRowDate } from "@/utils";
 
 type Props = {
 	data: Timekeep;
@@ -142,7 +142,7 @@ type RowProps = {
 
 function TimesheetPdfTableRow({ entry, currentTime, settings }: RowProps) {
 	const duration = getEntryDuration(entry, currentTime);
-	const durationFormatted = formatDuration(duration);
+	const durationFormatted = formatDurationLong(duration);
 
 	// Render start and end timing for individual entries
 	const renderTiming = entry.startTime !== null && (

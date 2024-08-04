@@ -1,14 +1,16 @@
 import moment from "moment";
-import { defaultSettings, TimekeepSettings } from "@/settings";
+import { DurationFormat, defaultSettings, TimekeepSettings } from "@/settings";
 
 import {
 	formatPdfDate,
 	formatDuration,
 	formatTimestamp,
 	formatPdfRowDate,
+	formatDurationLong,
+	formatDurationShort,
+	formatDurationDecimal,
 	parseEditableTimestamp,
 	formatEditableTimestamp,
-	formatDurationHoursTrunc,
 } from "./time";
 
 it("should format time", () => {
@@ -59,7 +61,7 @@ describe("format duration", () => {
 	])(
 		'for duration "%s" should expected formatted "%s"',
 		(input, expected) => {
-			const output = formatDuration(input);
+			const output = formatDurationLong(input);
 
 			expect(output).toBe(expected);
 		}
@@ -75,7 +77,52 @@ describe("format duration short", () => {
 	])(
 		'for duration "%s" should expected formatted "%s"',
 		(input, expected) => {
-			const output = formatDurationHoursTrunc(input);
+			const output = formatDurationShort(input);
+
+			expect(output).toBe(expected);
+		}
+	);
+});
+
+describe("format duration decimal", () => {
+	test.each([
+		[1000 * 60 * 60 * 2, "2.00"],
+		[1000 * 60 * 60 * 25.25, "25.25"],
+		[1000 * 60 * 60 * 25.255, "25.25"],
+		[1000 * 60 * 60 * 50.5, "50.50"],
+	])(
+		'for duration "%s" should expected formatted "%s"',
+		(input, expected) => {
+			const output = formatDurationDecimal(input);
+
+			expect(output).toBe(expected);
+		}
+	);
+});
+
+describe("format duration with format", () => {
+	test.each([
+		[DurationFormat.LONG, 1000, "1s"],
+		[DurationFormat.LONG, 1000 * 12, "12s"],
+		[DurationFormat.LONG, 1000 * 60, "1m 0s"],
+		[DurationFormat.LONG, 1000 * 60 * 2, "2m 0s"],
+		[DurationFormat.LONG, 1000 * 60 * 60 * 2, "2h 0s"],
+		[DurationFormat.LONG, 1000 * 60 * 60 * 2.5, "2h 30m 0s"],
+		[DurationFormat.LONG, 1000 * 60 * 60 * 2.505, "2h 30m 18s"],
+
+		[DurationFormat.SHORT, 1000 * 60 * 60 * 2, "2.00h"],
+		[DurationFormat.SHORT, 1000 * 60 * 60 * 25.25, "25.25h"],
+		[DurationFormat.SHORT, 1000 * 60 * 60 * 25.255, "25.25h"],
+		[DurationFormat.SHORT, 1000 * 60 * 60 * 50.5, "50.50h"],
+
+		[DurationFormat.DECIMAL, 1000 * 60 * 60 * 2, "2.00"],
+		[DurationFormat.DECIMAL, 1000 * 60 * 60 * 25.25, "25.25"],
+		[DurationFormat.DECIMAL, 1000 * 60 * 60 * 25.255, "25.25"],
+		[DurationFormat.DECIMAL, 1000 * 60 * 60 * 50.5, "50.50"],
+	])(
+		'for duration "%s" should expected formatted "%s"',
+		(format, input, expected) => {
+			const output = formatDuration(format, input);
 
 			expect(output).toBe(expected);
 		}
