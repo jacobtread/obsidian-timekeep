@@ -1,6 +1,6 @@
 import moment from "moment";
 import { TimeEntry } from "@/schema";
-import { formatDuration } from "@/utils";
+import { formatDurationLong } from "@/utils";
 import React, { useState, useEffect } from "react";
 import { isEntryRunning, getEntryDuration } from "@/timekeep";
 
@@ -46,5 +46,5 @@ export default function TimesheetRowDuration({ entry }: Props) {
 function getFormattedDuration(entry: TimeEntry): string {
 	const currentTime = moment();
 	const duration = getEntryDuration(entry, currentTime);
-	return formatDuration(duration);
+	return formatDurationLong(duration);
 }

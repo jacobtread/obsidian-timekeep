@@ -7,6 +7,15 @@ export enum PdfExportBehavior {
 	OPEN_FILE = "OPEN_FILE",
 }
 
+export enum DurationFormat {
+	// Format including all units (1h 30m 25s)
+	LONG = "LONG",
+	// Format just including hours (1.5h)
+	SHORT = "SHORT",
+	// Short format without units (1.5)
+	DECIMAL = "DECIMAL",
+}
+
 export interface TimekeepSettings {
 	csvDelimiter: string;
 	csvTitle: boolean;
@@ -20,6 +29,7 @@ export interface TimekeepSettings {
 	reverseSegmentOrder: boolean;
 	timestampFormat: string;
 	showDecimalHours: boolean;
+	exportDurationFormat: DurationFormat;
 }
 
 export const defaultSettings: TimekeepSettings = {
@@ -36,4 +46,5 @@ export const defaultSettings: TimekeepSettings = {
 	reverseSegmentOrder: false,
 	limitTableSize: true,
 	showDecimalHours: true,
+	exportDurationFormat: DurationFormat.SHORT,
 };

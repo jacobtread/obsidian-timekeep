@@ -4,7 +4,7 @@ import { Timekeep } from "@/schema";
 import React, { useState, useEffect } from "react";
 import { useSettings } from "@/contexts/use-settings-context";
 import { useTimekeepStore } from "@/contexts/use-timekeep-store";
-import { formatDuration, formatDurationHoursTrunc } from "@/utils";
+import { formatDurationLong, formatDurationShort } from "@/utils";
 import {
 	isKeepRunning,
 	getRunningEntry,
@@ -36,10 +36,10 @@ function getTimingState(timekeep: Timekeep): TimingState {
 
 	return {
 		running: runningEntry !== null,
-		current: formatDuration(current),
-		currentShort: formatDurationHoursTrunc(current),
-		total: formatDuration(total),
-		totalShort: formatDurationHoursTrunc(total),
+		current: formatDurationLong(current),
+		currentShort: formatDurationShort(current),
+		total: formatDurationLong(total),
+		totalShort: formatDurationShort(total),
 	};
 }
 

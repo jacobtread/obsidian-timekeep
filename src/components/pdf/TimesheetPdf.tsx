@@ -6,8 +6,8 @@ import { TimekeepSettings } from "@/settings";
 import { Page, View, Text, Document, StyleSheet } from "@/pdf";
 import {
 	formatPdfDate,
-	formatDuration,
-	formatDurationHoursTrunc,
+	formatDurationLong,
+	formatDurationShort,
 } from "@/utils";
 
 import TimesheetPdfTable from "./TimesheetPdfTable";
@@ -83,8 +83,8 @@ export default function TimesheetPdf({
 	const duration = getTotalDuration(data.entries, currentTime);
 
 	const currentDate = formatPdfDate(currentTime, settings);
-	const totalDuration = formatDuration(duration);
-	const totalDurationShort = formatDurationHoursTrunc(duration);
+	const totalDuration = formatDurationLong(duration);
+	const totalDurationShort = formatDurationShort(duration);
 
 	// Individual field within the details section
 	const DetailField = ({ name, value }: { name: string; value: string }) => (

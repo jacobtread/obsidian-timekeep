@@ -1,8 +1,8 @@
 import type { Moment } from "moment";
 import { formatDuration } from "@/utils";
 import { getTotalDuration } from "@/timekeep";
-import { TimekeepSettings } from "@/settings";
 import { Timekeep, TimeEntry } from "@/schema";
+import { DurationFormat, TimekeepSettings } from "@/settings";
 import { RawTableRow, TOTAL_COLUMNS, createRawTable } from "@/export";
 
 /**
@@ -22,8 +22,13 @@ function createHeader(): RawTableRow {
  * @param currentTime The current time to use for unfinished entries
  * @returns The created row
  */
-function createFooter(entries: TimeEntry[], currentTime: Moment): RawTableRow {
+function createFooter(
+	entries: TimeEntry[],
+	currentTime: Moment,
+	durationFormat: DurationFormat
+): RawTableRow {
 	const total: string = formatDuration(
+		durationFormat,
 		getTotalDuration(entries, currentTime)
 	);
 	return ["**Total**", "", "", `**${total}**`];
@@ -68,7 +73,11 @@ export function createMarkdownTable(
 		// Markdown raw table contents
 		...createRawTable(timekeep.entries, settings, currentTime),
 		// Markdown footer row
-		createFooter(timekeep.entries, currentTime),
+		createFooter(
+			timekeep.entries,
+			currentTime,
+			settings.exportDurationFormat
+		),
 	];
 
 	// Array of indexes for all the columns (0 - TOTAL_COLUMNS)

@@ -2,6 +2,7 @@ import { Store } from "@/store";
 import TimekeepPlugin from "@/main";
 import { App, Setting, PluginSettingTab } from "obsidian";
 import {
+	DurationFormat,
 	defaultSettings,
 	TimekeepSettings,
 	PdfExportBehavior,
@@ -241,6 +242,28 @@ export class TimekeepSettingsTab extends PluginSettingTab {
 					this.settingsStore.setState((currentValue) => ({
 						...currentValue,
 						limitTableSize: v,
+					}));
+				});
+			});
+
+		new Setting(this.containerEl)
+			.setName("CSV/Markdown duration format")
+			.setDesc("Format to show durations as when copying as CSV/Markdown")
+
+			.addDropdown((t) => {
+				t.addOptions({
+					[DurationFormat.LONG]:
+						"Long - Format including all units (1h 30m 25s)",
+					[DurationFormat.SHORT]:
+						"Short - Format just including hours (1.5h)",
+					[DurationFormat.DECIMAL]:
+						"Decimal - Short format without units (1.5)",
+				});
+				t.setValue(String(settings.exportDurationFormat));
+				t.onChange((v) => {
+					this.settingsStore.setState((currentValue) => ({
+						...currentValue,
+						exportDurationFormat: v as DurationFormat,
 					}));
 				});
 			});

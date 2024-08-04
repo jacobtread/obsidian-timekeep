@@ -1,5 +1,5 @@
 import moment, { Moment } from "moment";
-import { TimekeepSettings } from "@/settings";
+import { DurationFormat, TimekeepSettings } from "@/settings";
 
 /**
  * Formats a timestamp for tables and generated output
@@ -45,15 +45,36 @@ export function parseEditableTimestamp(
 }
 
 /**
+ * Formats a duration using the provided duration format
+ *
+ * @param format The format to use
+ * @param durationMS The duration to format
+ * @returns The formatted duration
+ */
+export function formatDuration(
+	format: DurationFormat,
+	durationMS: number
+): string {
+	switch (format) {
+		case DurationFormat.LONG:
+			return formatDurationLong(durationMS);
+		case DurationFormat.SHORT:
+			return formatDurationShort(durationMS);
+		case DurationFormat.DECIMAL:
+			return formatDurationDecimal(durationMS);
+	}
+}
+
+/**
  * Formats the provided duration in the form
  * of hours, minutes, and seconds
  *
- * @param totalTime The duration to format
+ * @param durationMS The duration to format in milliseconds
  * @returns The formatted duration
  */
-export function formatDuration(totalTime: number): string {
+export function formatDurationLong(durationMS: number): string {
 	let ret = "";
-	const duration = moment.duration(totalTime);
+	const duration = moment.duration(durationMS);
 	const hours = Math.floor(duration.asHours());
 
 	if (hours > 0) ret += hours + "h ";
@@ -64,19 +85,30 @@ export function formatDuration(totalTime: number): string {
 }
 
 /**
- * Formats a duration in the form of hours only
- * minutes will be counted a portions of an hour
- * (i.e 1h 30m will be 1.5h)
+ * Same as {@see formatDurationDecimal} but with a "h" suffix
+ * indicating its hours
  *
- * @param totalTime The duration to format
+ * @param durationMS The duration to format in milliseconds
  * @returns The formatted duration
  */
-export function formatDurationHoursTrunc(totalTime: number): string {
-	const duration = moment.duration(totalTime);
+export function formatDurationShort(durationMS: number): string {
+	return formatDurationDecimal(durationMS) + "h";
+}
+
+/**
+ * Formats a duration in the form of hours only
+ * minutes will be counted a portions of an hour
+ * (i.e 1h 30m will be 1.5)
+ *
+ * @param durationMS The duration to format
+ * @returns The formatted duration
+ */
+export function formatDurationDecimal(durationMS: number): string {
+	const duration = moment.duration(durationMS);
 
 	const hours = duration.asHours();
 
-	return hours.toFixed(2) + "h";
+	return hours.toFixed(2);
 }
 
 /**
