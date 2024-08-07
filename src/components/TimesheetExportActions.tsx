@@ -38,7 +38,11 @@ export default function TimekeepExportActions() {
 
 	const onCopyJSON = () => {
 		const timekeep = timekeepStore.getState();
-		const output = JSON.stringify(timekeep);
+		const output = JSON.stringify(
+			timekeep,
+			undefined,
+			settings.formatCopiedJSON ? 4 : undefined
+		);
 
 		navigator.clipboard
 			.writeText(output)

@@ -30,6 +30,7 @@ export interface TimekeepSettings {
 	timestampFormat: string;
 	showDecimalHours: boolean;
 	exportDurationFormat: DurationFormat;
+	formatCopiedJSON: boolean;
 }
 
 export const defaultSettings: TimekeepSettings = {
@@ -47,4 +48,5 @@ export const defaultSettings: TimekeepSettings = {
 	limitTableSize: true,
 	showDecimalHours: true,
 	exportDurationFormat: DurationFormat.SHORT,
+	formatCopiedJSON: false,
 };

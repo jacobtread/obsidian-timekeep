@@ -267,5 +267,20 @@ export class TimekeepSettingsTab extends PluginSettingTab {
 					}));
 				});
 			});
+
+		new Setting(this.containerEl)
+			.setName("Format copied JSON")
+			.setDesc(
+				"Whether to format the JSON contents before copying them to clipboard."
+			)
+			.addToggle((t) => {
+				t.setValue(settings.formatCopiedJSON);
+				t.onChange((v) => {
+					this.settingsStore.setState((currentValue) => ({
+						...currentValue,
+						formatCopiedJSON: v,
+					}));
+				});
+			});
 	}
 }
