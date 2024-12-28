@@ -245,7 +245,7 @@ export class TimekeepSettingsTab extends PluginSettingTab {
 			});
 
 		new Setting(this.containerEl)
-			.setName("Unstarted Sort order")
+			.setName("Unstarted sort order")
 			.setDesc(
 				"Where in the order should unstarted entries be put (Only applied when using 'Newest First' or 'Newest Last' sort order)"
 			)
