@@ -2,7 +2,7 @@ import { TimeEntry } from "@/schema";
 import type { Moment } from "moment";
 import { TimekeepSettings } from "@/settings";
 import { formatDuration, formatTimestamp } from "@/utils";
-import { getEntryDuration, getEntriesOrdered } from "@/timekeep";
+import { getEntryDuration, getEntriesSorted } from "@/timekeep";
 
 export { createCSV } from "./csv";
 export { createMarkdownTable } from "./markdown-table";
@@ -62,7 +62,7 @@ export function createRawTableEntries(
 	];
 
 	if (entry.subEntries) {
-		const entries = getEntriesOrdered(entry.subEntries, settings);
+		const entries = getEntriesSorted(entry.subEntries, settings);
 
 		for (const entry of entries) {
 			rows.push(...createRawTableEntries(entry, settings, currentTime));

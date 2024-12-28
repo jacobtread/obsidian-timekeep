@@ -16,6 +16,27 @@ export enum DurationFormat {
 	DECIMAL = "DECIMAL",
 }
 
+export enum SortOrder {
+	// Don't sort the the list, maintain insertion order
+	INSERTION = "INSERTION",
+
+	// Flip the insertion order
+	REVERSE_INSERTION = "REVERSE_INSERTION",
+
+	// Sort by the most recently started
+	NEWEST_START = "NEWEST_START",
+
+	// Sort by the oldest started entry
+	OLDEST_START = "OLDEST_START",
+}
+
+export enum UnstartedOrder {
+	// Sort unstarted items to the start
+	FIRST = "FIRST",
+	// Sort unstarted items to the end
+	LAST = "LAST",
+}
+
 export interface TimekeepSettings {
 	csvDelimiter: string;
 	csvTitle: boolean;
@@ -26,11 +47,14 @@ export interface TimekeepSettings {
 	pdfExportBehavior: PdfExportBehavior;
 	pdfDateFormat: string;
 	pdfRowDateFormat: string;
-	reverseSegmentOrder: boolean;
+	reverseSegmentOrder?: boolean;
 	timestampFormat: string;
 	showDecimalHours: boolean;
 	exportDurationFormat: DurationFormat;
 	formatCopiedJSON: boolean;
+
+	sortOrder: SortOrder;
+	unstartedOrder: UnstartedOrder;
 }
 
 export const defaultSettings: TimekeepSettings = {
@@ -44,9 +68,11 @@ export const defaultSettings: TimekeepSettings = {
 	editableTimestampFormat: "YYYY-MM-DD HH:mm:ss",
 	csvTitle: true,
 	csvDelimiter: ",",
-	reverseSegmentOrder: false,
 	limitTableSize: true,
 	showDecimalHours: true,
 	exportDurationFormat: DurationFormat.SHORT,
 	formatCopiedJSON: false,
+
+	sortOrder: SortOrder.INSERTION,
+	unstartedOrder: UnstartedOrder.LAST,
 };

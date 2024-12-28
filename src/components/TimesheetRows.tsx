@@ -2,7 +2,7 @@ import { TimeEntry } from "@/schema";
 import React, { useMemo, Fragment } from "react";
 import TimesheetRow from "@/components/TimesheetRow";
 import { useSettings } from "@/contexts/use-settings-context";
-import { getEntriesOrdered, getUniqueEntryHash } from "@/timekeep";
+import { getEntriesSorted, getUniqueEntryHash } from "@/timekeep";
 
 type Props = {
 	// Collection of entries
@@ -25,7 +25,7 @@ export default function TimesheetRows({
 	const settings = useSettings();
 	// Memoized sub entries
 	const entriesOrdered = useMemo(
-		() => getEntriesOrdered(entries, settings),
+		() => getEntriesSorted(entries, settings),
 		[entries, settings]
 	);
 

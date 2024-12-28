@@ -2,8 +2,8 @@ import { Moment } from "moment";
 import { Store, createStore } from "@/store";
 import { TimekeepSettingsTab } from "@/settings-tab";
 import { PluginManifest, App as ObsidianApp } from "obsidian";
-import { defaultSettings, TimekeepSettings } from "@/settings";
 import { Plugin, MarkdownPostProcessorContext } from "obsidian";
+import { SortOrder, defaultSettings, TimekeepSettings } from "@/settings";
 import {
 	load,
 	isKeepRunning,
@@ -51,10 +51,20 @@ export default class TimekeepPlugin extends Plugin {
 	}
 
 	async onload(): Promise<void> {
-		// Load saved settings and combine with defaults
-		this.settingsStore.setState(
-			Object.assign({}, defaultSettings, await this.loadData())
+		const loadedSettings: TimekeepSettings = Object.assign(
+			{},
+			defaultSettings,
+			await this.loadData()
 		);
+
+		// Compatibility with old reverse segment order
+		if (loadedSettings.reverseSegmentOrder) {
+			delete loadedSettings.reverseSegmentOrder;
+			loadedSettings.sortOrder = SortOrder.REVERSE_INSERTION;
+		}
+
+		// Load saved settings and combine with defaults
+		this.settingsStore.setState(loadedSettings);
 
 		this.addSettingTab(new TimekeepSettingsTab(this.app, this));
 

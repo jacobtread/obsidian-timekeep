@@ -1,7 +1,7 @@
 import type { Moment } from "moment";
 import { strHash } from "@/utils/text";
 import { isEmptyString } from "@/utils";
-import { TimekeepSettings } from "@/settings";
+import { SortOrder, UnstartedOrder, TimekeepSettings } from "@/settings";
 import { TIMEKEEP, Timekeep, TimeEntry, TimeEntryGroup } from "@/schema";
 
 export type LoadResult = LoadSuccess | LoadError;
@@ -475,23 +475,176 @@ export function getTotalDuration(
 }
 
 /**
- * Provides a new list of time entires re-ordered to match
- * the current timekeep settings ordering
+ * Provides a sorted copy of the provided entries list.
  *
- * @param entries The collection of entries
- * @param settings The timekeep settings
- * @returns The entries in the timekeep order
+ * Recursively sorts the groups and sorts groups based
+ * on the time entries within the group
+ *
+ * @param entries The list of entries
+ * @param settings The timekeep settings for which order to use
+ * @returns The sorted entries list
  */
-export function getEntriesOrdered(
+export function getEntriesSorted(
 	entries: TimeEntry[],
 	settings: TimekeepSettings
 ): TimeEntry[] {
-	// Reverse ordered entries
-	if (settings.reverseSegmentOrder) {
-		return entries.slice().reverse();
+	// List order should be unchanged
+	if (settings.sortOrder === SortOrder.INSERTION) {
+		return entries;
 	}
 
-	return entries;
+	// Reverse insertion is just .reverse on all the arrays
+	if (settings.sortOrder === SortOrder.REVERSE_INSERTION) {
+		return entries
+			.map((entry): TimeEntry => {
+				if (entry.subEntries !== null) {
+					return {
+						...entry,
+						subEntries: getEntriesSorted(
+							entry.subEntries,
+							settings
+						),
+					};
+				}
+
+				return entry;
+			})
+			.reverse();
+	}
+
+	return stripEntriesIndex(
+		entries
+			// Map entries to recursively sort the subEntries
+			.map((entry, index): TimeEntry & { index: number } => {
+				if (entry.subEntries !== null) {
+					return {
+						...entry,
+						subEntries: getEntriesSorted(
+							entry.subEntries,
+							settings
+						),
+						index,
+					};
+				}
+
+				return { ...entry, index };
+			})
+			// Sort by comparator
+			.sort(
+				createEntriesComparator(
+					settings.sortOrder === SortOrder.NEWEST_START,
+					settings.unstartedOrder
+				)
+			)
+	);
+}
+
+/**
+ * Strips the "index" property from items, this property
+ * is only used for sorting and needs to be removed after
+ *
+ * @param entries The entries to strip the index from
+ * @returns The entries without the inmdex
+ */
+function stripEntriesIndex(
+	entries: (TimeEntry & {
+		index: number;
+	})[]
+) {
+	return (
+		entries
+			// Map entries to recursively sort the subEntries
+			.map(({ index: _, ...entry }): TimeEntry => {
+				if (entry.subEntries !== null) {
+					return {
+						...entry,
+						subEntries: stripEntriesIndex(
+							entry.subEntries as (TimeEntry & {
+								index: number;
+							})[]
+						),
+					};
+				}
+
+				return entry;
+			})
+	);
+}
+
+/**
+ * Creates a comparator function for stable sorting a list
+ * of entries
+ *
+ * Entries are sorted in newest/oldest order based on the value
+ * provided
+ *
+ * Any entries without a start time are sorted based on their
+ * original order
+ *
+ * @param newest Whether to sort based on newest or oldest entries
+ * @returns The comparator function
+ */
+function createEntriesComparator(
+	newest: boolean,
+	unstartedOrder: UnstartedOrder
+) {
+	return (
+		a: TimeEntry & { index: number },
+		b: TimeEntry & { index: number }
+	): number => {
+		// Get the start time for both
+		const aStartTime = getStartTime(a, newest);
+		const bStartTime = getStartTime(b, newest);
+
+		// Sort newest when both have a start time
+		if (aStartTime && bStartTime) {
+			return newest
+				? bStartTime.diff(aStartTime)
+				: aStartTime.diff(bStartTime);
+		}
+
+		if (aStartTime) return unstartedOrder === UnstartedOrder.FIRST ? 1 : -1;
+		if (bStartTime) return unstartedOrder === UnstartedOrder.FIRST ? -1 : 1;
+
+		// Fallback to stable sort using the original index
+		return a.index - b.index;
+	};
+}
+
+/**
+ * Gets either the newest or oldest start time from a entry
+ *
+ * @param entry The entry to get the start time from
+ * @param newest Whether to get the newest or oldest
+ * @returns The start time or null if none were available
+ */
+function getStartTime(entry: TimeEntry, newest: boolean): Moment | null {
+	// Find the latest start time from entry
+	if (entry.subEntries !== null) {
+		return entry.subEntries.reduce(
+			(previousValue, currentValue) => {
+				if (previousValue === null) {
+					return currentValue.startTime;
+				}
+
+				// Use the current value if its newer
+				if (currentValue.startTime !== null) {
+					const timeDiff = newest
+						? previousValue.diff(currentValue.startTime)
+						: currentValue.startTime.diff(previousValue);
+
+					if (timeDiff > 0) {
+						return currentValue.startTime;
+					}
+				}
+
+				return previousValue;
+			},
+			null as Moment | null
+		);
+	}
+
+	return entry.startTime;
 }
 
 /**
