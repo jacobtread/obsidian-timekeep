@@ -39,7 +39,7 @@ jobs:
 
             # Save the coverage data
             - name: Save coverage report
-              uses: actions/upload-artifact@v2
+              uses: actions/upload-artifact@v4
               with:
                   name: coverage
                   path: coverage
