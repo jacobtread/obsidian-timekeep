@@ -2,7 +2,9 @@ import { Store } from "@/store";
 import TimekeepPlugin from "@/main";
 import { App, Setting, PluginSettingTab } from "obsidian";
 import {
+	SortOrder,
 	DurationFormat,
+	UnstartedOrder,
 	defaultSettings,
 	TimekeepSettings,
 	PdfExportBehavior,
@@ -217,16 +219,49 @@ export class TimekeepSettingsTab extends PluginSettingTab {
 			});
 
 		new Setting(this.containerEl)
-			.setName("Display segments in reverse order")
+			.setName("Sort order")
 			.setDesc(
-				"Whether older tracker segments should be displayed towards the bottom of the tracker, rather than the top."
+				"How entries should be sorted both when viewing and exporting"
 			)
-			.addToggle((t) => {
-				t.setValue(settings.reverseSegmentOrder);
+
+			.addDropdown((t) => {
+				t.addOptions({
+					[SortOrder.INSERTION]:
+						"Insertion - Don't sort, leave entries in the order they were created",
+					[SortOrder.REVERSE_INSERTION]:
+						"Reverse Insertion - Opposite order to how entries were inserted",
+					[SortOrder.NEWEST_START]:
+						"Newest First - Sort most recently started entries to the start",
+					[SortOrder.OLDEST_START]:
+						"Newest Last - Sort most recently started entries to the end",
+				});
+				t.setValue(String(settings.sortOrder));
 				t.onChange((v) => {
 					this.settingsStore.setState((currentValue) => ({
 						...currentValue,
-						reverseSegmentOrder: v,
+						sortOrder: v as SortOrder,
+					}));
+				});
+			});
+
+		new Setting(this.containerEl)
+			.setName("Unstarted Sort order")
+			.setDesc(
+				"Where in the order should unstarted entries be put (Only applied when using 'Newest First' or 'Newest Last' sort order)"
+			)
+
+			.addDropdown((t) => {
+				t.addOptions({
+					[UnstartedOrder.FIRST]:
+						"First - Put non started entries at the top of the list",
+					[UnstartedOrder.LAST]:
+						"Last - Put non started entries at the bottom of the list",
+				});
+				t.setValue(String(settings.unstartedOrder));
+				t.onChange((v) => {
+					this.settingsStore.setState((currentValue) => ({
+						...currentValue,
+						unstartedOrder: v as UnstartedOrder,
 					}));
 				});
 			});

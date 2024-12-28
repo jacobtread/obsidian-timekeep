@@ -1,7 +1,12 @@
 import moment from "moment";
 
 import { Timekeep, TimeEntry, TimeEntryGroup } from "./schema";
-import { defaultSettings, TimekeepSettings } from "./settings";
+import {
+	SortOrder,
+	UnstartedOrder,
+	defaultSettings,
+	TimekeepSettings,
+} from "./settings";
 import {
 	load,
 	LoadError,
@@ -16,7 +21,7 @@ import {
 	getRunningEntry,
 	getEntryDuration,
 	getTotalDuration,
-	getEntriesOrdered,
+	getEntriesSorted,
 	setEntryCollapsed,
 	getUniqueEntryHash,
 	stopRunningEntries,
@@ -1149,9 +1154,47 @@ describe("ordering entries", () => {
 				endTime: currentTime,
 				subEntries: null,
 			},
+			{
+				name: "Part 3",
+				startTime: null,
+				endTime: null,
+				subEntries: [
+					{
+						name: "Part 3 1",
+						startTime: currentTime,
+						endTime: currentTime,
+						subEntries: null,
+					},
+					{
+						name: "Part 3 2",
+						startTime: currentTime,
+						endTime: currentTime,
+						subEntries: null,
+					},
+				],
+			},
 		];
 
 		const expected = [
+			{
+				name: "Part 3",
+				startTime: null,
+				endTime: null,
+				subEntries: [
+					{
+						name: "Part 3 2",
+						startTime: currentTime,
+						endTime: currentTime,
+						subEntries: null,
+					},
+					{
+						name: "Part 3 1",
+						startTime: currentTime,
+						endTime: currentTime,
+						subEntries: null,
+					},
+				],
+			},
 			{
 				name: "Part 2",
 				startTime: currentTime,
@@ -1167,9 +1210,309 @@ describe("ordering entries", () => {
 		];
 
 		const settings: TimekeepSettings = defaultSettings;
-		settings.reverseSegmentOrder = true;
+		settings.sortOrder = SortOrder.REVERSE_INSERTION;
 
-		const output = getEntriesOrdered(input, settings);
+		const output = getEntriesSorted(input, settings);
+		expect(output).toEqual(expected);
+	});
+
+	it("should be in newest first order", () => {
+		const currentTime = moment();
+
+		const futureStartTime = currentTime.clone().add(5000, "ms");
+
+		const input = [
+			{
+				name: "Part 1",
+				startTime: currentTime,
+				endTime: currentTime,
+				subEntries: null,
+			},
+			{
+				name: "Part 1 null",
+				startTime: null,
+				endTime: null,
+				subEntries: null,
+			},
+			{
+				name: "Part 2 null",
+				startTime: null,
+				endTime: null,
+				subEntries: null,
+			},
+			{
+				name: "Part 2",
+				startTime: futureStartTime,
+				endTime: futureStartTime,
+				subEntries: null,
+			},
+			{
+				name: "Part 3",
+				startTime: null,
+				endTime: null,
+				subEntries: [
+					{
+						name: "Part 3 1",
+						startTime: currentTime,
+						endTime: currentTime,
+						subEntries: null,
+					},
+					{
+						name: "Part 3 2",
+						startTime: futureStartTime,
+						endTime: futureStartTime,
+						subEntries: null,
+					},
+				],
+			},
+		];
+
+		const expected = [
+			{
+				name: "Part 2",
+				startTime: futureStartTime,
+				endTime: futureStartTime,
+				subEntries: null,
+			},
+			{
+				name: "Part 1",
+				startTime: currentTime,
+				endTime: currentTime,
+				subEntries: null,
+			},
+			{
+				name: "Part 3",
+				startTime: null,
+				endTime: null,
+				subEntries: [
+					{
+						name: "Part 3 2",
+						startTime: futureStartTime,
+						endTime: futureStartTime,
+						subEntries: null,
+					},
+					{
+						name: "Part 3 1",
+						startTime: currentTime,
+						endTime: currentTime,
+						subEntries: null,
+					},
+				],
+			},
+			{
+				name: "Part 1 null",
+				startTime: null,
+				endTime: null,
+				subEntries: null,
+			},
+			{
+				name: "Part 2 null",
+				startTime: null,
+				endTime: null,
+				subEntries: null,
+			},
+		];
+
+		const settings: TimekeepSettings = defaultSettings;
+		settings.sortOrder = SortOrder.NEWEST_START;
+
+		const output = getEntriesSorted(input, settings);
+		expect(output).toEqual(expected);
+	});
+
+	it("should be in newest last order", () => {
+		const currentTime = moment();
+
+		const futureStartTime = currentTime.clone().add(5000, "ms");
+
+		const input = [
+			{
+				name: "Part 1",
+				startTime: currentTime,
+				endTime: currentTime,
+				subEntries: null,
+			},
+			{
+				name: "Part 2",
+				startTime: futureStartTime,
+				endTime: futureStartTime,
+				subEntries: null,
+			},
+			{
+				name: "Part 1 null",
+				startTime: null,
+				endTime: null,
+				subEntries: null,
+			},
+			{
+				name: "Part 3",
+				startTime: null,
+				endTime: null,
+				subEntries: [
+					{
+						name: "Part 3 1",
+						startTime: currentTime,
+						endTime: currentTime,
+						subEntries: null,
+					},
+					{
+						name: "Part 3 2",
+						startTime: currentTime,
+						endTime: currentTime,
+						subEntries: null,
+					},
+				],
+			},
+		];
+
+		const expected = [
+			{
+				name: "Part 1",
+				startTime: currentTime,
+				endTime: currentTime,
+				subEntries: null,
+			},
+			{
+				name: "Part 3",
+				startTime: null,
+				endTime: null,
+				subEntries: [
+					{
+						name: "Part 3 1",
+						startTime: currentTime,
+						endTime: currentTime,
+						subEntries: null,
+					},
+					{
+						name: "Part 3 2",
+						startTime: currentTime,
+						endTime: currentTime,
+						subEntries: null,
+					},
+				],
+			},
+			{
+				name: "Part 2",
+				startTime: futureStartTime,
+				endTime: futureStartTime,
+				subEntries: null,
+			},
+			{
+				name: "Part 1 null",
+				startTime: null,
+				endTime: null,
+				subEntries: null,
+			},
+		];
+
+		const settings: TimekeepSettings = defaultSettings;
+		settings.sortOrder = SortOrder.OLDEST_START;
+
+		const output = getEntriesSorted(input, settings);
+		expect(output).toEqual(expected);
+	});
+	it("should be in newest last order with nulls first", () => {
+		const currentTime = moment();
+
+		const futureStartTime = currentTime.clone().add(5000, "ms");
+
+		const input = [
+			{
+				name: "Part 2 null",
+				startTime: null,
+				endTime: null,
+				subEntries: null,
+			},
+			{
+				name: "Part 1",
+				startTime: currentTime,
+				endTime: currentTime,
+				subEntries: null,
+			},
+			{
+				name: "Part 2",
+				startTime: futureStartTime,
+				endTime: futureStartTime,
+				subEntries: null,
+			},
+			{
+				name: "Part 1 null",
+				startTime: null,
+				endTime: null,
+				subEntries: null,
+			},
+			{
+				name: "Part 3",
+				startTime: null,
+				endTime: null,
+				subEntries: [
+					{
+						name: "Part 3 1",
+						startTime: currentTime,
+						endTime: currentTime,
+						subEntries: null,
+					},
+					{
+						name: "Part 3 2",
+						startTime: currentTime,
+						endTime: currentTime,
+						subEntries: null,
+					},
+				],
+			},
+		];
+
+		const expected = [
+			{
+				name: "Part 2 null",
+				startTime: null,
+				endTime: null,
+				subEntries: null,
+			},
+			{
+				name: "Part 1 null",
+				startTime: null,
+				endTime: null,
+				subEntries: null,
+			},
+			{
+				name: "Part 1",
+				startTime: currentTime,
+				endTime: currentTime,
+				subEntries: null,
+			},
+			{
+				name: "Part 3",
+				startTime: null,
+				endTime: null,
+				subEntries: [
+					{
+						name: "Part 3 1",
+						startTime: currentTime,
+						endTime: currentTime,
+						subEntries: null,
+					},
+					{
+						name: "Part 3 2",
+						startTime: currentTime,
+						endTime: currentTime,
+						subEntries: null,
+					},
+				],
+			},
+			{
+				name: "Part 2",
+				startTime: futureStartTime,
+				endTime: futureStartTime,
+				subEntries: null,
+			},
+		];
+
+		const settings: TimekeepSettings = defaultSettings;
+		settings.sortOrder = SortOrder.OLDEST_START;
+		settings.unstartedOrder = UnstartedOrder.FIRST;
+
+		const output = getEntriesSorted(input, settings);
 		expect(output).toEqual(expected);
 	});
 
@@ -1207,9 +1550,9 @@ describe("ordering entries", () => {
 		];
 
 		const settings: TimekeepSettings = defaultSettings;
-		settings.reverseSegmentOrder = false;
+		settings.sortOrder = SortOrder.INSERTION;
 
-		const output = getEntriesOrdered(input, settings);
+		const output = getEntriesSorted(input, settings);
 		expect(output).toEqual(expected);
 	});
 });
