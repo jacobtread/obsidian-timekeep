@@ -1,5 +1,5 @@
 import React from "react";
-import { Timekeep } from "@/schema";
+import { Timekeep, stripTimekeepRuntimeData } from "@/schema";
 import { useTimekeepStore } from "@/contexts/use-timekeep-store";
 
 type Props = {
@@ -18,7 +18,9 @@ export default function TimesheetSaveError({ handleSaveTimekeep }: Props) {
 
 	// Copies the current timekeep state as JSON to clipboard
 	const onClickCopy = () => {
-		navigator.clipboard.writeText(JSON.stringify(timekeepStore.getState()));
+		navigator.clipboard.writeText(
+			JSON.stringify(stripTimekeepRuntimeData(timekeepStore.getState()))
+		);
 	};
 
 	return (

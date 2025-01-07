@@ -6,6 +6,7 @@ import { Notice } from "obsidian";
 import { Platform } from "obsidian";
 import { mkdir, writeFile } from "fs/promises";
 import { PdfExportBehavior } from "@/settings";
+import { stripTimekeepRuntimeData } from "@/schema";
 import { createCSV, createMarkdownTable } from "@/export";
 import { useSettings } from "@/contexts/use-settings-context";
 import { useTimekeepStore } from "@/contexts/use-timekeep-store";
@@ -39,7 +40,7 @@ export default function TimekeepExportActions() {
 	const onCopyJSON = () => {
 		const timekeep = timekeepStore.getState();
 		const output = JSON.stringify(
-			timekeep,
+			stripTimekeepRuntimeData(timekeep),
 			undefined,
 			settings.formatCopiedJSON ? 4 : undefined
 		);

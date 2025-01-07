@@ -1,8 +1,15 @@
+import { randomUUID } from "crypto";
 import type { Moment } from "moment";
 import { strHash } from "@/utils/text";
 import { isEmptyString } from "@/utils";
 import { SortOrder, UnstartedOrder, TimekeepSettings } from "@/settings";
-import { TIMEKEEP, Timekeep, TimeEntry, TimeEntryGroup } from "@/schema";
+import {
+	TIMEKEEP,
+	Timekeep,
+	TimeEntry,
+	TimeEntryGroup,
+	stripTimekeepRuntimeData,
+} from "@/schema";
 
 export type LoadResult = LoadSuccess | LoadError;
 
@@ -95,7 +102,7 @@ export function replaceTimekeepCodeblock(
 	lineStart: number,
 	lineEnd: number
 ): string {
-	const timekeepJSON = JSON.stringify(timekeep);
+	const timekeepJSON = JSON.stringify(stripTimekeepRuntimeData(timekeep));
 
 	// The actual JSON is the line after the code block start
 	const contentStart = lineStart + 1;
@@ -134,6 +141,7 @@ export function replaceTimekeepCodeblock(
  */
 export function createEntry(name: string, startTime: Moment): TimeEntry {
 	return {
+		id: randomUUID(),
 		name,
 		startTime,
 		endTime: null,
@@ -156,7 +164,7 @@ export function updateEntry(
 	newEntry: TimeEntry
 ): TimeEntry[] {
 	return entries.map((entry) => {
-		if (entry === previousEntry) {
+		if (entry.id === previousEntry.id) {
 			return newEntry;
 		} else if (entry.subEntries !== null) {
 			return {
@@ -244,7 +252,7 @@ export function removeEntry(
 	target: TimeEntry
 ): TimeEntry[] {
 	return entries.reduce((acc: TimeEntry[], entry: TimeEntry) => {
-		if (entry !== target) {
+		if (entry.id !== target.id) {
 			// Filter sub entries for matching entries
 			const updatedEntry = removeSubEntry(entry, target);
 			// Collapse any entries that need to be
@@ -271,7 +279,7 @@ export function removeEntry(
  * @param target The target to remove
  * @returns The map function
  */
-function removeSubEntry(entry: TimeEntry, target: TimeEntry): TimeEntry {
+export function removeSubEntry(entry: TimeEntry, target: TimeEntry): TimeEntry {
 	// Ignore non groups
 	if (entry.subEntries === null) return entry;
 
@@ -302,6 +310,7 @@ function collapseEntry(target: TimeEntry): TimeEntry {
 
 	return {
 		...firstEntry,
+		id: target.id,
 		name: target.name,
 	};
 }
@@ -321,6 +330,7 @@ function makeGroupEntry(entry: TimeEntry): TimeEntryGroup {
 	if (entry.subEntries !== null) return entry;
 
 	return {
+		id: randomUUID(),
 		name: entry.name,
 		subEntries: [{ ...entry, name: "Part 1" }],
 		startTime: null,

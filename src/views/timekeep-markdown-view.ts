@@ -1,11 +1,11 @@
 import App from "@/App";
 import moment from "moment";
-import { Timekeep } from "@/schema";
 import React, { StrictMode } from "react";
 import { Store, createStore } from "@/store";
 import { App as ObsidianApp } from "obsidian";
 import { TimekeepSettings } from "@/settings";
 import { Root, createRoot } from "react-dom/client";
+import { Timekeep, stripTimekeepRuntimeData } from "@/schema";
 import { LoadResult, replaceTimekeepCodeblock } from "@/timekeep";
 import {
 	TFile,
@@ -181,6 +181,9 @@ export class TimekeepMarkdownView extends MarkdownRenderChild {
 		const backupFileName = `timekeep-write-backup-${moment().format("YYYY-MM-DD HH-mm-ss")}.json`;
 
 		// Write to the backup file
-		this.app.vault.create(backupFileName, JSON.stringify(timekeep));
+		this.app.vault.create(
+			backupFileName,
+			JSON.stringify(stripTimekeepRuntimeData(timekeep))
+		);
 	}
 }

@@ -1,12 +1,19 @@
 import moment from "moment";
 
-import { Timekeep, TimeEntry, TimeEntryGroup } from "./schema";
 import {
 	SortOrder,
 	UnstartedOrder,
 	defaultSettings,
 	TimekeepSettings,
 } from "./settings";
+import {
+	Timekeep,
+	TimeEntry,
+	TimeEntryGroup,
+	stripEntryRuntimeData,
+	stripEntriesRuntimeData,
+	stripTimekeepRuntimeData,
+} from "./schema";
 import {
 	load,
 	LoadError,
@@ -18,6 +25,7 @@ import {
 	withSubEntry,
 	isKeepRunning,
 	isEntryRunning,
+	removeSubEntry,
 	getRunningEntry,
 	getEntryDuration,
 	getTotalDuration,
@@ -72,6 +80,7 @@ describe("replacing content", () => {
 		const inputTimekeep: Timekeep = {
 			entries: [
 				{
+					id: "49b99108-b1ad-4355-baa9-89c49c342be2",
 					name: "Block 2",
 					startTime: moment("2024-03-17T01:33:51.630Z"),
 					endTime: moment("2024-03-17T01:33:55.151Z"),
@@ -155,7 +164,9 @@ describe("loading timekeep", () => {
 		const successResult = result as LoadSuccess;
 
 		// Ensure the contents match
-		expect(successResult.timekeep).toEqual(expected);
+		expect(stripTimekeepRuntimeData(successResult.timekeep)).toEqual(
+			expected
+		);
 	});
 
 	it("should give error on invalid timekeep (JSON)", () => {
@@ -184,6 +195,7 @@ describe("manipulating entries", () => {
 		it("updating existing entry should succeed", () => {
 			const currentTime = moment();
 			const entryToUpdate = {
+				id: "5054dee3-8c15-493b-ad31-f070e08c2699",
 				name: "Block 1",
 				startTime: currentTime,
 				endTime: currentTime,
@@ -191,6 +203,7 @@ describe("manipulating entries", () => {
 			};
 
 			const updatedEntry = {
+				id: "5054dee3-8c15-493b-ad31-f070e08c2699",
 				name: "Block 1 Updated",
 				startTime: currentTime,
 				endTime: currentTime,
@@ -199,17 +212,20 @@ describe("manipulating entries", () => {
 
 			const entries = [
 				{
+					id: "9054dee3-8c15-493b-ad31-f070e08c2699",
 					name: "Block 3",
 					startTime: currentTime,
 					endTime: currentTime,
 					subEntries: null,
 				},
 				{
+					id: "8054dee3-8c15-493b-ad31-f070e08c2699",
 					name: "Block 3",
 					startTime: null,
 					endTime: null,
 					subEntries: [
 						{
+							id: "7054dee3-8c15-493b-ad31-f070e08c2699",
 							name: "Part 1",
 							startTime: currentTime,
 							endTime: currentTime,
@@ -219,6 +235,7 @@ describe("manipulating entries", () => {
 				},
 				entryToUpdate,
 				{
+					id: "6054dee3-8c15-493b-ad31-f070e08c2699",
 					name: "Block 2",
 					startTime: currentTime,
 					endTime: currentTime,
@@ -228,17 +245,20 @@ describe("manipulating entries", () => {
 
 			const expectedEntries = [
 				{
+					id: "9054dee3-8c15-493b-ad31-f070e08c2699",
 					name: "Block 3",
 					startTime: currentTime,
 					endTime: currentTime,
 					subEntries: null,
 				},
 				{
+					id: "8054dee3-8c15-493b-ad31-f070e08c2699",
 					name: "Block 3",
 					startTime: null,
 					endTime: null,
 					subEntries: [
 						{
+							id: "7054dee3-8c15-493b-ad31-f070e08c2699",
 							name: "Part 1",
 							startTime: currentTime,
 							endTime: currentTime,
@@ -248,6 +268,7 @@ describe("manipulating entries", () => {
 				},
 				updatedEntry,
 				{
+					id: "6054dee3-8c15-493b-ad31-f070e08c2699",
 					name: "Block 2",
 					startTime: currentTime,
 					endTime: currentTime,
@@ -265,25 +286,29 @@ describe("manipulating entries", () => {
 			const currentTime = moment();
 
 			const parent = {
-				name: "Block 1",
-				startTime: currentTime,
-				endTime: currentTime,
-				subEntries: null,
-			};
-			const entryToRemove = {
+				id: "49b99108-b1ad-4355-baa9-89c49c342be2",
 				name: "Block 1",
 				startTime: currentTime,
 				endTime: currentTime,
 				subEntries: null,
 			};
 
-			const output = removeEntry([parent], entryToRemove);
-			expect(output).toEqual([parent]);
+			const entryToRemove = {
+				id: "49b99108-b1ad-4355-baa9-89c49c342be2",
+				name: "Block 1",
+				startTime: currentTime,
+				endTime: currentTime,
+				subEntries: null,
+			};
+
+			const output = removeSubEntry(parent, entryToRemove);
+			expect(output).toEqual(parent);
 		});
 
 		it("remove on single entry should stay same if not target", () => {
 			const currentTime = moment();
 			const entryToRemove = {
+				id: "49b99108-b1ad-4355-baa9-89c49c342be2",
 				name: "Block 1",
 				startTime: currentTime,
 				endTime: currentTime,
@@ -292,23 +317,27 @@ describe("manipulating entries", () => {
 
 			const entries = [
 				{
+					id: "eeab0abb-8038-4c65-8b89-1e6daa994549",
 					name: "Block 3",
 					startTime: currentTime,
 					endTime: currentTime,
 					subEntries: null,
 				},
 				{
+					id: "b8fbcb98-f1e9-4d80-8867-994f58191046",
 					name: "Block 2",
 					startTime: null,
 					endTime: null,
 					subEntries: [
 						{
+							id: "76c19eb4-6bd1-49ac-bb63-68d6ef6335b8",
 							name: "Block 3",
 							startTime: currentTime,
 							endTime: currentTime,
 							subEntries: null,
 						},
 						{
+							id: "74850306-d21e-41c3-a046-0057c03b950b",
 							name: "Block 3",
 							startTime: currentTime,
 							endTime: currentTime,
@@ -321,23 +350,27 @@ describe("manipulating entries", () => {
 
 			const expectedEntries = [
 				{
+					id: "eeab0abb-8038-4c65-8b89-1e6daa994549",
 					name: "Block 3",
 					startTime: currentTime,
 					endTime: currentTime,
 					subEntries: null,
 				},
 				{
+					id: "b8fbcb98-f1e9-4d80-8867-994f58191046",
 					name: "Block 2",
 					startTime: null,
 					endTime: null,
 					subEntries: [
 						{
+							id: "76c19eb4-6bd1-49ac-bb63-68d6ef6335b8",
 							name: "Block 3",
 							startTime: currentTime,
 							endTime: currentTime,
 							subEntries: null,
 						},
 						{
+							id: "74850306-d21e-41c3-a046-0057c03b950b",
 							name: "Block 3",
 							startTime: currentTime,
 							endTime: currentTime,
@@ -354,6 +387,7 @@ describe("manipulating entries", () => {
 		it("should be able to remove entry", () => {
 			const currentTime = moment();
 			const entryToRemove = {
+				id: "76c19eb4-6bd1-49ac-bb63-68d6ef6335b8",
 				name: "Block 1",
 				startTime: currentTime,
 				endTime: currentTime,
@@ -362,6 +396,7 @@ describe("manipulating entries", () => {
 
 			const entries = [
 				{
+					id: "74850306-d21e-41c3-a046-0057c03b950b",
 					name: "Block 3",
 					startTime: currentTime,
 					endTime: currentTime,
@@ -369,6 +404,7 @@ describe("manipulating entries", () => {
 				},
 				entryToRemove,
 				{
+					id: "b8fbcb98-f1e9-4d80-8867-994f58191046",
 					name: "Block 2",
 					startTime: currentTime,
 					endTime: currentTime,
@@ -378,12 +414,14 @@ describe("manipulating entries", () => {
 
 			const expectedEntries = [
 				{
+					id: "74850306-d21e-41c3-a046-0057c03b950b",
 					name: "Block 3",
 					startTime: currentTime,
 					endTime: currentTime,
 					subEntries: null,
 				},
 				{
+					id: "b8fbcb98-f1e9-4d80-8867-994f58191046",
 					name: "Block 2",
 					startTime: currentTime,
 					endTime: currentTime,
@@ -398,6 +436,7 @@ describe("manipulating entries", () => {
 		it("should be able to remove nested entry", () => {
 			const currentTime = moment();
 			const entryToRemove = {
+				id: "76c19eb4-6bd1-49ac-bb63-68d6ef6335b8",
 				name: "Block 1",
 				startTime: currentTime,
 				endTime: currentTime,
@@ -406,22 +445,26 @@ describe("manipulating entries", () => {
 
 			const entries = [
 				{
+					id: "9054dee3-8c15-493b-ad31-f070e08c2699",
 					name: "Block 3",
 					startTime: null,
 					endTime: null,
 					subEntries: [
 						{
+							id: "a3b4c0ca-9a9f-4b2c-8363-75c82bae692f",
 							name: "Part 1",
 							startTime: null,
 							endTime: null,
 							subEntries: [
 								{
+									id: "dc376d49-9ac6-4a27-adff-a4666f0031b4",
 									name: "Part 1 A",
 									startTime: currentTime,
 									endTime: currentTime,
 									subEntries: null,
 								},
 								{
+									id: "a261164c-3456-420e-a773-37353f22450a",
 									name: "Part 2",
 									startTime: currentTime,
 									endTime: currentTime,
@@ -431,6 +474,7 @@ describe("manipulating entries", () => {
 							],
 						},
 						{
+							id: "f0ef900f-fa45-4031-94a4-b9290c8e655b",
 							name: "Part 2",
 							startTime: currentTime,
 							endTime: currentTime,
@@ -442,22 +486,26 @@ describe("manipulating entries", () => {
 
 			const expectedEntries = [
 				{
+					id: "9054dee3-8c15-493b-ad31-f070e08c2699",
 					name: "Block 3",
 					startTime: null,
 					endTime: null,
 					subEntries: [
 						{
+							id: "a3b4c0ca-9a9f-4b2c-8363-75c82bae692f",
 							name: "Part 1",
 							startTime: null,
 							endTime: null,
 							subEntries: [
 								{
+									id: "dc376d49-9ac6-4a27-adff-a4666f0031b4",
 									name: "Part 1 A",
 									startTime: currentTime,
 									endTime: currentTime,
 									subEntries: null,
 								},
 								{
+									id: "a261164c-3456-420e-a773-37353f22450a",
 									name: "Part 2",
 									startTime: currentTime,
 									endTime: currentTime,
@@ -466,6 +514,7 @@ describe("manipulating entries", () => {
 							],
 						},
 						{
+							id: "f0ef900f-fa45-4031-94a4-b9290c8e655b",
 							name: "Part 2",
 							startTime: currentTime,
 							endTime: currentTime,
@@ -482,6 +531,7 @@ describe("manipulating entries", () => {
 		it("should collapse groups with only one entry on remove", () => {
 			const currentTime = moment();
 			const entryToRemove = {
+				id: "9054dee3-8c15-493b-ad31-f070e08c2699",
 				name: "Block 1",
 				startTime: currentTime,
 				endTime: currentTime,
@@ -490,22 +540,26 @@ describe("manipulating entries", () => {
 
 			const entries = [
 				{
+					id: "8054dee3-8c15-493b-ad31-f070e08c2699",
 					name: "Block 3",
 					startTime: null,
 					endTime: null,
 					subEntries: [
 						{
+							id: "7054dee3-8c15-493b-ad31-f070e08c2699",
 							name: "Part 1",
 							startTime: null,
 							endTime: null,
 							subEntries: [
 								{
+									id: "6054dee3-8c15-493b-ad31-f070e08c2699",
 									name: "Part 1 A",
 									startTime: currentTime,
 									endTime: currentTime,
 									subEntries: null,
 								},
 								{
+									id: "5054dee3-8c15-493b-ad31-f070e08c2699",
 									name: "Part 2",
 									startTime: currentTime,
 									endTime: currentTime,
@@ -520,17 +574,20 @@ describe("manipulating entries", () => {
 
 			const expectedEntries = [
 				{
+					id: "8054dee3-8c15-493b-ad31-f070e08c2699",
 					name: "Block 3",
 					startTime: null,
 					endTime: null,
 					subEntries: [
 						{
+							id: "6054dee3-8c15-493b-ad31-f070e08c2699",
 							name: "Part 1 A",
 							startTime: currentTime,
 							endTime: currentTime,
 							subEntries: null,
 						},
 						{
+							id: "5054dee3-8c15-493b-ad31-f070e08c2699",
 							name: "Part 2",
 							startTime: currentTime,
 							endTime: currentTime,
@@ -547,6 +604,7 @@ describe("manipulating entries", () => {
 		it("should collapse groups with only one entry on remove (single)", () => {
 			const currentTime = moment();
 			const entryToRemove = {
+				id: "9054dee3-8c15-493b-ad31-f070e08c2699",
 				name: "Block 1",
 				startTime: currentTime,
 				endTime: currentTime,
@@ -555,16 +613,19 @@ describe("manipulating entries", () => {
 
 			const entries = [
 				{
+					id: "8054dee3-8c15-493b-ad31-f070e08c2699",
 					name: "Block 3",
 					startTime: null,
 					endTime: null,
 					subEntries: [
 						{
+							id: "7054dee3-8c15-493b-ad31-f070e08c2699",
 							name: "Part 1",
 							startTime: null,
 							endTime: null,
 							subEntries: [
 								{
+									id: "6054dee3-8c15-493b-ad31-f070e08c2699",
 									name: "Part 1 A",
 									startTime: currentTime,
 									endTime: currentTime,
@@ -574,6 +635,7 @@ describe("manipulating entries", () => {
 							],
 						},
 						{
+							id: "5054dee3-8c15-493b-ad31-f070e08c2699",
 							name: "Part 1",
 							startTime: currentTime,
 							endTime: currentTime,
@@ -585,17 +647,20 @@ describe("manipulating entries", () => {
 
 			const expectedEntries = [
 				{
+					id: "8054dee3-8c15-493b-ad31-f070e08c2699",
 					name: "Block 3",
 					startTime: null,
 					endTime: null,
 					subEntries: [
 						{
+							id: "7054dee3-8c15-493b-ad31-f070e08c2699",
 							name: "Part 1",
 							startTime: currentTime,
 							endTime: currentTime,
 							subEntries: null,
 						},
 						{
+							id: "5054dee3-8c15-493b-ad31-f070e08c2699",
 							name: "Part 1",
 							startTime: currentTime,
 							endTime: currentTime,
@@ -615,7 +680,7 @@ describe("manipulating entries", () => {
 			const currentTime = moment();
 
 			const entry = createEntry("Block 1", currentTime);
-			expect(entry).toStrictEqual({
+			expect(stripEntryRuntimeData(entry)).toStrictEqual({
 				name: "Block 1",
 				startTime: currentTime,
 				endTime: null,
@@ -628,6 +693,7 @@ describe("manipulating entries", () => {
 
 			const input = [
 				{
+					id: "9054dee3-8c15-493b-ad31-f070e08c2699",
 					name: "Part 1",
 					startTime: currentTime,
 					endTime: currentTime,
@@ -637,12 +703,14 @@ describe("manipulating entries", () => {
 
 			const expected = [
 				{
+					id: "9054dee3-8c15-493b-ad31-f070e08c2699",
 					name: "Part 1",
 					startTime: currentTime,
 					endTime: currentTime,
 					subEntries: null,
 				},
 				{
+					id: "8054dee3-8c15-493b-ad31-f070e08c2699",
 					name: "New Entry",
 					startTime: currentTime,
 					endTime: null,
@@ -651,7 +719,9 @@ describe("manipulating entries", () => {
 			];
 
 			const output = withEntry(input, "New Entry", currentTime);
-			expect(output).toEqual(expected);
+			expect(stripEntriesRuntimeData(output)).toEqual(
+				stripEntriesRuntimeData(expected)
+			);
 		});
 
 		it("should generate block name when empty", () => {
@@ -659,6 +729,7 @@ describe("manipulating entries", () => {
 
 			const input = [
 				{
+					id: "9054dee3-8c15-493b-ad31-f070e08c2699",
 					name: "Part 1",
 					startTime: currentTime,
 					endTime: currentTime,
@@ -668,12 +739,14 @@ describe("manipulating entries", () => {
 
 			const expected = [
 				{
+					id: "9054dee3-8c15-493b-ad31-f070e08c2699",
 					name: "Part 1",
 					startTime: currentTime,
 					endTime: currentTime,
 					subEntries: null,
 				},
 				{
+					id: "8054dee3-8c15-493b-ad31-f070e08c2699",
 					name: "Block 2",
 					startTime: currentTime,
 					endTime: null,
@@ -682,7 +755,9 @@ describe("manipulating entries", () => {
 			];
 
 			const output = withEntry(input, "", currentTime);
-			expect(output).toEqual(expected);
+			expect(stripEntriesRuntimeData(output)).toEqual(
+				stripEntriesRuntimeData(expected)
+			);
 		});
 	});
 
@@ -691,6 +766,7 @@ describe("manipulating entries", () => {
 			const currentTime = moment();
 
 			const input = {
+				id: "9054dee3-8c15-493b-ad31-f070e08c2699",
 				name: "Entry",
 				startTime: currentTime,
 				endTime: currentTime,
@@ -698,17 +774,20 @@ describe("manipulating entries", () => {
 			};
 
 			const expected = {
+				id: "9054dee3-8c15-493b-ad31-f070e08c2699",
 				name: "Entry",
 				startTime: null,
 				endTime: null,
 				subEntries: [
 					{
+						id: "8054dee3-8c15-493b-ad31-f070e08c2699",
 						name: "Part 1",
 						startTime: currentTime,
 						endTime: currentTime,
 						subEntries: null,
 					},
 					{
+						id: "7054dee3-8c15-493b-ad31-f070e08c2699",
 						name: "New Entry",
 						startTime: currentTime,
 						endTime: null,
@@ -718,24 +797,29 @@ describe("manipulating entries", () => {
 			};
 
 			const output = withSubEntry(input, "New Entry", currentTime);
-			expect(output).toEqual(expected);
+			expect(stripEntryRuntimeData(output)).toEqual(
+				stripEntryRuntimeData(expected)
+			);
 		});
 
 		it("adding to group should extend sub entries", () => {
 			const currentTime = moment();
 
 			const input = {
+				id: "9054dee3-8c15-493b-ad31-f070e08c2699",
 				name: "Entry",
 				startTime: null,
 				endTime: null,
 				subEntries: [
 					{
+						id: "8054dee3-8c15-493b-ad31-f070e08c2699",
 						name: "Part 1",
 						startTime: currentTime,
 						endTime: currentTime,
 						subEntries: null,
 					},
 					{
+						id: "7054dee3-8c15-493b-ad31-f070e08c2699",
 						name: "Part 2",
 						startTime: currentTime,
 						endTime: currentTime,
@@ -745,23 +829,27 @@ describe("manipulating entries", () => {
 			};
 
 			const expected = {
+				id: "9054dee3-8c15-493b-ad31-f070e08c2699",
 				name: "Entry",
 				startTime: null,
 				endTime: null,
 				subEntries: [
 					{
+						id: "8054dee3-8c15-493b-ad31-f070e08c2699",
 						name: "Part 1",
 						startTime: currentTime,
 						endTime: currentTime,
 						subEntries: null,
 					},
 					{
+						id: "7054dee3-8c15-493b-ad31-f070e08c2699",
 						name: "Part 2",
 						startTime: currentTime,
 						endTime: currentTime,
 						subEntries: null,
 					},
 					{
+						id: "6054dee3-8c15-493b-ad31-f070e08c2699",
 						name: "New Entry",
 						startTime: currentTime,
 						endTime: null,
@@ -771,13 +859,16 @@ describe("manipulating entries", () => {
 			};
 
 			const output = withSubEntry(input, "New Entry", currentTime);
-			expect(output).toEqual(expected);
+			expect(stripEntryRuntimeData(output)).toEqual(
+				stripEntryRuntimeData(expected)
+			);
 		});
 
 		it("empty name should generate a part name (single)", () => {
 			const currentTime = moment();
 
 			const input = {
+				id: "9054dee3-8c15-493b-ad31-f070e08c2699",
 				name: "Entry",
 				startTime: currentTime,
 				endTime: currentTime,
@@ -785,17 +876,20 @@ describe("manipulating entries", () => {
 			};
 
 			const expected = {
+				id: "9054dee3-8c15-493b-ad31-f070e08c2699",
 				name: "Entry",
 				startTime: null,
 				endTime: null,
 				subEntries: [
 					{
+						id: "8054dee3-8c15-493b-ad31-f070e08c2699",
 						name: "Part 1",
 						startTime: currentTime,
 						endTime: currentTime,
 						subEntries: null,
 					},
 					{
+						id: "7054dee3-8c15-493b-ad31-f070e08c2699",
 						name: "Part 2",
 						startTime: currentTime,
 						endTime: null,
@@ -805,24 +899,29 @@ describe("manipulating entries", () => {
 			};
 
 			const output = withSubEntry(input, "", currentTime);
-			expect(output).toEqual(expected);
+			expect(stripEntryRuntimeData(output)).toEqual(
+				stripEntryRuntimeData(expected)
+			);
 		});
 
 		it("empty name should generate a part name (group)", () => {
 			const currentTime = moment();
 
 			const input = {
+				id: "9054dee3-8c15-493b-ad31-f070e08c2699",
 				name: "Entry",
 				startTime: null,
 				endTime: null,
 				subEntries: [
 					{
+						id: "8054dee3-8c15-493b-ad31-f070e08c2699",
 						name: "Part 1",
 						startTime: currentTime,
 						endTime: currentTime,
 						subEntries: null,
 					},
 					{
+						id: "7054dee3-8c15-493b-ad31-f070e08c2699",
 						name: "Part 2",
 						startTime: currentTime,
 						endTime: currentTime,
@@ -832,23 +931,27 @@ describe("manipulating entries", () => {
 			};
 
 			const expected = {
+				id: "9054dee3-8c15-493b-ad31-f070e08c2699",
 				name: "Entry",
 				startTime: null,
 				endTime: null,
 				subEntries: [
 					{
+						id: "8054dee3-8c15-493b-ad31-f070e08c2699",
 						name: "Part 1",
 						startTime: currentTime,
 						endTime: currentTime,
 						subEntries: null,
 					},
 					{
+						id: "7054dee3-8c15-493b-ad31-f070e08c2699",
 						name: "Part 2",
 						startTime: currentTime,
 						endTime: currentTime,
 						subEntries: null,
 					},
 					{
+						id: "6054dee3-8c15-493b-ad31-f070e08c2699",
 						name: "Part 3",
 						startTime: currentTime,
 						endTime: null,
@@ -858,7 +961,9 @@ describe("manipulating entries", () => {
 			};
 
 			const output = withSubEntry(input, "", currentTime);
-			expect(output).toEqual(expected);
+			expect(stripEntryRuntimeData(output)).toEqual(
+				stripEntryRuntimeData(expected)
+			);
 		});
 	});
 
@@ -869,17 +974,20 @@ describe("manipulating entries", () => {
 
 			const input = [
 				{
+					id: "9054dee3-8c15-493b-ad31-f070e08c2699",
 					name: "Entry",
 					startTime: null,
 					endTime: null,
 					subEntries: [
 						{
+							id: "8054dee3-8c15-493b-ad31-f070e08c2699",
 							name: "Part 1",
 							startTime: currentTime,
 							endTime: currentTime,
 							subEntries: null,
 						},
 						{
+							id: "7054dee3-8c15-493b-ad31-f070e08c2699",
 							name: "Running Entry",
 							startTime: currentTime,
 							endTime: null,
@@ -888,6 +996,7 @@ describe("manipulating entries", () => {
 					],
 				},
 				{
+					id: "6054dee3-8c15-493b-ad31-f070e08c2699",
 					name: "Running Entry",
 					startTime: currentTime,
 					endTime: null,
@@ -897,17 +1006,20 @@ describe("manipulating entries", () => {
 
 			const expected = [
 				{
+					id: "9054dee3-8c15-493b-ad31-f070e08c2699",
 					name: "Entry",
 					startTime: null,
 					endTime: null,
 					subEntries: [
 						{
+							id: "8054dee3-8c15-493b-ad31-f070e08c2699",
 							name: "Part 1",
 							startTime: currentTime,
 							endTime: currentTime,
 							subEntries: null,
 						},
 						{
+							id: "7054dee3-8c15-493b-ad31-f070e08c2699",
 							name: "Running Entry",
 							startTime: currentTime,
 							endTime: endTime,
@@ -916,6 +1028,7 @@ describe("manipulating entries", () => {
 					],
 				},
 				{
+					id: "6054dee3-8c15-493b-ad31-f070e08c2699",
 					name: "Running Entry",
 					startTime: currentTime,
 					endTime: endTime,
@@ -938,6 +1051,7 @@ describe("checking entries", () => {
 		const currentTime = moment();
 		expect(
 			isEntryRunning({
+				id: "9054dee3-8c15-493b-ad31-f070e08c2699",
 				name: "Running Entry",
 				startTime: currentTime,
 				endTime: null,
@@ -947,6 +1061,7 @@ describe("checking entries", () => {
 
 		expect(
 			isEntryRunning({
+				id: "8054dee3-8c15-493b-ad31-f070e08c2699",
 				name: "Stopped Entry",
 				startTime: currentTime,
 				endTime: currentTime,
@@ -959,11 +1074,13 @@ describe("checking entries", () => {
 		const currentTime = moment();
 		expect(
 			isEntryRunning({
+				id: "9054dee3-8c15-493b-ad31-f070e08c2699",
 				name: "Running Entry",
 				startTime: null,
 				endTime: null,
 				subEntries: [
 					{
+						id: "8054dee3-8c15-493b-ad31-f070e08c2699",
 						name: "Running Entry",
 						startTime: currentTime,
 						endTime: null,
@@ -975,11 +1092,13 @@ describe("checking entries", () => {
 
 		expect(
 			isEntryRunning({
+				id: "9054dee3-8c15-493b-ad31-f070e08c2699",
 				name: "Stopped Entry",
 				startTime: null,
 				endTime: null,
 				subEntries: [
 					{
+						id: "8054dee3-8c15-493b-ad31-f070e08c2699",
 						name: "Stopped Entry",
 						startTime: currentTime,
 						endTime: currentTime,
@@ -993,6 +1112,7 @@ describe("checking entries", () => {
 	it("should find running entry", () => {
 		const currentTime = moment();
 		const runningEntry = {
+			id: "9054dee3-8c15-493b-ad31-f070e08c2699",
 			name: "Running Entry",
 			startTime: currentTime,
 			endTime: null,
@@ -1001,6 +1121,7 @@ describe("checking entries", () => {
 
 		const input = [
 			{
+				id: "8054dee3-8c15-493b-ad31-f070e08c2699",
 				name: "Block 1",
 				startTime: currentTime,
 				endTime: currentTime,
@@ -1017,6 +1138,7 @@ describe("checking entries", () => {
 	it("should find nested running entry", () => {
 		const currentTime = moment();
 		const runningEntry = {
+			id: "9054dee3-8c15-493b-ad31-f070e08c2699",
 			name: "Running Entry",
 			startTime: currentTime,
 			endTime: null,
@@ -1025,11 +1147,13 @@ describe("checking entries", () => {
 
 		const input = [
 			{
+				id: "8054dee3-8c15-493b-ad31-f070e08c2699",
 				name: "Block 1",
 				startTime: null,
 				endTime: null,
 				subEntries: [
 					{
+						id: "7054dee3-8c15-493b-ad31-f070e08c2699",
 						name: "Part 1",
 						startTime: currentTime,
 						endTime: currentTime,
@@ -1050,17 +1174,20 @@ describe("checking entries", () => {
 
 		const input = [
 			{
+				id: "9054dee3-8c15-493b-ad31-f070e08c2699",
 				name: "Block 1",
 				startTime: currentTime,
 				endTime: currentTime,
 				subEntries: null,
 			},
 			{
+				id: "8054dee3-8c15-493b-ad31-f070e08c2699",
 				name: "Block 2",
 				startTime: null,
 				endTime: null,
 				subEntries: [
 					{
+						id: "7054dee3-8c15-493b-ad31-f070e08c2699",
 						name: "Part 1",
 						startTime: currentTime,
 						endTime: currentTime,
@@ -1078,6 +1205,7 @@ describe("checking entries", () => {
 	it("should show keep running", () => {
 		const currentTime = moment();
 		const runningEntry = {
+			id: "9054dee3-8c15-493b-ad31-f070e08c2699",
 			name: "Running Entry",
 			startTime: currentTime,
 			endTime: null,
@@ -1087,11 +1215,13 @@ describe("checking entries", () => {
 		const input: Timekeep = {
 			entries: [
 				{
+					id: "8054dee3-8c15-493b-ad31-f070e08c2699",
 					name: "Block 1",
 					startTime: null,
 					endTime: null,
 					subEntries: [
 						{
+							id: "7054dee3-8c15-493b-ad31-f070e08c2699",
 							name: "Part 1",
 							startTime: currentTime,
 							endTime: currentTime,
@@ -1112,17 +1242,20 @@ describe("checking entries", () => {
 		const input: Timekeep = {
 			entries: [
 				{
+					id: "9054dee3-8c15-493b-ad31-f070e08c2699",
 					name: "Block 1",
 					startTime: currentTime,
 					endTime: currentTime,
 					subEntries: null,
 				},
 				{
+					id: "8054dee3-8c15-493b-ad31-f070e08c2699",
 					name: "Block 2",
 					startTime: null,
 					endTime: null,
 					subEntries: [
 						{
+							id: "7054dee3-8c15-493b-ad31-f070e08c2699",
 							name: "Part 1",
 							startTime: currentTime,
 							endTime: currentTime,
@@ -1143,29 +1276,34 @@ describe("ordering entries", () => {
 
 		const input = [
 			{
+				id: "9054dee3-8c15-493b-ad31-f070e08c2699",
 				name: "Part 1",
 				startTime: currentTime,
 				endTime: currentTime,
 				subEntries: null,
 			},
 			{
+				id: "8054dee3-8c15-493b-ad31-f070e08c2699",
 				name: "Part 2",
 				startTime: currentTime,
 				endTime: currentTime,
 				subEntries: null,
 			},
 			{
+				id: "7054dee3-8c15-493b-ad31-f070e08c2699",
 				name: "Part 3",
 				startTime: null,
 				endTime: null,
 				subEntries: [
 					{
+						id: "6054dee3-8c15-493b-ad31-f070e08c2699",
 						name: "Part 3 1",
 						startTime: currentTime,
 						endTime: currentTime,
 						subEntries: null,
 					},
 					{
+						id: "5054dee3-8c15-493b-ad31-f070e08c2699",
 						name: "Part 3 2",
 						startTime: currentTime,
 						endTime: currentTime,
@@ -1177,17 +1315,20 @@ describe("ordering entries", () => {
 
 		const expected = [
 			{
+				id: "7054dee3-8c15-493b-ad31-f070e08c2699",
 				name: "Part 3",
 				startTime: null,
 				endTime: null,
 				subEntries: [
 					{
+						id: "5054dee3-8c15-493b-ad31-f070e08c2699",
 						name: "Part 3 2",
 						startTime: currentTime,
 						endTime: currentTime,
 						subEntries: null,
 					},
 					{
+						id: "6054dee3-8c15-493b-ad31-f070e08c2699",
 						name: "Part 3 1",
 						startTime: currentTime,
 						endTime: currentTime,
@@ -1196,12 +1337,14 @@ describe("ordering entries", () => {
 				],
 			},
 			{
+				id: "8054dee3-8c15-493b-ad31-f070e08c2699",
 				name: "Part 2",
 				startTime: currentTime,
 				endTime: currentTime,
 				subEntries: null,
 			},
 			{
+				id: "9054dee3-8c15-493b-ad31-f070e08c2699",
 				name: "Part 1",
 				startTime: currentTime,
 				endTime: currentTime,
@@ -1223,41 +1366,48 @@ describe("ordering entries", () => {
 
 		const input = [
 			{
+				id: "9054dee3-8c15-493b-ad31-f070e08c2699",
 				name: "Part 1",
 				startTime: currentTime,
 				endTime: currentTime,
 				subEntries: null,
 			},
 			{
+				id: "8054dee3-8c15-493b-ad31-f070e08c2699",
 				name: "Part 1 null",
 				startTime: null,
 				endTime: null,
 				subEntries: null,
 			},
 			{
+				id: "7054dee3-8c15-493b-ad31-f070e08c2699",
 				name: "Part 2 null",
 				startTime: null,
 				endTime: null,
 				subEntries: null,
 			},
 			{
+				id: "6054dee3-8c15-493b-ad31-f070e08c2699",
 				name: "Part 2",
 				startTime: futureStartTime,
 				endTime: futureStartTime,
 				subEntries: null,
 			},
 			{
+				id: "5054dee3-8c15-493b-ad31-f070e08c2699",
 				name: "Part 3",
 				startTime: null,
 				endTime: null,
 				subEntries: [
 					{
+						id: "4054dee3-8c15-493b-ad31-f070e08c2699",
 						name: "Part 3 1",
 						startTime: currentTime,
 						endTime: currentTime,
 						subEntries: null,
 					},
 					{
+						id: "3054dee3-8c15-493b-ad31-f070e08c2699",
 						name: "Part 3 2",
 						startTime: futureStartTime,
 						endTime: futureStartTime,
@@ -1269,29 +1419,34 @@ describe("ordering entries", () => {
 
 		const expected = [
 			{
+				id: "6054dee3-8c15-493b-ad31-f070e08c2699",
 				name: "Part 2",
 				startTime: futureStartTime,
 				endTime: futureStartTime,
 				subEntries: null,
 			},
 			{
+				id: "9054dee3-8c15-493b-ad31-f070e08c2699",
 				name: "Part 1",
 				startTime: currentTime,
 				endTime: currentTime,
 				subEntries: null,
 			},
 			{
+				id: "5054dee3-8c15-493b-ad31-f070e08c2699",
 				name: "Part 3",
 				startTime: null,
 				endTime: null,
 				subEntries: [
 					{
+						id: "3054dee3-8c15-493b-ad31-f070e08c2699",
 						name: "Part 3 2",
 						startTime: futureStartTime,
 						endTime: futureStartTime,
 						subEntries: null,
 					},
 					{
+						id: "4054dee3-8c15-493b-ad31-f070e08c2699",
 						name: "Part 3 1",
 						startTime: currentTime,
 						endTime: currentTime,
@@ -1300,12 +1455,14 @@ describe("ordering entries", () => {
 				],
 			},
 			{
+				id: "8054dee3-8c15-493b-ad31-f070e08c2699",
 				name: "Part 1 null",
 				startTime: null,
 				endTime: null,
 				subEntries: null,
 			},
 			{
+				id: "7054dee3-8c15-493b-ad31-f070e08c2699",
 				name: "Part 2 null",
 				startTime: null,
 				endTime: null,
@@ -1327,35 +1484,41 @@ describe("ordering entries", () => {
 
 		const input = [
 			{
+				id: "9054dee3-8c15-493b-ad31-f070e08c2699",
 				name: "Part 1",
 				startTime: currentTime,
 				endTime: currentTime,
 				subEntries: null,
 			},
 			{
+				id: "8054dee3-8c15-493b-ad31-f070e08c2699",
 				name: "Part 2",
 				startTime: futureStartTime,
 				endTime: futureStartTime,
 				subEntries: null,
 			},
 			{
+				id: "7054dee3-8c15-493b-ad31-f070e08c2699",
 				name: "Part 1 null",
 				startTime: null,
 				endTime: null,
 				subEntries: null,
 			},
 			{
+				id: "6054dee3-8c15-493b-ad31-f070e08c2699",
 				name: "Part 3",
 				startTime: null,
 				endTime: null,
 				subEntries: [
 					{
+						id: "5054dee3-8c15-493b-ad31-f070e08c2699",
 						name: "Part 3 1",
 						startTime: currentTime,
 						endTime: currentTime,
 						subEntries: null,
 					},
 					{
+						id: "4054dee3-8c15-493b-ad31-f070e08c2699",
 						name: "Part 3 2",
 						startTime: currentTime,
 						endTime: currentTime,
@@ -1367,23 +1530,27 @@ describe("ordering entries", () => {
 
 		const expected = [
 			{
+				id: "9054dee3-8c15-493b-ad31-f070e08c2699",
 				name: "Part 1",
 				startTime: currentTime,
 				endTime: currentTime,
 				subEntries: null,
 			},
 			{
+				id: "6054dee3-8c15-493b-ad31-f070e08c2699",
 				name: "Part 3",
 				startTime: null,
 				endTime: null,
 				subEntries: [
 					{
+						id: "5054dee3-8c15-493b-ad31-f070e08c2699",
 						name: "Part 3 1",
 						startTime: currentTime,
 						endTime: currentTime,
 						subEntries: null,
 					},
 					{
+						id: "4054dee3-8c15-493b-ad31-f070e08c2699",
 						name: "Part 3 2",
 						startTime: currentTime,
 						endTime: currentTime,
@@ -1392,12 +1559,14 @@ describe("ordering entries", () => {
 				],
 			},
 			{
+				id: "8054dee3-8c15-493b-ad31-f070e08c2699",
 				name: "Part 2",
 				startTime: futureStartTime,
 				endTime: futureStartTime,
 				subEntries: null,
 			},
 			{
+				id: "7054dee3-8c15-493b-ad31-f070e08c2699",
 				name: "Part 1 null",
 				startTime: null,
 				endTime: null,
@@ -1418,41 +1587,48 @@ describe("ordering entries", () => {
 
 		const input = [
 			{
+				id: "9054dee3-8c15-493b-ad31-f070e08c2699",
 				name: "Part 2 null",
 				startTime: null,
 				endTime: null,
 				subEntries: null,
 			},
 			{
+				id: "8054dee3-8c15-493b-ad31-f070e08c2699",
 				name: "Part 1",
 				startTime: currentTime,
 				endTime: currentTime,
 				subEntries: null,
 			},
 			{
+				id: "7054dee3-8c15-493b-ad31-f070e08c2699",
 				name: "Part 2",
 				startTime: futureStartTime,
 				endTime: futureStartTime,
 				subEntries: null,
 			},
 			{
+				id: "6054dee3-8c15-493b-ad31-f070e08c2699",
 				name: "Part 1 null",
 				startTime: null,
 				endTime: null,
 				subEntries: null,
 			},
 			{
+				id: "5054dee3-8c15-493b-ad31-f070e08c2699",
 				name: "Part 3",
 				startTime: null,
 				endTime: null,
 				subEntries: [
 					{
+						id: "454dee3-8c15-493b-ad31-f070e08c2699",
 						name: "Part 3 1",
 						startTime: currentTime,
 						endTime: currentTime,
 						subEntries: null,
 					},
 					{
+						id: "3054dee3-8c15-493b-ad31-f070e08c2699",
 						name: "Part 3 2",
 						startTime: currentTime,
 						endTime: currentTime,
@@ -1464,35 +1640,41 @@ describe("ordering entries", () => {
 
 		const expected = [
 			{
+				id: "9054dee3-8c15-493b-ad31-f070e08c2699",
 				name: "Part 2 null",
 				startTime: null,
 				endTime: null,
 				subEntries: null,
 			},
 			{
+				id: "6054dee3-8c15-493b-ad31-f070e08c2699",
 				name: "Part 1 null",
 				startTime: null,
 				endTime: null,
 				subEntries: null,
 			},
 			{
+				id: "8054dee3-8c15-493b-ad31-f070e08c2699",
 				name: "Part 1",
 				startTime: currentTime,
 				endTime: currentTime,
 				subEntries: null,
 			},
 			{
+				id: "5054dee3-8c15-493b-ad31-f070e08c2699",
 				name: "Part 3",
 				startTime: null,
 				endTime: null,
 				subEntries: [
 					{
+						id: "454dee3-8c15-493b-ad31-f070e08c2699",
 						name: "Part 3 1",
 						startTime: currentTime,
 						endTime: currentTime,
 						subEntries: null,
 					},
 					{
+						id: "3054dee3-8c15-493b-ad31-f070e08c2699",
 						name: "Part 3 2",
 						startTime: currentTime,
 						endTime: currentTime,
@@ -1501,6 +1683,7 @@ describe("ordering entries", () => {
 				],
 			},
 			{
+				id: "7054dee3-8c15-493b-ad31-f070e08c2699",
 				name: "Part 2",
 				startTime: futureStartTime,
 				endTime: futureStartTime,
@@ -1521,12 +1704,14 @@ describe("ordering entries", () => {
 
 		const input = [
 			{
+				id: "9054dee3-8c15-493b-ad31-f070e08c2699",
 				name: "Part 1",
 				startTime: currentTime,
 				endTime: currentTime,
 				subEntries: null,
 			},
 			{
+				id: "8054dee3-8c15-493b-ad31-f070e08c2699",
 				name: "Part 2",
 				startTime: currentTime,
 				endTime: currentTime,
@@ -1536,12 +1721,14 @@ describe("ordering entries", () => {
 
 		const expected = [
 			{
+				id: "9054dee3-8c15-493b-ad31-f070e08c2699",
 				name: "Part 1",
 				startTime: currentTime,
 				endTime: currentTime,
 				subEntries: null,
 			},
 			{
+				id: "8054dee3-8c15-493b-ad31-f070e08c2699",
 				name: "Part 2",
 				startTime: currentTime,
 				endTime: currentTime,
@@ -1562,17 +1749,20 @@ describe("hashing", () => {
 		const currentTime = moment();
 
 		const left: TimeEntry = {
+			id: "9054dee3-8c15-493b-ad31-f070e08c2699",
 			name: "Test",
 			startTime: null,
 			endTime: null,
 			subEntries: [
 				{
+					id: "8054dee3-8c15-493b-ad31-f070e08c2699",
 					name: "Part 1",
 					startTime: currentTime,
 					endTime: currentTime,
 					subEntries: null,
 				},
 				{
+					id: "7054dee3-8c15-493b-ad31-f070e08c2699",
 					name: "Part 2",
 					startTime: currentTime,
 					endTime: currentTime,
@@ -1582,17 +1772,20 @@ describe("hashing", () => {
 		};
 
 		const right: TimeEntry = {
+			id: "9054dee3-8c15-493b-ad31-f070e08c2699",
 			name: "Test",
 			startTime: null,
 			endTime: null,
 			subEntries: [
 				{
+					id: "8054dee3-8c15-493b-ad31-f070e08c2699",
 					name: "Part 1",
 					startTime: currentTime,
 					endTime: currentTime,
 					subEntries: null,
 				},
 				{
+					id: "7054dee3-8c15-493b-ad31-f070e08c2699",
 					name: "Part 2",
 					startTime: currentTime,
 					endTime: currentTime,
@@ -1608,6 +1801,7 @@ describe("hashing", () => {
 		const currentTime = moment();
 
 		const left: TimeEntry = {
+			id: "9054dee3-8c15-493b-ad31-f070e08c2699",
 			name: "Test",
 			startTime: currentTime,
 			endTime: currentTime,
@@ -1615,17 +1809,20 @@ describe("hashing", () => {
 		};
 
 		const right: TimeEntry = {
+			id: "9054dee3-8c15-493b-ad31-f070e08c2699",
 			name: "Test",
 			startTime: null,
 			endTime: null,
 			subEntries: [
 				{
+					id: "8054dee3-8c15-493b-ad31-f070e08c2699",
 					name: "Part 1",
 					startTime: currentTime,
 					endTime: currentTime,
 					subEntries: null,
 				},
 				{
+					id: "7054dee3-8c15-493b-ad31-f070e08c2699",
 					name: "Part 1",
 					startTime: currentTime,
 					endTime: currentTime,
@@ -1644,6 +1841,7 @@ describe("duration", () => {
 		const durationMs = 500;
 
 		const input: TimeEntry = {
+			id: "9054dee3-8c15-493b-ad31-f070e08c2699",
 			name: "Test",
 			startTime: currentTime,
 			endTime: currentTime.clone().add(durationMs, "ms"),
@@ -1660,6 +1858,7 @@ describe("duration", () => {
 		const durationMs = 0;
 
 		const input: TimeEntry = {
+			id: "9054dee3-8c15-493b-ad31-f070e08c2699",
 			name: "Test",
 			startTime: null,
 			endTime: null,
@@ -1676,23 +1875,27 @@ describe("duration", () => {
 		const durationMs = 500;
 
 		const input: TimeEntry = {
+			id: "9054dee3-8c15-493b-ad31-f070e08c2699",
 			name: "Test",
 			startTime: null,
 			endTime: null,
 			subEntries: [
 				{
+					id: "8054dee3-8c15-493b-ad31-f070e08c2699",
 					name: "Part A",
 					startTime: currentTime,
 					endTime: currentTime.clone().add(durationMs, "ms"),
 					subEntries: null,
 				},
 				{
+					id: "7054dee3-8c15-493b-ad31-f070e08c2699",
 					name: "Part B",
 					startTime: currentTime,
 					endTime: currentTime.clone().add(durationMs, "ms"),
 					subEntries: null,
 				},
 				{
+					id: "6054dee3-8c15-493b-ad31-f070e08c2699",
 					name: "Part c",
 					startTime: currentTime,
 					endTime: currentTime.clone().add(durationMs, "ms"),
@@ -1714,6 +1917,7 @@ describe("duration", () => {
 		const endTime = currentTime.clone().add(durationMs, "ms");
 
 		const input: TimeEntry = {
+			id: "9054dee3-8c15-493b-ad31-f070e08c2699",
 			name: "Test",
 			startTime: currentTime,
 			endTime: null,
@@ -1731,23 +1935,27 @@ describe("duration", () => {
 
 		const input: TimeEntry[] = [
 			{
+				id: "9054dee3-8c15-493b-ad31-f070e08c2699",
 				name: "Test",
 				startTime: null,
 				endTime: null,
 				subEntries: [
 					{
+						id: "8054dee3-8c15-493b-ad31-f070e08c2699",
 						name: "Part A",
 						startTime: currentTime,
 						endTime: currentTime.clone().add(durationMs, "ms"),
 						subEntries: null,
 					},
 					{
+						id: "7054dee3-8c15-493b-ad31-f070e08c2699",
 						name: "Part B",
 						startTime: currentTime,
 						endTime: currentTime.clone().add(durationMs, "ms"),
 						subEntries: null,
 					},
 					{
+						id: "6054dee3-8c15-493b-ad31-f070e08c2699",
 						name: "Part c",
 						startTime: currentTime,
 						endTime: currentTime.clone().add(durationMs, "ms"),
@@ -1756,23 +1964,27 @@ describe("duration", () => {
 				],
 			},
 			{
+				id: "5054dee3-8c15-493b-ad31-f070e08c2699",
 				name: "Test",
 				startTime: null,
 				endTime: null,
 				subEntries: [
 					{
+						id: "4054dee3-8c15-493b-ad31-f070e08c2699",
 						name: "Part A",
 						startTime: currentTime,
 						endTime: currentTime.clone().add(durationMs, "ms"),
 						subEntries: null,
 					},
 					{
+						id: "3054dee3-8c15-493b-ad31-f070e08c2699",
 						name: "Part B",
 						startTime: currentTime,
 						endTime: currentTime.clone().add(durationMs, "ms"),
 						subEntries: null,
 					},
 					{
+						id: "2054dee3-8c15-493b-ad31-f070e08c2699",
 						name: "Part c",
 						startTime: currentTime,
 						endTime: currentTime.clone().add(durationMs, "ms"),
@@ -1810,6 +2022,7 @@ describe("extracting code blocks", () => {
 		const inputTimekeep1: Timekeep = {
 			entries: [
 				{
+					id: "9054dee3-8c15-493b-ad31-f070e08c2699",
 					name: "Block 1",
 					startTime: moment("2024-03-17T01:33:51.630Z"),
 					endTime: moment("2024-03-17T01:33:55.151Z"),
@@ -1822,6 +2035,7 @@ describe("extracting code blocks", () => {
 		const inputTimekeep2: Timekeep = {
 			entries: [
 				{
+					id: "9054dee3-8c15-493b-ad31-f070e08c2699",
 					name: "Block 2",
 					startTime: moment("2024-03-17T01:33:51.630Z"),
 					endTime: moment("2024-03-17T01:33:55.151Z"),
@@ -1834,8 +2048,12 @@ describe("extracting code blocks", () => {
 
 		const output = extractTimekeepCodeblocks(text);
 
-		expect(output[0]).toStrictEqual(inputTimekeep1);
-		expect(output[1]).toStrictEqual(inputTimekeep2);
+		expect(stripTimekeepRuntimeData(output[0])).toStrictEqual(
+			stripTimekeepRuntimeData(inputTimekeep1)
+		);
+		expect(stripTimekeepRuntimeData(output[1])).toStrictEqual(
+			stripTimekeepRuntimeData(inputTimekeep2)
+		);
 		expect(output.length).toBe(2);
 	});
 
@@ -1851,6 +2069,7 @@ describe("extracting code blocks", () => {
 		const inputTimekeep1: Timekeep = {
 			entries: [
 				{
+					id: "9054dee3-8c15-493b-ad31-f070e08c2699",
 					name: "Block 1",
 					startTime: moment("2024-03-17T01:33:51.630Z"),
 					endTime: moment("2024-03-17T01:33:55.151Z"),
@@ -1863,7 +2082,9 @@ describe("extracting code blocks", () => {
 
 		const output = extractTimekeepCodeblocks(text);
 
-		expect(output[0]).toStrictEqual(inputTimekeep1);
+		expect(stripTimekeepRuntimeData(output[0])).toStrictEqual(
+			stripTimekeepRuntimeData(inputTimekeep1)
+		);
 		expect(output.length).toBe(1);
 	});
 });
@@ -1873,11 +2094,13 @@ describe("collapse state", () => {
 		const currentTime = moment();
 
 		const input: TimeEntryGroup = {
+			id: "9054dee3-8c15-493b-ad31-f070e08c2699",
 			name: "Test",
 			startTime: null,
 			endTime: null,
 			subEntries: [
 				{
+					id: "8054dee3-8c15-493b-ad31-f070e08c2699",
 					name: "Test",
 					startTime: currentTime,
 					endTime: currentTime,
@@ -1897,11 +2120,13 @@ describe("collapse state", () => {
 		const currentTime = moment();
 
 		const input: TimeEntryGroup = {
+			id: "9054dee3-8c15-493b-ad31-f070e08c2699",
 			name: "Test",
 			startTime: null,
 			endTime: null,
 			subEntries: [
 				{
+					id: "8054dee3-8c15-493b-ad31-f070e08c2699",
 					name: "Test",
 					startTime: currentTime,
 					endTime: currentTime,
@@ -1920,6 +2145,7 @@ describe("collapse state", () => {
 		const currentTime = moment();
 
 		const input: TimeEntry = {
+			id: "9054dee3-8c15-493b-ad31-f070e08c2699",
 			name: "Test",
 			startTime: currentTime,
 			endTime: currentTime,
