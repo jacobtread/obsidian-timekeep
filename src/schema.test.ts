@@ -1,10 +1,10 @@
 import moment from "moment";
-import { randomUUID } from "crypto";
+import { v4 as uuid } from "uuid";
 
 import { TIMEKEEP } from "./schema";
 
-jest.mock("crypto", () => ({
-	randomUUID: jest.fn(() => "mocked-uuid"),
+jest.mock("uuid", () => ({
+	v4: jest.fn(() => "mocked-uuid"),
 }));
 
 describe("schema transform", () => {
@@ -61,6 +61,6 @@ describe("schema transform", () => {
 			],
 		});
 
-		expect(randomUUID).toHaveBeenCalled();
+		expect(uuid).toHaveBeenCalled();
 	});
 });

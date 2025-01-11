@@ -1,4 +1,4 @@
-import { randomUUID } from "crypto";
+import { v4 as uuid } from "uuid";
 import type { Moment } from "moment";
 import { strHash } from "@/utils/text";
 import { isEmptyString } from "@/utils";
@@ -141,7 +141,7 @@ export function replaceTimekeepCodeblock(
  */
 export function createEntry(name: string, startTime: Moment): TimeEntry {
 	return {
-		id: randomUUID(),
+		id: uuid(),
 		name,
 		startTime,
 		endTime: null,
@@ -330,7 +330,7 @@ function makeGroupEntry(entry: TimeEntry): TimeEntryGroup {
 	if (entry.subEntries !== null) return entry;
 
 	return {
-		id: randomUUID(),
+		id: uuid(),
 		name: entry.name,
 		subEntries: [{ ...entry, name: "Part 1" }],
 		startTime: null,

@@ -1,6 +1,6 @@
 import { z } from "zod";
 import moment from "moment";
-import { randomUUID } from "crypto";
+import { v4 as uuid } from "uuid";
 
 /*
  * This file contains the strict schema for parsing timekeep data
@@ -39,7 +39,7 @@ const TIME_ENTRY_SINGLE = z
 	// At runtime a unique ID is inserted
 	.transform((entry) => ({
 		...entry,
-		id: randomUUID(),
+		id: uuid(),
 	}));
 
 // Schema for a time entry with children (Base portion, separate portion is required for recursion)
@@ -64,7 +64,7 @@ const TIME_ENTRY_GROUP: z.ZodType<
 	/* istanbul ignore next */
 	.transform((entry) => ({
 		...entry,
-		id: randomUUID(),
+		id: uuid(),
 	}));
 
 // Schema for time entries
