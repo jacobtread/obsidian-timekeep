@@ -31,27 +31,24 @@ export default function TimekeepStart() {
 
 	const isTimekeepRunning = currentEntry !== null;
 
-	/**
-	 * Handles the click of the start/stop button
-	 */
-	const onSubmit = (event: FormEvent) => {
+	const onStart = (event: FormEvent) => {
 		// Prevent form submission from reloading Obsidian
 		event.preventDefault();
 		event.stopPropagation();
 
 		store.setState((timekeep) => {
 			const currentTime = moment();
-			let entries;
+			let entries = timekeep.entries;
 
-			// If the timekeep is currently running
+			// Stop any already running entries
 			if (isKeepRunning(timekeep)) {
 				// Stop the running entry
-				entries = stopRunningEntries(timekeep.entries, currentTime);
-			} else {
-				/// Clear the name input
-				setName("");
-				entries = withEntry(timekeep.entries, name, currentTime);
+				entries = stopRunningEntries(entries, currentTime);
 			}
+
+			/// Clear the name input
+			setName("");
+			entries = withEntry(entries, name, currentTime);
 
 			return {
 				...timekeep,
@@ -60,26 +57,76 @@ export default function TimekeepStart() {
 		});
 	};
 
+	const onStop = (event: FormEvent) => {
+		// Prevent form submission from reloading Obsidian
+		event.preventDefault();
+		event.stopPropagation();
+
+		store.setState((timekeep) => {
+			const currentTime = moment();
+
+			return {
+				...timekeep,
+				entries: stopRunningEntries(timekeep.entries, currentTime),
+			};
+		});
+	};
+
 	return (
-		<form className="timekeep-start-area" onSubmitCapture={onSubmit}>
-			{currentEntry !== null && currentEntry.startTime !== null ? (
-				<div className="active-entry timekeep-name-wrapper">
-					<span>
-						<b>Currently Running:</b>
-					</span>
-					<div className="active-entry__details">
-						<span className="active-entry__name">
-							<b>Name: </b> {currentEntry.name}
+		<div>
+			{/* Currently running entry */}
+			{currentEntry !== null && currentEntry.startTime !== null && (
+				<form
+					className="timekeep-start-area"
+					data-area="running"
+					onSubmitCapture={onStop}>
+					<div className="active-entry timekeep-name-wrapper">
+						<span>
+							<b>Currently Running:</b>
 						</span>
-						<span className="active-entry__time">
-							<b>{"Started at: "}</b>
-							{formatTimestamp(currentEntry.startTime, settings)}
-						</span>
+						<div className="active-entry__details">
+							<span className="active-entry__name">
+								<b>Name: </b> {currentEntry.name}
+							</span>
+							<span className="active-entry__time">
+								<b>{"Started at: "}</b>
+								{formatTimestamp(
+									currentEntry.startTime,
+									settings
+								)}
+							</span>
+						</div>
 					</div>
-				</div>
-			) : (
+
+					<button
+						type="submit"
+						title="Stop"
+						className="timekeep-start">
+						<ObsidianIcon
+							icon="stop-circle"
+							className="button-icon"
+						/>
+					</button>
+				</form>
+			)}
+
+			{/* Start new entry */}
+			<form
+				className="timekeep-start-area"
+				data-area="start"
+				onSubmitCapture={onStart}>
 				<div className="timekeep-name-wrapper">
-					<label htmlFor="timekeepBlockName">Block Name:</label>
+					<label htmlFor="timekeepBlockName">
+						Block Name:
+						{currentEntry !== null &&
+							currentEntry.startTime !== null && (
+								<span className="timekeep-start-note">
+									Starting a new task will pause the previous
+									one
+								</span>
+							)}
+					</label>
+
 					<input
 						id="timekeepBlockName"
 						className="timekeep-name"
@@ -89,17 +136,14 @@ export default function TimekeepStart() {
 						onChange={(event) => setName(event.target.value)}
 					/>
 				</div>
-			)}
-			<button
-				type="submit"
-				title={isTimekeepRunning ? "Stop" : "Start"}
-				className="timekeep-start">
-				{isTimekeepRunning ? (
-					<ObsidianIcon icon="stop-circle" className="button-icon" />
-				) : (
+
+				<button
+					type="submit"
+					title={isTimekeepRunning ? "Stop and start" : "Start"}
+					className="timekeep-start">
 					<ObsidianIcon icon="play" className="button-icon" />
-				)}
-			</button>
-		</form>
+				</button>
+			</form>
+		</div>
 	);
 }

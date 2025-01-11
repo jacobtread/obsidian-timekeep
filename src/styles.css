@@ -214,3 +214,9 @@
 	cursor: pointer;
 	vertical-align: middle;
 }
+
+.timekeep-start-note {
+	font-size: 0.8rem;
+	color: #777;
+	margin-left: 0.5rem;
+}
