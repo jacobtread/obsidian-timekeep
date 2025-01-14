@@ -12,6 +12,7 @@ import {
 	isKeepRunning,
 	isEntryRunning,
 	setEntryCollapsed,
+	stopRunningEntries,
 } from "@/timekeep";
 
 import { formatTimestamp } from "src/utils";
@@ -21,14 +22,9 @@ import ObsidianIcon from "./ObsidianIcon";
 type Props = {
 	entry: TimeEntry;
 	indent: number;
-	isTimekeepRunning: boolean;
 };
 
-export default function TimesheetRow({
-	entry,
-	indent,
-	isTimekeepRunning,
-}: Props) {
+export default function TimesheetRow({ entry, indent }: Props) {
 	const settings = useSettings();
 	const timekeepStore = useTimekeepStore();
 
@@ -41,28 +37,29 @@ export default function TimesheetRow({
 
 	const onClickStart = () => {
 		timekeepStore.setState((timekeep) => {
-			// Don't start if already running
+			const currentTime = moment();
+
+			let entries = timekeep.entries;
+
+			// Stop any already running entries
 			if (isKeepRunning(timekeep)) {
-				return timekeep;
+				// Stop the running entry
+				entries = stopRunningEntries(entries, currentTime);
 			}
-
-			const startTime = moment();
-
-			let entries;
 
 			if (entry.subEntries !== null || entry.startTime !== null) {
 				// If the entry has been started or is a group create a new child entry
 				entries = updateEntry(
-					timekeep.entries,
+					entries,
 					entry,
-					withSubEntry(entry, "", startTime)
+					withSubEntry(entry, "", currentTime)
 				);
 			} else {
 				// If the entry hasn't been started then start it
 				entries = updateEntry(
-					timekeep.entries,
+					entries,
 					entry,
-					createEntry(entry.name, startTime)
+					createEntry(entry.name, currentTime)
 				);
 			}
 
@@ -136,10 +133,7 @@ export default function TimesheetRow({
 			</td>
 			<td className="timekeep-col timekeep-col--actions">
 				<div className="timekeep-actions-wrapper">
-					<button
-						disabled={isTimekeepRunning}
-						onClick={onClickStart}
-						className="timekeep-action">
+					<button onClick={onClickStart} className="timekeep-action">
 						<ObsidianIcon icon="play" className="button-icon" />
 					</button>
 					<button

@@ -9,19 +9,13 @@ type Props = {
 	entries: TimeEntry[];
 	// Indentation for the entries
 	indent: number;
-	// Whether the timekeep is currently running
-	isTimekeepRunning: boolean;
 };
 
 /**
  * Renders a collection of timesheet entries ordered based
  * on the current settings
  */
-export default function TimesheetRows({
-	entries,
-	indent,
-	isTimekeepRunning,
-}: Props) {
+export default function TimesheetRows({ entries, indent }: Props) {
 	const settings = useSettings();
 	// Memoized sub entries
 	const entriesOrdered = useMemo(
@@ -31,18 +25,10 @@ export default function TimesheetRows({
 
 	return entriesOrdered.map((entry) => (
 		<Fragment key={getUniqueEntryHash(entry)}>
-			<TimesheetRow
-				entry={entry}
-				indent={indent}
-				isTimekeepRunning={isTimekeepRunning}
-			/>
+			<TimesheetRow entry={entry} indent={indent} />
 
 			{entry.subEntries !== null && !entry.collapsed && (
-				<TimesheetRows
-					entries={entry.subEntries}
-					indent={indent + 1}
-					isTimekeepRunning={isTimekeepRunning}
-				/>
+				<TimesheetRows entries={entry.subEntries} indent={indent + 1} />
 			)}
 		</Fragment>
 	));
