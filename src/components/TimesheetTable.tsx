@@ -1,6 +1,5 @@
+import React from "react";
 import { useStore } from "@/store";
-import React, { useMemo } from "react";
-import { isKeepRunning } from "@/timekeep";
 import TimesheetRows from "@/components/TimesheetRows";
 import { useSettings } from "@/contexts/use-settings-context";
 import { useTimekeepStore } from "@/contexts/use-timekeep-store";
@@ -9,12 +8,6 @@ export default function TimesheetTable() {
 	const store = useTimekeepStore();
 	const timekeep = useStore(store);
 	const settings = useSettings();
-
-	// Determine whether the keep is running
-	const isTimekeepRunning = useMemo(
-		() => isKeepRunning(timekeep),
-		[timekeep]
-	);
 
 	// Max size and scroll for table with "Limit table size" option
 	const limitedSize: React.CSSProperties = settings.limitTableSize
@@ -34,11 +27,7 @@ export default function TimesheetTable() {
 					</tr>
 				</thead>
 				<tbody>
-					<TimesheetRows
-						entries={timekeep.entries}
-						indent={0}
-						isTimekeepRunning={isTimekeepRunning}
-					/>
+					<TimesheetRows entries={timekeep.entries} indent={0} />
 				</tbody>
 			</table>
 		</div>
