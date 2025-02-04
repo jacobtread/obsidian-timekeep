@@ -1,8 +1,10 @@
 import moment from "moment";
 import { TimeEntry } from "@/schema";
 import React, { useMemo, useState } from "react";
+import { useApp } from "@/contexts/use-app-context";
 import { useSettings } from "@/contexts/use-settings-context";
 import { useTimekeepStore } from "@/contexts/use-timekeep-store";
+import { NameSegmentType, parseNameSegments } from "@/utils/name";
 import TimesheetRowEditing from "@/components/TimesheetRowEditing";
 import TimesheetRowDuration from "@/components/TimesheetRowDuration";
 import {
@@ -25,11 +27,13 @@ type Props = {
 };
 
 export default function TimesheetRow({ entry, indent }: Props) {
+	const app = useApp();
 	const settings = useSettings();
 	const timekeepStore = useTimekeepStore();
 
 	const [editing, setEditing] = useState(false);
 
+	const segments = parseNameSegments(entry.name);
 	const isSelfRunning = useMemo(
 		() => entry.subEntries === null && isEntryRunning(entry),
 		[entry]
@@ -70,6 +74,12 @@ export default function TimesheetRow({ entry, indent }: Props) {
 		});
 	};
 
+	const onOpenLink = (link: string) => {
+		const activeFile = app.workspace.getActiveFile();
+		if (activeFile === null) return;
+		app.workspace.openLinkText(link, activeFile.path);
+	};
+
 	// Handles toggling the collapsed state for an entry
 	const handleToggleCollapsed = () => {
 		if (entry.subEntries === null) return;
@@ -102,7 +112,24 @@ export default function TimesheetRow({ entry, indent }: Props) {
 					className="timekeep-entry-name"
 					title={entry.name}
 					onClick={handleToggleCollapsed}>
-					{entry.name}
+					{segments.map((segment, index) => {
+						switch (segment.type) {
+							case NameSegmentType.Text:
+								return <span key={index}>{segment.text}</span>;
+
+							case NameSegmentType.Link:
+								return (
+									<a
+										key={index}
+										href={segment.url}
+										onClick={() => {
+											onOpenLink(segment.url);
+										}}>
+										{segment.text}
+									</a>
+								);
+						}
+					})}
 
 					{entry.subEntries !== null && (
 						<ObsidianIcon
