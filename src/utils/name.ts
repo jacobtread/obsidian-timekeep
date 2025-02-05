@@ -16,14 +16,15 @@ export type NameSegment =
 	| ({ type: NameSegmentType.Text } & NameSegmentText)
 	| ({ type: NameSegmentType.Link } & NameSegmentLink);
 
+// Matches wikilinks [[link]] and markdown links [text](url)
+const LINK_REGEX = /\[\[([^\]]+)\]\]|\[([^\]]+)\]\(([^)]+)\)/g;
+
 export function parseNameSegments(input: string): NameSegment[] {
-	// Matches wikilinks [[link]] and markdown links [text](url)
-	const linkRegex = /\[\[([^\]]+)\]\]|\[([^\]]+)\]\(([^)]+)\)/g;
 	const segments: NameSegment[] = [];
 
 	let lastIndex = 0;
 
-	for (const match of input.matchAll(linkRegex)) {
+	for (const match of input.matchAll(LINK_REGEX)) {
 		const index = (match as RegExpExecArray).index;
 
 		// Handle the text before the current link
