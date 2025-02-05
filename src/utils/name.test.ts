@@ -94,6 +94,26 @@ describe("parseNameSegments", () => {
 		]);
 	});
 
+	it("should parse a combination of Wikilinks and Markdown links with trailing text", () => {
+		const input = "Hello [[Wikilink]] and [Text](https://example.com).";
+		const result = parseNameSegments(input);
+		expect(result).toEqual([
+			{ type: NameSegmentType.Text, text: "Hello " },
+			{
+				type: NameSegmentType.Link,
+				url: "Wikilink",
+				text: "Wikilink",
+			},
+			{ type: NameSegmentType.Text, text: " and " },
+			{
+				type: NameSegmentType.Link,
+				url: "https://example.com",
+				text: "Text",
+			},
+			{ type: NameSegmentType.Text, text: "." },
+		]);
+	});
+
 	it("should handle multiple Wikilinks correctly", () => {
 		const input = "[[Link1]] and [[Link2]]";
 		const result = parseNameSegments(input);
