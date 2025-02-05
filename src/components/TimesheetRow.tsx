@@ -18,6 +18,7 @@ import {
 import { formatTimestamp } from "src/utils";
 
 import ObsidianIcon from "./ObsidianIcon";
+import TimekeepName from "./TimekeepName";
 
 type Props = {
 	entry: TimeEntry;
@@ -102,7 +103,7 @@ export default function TimesheetRow({ entry, indent }: Props) {
 					className="timekeep-entry-name"
 					title={entry.name}
 					onClick={handleToggleCollapsed}>
-					{entry.name}
+					<TimekeepName name={entry.name} />
 
 					{entry.subEntries !== null && (
 						<ObsidianIcon
