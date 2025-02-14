@@ -98,6 +98,52 @@ If you have frequently used entry names you can define them in your template by 
 
 This will create an entry that is not yet started which you can click the play button on and start without having to type out the name.
 
+## 🦾 API
+
+Timekeep exposes a JS API which can be used by other scripts such as with [Dataview](https://blacksmithgu.github.io/obsidian-dataview/api/intro/)
+
+You can access the plugin API through:
+
+```js
+// Get the timekeep plugin API
+const timekeepPlugin = this.app.plugins.plugins.timekeep;
+
+// Extract the timekeeps from the file text
+const timekeeps = timekeepPlugin.extractTimekeepCodeblocks(text);
+```
+
+Below is a Dataview example for showing the total elapsed time for all timekeeps in the current file:
+
+````
+```dataviewjs
+// Get the currently open file
+const activeFile = this.app.workspace.getActiveFile();
+if(!activeFile || !activeFile.name) return; 
+
+// Read the file
+const text = await this.app.vault.read(activeFile); 
+
+// Get the timekeep plugin API
+const timekeepPlugin = this.app.plugins.plugins.timekeep;
+
+// Extract the timekeeps from the file text
+const timekeeps = timekeepPlugin.extractTimekeepCodeblocks(text);
+
+// Current time is required for unfinished entries
+const currentTime = moment();
+
+let totalRunningDuration = 0;
+
+for (const timekeep of timekeeps) {
+  totalRunningDuration += timekeepPlugin.getTotalDuration(timekeep.entries, currentTime);
+}
+
+// Total running duration is in milliseconds
+dv.span(totalRunningDuration);
+```
+````
+
+
 
 ## Known issues
 
