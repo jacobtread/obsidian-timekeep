@@ -11,6 +11,7 @@ import {
 	withSubEntry,
 	isKeepRunning,
 	isEntryRunning,
+	getRunningEntry,
 	setEntryCollapsed,
 	stopRunningEntries,
 } from "@/timekeep";
@@ -31,10 +32,15 @@ export default function TimesheetRow({ entry, indent }: Props) {
 
 	const [editing, setEditing] = useState(false);
 
-	const isSelfRunning = useMemo(
-		() => entry.subEntries === null && isEntryRunning(entry),
-		[entry]
-	);
+	const { isSelfRunning, isRunningWithin } = useMemo(() => {
+		const isSelfRunning =
+			entry.subEntries === null && isEntryRunning(entry);
+		const isRunningWithin =
+			entry.subEntries !== null &&
+			getRunningEntry(entry.subEntries) !== null;
+
+		return { isSelfRunning, isRunningWithin };
+	}, [entry]);
 
 	const onClickStart = () => {
 		timekeepStore.setState((timekeep) => {
@@ -95,6 +101,7 @@ export default function TimesheetRow({ entry, indent }: Props) {
 		<tr
 			className="timekeep-row"
 			data-running={isSelfRunning}
+			data-running-within={isRunningWithin}
 			data-sub-entires={entry.subEntries !== null}>
 			<td
 				className="timekeep-col timekeep-col--name"
