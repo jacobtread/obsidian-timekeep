@@ -73,7 +73,10 @@ export function extractTimekeepCodeblocks(value: string): Timekeep[] {
 		}
 
 		// Find end of codeblock
-		const endLineIndex = lines.indexOf("```", i);
+		const endLineIndex = lines.findIndex(
+			(line, index) => index > i && line.trim() === "```"
+		);
+
 		if (endLineIndex === -1) {
 			continue;
 		}
@@ -119,7 +122,7 @@ export function replaceTimekeepCodeblock(
 		);
 	}
 
-	if (!lines[lineEnd].startsWith("```")) {
+	if (!lines[lineEnd].trim().startsWith("```")) {
 		throw new Error(
 			"Content timekeep out of sync, line number for codeblock end doesn't match" +
 				content[lineEnd]

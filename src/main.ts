@@ -16,6 +16,7 @@ import {
 
 import { Timekeep, TimeEntry } from "./schema";
 import { TimekeepMarkdownView } from "./views/timekeep-markdown-view";
+import { TimekeepLocatorModal } from "./views/timekeep-locator-modal";
 
 export default class TimekeepPlugin extends Plugin {
 	settingsStore: Store<TimekeepSettings>;
@@ -95,6 +96,12 @@ export default class TimekeepPlugin extends Plugin {
 			editorCallback: (e) => {
 				e.replaceSelection('\n```timekeep\n{"entries": []}\n```\n');
 			},
+		});
+
+		this.addCommand({
+			id: `find`,
+			name: `Find running trackers`,
+			callback: () => new TimekeepLocatorModal(this.app).open(),
 		});
 	}
 }
