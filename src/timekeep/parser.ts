@@ -61,7 +61,7 @@ export function extractTimekeepCodeblocks(value: string): Timekeep[] {
 		const startLine = lines[i];
 
 		// Skip lines till a timekeep block is found
-		if (!startLine.startsWith("```timekeep")) {
+		if (!startLine.trim().startsWith("```timekeep")) {
 			continue;
 		}
 
@@ -108,7 +108,7 @@ export function replaceTimekeepCodeblock(
 	const lines = content.split("\n");
 
 	// Sanity checks to prevent overriding content
-	if (!lines[lineStart].startsWith("```")) {
+	if (!lines[lineStart].trim().startsWith("```")) {
 		throw new Error(
 			"Content timekeep out of sync, line number for codeblock start doesn't match: " +
 				content[lineStart]

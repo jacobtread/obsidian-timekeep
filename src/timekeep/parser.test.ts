@@ -152,6 +152,15 @@ describe("loading timekeep", () => {
 		expect(errorResult.error).toBe("Failed to parse timekeep JSON");
 	});
 
+	it("should tolerate a timekeep with leading or trailing whitespaces", () => {
+		const input = `
+		      \`\`\`timekeep
+		 \`\`\` 
+		`;
+		// Start not code fences
+		replaceTimekeepCodeblock({ entries: [] }, input, 1, 2);
+	});
+
 	it("should give error on invalid timekeep (validation)", () => {
 		const data = `{"entries":[{"startTime":"2024-03-17T01:33:51.630Z","endTime":"2024-03-17T01:33:55.151Z","subEntries":null}]}`;
 
