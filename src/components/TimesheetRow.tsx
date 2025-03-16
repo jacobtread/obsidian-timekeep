@@ -1,5 +1,5 @@
 import moment from "moment";
-import { TimeEntry } from "@/schema";
+import { TimeEntry } from "@/timekeep/schema";
 import React, { useMemo, useState } from "react";
 import { useSettings } from "@/contexts/use-settings-context";
 import { useTimekeepStore } from "@/contexts/use-timekeep-store";

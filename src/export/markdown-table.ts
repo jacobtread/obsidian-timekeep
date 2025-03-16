@@ -1,7 +1,7 @@
 import type { Moment } from "moment";
 import { formatDuration } from "@/utils";
 import { getTotalDuration } from "@/timekeep";
-import { Timekeep, TimeEntry } from "@/schema";
+import { Timekeep, TimeEntry } from "@/timekeep/schema";
 import { DurationFormat, TimekeepSettings } from "@/settings";
 import { RawTableRow, TOTAL_COLUMNS, createRawTable } from "@/export";
 

@@ -1,7 +1,6 @@
 import moment from "moment";
 import { v4 as uuid } from "uuid";
-
-import { TIMEKEEP } from "./schema";
+import { TIMEKEEP } from "@/timekeep/schema";
 
 jest.mock("uuid", () => ({
 	v4: jest.fn(() => "mocked-uuid"),

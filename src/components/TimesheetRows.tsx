@@ -1,4 +1,4 @@
-import { TimeEntry } from "@/schema";
+import { TimeEntry } from "@/timekeep/schema";
 import React, { useMemo, Fragment } from "react";
 import TimesheetRow from "@/components/TimesheetRow";
 import { useSettings } from "@/contexts/use-settings-context";

@@ -3,18 +3,17 @@ import { Store, createStore } from "@/store";
 import { TimekeepSettingsTab } from "@/settings-tab";
 import { PluginManifest, App as ObsidianApp } from "obsidian";
 import { Plugin, MarkdownPostProcessorContext } from "obsidian";
+import { load, extractTimekeepCodeblocks } from "@/timekeep/parser";
 import { SortOrder, defaultSettings, TimekeepSettings } from "@/settings";
 import {
-	load,
 	isKeepRunning,
 	isEntryRunning,
 	getRunningEntry,
 	getEntryDuration,
 	getTotalDuration,
-	extractTimekeepCodeblocks,
 } from "@/timekeep";
 
-import { Timekeep, TimeEntry } from "./schema";
+import { Timekeep, TimeEntry } from "./timekeep/schema";
 import { TimekeepMarkdownView } from "./views/timekeep-markdown-view";
 import { TimekeepLocatorModal } from "./views/timekeep-locator-modal";
 

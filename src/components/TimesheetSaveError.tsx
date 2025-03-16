@@ -1,6 +1,6 @@
 import React from "react";
-import { Timekeep, stripTimekeepRuntimeData } from "@/schema";
 import { useTimekeepStore } from "@/contexts/use-timekeep-store";
+import { Timekeep, stripTimekeepRuntimeData } from "@/timekeep/schema";
 
 type Props = {
 	// Callback to save the timekeep

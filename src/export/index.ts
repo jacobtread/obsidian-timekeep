@@ -1,5 +1,5 @@
-import { TimeEntry } from "@/schema";
 import type { Moment } from "moment";
+import { TimeEntry } from "@/timekeep/schema";
 import { TimekeepSettings } from "@/settings";
 import { formatDuration, formatTimestamp } from "@/utils";
 import { getEntryDuration, getEntriesSorted } from "@/timekeep";
