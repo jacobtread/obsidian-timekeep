@@ -1,6 +1,6 @@
 import moment from "moment";
 import { useStore } from "@/store";
-import { Timekeep } from "@/schema";
+import { Timekeep } from "@/timekeep/schema";
 import React, { useState, useEffect } from "react";
 import { useSettings } from "@/contexts/use-settings-context";
 import { useTimekeepStore } from "@/contexts/use-timekeep-store";

@@ -1,4 +1,4 @@
-import { TimeEntry } from "@/schema";
+import { TimeEntry } from "@/timekeep/schema";
 import { useDialog } from "@/contexts/use-dialog";
 import { removeEntry, updateEntry } from "@/timekeep";
 import { useSettings } from "@/contexts/use-settings-context";

@@ -1,6 +1,6 @@
 import React from "react";
-import { Timekeep } from "@/schema";
 import { Store, useStore } from "@/store";
+import { Timekeep } from "@/timekeep/schema";
 import { App as ObsidianApp } from "obsidian";
 import { TimekeepSettings } from "@/settings";
 import { AppContext } from "@/contexts/use-app-context";

@@ -1,5 +1,5 @@
-import { Timekeep } from "@/schema";
 import type { Moment } from "moment";
+import { Timekeep } from "@/timekeep/schema";
 import { TimekeepSettings } from "@/settings";
 import { RawTableRow, createRawTable } from "@/export";
 

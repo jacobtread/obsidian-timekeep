@@ -1,6 +1,6 @@
 import moment from "moment";
-import { TimeEntry } from "@/schema";
 import { formatDurationLong } from "@/utils";
+import { TimeEntry } from "@/timekeep/schema";
 import React, { useState, useEffect } from "react";
 import { isEntryRunning, getEntryDuration } from "@/timekeep";
 

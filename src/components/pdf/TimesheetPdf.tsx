@@ -1,6 +1,6 @@
 import React from "react";
-import { Timekeep } from "@/schema";
 import type { Moment } from "moment";
+import { Timekeep } from "@/timekeep/schema";
 import { getTotalDuration } from "@/timekeep";
 import { TimekeepSettings } from "@/settings";
 import { Page, View, Text, Document, StyleSheet } from "@/pdf";

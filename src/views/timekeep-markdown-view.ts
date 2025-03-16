@@ -5,8 +5,8 @@ import { Store, createStore } from "@/store";
 import { App as ObsidianApp } from "obsidian";
 import { TimekeepSettings } from "@/settings";
 import { Root, createRoot } from "react-dom/client";
-import { Timekeep, stripTimekeepRuntimeData } from "@/schema";
-import { LoadResult, replaceTimekeepCodeblock } from "@/timekeep";
+import { Timekeep, stripTimekeepRuntimeData } from "@/timekeep/schema";
+import { LoadResult, replaceTimekeepCodeblock } from "@/timekeep/parser";
 import {
 	TFile,
 	TAbstractFile,

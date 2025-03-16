@@ -6,8 +6,8 @@ import { Notice } from "obsidian";
 import { Platform } from "obsidian";
 import { mkdir, writeFile } from "fs/promises";
 import { PdfExportBehavior } from "@/settings";
-import { stripTimekeepRuntimeData } from "@/schema";
 import { createCSV, createMarkdownTable } from "@/export";
+import { stripTimekeepRuntimeData } from "@/timekeep/schema";
 import { useSettings } from "@/contexts/use-settings-context";
 import { useTimekeepStore } from "@/contexts/use-timekeep-store";
 

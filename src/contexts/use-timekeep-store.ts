@@ -1,5 +1,5 @@
 import { Store } from "@/store";
-import { Timekeep } from "@/schema";
+import { Timekeep } from "@/timekeep/schema";
 import { useContext, createContext } from "react";
 
 export type TimekeepStore = Store<Timekeep>;

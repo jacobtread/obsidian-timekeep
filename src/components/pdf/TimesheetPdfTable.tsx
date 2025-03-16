@@ -2,8 +2,8 @@ import type { Moment } from "moment";
 import React, { Fragment } from "react";
 import { getEntryDuration } from "@/timekeep";
 import { TimekeepSettings } from "@/settings";
-import { Timekeep, TimeEntry } from "@/schema";
 import { View, Text, StyleSheet } from "@/pdf";
+import { Timekeep, TimeEntry } from "@/timekeep/schema";
 import { formatPdfRowDate, formatDurationLong } from "@/utils";
 
 type Props = {
