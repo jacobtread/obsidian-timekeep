@@ -32,14 +32,19 @@ export default function TimesheetRow({ entry, indent }: Props) {
 
 	const [editing, setEditing] = useState(false);
 
-	const { isSelfRunning, isRunningWithin } = useMemo(() => {
+	const { isSelfRunning, isRunningWithin, isInvalidEntry } = useMemo(() => {
 		const isSelfRunning =
 			entry.subEntries === null && isEntryRunning(entry);
 		const isRunningWithin =
 			entry.subEntries !== null &&
 			getRunningEntry(entry.subEntries) !== null;
 
-		return { isSelfRunning, isRunningWithin };
+		const isInvalidEntry =
+			entry.startTime !== null &&
+			entry.endTime !== null &&
+			entry.endTime.isBefore(entry.startTime);
+
+		return { isSelfRunning, isRunningWithin, isInvalidEntry };
 	}, [entry]);
 
 	const onClickStart = () => {
@@ -102,7 +107,8 @@ export default function TimesheetRow({ entry, indent }: Props) {
 			className="timekeep-row"
 			data-running={isSelfRunning}
 			data-running-within={isRunningWithin}
-			data-sub-entires={entry.subEntries !== null}>
+			data-sub-entires={entry.subEntries !== null}
+			data-invalid={isInvalidEntry}>
 			<td
 				className="timekeep-col timekeep-col--name"
 				style={{ paddingLeft: `${(indent + 1) * 15}px` }}>

@@ -31,6 +31,10 @@
 	border-bottom: 2px solid var(--color-base-40);
 }
 
+.timekeep-row[data-invalid="true"] {
+	border-left: 2px solid var(--color-red);
+}
+
 .timesheet-editing {
 	display: flex;
 	flex-flow: column;
