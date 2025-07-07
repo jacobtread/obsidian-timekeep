@@ -23,6 +23,7 @@ import {
 	isKeepRunning,
 	isEntryRunning,
 	removeSubEntry,
+	getPathToEntry,
 	getRunningEntry,
 	getEntryDuration,
 	getTotalDuration,
@@ -298,6 +299,16 @@ describe("checking entries", () => {
 		const output = getRunningEntry(input);
 
 		expect(output).toBe(runningEntry);
+	});
+
+	it("should find running entry path", async () => {
+		const { input, runningEntry, path } = await import(
+			"./__fixtures__/checking/findRunningEntryPath"
+		);
+
+		const output = getPathToEntry(input, runningEntry);
+
+		expect(output).toEqual(path);
 	});
 
 	it("should not find running entry", async () => {

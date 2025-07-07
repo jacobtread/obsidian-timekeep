@@ -224,3 +224,8 @@
 	color: #777;
 	margin-left: 0.5rem;
 }
+
+.timekeep-path-to-entry {
+	display: inline-flex;
+	gap: 0.5rem;
+}

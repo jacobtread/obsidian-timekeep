@@ -289,6 +289,47 @@ export function isEntryRunning(entry: TimeEntry) {
 }
 
 /**
+ * Get the path to the provided target entry
+ *
+ * @param entries The collection of entries
+ * @param target The target entry
+ * @returns The path to the entry
+ */
+export function getPathToEntry(
+	entries: TimeEntry[],
+	target: TimeEntry
+): { id: string; name: string }[] {
+	const path: { id: string; name: string }[] = [];
+
+	function dfs(entry: TimeEntry): boolean {
+		path.push({ id: entry.id, name: entry.name });
+
+		if (entry.id === target.id) {
+			return true;
+		}
+
+		if (entry.subEntries) {
+			for (const sub of entry.subEntries) {
+				if (dfs(sub)) {
+					return true;
+				}
+			}
+		}
+
+		path.pop();
+		return false;
+	}
+
+	for (const entry of entries) {
+		if (dfs(entry)) {
+			return path;
+		}
+	}
+
+	return [];
+}
+
+/**
  * Searches through the nested list of time entries using
  * a "stack" depth-first search approach attempting to
  * find an entry that is running

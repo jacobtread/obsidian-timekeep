@@ -7,6 +7,7 @@ import { useTimekeepStore } from "@/contexts/use-timekeep-store";
 import {
 	withEntry,
 	isKeepRunning,
+	getPathToEntry,
 	getRunningEntry,
 	stopRunningEntries,
 } from "@/timekeep";
@@ -27,6 +28,14 @@ export default function TimekeepStart() {
 	const currentEntry = useMemo(
 		() => getRunningEntry(timekeep.entries),
 		[timekeep]
+	);
+
+	const pathToEntry = useMemo(
+		() =>
+			currentEntry
+				? getPathToEntry(timekeep.entries, currentEntry)
+				: null,
+		[timekeep, currentEntry]
 	);
 
 	const isTimekeepRunning = currentEntry !== null;
@@ -86,7 +95,20 @@ export default function TimekeepStart() {
 						</span>
 						<div className="active-entry__details">
 							<span className="active-entry__name">
-								<b>Name: </b> {currentEntry.name}
+								<b>Name: </b>{" "}
+								{pathToEntry && pathToEntry.length > 0 && (
+									<span className="timekeep-path-to-entry">
+										{pathToEntry.map((path, index) => (
+											<span key={path.id}>
+												{path.name}
+
+												{index <
+													pathToEntry.length - 1 &&
+													" >"}
+											</span>
+										))}
+									</span>
+								)}
 							</span>
 							<span className="active-entry__time">
 								<b>{"Started at: "}</b>
