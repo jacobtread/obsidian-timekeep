@@ -60,11 +60,19 @@ export default function TimesheetRow({ entry, indent }: Props) {
 			}
 
 			if (entry.subEntries !== null || entry.startTime !== null) {
+				let currentEntry = entry;
+
+				// Ensure the current entry is stopped before using it
+				if (entry.subEntries === null && entry.startTime !== null) {
+					currentEntry = { ...entry, endTime: currentTime };
+				}
+
 				// If the entry has been started or is a group create a new child entry
 				entries = updateEntry(
 					entries,
-					entry,
-					withSubEntry(entry, "", currentTime)
+					// Ensure the current entry is ended
+					currentEntry,
+					withSubEntry(currentEntry, "", currentTime)
 				);
 			} else {
 				// If the entry hasn't been started then start it
