@@ -25,9 +25,9 @@ If you accidentally gave a block an incorrect name or started the timer late, yo
 
 ![Editing](images/editing.png)
 
-## 👀 How its stored
+## 👀 How it's stored
 
-This plugin is heavily inspired by [ObsidianSimpleTimeTracker](https://github.com/Ellpeck/ObsidianSimpleTimeTracker) (semi backwards compatible; some simple-time-tracker blocks can be renamed to timekeep), so the data for time tracking is stored as JSON within the `timekeep` code block.
+This plugin is heavily inspired by [ObsidianSimpleTimeTracker](https://github.com/Ellpeck/ObsidianSimpleTimeTracker) (semi backwards compatible; some simple-time-tracker blocks can be renamed to timekeep), the data for time tracking is stored as JSON within the `timekeep` code block.
 
 The time block start and stop times are stored as timestamps, making it possible for you to start your time tracker, then close Obsidian and have the tracking continue when you open it again.
 
@@ -96,7 +96,7 @@ If you have frequently used entry names you can define them in your template by 
 {"entries":[{"name":"Non started block","startTime":null,"endTime":null,"subEntries":null}]}
 ```
 
-This will create an entry that is not yet started which you can click the play button on and start without having to type out the name.
+This will create an entry that is not yet started; you can start it by clicking the play button without having to type out the name.
 
 ## 🦾 API
 
@@ -151,7 +151,7 @@ dv.span(totalRunningDuration);
 
 If your lists become longer you will likely see some jumpy/flickery behavior with timekeep when making modifications (add/save/delete/collapse/expand), this is a limitation of how Obsidian re-renders the app.
 
-I am unable to take advantage of the React virtual DOM to only update the changed DOM elements for the entries, because Obsidian re-creates the entire app when the code block changes (Since the timekeep data is stored in the codeblock, modifications cause this to happen. Thus the virtual DOM and real DOM are thrown away causing a full re-render). This issue also means local state will all be lost on modification (Which is why the collapsed state must be persisted to the timekeep)
+I am unable to take advantage of the React virtual DOM to only update the changed DOM elements for the entries, because Obsidian re-creates the entire app when the code block changes (Since the timekeep data is stored in the codeblock, modifications cause this to happen. Thus the virtual DOM and real DOM are thrown away causing a full re-render). This issue also means local state will all be lost on modification (This is why the collapsed state must be persisted to the timekeep.)
 
 
 I do not believe this can be fixed but PRs are welcome if you are aware of a way to fix this. 
