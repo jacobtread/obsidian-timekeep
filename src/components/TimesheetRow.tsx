@@ -7,13 +7,10 @@ import TimesheetRowEditing from "@/components/TimesheetRowEditing";
 import TimesheetRowDuration from "@/components/TimesheetRowDuration";
 import {
 	updateEntry,
-	createEntry,
-	withSubEntry,
-	isKeepRunning,
 	isEntryRunning,
 	getRunningEntry,
 	setEntryCollapsed,
-	stopRunningEntries,
+	startNewNestedEntry,
 } from "@/timekeep";
 
 import { formatTimestamp } from "src/utils";
@@ -50,38 +47,11 @@ export default function TimesheetRow({ entry, indent }: Props) {
 	const onClickStart = () => {
 		timekeepStore.setState((timekeep) => {
 			const currentTime = moment();
-
-			let entries = timekeep.entries;
-
-			// Stop any already running entries
-			if (isKeepRunning(timekeep)) {
-				// Stop the running entry
-				entries = stopRunningEntries(entries, currentTime);
-			}
-
-			if (entry.subEntries !== null || entry.startTime !== null) {
-				let currentEntry = entry;
-
-				// Ensure the current entry is stopped before using it
-				if (entry.subEntries === null && entry.startTime !== null) {
-					currentEntry = { ...entry, endTime: currentTime };
-				}
-
-				// If the entry has been started or is a group create a new child entry
-				entries = updateEntry(
-					entries,
-					// Ensure the current entry is ended
-					currentEntry,
-					withSubEntry(currentEntry, "", currentTime)
-				);
-			} else {
-				// If the entry hasn't been started then start it
-				entries = updateEntry(
-					entries,
-					entry,
-					createEntry(entry.name, currentTime)
-				);
-			}
+			const entries = startNewNestedEntry(
+				currentTime,
+				entry,
+				timekeep.entries
+			);
 
 			return {
 				...timekeep,
@@ -96,7 +66,7 @@ export default function TimesheetRow({ entry, indent }: Props) {
 
 		timekeepStore.setState((timekeep) => {
 			const newEntry = setEntryCollapsed(entry, !entry.collapsed);
-			const entries = updateEntry(timekeep.entries, entry, newEntry);
+			const entries = updateEntry(timekeep.entries, entry.id, newEntry);
 			return { ...timekeep, entries };
 		});
 	};

@@ -23,28 +23,99 @@ export function createEntry(name: string, startTime: Moment): TimeEntry {
 }
 
 /**
+ * Start a new entry in the provided set of entires
+ *
+ * @param name Name of the new entry
+ * @param currentTime The current time to use for the start time
+ * @param entries Entries to append to
+ * @returns Entries with the new entry added
+ */
+export function startNewEntry(
+	name: string,
+	currentTime: Moment,
+	entries: TimeEntry[]
+): TimeEntry[] {
+	// Stop any already running entries
+	if (getRunningEntry(entries) !== null) {
+		// Stop the running entry
+		entries = stopRunningEntries(entries, currentTime);
+	}
+
+	// Add the new entry
+	entries = withEntry(entries, name, currentTime);
+	return entries;
+}
+
+/**
+ * Start a new entry that is a sub-entry of the provided
+ * target entry
+ *
+ * @param currentTime Current time to use as the start time for the new entry
+ * @param targetEntry Entry to start the sub-entry within
+ * @param entries Set of entries to update
+ * @returns The updated entries set
+ */
+export function startNewNestedEntry(
+	currentTime: Moment,
+	targetEntry: TimeEntry,
+	entries: TimeEntry[]
+): TimeEntry[] {
+	// Stop any already running entries
+	if (getRunningEntry(entries) !== null) {
+		// Stop the running entry
+		entries = stopRunningEntries(entries, currentTime);
+	}
+
+	if (targetEntry.subEntries !== null || targetEntry.startTime !== null) {
+		let currentEntry = targetEntry;
+
+		// Ensure the current entry is stopped before using it
+		if (targetEntry.subEntries === null && targetEntry.startTime !== null) {
+			currentEntry = { ...targetEntry, endTime: currentTime };
+		}
+
+		// If the entry has been started or is a group create a new child entry
+		entries = updateEntry(
+			entries,
+			// Ensure the current entry is ended
+			targetEntry.id,
+			withSubEntry(currentEntry, "", currentTime)
+		);
+	} else {
+		// If the entry hasn't been started then start it
+		entries = updateEntry(
+			entries,
+			targetEntry.id,
+			createEntry(targetEntry.name, currentTime)
+		);
+	}
+
+	return entries;
+}
+
+/**
  * Recursively updates a collection of entries, finding a possibly deeply nested
  * old entry by reference replacing it with a new entry
  *
  * @param entries The entries to make the update within
- * @param previousEntry The old entry to update
+ * @param previousEntryId The ID of the old entry to update
  * @param newEntry The new entry to take its place
  * @returns The collection with the updated entry
  */
 export function updateEntry(
 	entries: TimeEntry[],
-	previousEntry: TimeEntry,
+	previousEntryId: string,
 	newEntry: TimeEntry
 ): TimeEntry[] {
 	return entries.map((entry) => {
-		if (entry.id === previousEntry.id) {
+		if (entry.id === previousEntryId) {
 			return newEntry;
 		} else if (entry.subEntries !== null) {
 			return {
 				...entry,
 				subEntries: updateEntry(
 					entry.subEntries,
-					previousEntry,
+					previousEntryId,
 					newEntry
 				),
 			};

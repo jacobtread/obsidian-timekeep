@@ -21,6 +21,7 @@ import {
 	updateEntry,
 	withSubEntry,
 	isKeepRunning,
+	startNewEntry,
 	isEntryRunning,
 	removeSubEntry,
 	getPathToEntry,
@@ -31,6 +32,7 @@ import {
 	setEntryCollapsed,
 	getUniqueEntryHash,
 	stopRunningEntries,
+	startNewNestedEntry,
 } from "./index";
 
 describe("manipulating entries", () => {
@@ -40,7 +42,11 @@ describe("manipulating entries", () => {
 				await import(
 					"./__fixtures__/manipulating/update_entry/updateEntry"
 				);
-			const updated = updateEntry(entries, entryToUpdate, updatedEntry);
+			const updated = updateEntry(
+				entries,
+				entryToUpdate.id,
+				updatedEntry
+			);
 			expect(updated).toEqual(expectedEntries);
 		});
 	});
@@ -93,6 +99,97 @@ describe("manipulating entries", () => {
 			);
 			const updated = removeEntry(entries, entryToRemove);
 			expect(updated).toEqual(expectedEntries);
+		});
+	});
+
+	describe("path to entry", () => {
+		it("path not found", async () => {
+			const { targetEntry, entries, expected } = await import(
+				"./__fixtures__/path/pathNotFound"
+			);
+			const output = getPathToEntry(entries, targetEntry);
+			expect(output).toEqual(expected);
+		});
+
+		it("top level path found", () => {});
+
+		it("deep path found", () => {});
+	});
+
+	describe("start new entry", () => {
+		it("starting a new entry should stop any running entries", async () => {
+			const { currentTime, stopped, name, input, expected } =
+				await import(
+					"./__fixtures__/manipulating/start_entry/startShouldStopRunning"
+				);
+
+			const output = startNewEntry(name, currentTime, input);
+			const stoppedEntry = output.find((entry) => entry.id === stopped);
+
+			expect(stoppedEntry).toBeDefined();
+			expect(stoppedEntry!.endTime).not.toBeNull();
+
+			expect(stripEntriesRuntimeData(output)).toEqual(
+				stripEntriesRuntimeData(expected)
+			);
+		});
+
+		it("starting a new entry should add a new entry", async () => {
+			const { currentTime, name, input, expected } = await import(
+				"./__fixtures__/manipulating/start_entry/startShouldStopRunning"
+			);
+
+			const output = startNewEntry(name, currentTime, input);
+			expect(stripEntriesRuntimeData(output)).toEqual(
+				stripEntriesRuntimeData(expected)
+			);
+		});
+	});
+
+	describe("start non started entry", () => {
+		it("starting a new entry should stop any running entries", async () => {
+			const { currentTime, targetEntry, input, expected } = await import(
+				"./__fixtures__/manipulating/start_entry/startNotStartedEntry"
+			);
+
+			const output = startNewNestedEntry(currentTime, targetEntry, input);
+			expect(stripEntriesRuntimeData(output)).toEqual(
+				stripEntriesRuntimeData(expected)
+			);
+		});
+	});
+
+	describe("start new nested entry", () => {
+		it("starting a new entry should stop any running entries", async () => {
+			const { currentTime, stopped, targetEntry, input, expected } =
+				await import(
+					"./__fixtures__/manipulating/start_entry/startNestedShouldStopRunning"
+				);
+
+			const output = startNewNestedEntry(currentTime, targetEntry, input);
+
+			const outerEntry = output[0];
+			const stoppedEntry = outerEntry.subEntries?.find(
+				(entry) => entry.id === stopped
+			);
+
+			expect(stoppedEntry).toBeDefined();
+			expect(stoppedEntry!.endTime).not.toBeNull();
+
+			expect(stripEntriesRuntimeData(output)).toEqual(
+				stripEntriesRuntimeData(expected)
+			);
+		});
+
+		it("starting a new entry should add a new entry", async () => {
+			const { currentTime, targetEntry, input, expected } = await import(
+				"./__fixtures__/manipulating/start_entry/startNestedShouldStopRunning"
+			);
+
+			const output = startNewNestedEntry(currentTime, targetEntry, input);
+			expect(stripEntriesRuntimeData(output)).toEqual(
+				stripEntriesRuntimeData(expected)
+			);
 		});
 	});
 

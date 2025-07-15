@@ -5,8 +5,7 @@ import React, { useMemo, useState, FormEvent } from "react";
 import { useSettings } from "@/contexts/use-settings-context";
 import { useTimekeepStore } from "@/contexts/use-timekeep-store";
 import {
-	withEntry,
-	isKeepRunning,
+	startNewEntry,
 	getPathToEntry,
 	getRunningEntry,
 	stopRunningEntries,
@@ -22,21 +21,17 @@ import ObsidianIcon from "./ObsidianIcon";
 export default function TimekeepStart() {
 	const store = useTimekeepStore();
 	const timekeep = useStore(store);
-	const [name, setName] = useState("");
 	const settings = useSettings();
 
-	const currentEntry = useMemo(
-		() => getRunningEntry(timekeep.entries),
-		[timekeep]
-	);
+	const [name, setName] = useState("");
 
-	const pathToEntry = useMemo(
-		() =>
-			currentEntry
-				? getPathToEntry(timekeep.entries, currentEntry)
-				: null,
-		[timekeep, currentEntry]
-	);
+	const { currentEntry, pathToEntry } = useMemo(() => {
+		const currentEntry = getRunningEntry(timekeep.entries);
+		const pathToEntry = currentEntry
+			? getPathToEntry(timekeep.entries, currentEntry)
+			: null;
+		return { currentEntry, pathToEntry };
+	}, [timekeep]);
 
 	const isTimekeepRunning = currentEntry !== null;
 
@@ -47,17 +42,10 @@ export default function TimekeepStart() {
 
 		store.setState((timekeep) => {
 			const currentTime = moment();
-			let entries = timekeep.entries;
+			const entries = startNewEntry(name, currentTime, timekeep.entries);
 
-			// Stop any already running entries
-			if (isKeepRunning(timekeep)) {
-				// Stop the running entry
-				entries = stopRunningEntries(entries, currentTime);
-			}
-
-			/// Clear the name input
+			// Reset name input
 			setName("");
-			entries = withEntry(entries, name, currentTime);
 
 			return {
 				...timekeep,

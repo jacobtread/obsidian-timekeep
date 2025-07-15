@@ -79,7 +79,7 @@ export default function TimesheetRowEditing({ entry, onFinishEditing }: Props) {
 
 		// Save the updated entry
 		timekeepStore.setState((timekeep) => ({
-			entries: updateEntry(timekeep.entries, entry, newEntry),
+			entries: updateEntry(timekeep.entries, entry.id, newEntry),
 		}));
 
 		onFinishEditing();
