@@ -97,7 +97,7 @@ export default function TimekeepStart() {
 	return (
 		<div>
 			{editing ? (
-				/* Start new entry */
+				/* Edit the name of the current entry */
 				<form
 					className="timekeep-start-area"
 					data-area="start"
