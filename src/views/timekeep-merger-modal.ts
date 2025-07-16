@@ -1,4 +1,7 @@
+import { Store } from "@/store";
 import { v4 as uuid } from "uuid";
+import { exportPdf } from "@/export/pdf";
+import { TimekeepSettings } from "@/settings";
 import { extractTimekeepCodeblocks } from "@/timekeep/parser";
 import { Timekeep, stripTimekeepRuntimeData } from "@/timekeep/schema";
 import { App, TFile, Modal, TextComponent, ButtonComponent } from "obsidian";
@@ -18,11 +21,20 @@ export class TimekeepMergerModal extends Modal {
 	private listContainer: HTMLElement | undefined;
 	private searchInput: TextComponent | undefined;
 	private loadingEl: HTMLElement | undefined;
+	private exportPdf: boolean;
+	private settings: Store<TimekeepSettings>;
 
-	constructor(app: App) {
+	constructor(
+		app: App,
+		settings: Store<TimekeepSettings>,
+		exportPdf = false
+	) {
 		super(app);
 
-		this.setTitle("Create merged timekeep");
+		this.exportPdf = exportPdf;
+		this.settings = settings;
+
+		this.setTitle("Create merged timekeep" + (exportPdf ? " pdf" : ""));
 	}
 
 	async onOpen(): Promise<void> {
@@ -77,12 +89,17 @@ export class TimekeepMergerModal extends Modal {
 				// Close after taking the results as closing resets the list
 				this.close();
 
-				const editor = this.app.workspace.activeEditor?.editor;
-
-				if (editor) {
-					editor.replaceSelection(
-						`\n\`\`\`timekeep\n${JSON.stringify(stripTimekeepRuntimeData(timekeep))}\n\`\`\`\n`
-					);
+				if (this.exportPdf) {
+					// Export a pdf
+					exportPdf(timekeep, this.settings.getState());
+				} else {
+					// Insert into editor
+					const editor = this.app.workspace.activeEditor?.editor;
+					if (editor) {
+						editor.replaceSelection(
+							`\n\`\`\`timekeep\n${JSON.stringify(stripTimekeepRuntimeData(timekeep))}\n\`\`\`\n`
+						);
+					}
 				}
 			});
 

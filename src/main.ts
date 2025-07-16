@@ -107,7 +107,23 @@ export default class TimekeepPlugin extends Plugin {
 		this.addCommand({
 			id: `create-merged`,
 			name: `Create Merged Tracker`,
-			callback: () => new TimekeepMergerModal(this.app).open(),
+			callback: () =>
+				new TimekeepMergerModal(
+					this.app,
+					this.settingsStore,
+					false
+				).open(),
+		});
+
+		this.addCommand({
+			id: `export-merged-pdf`,
+			name: `Export Merged Tracker PDF`,
+			callback: () =>
+				new TimekeepMergerModal(
+					this.app,
+					this.settingsStore,
+					true
+				).open(),
 		});
 	}
 }
