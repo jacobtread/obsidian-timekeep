@@ -152,7 +152,11 @@ describe("manipulating entries", () => {
 				"./__fixtures__/manipulating/start_entry/startNotStartedEntry"
 			);
 
-			const output = startNewNestedEntry(currentTime, targetEntry, input);
+			const output = startNewNestedEntry(
+				currentTime,
+				targetEntry.id,
+				input
+			);
 			expect(stripEntriesRuntimeData(output)).toEqual(
 				stripEntriesRuntimeData(expected)
 			);
@@ -166,7 +170,11 @@ describe("manipulating entries", () => {
 					"./__fixtures__/manipulating/start_entry/startNestedShouldStopRunning"
 				);
 
-			const output = startNewNestedEntry(currentTime, targetEntry, input);
+			const output = startNewNestedEntry(
+				currentTime,
+				targetEntry.id,
+				input
+			);
 
 			const outerEntry = output[0];
 			const stoppedEntry = outerEntry.subEntries?.find(
@@ -186,7 +194,11 @@ describe("manipulating entries", () => {
 				"./__fixtures__/manipulating/start_entry/startNestedShouldStopRunning"
 			);
 
-			const output = startNewNestedEntry(currentTime, targetEntry, input);
+			const output = startNewNestedEntry(
+				currentTime,
+				targetEntry.id,
+				input
+			);
 			expect(stripEntriesRuntimeData(output)).toEqual(
 				stripEntriesRuntimeData(expected)
 			);

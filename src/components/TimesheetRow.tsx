@@ -49,7 +49,7 @@ export default function TimesheetRow({ entry, indent }: Props) {
 			const currentTime = moment();
 			const entries = startNewNestedEntry(
 				currentTime,
-				entry,
+				entry.id,
 				timekeep.entries
 			);
 

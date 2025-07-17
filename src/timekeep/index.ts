@@ -36,14 +36,29 @@ export function startNewEntry(
 	entries: TimeEntry[]
 ): TimeEntry[] {
 	// Stop any already running entries
-	if (getRunningEntry(entries) !== null) {
-		// Stop the running entry
-		entries = stopRunningEntries(entries, currentTime);
-	}
+	entries = stopRunningEntries(entries, currentTime);
 
 	// Add the new entry
 	entries = withEntry(entries, name, currentTime);
 	return entries;
+}
+
+export function getEntryById(
+	entryId: string,
+	entries: TimeEntry[]
+): TimeEntry | undefined {
+	for (const entry of entries) {
+		if (entry.id === entryId) {
+			return entry;
+		}
+
+		if (entry.subEntries) {
+			const nestedEntry = getEntryById(entryId, entry.subEntries);
+			if (nestedEntry) return nestedEntry;
+		}
+	}
+
+	return undefined;
 }
 
 /**
@@ -51,42 +66,38 @@ export function startNewEntry(
  * target entry
  *
  * @param currentTime Current time to use as the start time for the new entry
- * @param targetEntry Entry to start the sub-entry within
+ * @param targetEntryId Entry ID to start the sub-entry within
  * @param entries Set of entries to update
  * @returns The updated entries set
  */
 export function startNewNestedEntry(
 	currentTime: Moment,
-	targetEntry: TimeEntry,
+	targetEntryId: string,
 	entries: TimeEntry[]
 ): TimeEntry[] {
 	// Stop any already running entries
-	if (getRunningEntry(entries) !== null) {
-		// Stop the running entry
-		entries = stopRunningEntries(entries, currentTime);
+	entries = stopRunningEntries(entries, currentTime);
+
+	// Get the updated stopped entry
+	const currentEntry = getEntryById(targetEntryId, entries);
+	if (currentEntry === undefined) {
+		return entries;
 	}
 
-	if (targetEntry.subEntries !== null || targetEntry.startTime !== null) {
-		let currentEntry = targetEntry;
-
-		// Ensure the current entry is stopped before using it
-		if (targetEntry.subEntries === null && targetEntry.startTime !== null) {
-			currentEntry = { ...targetEntry, endTime: currentTime };
-		}
-
+	if (currentEntry.subEntries !== null || currentEntry.startTime !== null) {
 		// If the entry has been started or is a group create a new child entry
 		entries = updateEntry(
 			entries,
 			// Ensure the current entry is ended
-			targetEntry.id,
+			currentEntry.id,
 			withSubEntry(currentEntry, "", currentTime)
 		);
 	} else {
 		// If the entry hasn't been started then start it
 		entries = updateEntry(
 			entries,
-			targetEntry.id,
-			createEntry(targetEntry.name, currentTime)
+			currentEntry.id,
+			createEntry(currentEntry.name, currentTime)
 		);
 	}
 
