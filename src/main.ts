@@ -14,6 +14,7 @@ import {
 } from "@/timekeep";
 
 import { Timekeep, TimeEntry } from "./timekeep/schema";
+import { TimekeepMergerModal } from "./views/timekeep-merger-modal";
 import { TimekeepMarkdownView } from "./views/timekeep-markdown-view";
 import { TimekeepLocatorModal } from "./views/timekeep-locator-modal";
 
@@ -101,6 +102,28 @@ export default class TimekeepPlugin extends Plugin {
 			id: `find`,
 			name: `Find running trackers`,
 			callback: () => new TimekeepLocatorModal(this.app).open(),
+		});
+
+		this.addCommand({
+			id: `create-merged`,
+			name: `Create Merged Tracker`,
+			callback: () =>
+				new TimekeepMergerModal(
+					this.app,
+					this.settingsStore,
+					false
+				).open(),
+		});
+
+		this.addCommand({
+			id: `export-merged-pdf`,
+			name: `Export Merged Tracker PDF`,
+			callback: () =>
+				new TimekeepMergerModal(
+					this.app,
+					this.settingsStore,
+					true
+				).open(),
 		});
 	}
 }

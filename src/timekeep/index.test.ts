@@ -20,6 +20,7 @@ import {
 	removeEntry,
 	updateEntry,
 	withSubEntry,
+	getEntryById,
 	isKeepRunning,
 	startNewEntry,
 	isEntryRunning,
@@ -48,6 +49,35 @@ describe("manipulating entries", () => {
 				updatedEntry
 			);
 			expect(updated).toEqual(expectedEntries);
+		});
+	});
+
+	describe("find entry", () => {
+		it("find top level entry", async () => {
+			const { input, targetEntry, targetEntryId } = await import(
+				"./__fixtures__/checking/findEntryById"
+			);
+
+			const output = getEntryById(targetEntryId, input);
+			expect(output).toEqual(targetEntry);
+		});
+
+		it("find nested entry", async () => {
+			const { input, targetEntry, targetEntryId } = await import(
+				"./__fixtures__/checking/findEntryByIdNested"
+			);
+
+			const output = getEntryById(targetEntryId, input);
+			expect(output).toEqual(targetEntry);
+		});
+
+		it("find entry non existent", async () => {
+			const { input, targetEntryId } = await import(
+				"./__fixtures__/checking/findEntryByIdMissing"
+			);
+
+			const output = getEntryById(targetEntryId, input);
+			expect(output).toBeUndefined();
 		});
 	});
 
@@ -152,7 +182,42 @@ describe("manipulating entries", () => {
 				"./__fixtures__/manipulating/start_entry/startNotStartedEntry"
 			);
 
-			const output = startNewNestedEntry(currentTime, targetEntry, input);
+			const output = startNewNestedEntry(
+				currentTime,
+				targetEntry.id,
+				input
+			);
+			expect(stripEntriesRuntimeData(output)).toEqual(
+				stripEntriesRuntimeData(expected)
+			);
+		});
+
+		it("starting a new entry should stop any running entries", async () => {
+			const { currentTime, targetEntry, input, expected } = await import(
+				"./__fixtures__/manipulating/start_entry/startNotStartedEntry"
+			);
+
+			const output = startNewNestedEntry(
+				currentTime,
+				targetEntry.id,
+				input
+			);
+			expect(stripEntriesRuntimeData(output)).toEqual(
+				stripEntriesRuntimeData(expected)
+			);
+		});
+
+		it("starting a new entry should stop any running entries", async () => {
+			const { currentTime, targetEntryId, input, expected } =
+				await import(
+					"./__fixtures__/manipulating/start_entry/startNestedNonExistent"
+				);
+
+			const output = startNewNestedEntry(
+				currentTime,
+				targetEntryId,
+				input
+			);
 			expect(stripEntriesRuntimeData(output)).toEqual(
 				stripEntriesRuntimeData(expected)
 			);
@@ -166,7 +231,11 @@ describe("manipulating entries", () => {
 					"./__fixtures__/manipulating/start_entry/startNestedShouldStopRunning"
 				);
 
-			const output = startNewNestedEntry(currentTime, targetEntry, input);
+			const output = startNewNestedEntry(
+				currentTime,
+				targetEntry.id,
+				input
+			);
 
 			const outerEntry = output[0];
 			const stoppedEntry = outerEntry.subEntries?.find(
@@ -186,7 +255,11 @@ describe("manipulating entries", () => {
 				"./__fixtures__/manipulating/start_entry/startNestedShouldStopRunning"
 			);
 
-			const output = startNewNestedEntry(currentTime, targetEntry, input);
+			const output = startNewNestedEntry(
+				currentTime,
+				targetEntry.id,
+				input
+			);
 			expect(stripEntriesRuntimeData(output)).toEqual(
 				stripEntriesRuntimeData(expected)
 			);
