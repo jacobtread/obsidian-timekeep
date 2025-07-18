@@ -4,9 +4,9 @@
 	"description": "Obsidian plugin for time tracking",
 	"main": "main.js",
 	"scripts": {
-		"dev": "obsidian-plugin dev --esbuild-config=esbuild.config.js --vault-path=test-vault --with-stylesheet src/styles.css src/main.ts",
-		"build": "obsidian-plugin build --esbuild-config=esbuild.config.js --with-stylesheet src/styles.css src/main.ts",
-		"version": "node version-bump.mjs && git add manifest.json versions.json",
+		"dev": "node scripts/dev.js",
+		"build": "node scripts/build.js",
+		"version": "node scripts/version-bump.mjs && git add manifest.json versions.json",
 		"lint": "eslint src",
 		"format": "prettier -w src",
 		"test": "jest --coverage"
@@ -22,12 +22,12 @@
 		"@typescript-eslint/eslint-plugin": "5.29.0",
 		"@typescript-eslint/parser": "5.29.0",
 		"builtin-modules": "^3.3.0",
-		"esbuild": "^0.20.2",
+		"chokidar": "^4.0.3",
+		"esbuild": "^0.25.6",
 		"eslint-config-prettier": "^9.1.0",
 		"eslint-plugin-perfectionist": "^2.9.0",
 		"jest": "^29.7.0",
 		"obsidian": "latest",
-		"obsidian-plugin-cli": "^0.9.0",
 		"prettier": "^3.2.5",
 		"ts-jest": "^29.1.2",
 		"typescript": "4.7.4"
@@ -39,5 +39,6 @@
 		"react-dom": "^18.2.0",
 		"uuid": "^11.0.5",
 		"zod": "^3.22.4"
-	}
+	},
+	"overrides": {}
 }

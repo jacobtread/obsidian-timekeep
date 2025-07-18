@@ -26,7 +26,6 @@ module.exports = {
 		...builtins],
 	format: "cjs",
 	target: "es2018",
-	logLevel: "debug",
 	sourcemap: prod ? false : "inline",
 	treeShaking: true,
 	loader: { '.ttf': 'dataurl' },
