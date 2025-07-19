@@ -1,4 +1,8 @@
-import { Font } from "@/pdf";
+import React from "react";
+import { Moment } from "moment";
+import { Timekeep } from "@/timekeep/schema";
+import { TimekeepSettings } from "@/settings";
+import { pdf, Font } from "@react-pdf/renderer";
 // Embedded fonts
 import RobotoBold from "@/fonts/Roboto-Bold.ttf";
 import RobotoRegular from "@/fonts/Roboto-Regular.ttf";
@@ -20,4 +24,31 @@ Font.register({
 	],
 });
 
-export default TimesheetPdf;
+/**
+ * Generates a PDF for the provided timekeep
+ *
+ * @param timekeep The timekeep data to export
+ * @param settings Current user settings for export settings
+ * @param currentTime Current time to use for any unfinished entries
+ * @returns The PDF buffer stream
+ */
+export async function createPdf(
+	timekeep: Timekeep,
+	settings: TimekeepSettings,
+	currentTime: Moment
+): Promise<NodeJS.ReadableStream> {
+	const document = React.createElement(TimesheetPdf, {
+		data: timekeep,
+		title: settings.pdfTitle,
+		footnote: settings.pdfFootnote,
+		currentTime,
+		settings,
+	});
+
+	// Create the PDF
+	const createdPdf = pdf(document);
+
+	// Create a blob from the PDF
+	const buffer = await createdPdf.toBuffer();
+	return buffer;
+}

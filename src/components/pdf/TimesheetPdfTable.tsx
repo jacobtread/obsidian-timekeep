@@ -1,10 +1,10 @@
+import React from "react";
 import type { Moment } from "moment";
-import React, { Fragment } from "react";
-import { getEntryDuration } from "@/timekeep";
+import { Timekeep } from "@/timekeep/schema";
 import { TimekeepSettings } from "@/settings";
-import { View, Text, StyleSheet } from "@/pdf";
-import { Timekeep, TimeEntry } from "@/timekeep/schema";
-import { formatPdfRowDate, formatDurationLong } from "@/utils";
+import { View, Text, StyleSheet } from "@react-pdf/renderer";
+
+import { TimesheetPdfTableRow } from "./TimesheetPdfTableRow";
 
 type Props = {
 	data: Timekeep;
@@ -40,12 +40,6 @@ const styles = StyleSheet.create({
 		backgroundColor: "#ececec",
 	},
 
-	// Wrapper for nested rows
-	tableRowWrapper: {
-		borderColor: "#f9f9f9",
-		borderWidth: 5,
-	},
-
 	// Base table cell
 	tableCell: {
 		padding: 15,
@@ -68,12 +62,6 @@ const styles = StyleSheet.create({
 		textAlign: "right",
 		fontWeight: 700,
 		fontFamily: "Roboto",
-	},
-
-	// Table indentation container
-	tableIndent: {
-		borderLeftWidth: 5,
-		borderLeftColor: "#999",
 	},
 });
 
@@ -131,58 +119,5 @@ export default function TimesheetPdfTable({
 			{renderEntries}
 			{renderFooter}
 		</View>
-	);
-}
-
-type RowProps = {
-	entry: TimeEntry;
-	currentTime: Moment;
-	settings: TimekeepSettings;
-};
-
-function TimesheetPdfTableRow({ entry, currentTime, settings }: RowProps) {
-	const duration = getEntryDuration(entry, currentTime);
-	const durationFormatted = formatDurationLong(duration);
-
-	// Render start and end timing for individual entries
-	const renderTiming = entry.startTime !== null && (
-		<>
-			<Text style={[styles.tableCell, styles.tableCellTime]}>
-				{formatPdfRowDate(entry.startTime, settings)}
-			</Text>
-			<Text style={[styles.tableCell, styles.tableCellTime]}>
-				{formatPdfRowDate(entry.endTime ?? currentTime, settings)}
-			</Text>
-		</>
-	);
-
-	// Render the child rows for groups
-	const renderChildren = entry.subEntries != null && (
-		<View style={[styles.tableIndent, styles.tableRowWrapper]}>
-			{entry.subEntries.map((entry, index) => (
-				<TimesheetPdfTableRow
-					entry={entry}
-					key={index}
-					currentTime={currentTime}
-					settings={settings}
-				/>
-			))}
-		</View>
-	);
-
-	return (
-		<Fragment>
-			<View style={styles.tableRow} wrap={false}>
-				<Text style={[styles.tableCell, styles.tableCellBlock]}>
-					{entry.name}
-				</Text>
-				{renderTiming}
-				<Text style={[styles.tableCell, styles.tableCellTime]}>
-					{durationFormatted}
-				</Text>
-			</View>
-
-			{renderChildren}
-		</Fragment>
 	);
 }
