@@ -1,6 +1,9 @@
-## ⌛ Obsidian Timekeep
+<h1>
+  <img src="images/timekeep.svg" width="100%" height="50">
 
-> Obsidian plugin for time tracking
+</h1>
+
+<center><p>Obsidian plugin for time tracking</p></center>
 
 ![License](https://img.shields.io/github/license/jacobtread/obsidian-timekeep?style=for-the-badge)
 ![Build](https://img.shields.io/github/actions/workflow/status/jacobtread/obsidian-timekeep/build.yml?style=for-the-badge)

@@ -1,4 +1,3 @@
-import React from "react";
 import moment from "moment";
 import * as path from "path";
 import { existsSync } from "fs";
@@ -16,7 +15,6 @@ export async function exportPdf(
 
 	// Dynamic imports to prevent them from causing errors when loaded (Because they are unsupported on mobile)
 	const electron = require("electron");
-	const { pdf } = require("@/pdf");
 	const pdfModule = require("@/components/pdf");
 
 	const currentTime = moment();
@@ -37,21 +35,8 @@ export async function exportPdf(
 	if (outputPath === undefined) {
 		return;
 	}
-	const TimesheetPdf = pdfModule.default;
 
-	const document = React.createElement(TimesheetPdf, {
-		data: timekeep,
-		title: settings.pdfTitle,
-		footnote: settings.pdfFootnote,
-		currentTime,
-		settings,
-	});
-
-	// Create the PDF
-	const createdPdf = pdf(document);
-
-	// Create a blob from the PDF
-	const buffer = await createdPdf.toBuffer();
+	const buffer = await pdfModule.createPdf(timekeep, settings, currentTime);
 
 	const fullOutputPath = path.normalize(outputPath);
 	const fullOutputDir = path.dirname(fullOutputPath);

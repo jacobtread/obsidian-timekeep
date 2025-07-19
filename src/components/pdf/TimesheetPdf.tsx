@@ -3,7 +3,7 @@ import type { Moment } from "moment";
 import { Timekeep } from "@/timekeep/schema";
 import { getTotalDuration } from "@/timekeep";
 import { TimekeepSettings } from "@/settings";
-import { Page, View, Text, Document, StyleSheet } from "@/pdf";
+import { Page, View, Text, Document, StyleSheet } from "@react-pdf/renderer";
 import {
 	formatPdfDate,
 	formatDurationLong,
@@ -11,6 +11,7 @@ import {
 } from "@/utils";
 
 import TimesheetPdfTable from "./TimesheetPdfTable";
+import TimesheetPdfDetailField from "./TimesheetPdfDetailField";
 
 type Props = {
 	title: string;
@@ -49,20 +50,6 @@ const styles = StyleSheet.create({
 		marginBottom: 5,
 	},
 
-	// Name of a details field
-	detailsFieldName: {
-		fontFamily: "Roboto",
-		fontWeight: 700,
-		fontSize: 8,
-		marginBottom: 5,
-	},
-
-	// Value of a details field
-	detailsFieldValue: {
-		fontSize: 8,
-		marginBottom: 5,
-	},
-
 	// Footer note
 	footNote: {
 		marginTop: 10,
@@ -86,14 +73,6 @@ export default function TimesheetPdf({
 	const totalDuration = formatDurationLong(duration);
 	const totalDurationShort = formatDurationShort(duration);
 
-	// Individual field within the details section
-	const DetailField = ({ name, value }: { name: string; value: string }) => (
-		<Text style={styles.detailsFieldValue}>
-			<Text style={styles.detailsFieldName}>{name}: </Text>
-			{value}
-		</Text>
-	);
-
 	return (
 		<Document>
 			<Page size="A4" style={styles.page}>
@@ -103,9 +82,12 @@ export default function TimesheetPdf({
 				</View>
 
 				<View style={styles.details}>
-					<DetailField name="Date" value={currentDate} />
-					<DetailField name="Total Duration" value={totalDuration} />
-					<DetailField
+					<TimesheetPdfDetailField name="Date" value={currentDate} />
+					<TimesheetPdfDetailField
+						name="Total Duration"
+						value={totalDuration}
+					/>
+					<TimesheetPdfDetailField
 						name="Total Duration (hours)"
 						value={totalDurationShort}
 					/>
