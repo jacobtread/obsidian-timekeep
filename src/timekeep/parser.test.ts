@@ -6,6 +6,7 @@ import {
 	LoadError,
 	LoadSuccess,
 	replaceTimekeepCodeblock,
+	extractTimekeepCodeblocks,
 } from "./parser";
 
 /**
@@ -34,6 +35,36 @@ const createCodeBlock = (
 	}
 	return output;
 };
+
+describe("extracting code blocks", () => {
+	it("should extract codeblock contents", async () => {
+		const { text, inputTimekeep1, inputTimekeep2 } = await import(
+			"./__fixtures__/extracting/codeblockContents"
+		);
+
+		const output = extractTimekeepCodeblocks(text);
+
+		expect(stripTimekeepRuntimeData(output[0])).toStrictEqual(
+			stripTimekeepRuntimeData(inputTimekeep1)
+		);
+		expect(stripTimekeepRuntimeData(output[1])).toStrictEqual(
+			stripTimekeepRuntimeData(inputTimekeep2)
+		);
+		expect(output.length).toBe(2);
+	});
+
+	it("should ignore codeblocks that are not closed", async () => {
+		const { text, inputTimekeep1 } = await import(
+			"./__fixtures__/extracting/unclosedCodeBlock"
+		);
+		const output = extractTimekeepCodeblocks(text);
+
+		expect(stripTimekeepRuntimeData(output[0])).toStrictEqual(
+			stripTimekeepRuntimeData(inputTimekeep1)
+		);
+		expect(output.length).toBe(1);
+	});
+});
 
 describe("replacing content", () => {
 	it("should replace codeblock contents", () => {
