@@ -4,6 +4,7 @@ import React, { StrictMode } from "react";
 import { Store, createStore } from "@/store";
 import { App as ObsidianApp } from "obsidian";
 import { TimekeepSettings } from "@/settings";
+import { CustomOutputFormat } from "@/output";
 import { Root, createRoot } from "react-dom/client";
 import { Timekeep, stripTimekeepRuntimeData } from "@/timekeep/schema";
 import { LoadResult, replaceTimekeepCodeblock } from "@/timekeep/parser";
@@ -19,6 +20,8 @@ export class TimekeepMarkdownView extends MarkdownRenderChild {
 	app: ObsidianApp;
 	// Timekeep settings store
 	settingsStore: Store<TimekeepSettings>;
+	// Custom output formats store
+	customOutputFormats: Store<Record<string, CustomOutputFormat>>;
 	// Markdown context for the current markdown block
 	context: MarkdownPostProcessorContext;
 	// Timekeep load result
@@ -32,12 +35,14 @@ export class TimekeepMarkdownView extends MarkdownRenderChild {
 		containerEl: HTMLElement,
 		app: ObsidianApp,
 		settingsStore: Store<TimekeepSettings>,
+		customOutputFormats: Store<Record<string, CustomOutputFormat>>,
 		context: MarkdownPostProcessorContext,
 		loadResult: LoadResult
 	) {
 		super(containerEl);
 		this.app = app;
 		this.settingsStore = settingsStore;
+		this.customOutputFormats = customOutputFormats;
 		this.context = context;
 		this.loadResult = loadResult;
 		this.root = createRoot(containerEl);
@@ -97,6 +102,7 @@ export class TimekeepMarkdownView extends MarkdownRenderChild {
 						timekeepStore,
 						saveErrorStore,
 						settingsStore: this.settingsStore,
+						customOutputFormats: this.customOutputFormats,
 						handleSaveTimekeep,
 					})
 				)

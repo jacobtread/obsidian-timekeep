@@ -3,8 +3,12 @@ import { Store, createStore } from "@/store";
 import { TimekeepSettingsTab } from "@/settings-tab";
 import { PluginManifest, App as ObsidianApp } from "obsidian";
 import { Plugin, MarkdownPostProcessorContext } from "obsidian";
-import { load, extractTimekeepCodeblocks } from "@/timekeep/parser";
 import { SortOrder, defaultSettings, TimekeepSettings } from "@/settings";
+import {
+	load,
+	replaceTimekeepCodeblock,
+	extractTimekeepCodeblocks,
+} from "@/timekeep/parser";
 import {
 	isKeepRunning,
 	isEntryRunning,
@@ -13,6 +17,7 @@ import {
 	getTotalDuration,
 } from "@/timekeep";
 
+import { CustomOutputFormat } from "./output";
 import { Timekeep, TimeEntry } from "./timekeep/schema";
 import { TimekeepMergerModal } from "./views/timekeep-merger-modal";
 import { TimekeepMarkdownView } from "./views/timekeep-markdown-view";
@@ -20,7 +25,14 @@ import { TimekeepLocatorModal } from "./views/timekeep-locator-modal";
 
 export default class TimekeepPlugin extends Plugin {
 	settingsStore: Store<TimekeepSettings>;
+	customOutputFormats: Store<Record<string, CustomOutputFormat>>;
 
+	replaceTimekeepCodeblock: (
+		timekeep: Timekeep,
+		content: string,
+		lineStart: number,
+		lineEnd: number
+	) => string;
 	extractTimekeepCodeblocks: (value: string) => Timekeep[];
 	isKeepRunning: (timekeep: Timekeep) => boolean;
 	isEntryRunning: (entry: TimeEntry) => boolean;
@@ -34,15 +46,18 @@ export default class TimekeepPlugin extends Plugin {
 		const saveSettings = this.saveData.bind(this);
 
 		const settingsStore = createStore(defaultSettings);
+		const customOutputFormats = createStore({});
 
 		// Subscribe to settings changes to save them
 		settingsStore.subscribe(() => {
 			saveSettings(settingsStore.getState());
 		});
 
+		this.customOutputFormats = customOutputFormats;
 		this.settingsStore = settingsStore;
 
 		// Expose API functions
+		this.replaceTimekeepCodeblock = replaceTimekeepCodeblock;
 		this.extractTimekeepCodeblocks = extractTimekeepCodeblocks;
 		this.isKeepRunning = isKeepRunning;
 		this.isEntryRunning = isEntryRunning;
@@ -83,6 +98,7 @@ export default class TimekeepPlugin extends Plugin {
 						el,
 						this.app,
 						this.settingsStore,
+						this.customOutputFormats,
 						context,
 						loadResult
 					)
@@ -124,6 +140,23 @@ export default class TimekeepPlugin extends Plugin {
 					this.settingsStore,
 					true
 				).open(),
+		});
+	}
+
+	registerCustomOutputFormat(id: string, format: CustomOutputFormat) {
+		this.customOutputFormats.setState((state) => {
+			return {
+				...state,
+				[id]: format,
+			};
+		});
+	}
+
+	unregisterCustomOutputFormat(id: string) {
+		this.customOutputFormats.setState((state) => {
+			const newState = { ...state };
+			delete newState[id];
+			return newState;
 		});
 	}
 }

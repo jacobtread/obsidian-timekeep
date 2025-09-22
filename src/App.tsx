@@ -3,6 +3,7 @@ import { Store, useStore } from "@/store";
 import { Timekeep } from "@/timekeep/schema";
 import { App as ObsidianApp } from "obsidian";
 import { TimekeepSettings } from "@/settings";
+import { CustomOutputFormat } from "@/output";
 import { AppContext } from "@/contexts/use-app-context";
 import TimesheetStart from "@/components/TimesheetStart";
 import TimesheetTable from "@/components/TimesheetTable";
@@ -11,6 +12,8 @@ import TimesheetSaveError from "@/components/TimesheetSaveError";
 import { SettingsContext } from "@/contexts/use-settings-context";
 import { TimekeepStoreContext } from "@/contexts/use-timekeep-store";
 import TimesheetExportActions from "@/components/TimesheetExportActions";
+
+import { CustomOutputFormatsContext } from "./contexts/use-custom-output-formats";
 
 export type AppProps = {
 	// Obsidian app for creating modals
@@ -21,6 +24,8 @@ export type AppProps = {
 	saveErrorStore: Store<boolean>;
 	// Timekeep settings store
 	settingsStore: Store<TimekeepSettings>;
+	// Custom output formats store
+	customOutputFormats: Store<Record<string, CustomOutputFormat>>;
 	// Callback to save the timekeep
 	handleSaveTimekeep: (value: Timekeep) => Promise<void>;
 };
@@ -34,28 +39,33 @@ export default function App({
 	timekeepStore,
 	saveErrorStore,
 	settingsStore,
+	customOutputFormats,
 	handleSaveTimekeep,
 }: AppProps) {
 	const settings = useStore(settingsStore);
+	const customOutputFormatsState = useStore(customOutputFormats);
 	const saveError = useStore(saveErrorStore);
 
 	return (
 		<AppContext.Provider value={app}>
 			<SettingsContext.Provider value={settings}>
 				<TimekeepStoreContext.Provider value={timekeepStore}>
-					{saveError ? (
-						// Error page when saving fails
-						<TimesheetSaveError
-							handleSaveTimekeep={handleSaveTimekeep}
-						/>
-					) : (
-						<div className="timekeep-container">
-							<TimesheetCounters />
-							<TimesheetStart />
-							<TimesheetTable />
-							<TimesheetExportActions />
-						</div>
-					)}
+					<CustomOutputFormatsContext.Provider
+						value={customOutputFormatsState}>
+						{saveError ? (
+							// Error page when saving fails
+							<TimesheetSaveError
+								handleSaveTimekeep={handleSaveTimekeep}
+							/>
+						) : (
+							<div className="timekeep-container">
+								<TimesheetCounters />
+								<TimesheetStart />
+								<TimesheetTable />
+								<TimesheetExportActions />
+							</div>
+						)}
+					</CustomOutputFormatsContext.Provider>
 				</TimekeepStoreContext.Provider>
 			</SettingsContext.Provider>
 		</AppContext.Provider>
