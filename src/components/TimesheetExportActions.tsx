@@ -3,12 +3,20 @@ import moment from "moment";
 import { Notice } from "obsidian";
 import { Platform } from "obsidian";
 import { exportPdf } from "@/export/pdf";
+import { CustomOutputFormat } from "@/output";
 import { createCSV, createMarkdownTable } from "@/export";
 import { stripTimekeepRuntimeData } from "@/timekeep/schema";
 import { useSettings } from "@/contexts/use-settings-context";
 import { useTimekeepStore } from "@/contexts/use-timekeep-store";
 
-export default function TimekeepExportActions() {
+type Props = {
+	/**
+	 * Additional custom output formats
+	 */
+	customOutputFormats: Record<string, CustomOutputFormat>;
+};
+
+export default function TimekeepExportActions({ customOutputFormats }: Props) {
 	const settings = useSettings();
 	const timekeepStore = useTimekeepStore();
 
@@ -61,6 +69,18 @@ export default function TimekeepExportActions() {
 			{!Platform.isMobileApp && (
 				<button onClick={onSavePDF}>Save PDF</button>
 			)}
+
+			{Object.entries(customOutputFormats).map(([key, outputFormat]) => (
+				<button
+					key={key}
+					onClick={() => {
+						const timekeep = timekeepStore.getState();
+						const currentTime = moment();
+						outputFormat.onExport(timekeep, settings, currentTime);
+					}}>
+					{outputFormat.getButtonLabel()}
+				</button>
+			))}
 		</div>
 	);
 }

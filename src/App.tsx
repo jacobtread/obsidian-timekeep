@@ -3,6 +3,7 @@ import { Store, useStore } from "@/store";
 import { Timekeep } from "@/timekeep/schema";
 import { App as ObsidianApp } from "obsidian";
 import { TimekeepSettings } from "@/settings";
+import { CustomOutputFormat } from "@/output";
 import { AppContext } from "@/contexts/use-app-context";
 import TimesheetStart from "@/components/TimesheetStart";
 import TimesheetTable from "@/components/TimesheetTable";
@@ -21,6 +22,8 @@ export type AppProps = {
 	saveErrorStore: Store<boolean>;
 	// Timekeep settings store
 	settingsStore: Store<TimekeepSettings>;
+	// Custom output formats store
+	customOutputFormats: Store<Record<string, CustomOutputFormat>>;
 	// Callback to save the timekeep
 	handleSaveTimekeep: (value: Timekeep) => Promise<void>;
 };
@@ -34,9 +37,11 @@ export default function App({
 	timekeepStore,
 	saveErrorStore,
 	settingsStore,
+	customOutputFormats,
 	handleSaveTimekeep,
 }: AppProps) {
 	const settings = useStore(settingsStore);
+	const customOutputFormatsState = useStore(customOutputFormats);
 	const saveError = useStore(saveErrorStore);
 
 	return (
@@ -53,7 +58,9 @@ export default function App({
 							<TimesheetCounters />
 							<TimesheetStart />
 							<TimesheetTable />
-							<TimesheetExportActions />
+							<TimesheetExportActions
+								customOutputFormats={customOutputFormatsState}
+							/>
 						</div>
 					)}
 				</TimekeepStoreContext.Provider>
