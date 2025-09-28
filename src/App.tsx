@@ -13,8 +13,6 @@ import { SettingsContext } from "@/contexts/use-settings-context";
 import { TimekeepStoreContext } from "@/contexts/use-timekeep-store";
 import TimesheetExportActions from "@/components/TimesheetExportActions";
 
-import { CustomOutputFormatsContext } from "./contexts/use-custom-output-formats";
-
 export type AppProps = {
 	// Obsidian app for creating modals
 	app: ObsidianApp;
@@ -50,22 +48,21 @@ export default function App({
 		<AppContext.Provider value={app}>
 			<SettingsContext.Provider value={settings}>
 				<TimekeepStoreContext.Provider value={timekeepStore}>
-					<CustomOutputFormatsContext.Provider
-						value={customOutputFormatsState}>
-						{saveError ? (
-							// Error page when saving fails
-							<TimesheetSaveError
-								handleSaveTimekeep={handleSaveTimekeep}
+					{saveError ? (
+						// Error page when saving fails
+						<TimesheetSaveError
+							handleSaveTimekeep={handleSaveTimekeep}
+						/>
+					) : (
+						<div className="timekeep-container">
+							<TimesheetCounters />
+							<TimesheetStart />
+							<TimesheetTable />
+							<TimesheetExportActions
+								customOutputFormats={customOutputFormatsState}
 							/>
-						) : (
-							<div className="timekeep-container">
-								<TimesheetCounters />
-								<TimesheetStart />
-								<TimesheetTable />
-								<TimesheetExportActions />
-							</div>
-						)}
-					</CustomOutputFormatsContext.Provider>
+						</div>
+					)}
 				</TimekeepStoreContext.Provider>
 			</SettingsContext.Provider>
 		</AppContext.Provider>

@@ -3,16 +3,22 @@ import moment from "moment";
 import { Notice } from "obsidian";
 import { Platform } from "obsidian";
 import { exportPdf } from "@/export/pdf";
+import { CustomOutputFormat } from "@/output";
 import { createCSV, createMarkdownTable } from "@/export";
 import { stripTimekeepRuntimeData } from "@/timekeep/schema";
 import { useSettings } from "@/contexts/use-settings-context";
 import { useTimekeepStore } from "@/contexts/use-timekeep-store";
-import { useCustomOutputFormats } from "@/contexts/use-custom-output-formats";
 
-export default function TimekeepExportActions() {
+type Props = {
+	/**
+	 * Additional custom output formats
+	 */
+	customOutputFormats: Record<string, CustomOutputFormat>;
+};
+
+export default function TimekeepExportActions({ customOutputFormats }: Props) {
 	const settings = useSettings();
 	const timekeepStore = useTimekeepStore();
-	const customOutputFormats = useCustomOutputFormats();
 
 	const onCopyMarkdown = () => {
 		const timekeep = timekeepStore.getState();
