@@ -4,7 +4,7 @@ import { exportPdf } from "@/export/pdf";
 import { TimekeepSettings } from "@/settings";
 import { extractTimekeepCodeblocks } from "@/timekeep/parser";
 import { Timekeep, stripTimekeepRuntimeData } from "@/timekeep/schema";
-import { App, TFile, Modal, TextComponent, ButtonComponent } from "obsidian";
+import { App, TFile, Modal, TextComponent, ButtonComponent, Setting } from "obsidian";
 
 interface TimekeepResult {
 	timekeep: Timekeep;
@@ -57,6 +57,20 @@ export class TimekeepMergerModal extends Modal {
 			this.updateFilteredResults();
 			this.renderList();
 		});
+
+		new Setting(this.contentEl)
+			.setName("Select All")
+			.addToggle(toggle => {
+				toggle.onChange(checked => {
+					if (checked) {
+						this.selectedResults = [...this.filteredResults];
+					} else {
+						this.selectedResults = [];
+					}
+					this.renderList();
+				});
+			});
+
 
 		this.listContainer = this.contentEl.createDiv();
 		this.listContainer.style.maxHeight = "400px";
