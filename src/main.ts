@@ -22,6 +22,7 @@ import { Timekeep, TimeEntry } from "./timekeep/schema";
 import { TimekeepMergerModal } from "./views/timekeep-merger-modal";
 import { TimekeepMarkdownView } from "./views/timekeep-markdown-view";
 import { TimekeepLocatorModal } from "./views/timekeep-locator-modal";
+import { stopAllTrackers } from "./commands/stop-all-trackers";
 
 export default class TimekeepPlugin extends Plugin {
 	settingsStore: Store<TimekeepSettings>;
@@ -140,6 +141,12 @@ export default class TimekeepPlugin extends Plugin {
 					this.settingsStore,
 					true
 				).open(),
+		});
+
+		this.addCommand({
+			id: `stop-all`,
+			name: `Stop all running trackers`,
+			callback: () => stopAllTrackers(this.app),
 		});
 	}
 
