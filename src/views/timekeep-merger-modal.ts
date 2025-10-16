@@ -61,14 +61,12 @@ export class TimekeepMergerModal extends Modal {
 			this.updateSelectAll();
 		});
 
-		const selectContainer = this.contentEl.createDiv();
+		const selectContainer = this.contentEl.createDiv({
+			cls: "timekeep-merge-select-container",
+		});
+
 		selectContainer.style.display = "none";
-		selectContainer.style.flexDirection = "row";
-		selectContainer.style.alignItems = "center";
-		selectContainer.style.gap = "0.5rem";
-		selectContainer.style.paddingLeft = "0.75rem";
-		selectContainer.style.paddingTop = "1rem";
-		selectContainer.style.fontWeight = "bold";
+
 		this.selectContainer = selectContainer;
 
 		const selectAll = selectContainer.createEl("input", {
@@ -86,17 +84,13 @@ export class TimekeepMergerModal extends Modal {
 		selectAllLabel.htmlFor = "merge-select-all";
 		selectAllLabel.textContent = "Select All";
 
-		this.listContainer = this.contentEl.createDiv();
-		this.listContainer.style.maxHeight = "400px";
-		this.listContainer.style.overflowY = "auto";
-		this.listContainer.style.marginTop = "0.25em";
-		this.listContainer.style.padding = "0.25em";
+		this.listContainer = this.contentEl.createDiv({
+			cls: "timekeep-merge-list-container",
+		});
 
-		const footer = this.contentEl.createDiv();
-		footer.style.display = "flex";
-		footer.style.flexFlow = "row";
-		footer.style.gap = "1rem";
-		footer.style.marginTop = "0.5rem";
+		const footer = this.contentEl.createDiv({
+			cls: "timekeep-merge-footer",
+		});
 
 		const mergeButton = new ButtonComponent(footer)
 			.setButtonText("Create")
@@ -276,16 +270,14 @@ export class TimekeepMergerModal extends Modal {
 		this.listContainer.empty();
 		for (const result of this.filteredResults) {
 			const itemEl = this.listContainer.createEl("label", {
-				cls: "timekeep-item",
+				cls: "timekeep-merge-item",
 			});
 			itemEl.htmlFor = `timekeep-${result.id}`;
-			itemEl.style.display = "flex";
-			itemEl.style.alignItems = "center";
-			itemEl.style.padding = "0.5em";
-			itemEl.style.gap = "0.5em";
 
-			const checkbox = itemEl.createEl("input", { type: "checkbox" });
-			checkbox.style.marginRight = "0.5em";
+			const checkbox = itemEl.createEl("input", {
+				cls: "timekeep-merge-item-checkbox",
+				type: "checkbox",
+			});
 			checkbox.checked =
 				this.selectedResults.find((other) => other.id === result.id) !==
 				undefined;
@@ -301,17 +293,19 @@ export class TimekeepMergerModal extends Modal {
 				}
 			};
 
-			const label = itemEl.createDiv();
-			label.style.flexGrow = "1";
-			label.style.display = "flex";
-			label.style.flexFlow = "column";
+			const label = itemEl.createDiv({
+				cls: "timekeep-merge-item-label",
+			});
 
-			const title = label.createEl("span");
+			const title = label.createEl("span", {
+				cls: "timekeep-merge-item-title",
+			});
 			title.textContent = `${result.file.basename}: Timekeep ${result.index + 1}`;
 
-			const path = label.createEl("span");
+			const path = label.createEl("span", {
+				cls: "timekeep-merge-item-path",
+			});
 			path.textContent = `${result.file.path}`;
-			path.style.opacity = "0.7";
 		}
 	}
 
