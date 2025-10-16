@@ -20,6 +20,8 @@ export class TimekeepMergerModal extends Modal {
 
 	private listContainer: HTMLElement | undefined;
 	private searchInput: TextComponent | undefined;
+	private selectAll: HTMLInputElement | undefined;
+	private selectContainer: HTMLDivElement | undefined;
 	private loadingEl: HTMLElement | undefined;
 	private exportPdf: boolean;
 	private settings: Store<TimekeepSettings>;
@@ -56,19 +58,39 @@ export class TimekeepMergerModal extends Modal {
 		this.searchInput.onChange(() => {
 			this.updateFilteredResults();
 			this.renderList();
+			this.updateSelectAll();
 		});
 
-		this.listContainer = this.contentEl.createDiv();
-		this.listContainer.style.maxHeight = "400px";
-		this.listContainer.style.overflowY = "auto";
-		this.listContainer.style.marginTop = "1em";
-		this.listContainer.style.padding = "0.25em";
+		const selectContainer = this.contentEl.createDiv({
+			cls: "timekeep-merge-select-container",
+		});
 
-		const footer = this.contentEl.createDiv();
-		footer.style.display = "flex";
-		footer.style.flexFlow = "row";
-		footer.style.gap = "1rem";
-		footer.style.marginTop = "1rem";
+		selectContainer.style.display = "none";
+
+		this.selectContainer = selectContainer;
+
+		const selectAll = selectContainer.createEl("input", {
+			type: "checkbox",
+		});
+		selectAll.checked = this.isAllSelected();
+		selectAll.id = `merge-select-all`;
+		selectAll.onchange = () => {
+			this.toggleSelectAll(selectAll.checked);
+			this.renderList();
+		};
+		this.selectAll = selectAll;
+
+		const selectAllLabel = selectContainer.createEl("label");
+		selectAllLabel.htmlFor = "merge-select-all";
+		selectAllLabel.textContent = "Select All";
+
+		this.listContainer = this.contentEl.createDiv({
+			cls: "timekeep-merge-list-container",
+		});
+
+		const footer = this.contentEl.createDiv({
+			cls: "timekeep-merge-footer",
+		});
 
 		const mergeButton = new ButtonComponent(footer)
 			.setButtonText("Create")
@@ -112,6 +134,7 @@ export class TimekeepMergerModal extends Modal {
 
 			this.updateFilteredResults();
 			this.renderList();
+			this.updateSelectAll();
 
 			this.loadingEl.remove();
 			mergeButton.setDisabled(false);
@@ -123,6 +146,74 @@ export class TimekeepMergerModal extends Modal {
 		}
 	}
 
+	updateSelectAll() {
+		if (this.selectContainer) {
+			this.selectContainer.style.display =
+				this.filteredResults.length > 0 ? "flex" : "none";
+		}
+
+		const isAllSelected = this.isAllSelected();
+		if (this.selectAll) {
+			this.selectAll.checked = isAllSelected;
+		}
+	}
+
+	/**
+	 * Check if the whole filtered result set is selected
+	 */
+	isAllSelected() {
+		// Must have at least one result to be selected
+		if (this.filteredResults.length < 1) {
+			return false;
+		}
+
+		for (const result of this.filteredResults) {
+			const selected = this.selectedResults.find(
+				(selected) => selected.id === result.id
+			);
+
+			if (selected === undefined) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	/**
+	 * Toggle the "select all" for the current filtered result set
+	 *
+	 * When checked adds all visible results to the current selection
+	 * When unchecked removes all visible results from the current selection
+	 *
+	 * @param checked Whether to select all
+	 */
+	toggleSelectAll(checked: boolean) {
+		if (checked) {
+			// Find all results that aren't already selected
+			const toBeSelected = this.filteredResults.filter((result) => {
+				const selected = this.selectedResults.find(
+					(selected) => selected.id === result.id
+				);
+				return selected === undefined;
+			});
+
+			this.selectedResults = [...this.selectedResults, ...toBeSelected];
+		} else {
+			// Keep only the results that aren't in the current filtered list
+			this.selectedResults = this.selectedResults.filter((selected) => {
+				const filtered = this.filteredResults.find(
+					(filtered) => filtered.id === selected.id
+				);
+				return filtered === undefined;
+			});
+		}
+	}
+
+	/**
+	 * Update the current filtered results to match the
+	 * search query
+	 */
 	updateFilteredResults() {
 		if (!this.searchInput) return;
 
@@ -137,6 +228,9 @@ export class TimekeepMergerModal extends Modal {
 		});
 	}
 
+	/**
+	 * Locate all timekeep codeblocks in files
+	 */
 	async getResults(): Promise<TimekeepResult[]> {
 		const markdownFiles = this.app.vault.getMarkdownFiles();
 		const batchSize = 25;
@@ -165,6 +259,9 @@ export class TimekeepMergerModal extends Modal {
 		return results;
 	}
 
+	/**
+	 * Render the list of filtered results
+	 */
 	private renderList() {
 		if (!this.listContainer) {
 			return;
@@ -173,16 +270,14 @@ export class TimekeepMergerModal extends Modal {
 		this.listContainer.empty();
 		for (const result of this.filteredResults) {
 			const itemEl = this.listContainer.createEl("label", {
-				cls: "timekeep-item",
+				cls: "timekeep-merge-item",
 			});
 			itemEl.htmlFor = `timekeep-${result.id}`;
-			itemEl.style.display = "flex";
-			itemEl.style.alignItems = "center";
-			itemEl.style.padding = "0.5em";
-			itemEl.style.gap = "0.5em";
 
-			const checkbox = itemEl.createEl("input", { type: "checkbox" });
-			checkbox.style.marginRight = "0.5em";
+			const checkbox = itemEl.createEl("input", {
+				cls: "timekeep-merge-item-checkbox",
+				type: "checkbox",
+			});
 			checkbox.checked =
 				this.selectedResults.find((other) => other.id === result.id) !==
 				undefined;
@@ -198,17 +293,19 @@ export class TimekeepMergerModal extends Modal {
 				}
 			};
 
-			const label = itemEl.createDiv();
-			label.style.flexGrow = "1";
-			label.style.display = "flex";
-			label.style.flexFlow = "column";
+			const label = itemEl.createDiv({
+				cls: "timekeep-merge-item-label",
+			});
 
-			const title = label.createEl("span");
+			const title = label.createEl("span", {
+				cls: "timekeep-merge-item-title",
+			});
 			title.textContent = `${result.file.basename}: Timekeep ${result.index + 1}`;
 
-			const path = label.createEl("span");
+			const path = label.createEl("span", {
+				cls: "timekeep-merge-item-path",
+			});
 			path.textContent = `${result.file.path}`;
-			path.style.opacity = "0.7";
 		}
 	}
 
@@ -221,5 +318,6 @@ export class TimekeepMergerModal extends Modal {
 		this.searchInput = undefined;
 		this.listContainer = undefined;
 		this.loadingEl = undefined;
+		this.selectAll = undefined;
 	}
 }
