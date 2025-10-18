@@ -44,7 +44,6 @@ export class TimekeepLocatorModal extends SuggestModal<TimekeepResult> {
 				batch.map(async (file) => {
 					const content = await this.app.vault.cachedRead(file);
 					const timekeeps = extractTimekeepCodeblocks(content);
-					console.log(timekeeps);
 
 					for (const timekeep of timekeeps) {
 						const running = getRunningEntry(timekeep.entries);
@@ -59,6 +58,7 @@ export class TimekeepLocatorModal extends SuggestModal<TimekeepResult> {
 				})
 			);
 		}
+
 		return results;
 	}
 

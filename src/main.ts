@@ -1,8 +1,8 @@
-import { Moment } from "moment";
+import moment, { Moment } from "moment";
 import { Store, createStore } from "@/store";
 import { TimekeepSettingsTab } from "@/settings-tab";
-import { PluginManifest, App as ObsidianApp } from "obsidian";
 import { Plugin, MarkdownPostProcessorContext } from "obsidian";
+import { Notice, PluginManifest, App as ObsidianApp } from "obsidian";
 import { SortOrder, defaultSettings, TimekeepSettings } from "@/settings";
 import {
 	load,
@@ -22,6 +22,10 @@ import { Timekeep, TimeEntry } from "./timekeep/schema";
 import { TimekeepMergerModal } from "./views/timekeep-merger-modal";
 import { TimekeepMarkdownView } from "./views/timekeep-markdown-view";
 import { TimekeepLocatorModal } from "./views/timekeep-locator-modal";
+import {
+	stopAllTimekeeps,
+	stopFileTimekeeps,
+} from "./commands/stopAllTimekeeps";
 
 export default class TimekeepPlugin extends Plugin {
 	settingsStore: Store<TimekeepSettings>;
@@ -140,6 +144,84 @@ export default class TimekeepPlugin extends Plugin {
 					this.settingsStore,
 					true
 				).open(),
+		});
+
+		this.addCommand({
+			id: `stop-all-timekeeps`,
+			name: `Stop All Running Trackers`,
+			callback: () => {
+				const currentTime = moment();
+				stopAllTimekeeps(this.app.vault, currentTime)
+					.then((totalStopped) => {
+						if (totalStopped < 1) {
+							new Notice("Nothing to stop.", 1500);
+							return;
+						}
+
+						new Notice(
+							`Stopped ${totalStopped} tracker${totalStopped !== 1 ? "s" : ""}`,
+							1500
+						);
+					})
+					.catch((error) => {
+						let errorMessage = "";
+						if (error instanceof Error) {
+							errorMessage = error.message;
+						} else if (typeof error === "string") {
+							errorMessage = error;
+						} else {
+							error = "Unknown error occurred";
+						}
+
+						new Notice(
+							"Failed to stop timekeeps: " + errorMessage,
+							1500
+						);
+					});
+			},
+		});
+
+		this.addCommand({
+			id: `stop-current-timekeeps`,
+			name: `Stop All Running Trackers (Current File Only)`,
+			callback: () => {
+				const currentTime = moment();
+				const currentFile =
+					this.app.workspace.activeEditor?.file ?? null;
+
+				if (currentFile === null) {
+					new Notice("No active file detected", 1500);
+					return;
+				}
+
+				stopFileTimekeeps(this.app.vault, currentFile, currentTime)
+					.then((totalStopped) => {
+						if (totalStopped < 1) {
+							new Notice("Nothing to stop.", 1500);
+							return;
+						}
+
+						new Notice(
+							`Stopped ${totalStopped} tracker${totalStopped !== 1 ? "s" : ""}`,
+							1500
+						);
+					})
+					.catch((error) => {
+						let errorMessage = "";
+						if (error instanceof Error) {
+							errorMessage = error.message;
+						} else if (typeof error === "string") {
+							errorMessage = error;
+						} else {
+							error = "Unknown error occurred";
+						}
+
+						new Notice(
+							"Failed to stop timekeeps: " + errorMessage,
+							1500
+						);
+					});
+			},
 		});
 	}
 
