@@ -3,3 +3,5 @@ declare module "*.ttf" {
 
 	export default buffer;
 }
+
+declare module "*.md";

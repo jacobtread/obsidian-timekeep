@@ -1,14 +1,19 @@
 import moment, { Moment } from "moment";
 import { Store, createStore } from "@/store";
 import { TimekeepSettingsTab } from "@/settings-tab";
-import { Plugin, MarkdownPostProcessorContext } from "obsidian";
-import { Notice, PluginManifest, App as ObsidianApp } from "obsidian";
 import { SortOrder, defaultSettings, TimekeepSettings } from "@/settings";
 import {
 	load,
 	replaceTimekeepCodeblock,
 	extractTimekeepCodeblocks,
 } from "@/timekeep/parser";
+import {
+	Notice,
+	Plugin,
+	PluginManifest,
+	App as ObsidianApp,
+	MarkdownPostProcessorContext,
+} from "obsidian";
 import {
 	isKeepRunning,
 	isEntryRunning,
@@ -19,13 +24,11 @@ import {
 
 import { CustomOutputFormat } from "./output";
 import { Timekeep, TimeEntry } from "./timekeep/schema";
+import { stopAllTimekeeps } from "./commands/stopAllTimekeeps";
+import { stopFileTimekeeps } from "./commands/stopFileTimekeeps";
 import { TimekeepMergerModal } from "./views/timekeep-merger-modal";
-import { TimekeepMarkdownView } from "./views/timekeep-markdown-view";
 import { TimekeepLocatorModal } from "./views/timekeep-locator-modal";
-import {
-	stopAllTimekeeps,
-	stopFileTimekeeps,
-} from "./commands/stopAllTimekeeps";
+import { TimekeepMarkdownView } from "./views/timekeep-markdown-view";
 
 export default class TimekeepPlugin extends Plugin {
 	settingsStore: Store<TimekeepSettings>;
