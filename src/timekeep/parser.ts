@@ -46,15 +46,26 @@ export function load(value: string): LoadResult {
 	const timekeep = timekeepResult.data;
 	return { success: true, timekeep };
 }
+
+export interface TimekeepWithPosition {
+	timekeep: Timekeep;
+	startLine: number;
+	endLine: number;
+}
+
 /**
- * Extracts timekeep codeblocks from the provided file
- * contents.
+ * Extracts timekeep codeblocks from the provided file contents.
+ *
+ * Provides the extracted timekeep blocks along with the start
+ * and end lines that they span
  *
  * @param value The file text contents
  * @returns The extracted timekeep blocks
  */
-export function extractTimekeepCodeblocks(value: string): Timekeep[] {
-	const out: Timekeep[] = [];
+export function extractTimekeepCodeblocksWithPosition(
+	value: string
+): TimekeepWithPosition[] {
+	const out: TimekeepWithPosition[] = [];
 	const lines = value.replace("\n\r", "\n").split("\n");
 
 	for (let i = 0; i < lines.length; i++) {
@@ -81,11 +92,30 @@ export function extractTimekeepCodeblocks(value: string): Timekeep[] {
 
 		const result = load(content);
 		if (result.success) {
-			out.push(result.timekeep);
+			out.push({
+				timekeep: result.timekeep,
+				startLine: i,
+				endLine: endLineIndex,
+			});
 		}
 	}
 
 	return out;
+}
+
+/**
+ * Extracts timekeep codeblocks from the provided file
+ * contents.
+ *
+ * @param value The file text contents
+ * @returns The extracted timekeep blocks
+ */
+export function extractTimekeepCodeblocks(value: string): Timekeep[] {
+	return (
+		extractTimekeepCodeblocksWithPosition(value)
+			//
+			.map((value) => value.timekeep)
+	);
 }
 
 /**
