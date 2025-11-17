@@ -13,6 +13,7 @@ import {
     getRunningEntry,
     getEntryDuration,
     getTotalDuration,
+    extractNamesFromTimekeep,
 } from "@/timekeep";
 import {
     Vault,
@@ -54,6 +55,7 @@ export default class TimekeepPlugin extends Plugin {
         file: TFile,
         currentTime: Moment
     ) => Promise<number>;
+    getAllEntryNames: () => Promise<string[]>;
 
     constructor(app: ObsidianApp, manifest: PluginManifest) {
         super(app, manifest);
@@ -81,6 +83,7 @@ export default class TimekeepPlugin extends Plugin {
         this.getTotalDuration = getTotalDuration;
         this.stopAllTimekeeps = stopAllTimekeeps;
         this.stopFileTimekeeps = stopFileTimekeeps;
+        this.getAllEntryNames = () => this.getAllEntryNamesImpl();
     }
 
     async onload(): Promise<void> {
@@ -253,5 +256,49 @@ export default class TimekeepPlugin extends Plugin {
             delete newState[id];
             return newState;
         });
+    }
+
+    /**
+     * Gets all unique entry names from all timekeep blocks in the vault
+     * Excludes sub-task names like "Part 1", "Part 2", etc.
+     * 
+     * @returns Promise resolving to an array of unique entry names
+     */
+    private async getAllEntryNamesImpl(): Promise<string[]> {
+        const markdownFiles = this.app.vault.getMarkdownFiles();
+        const batchSize = 25;
+        const allNames = new Set<string>();
+
+        // Pattern to match sub-task names like "Part 1", "Part 2", etc.
+        const subTaskPattern = /^Part\s+\d+$/i;
+
+        for (let i = 0; i < markdownFiles.length; i += batchSize) {
+            const batch = markdownFiles.slice(i, i + batchSize);
+
+            await Promise.allSettled(
+                batch.map(async (file) => {
+                    try {
+                        const content = await this.app.vault.cachedRead(file);
+                        const timekeeps = extractTimekeepCodeblocks(content);
+
+                        for (const timekeep of timekeeps) {
+                            const names = extractNamesFromTimekeep(timekeep);
+                            names.forEach((name) => {
+                                // Exclude sub-task names
+                                if (!subTaskPattern.test(name.trim())) {
+                                    allNames.add(name);
+                                }
+                            });
+                        }
+                    } catch (error) {
+                        // Silently skip files that can't be read
+                        console.error(`Failed to read file ${file.path}:`, error);
+                    }
+                })
+            );
+        }
+
+        // Convert Set to sorted array
+        return Array.from(allNames).sort();
     }
 }
