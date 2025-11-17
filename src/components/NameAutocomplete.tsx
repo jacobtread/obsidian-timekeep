@@ -21,7 +21,9 @@ export default function NameAutocomplete({
 }: Props) {
 	const app = useApp();
 	const [suggestions, setSuggestions] = useState<string[]>([]);
-	const [filteredSuggestions, setFilteredSuggestions] = useState<string[]>([]);
+	const [filteredSuggestions, setFilteredSuggestions] = useState<string[]>(
+		[]
+	);
 	const [showSuggestions, setShowSuggestions] = useState(false);
 	const [selectedIndex, setSelectedIndex] = useState(-1);
 	const inputRef = useRef<HTMLInputElement>(null);
@@ -100,7 +102,10 @@ export default function NameAutocomplete({
 					setSelectedIndex((prev) => (prev > 0 ? prev - 1 : -1));
 					return;
 				case "Enter":
-					if (selectedIndex >= 0 && selectedIndex < filteredSuggestions.length) {
+					if (
+						selectedIndex >= 0 &&
+						selectedIndex < filteredSuggestions.length
+					) {
 						event.preventDefault();
 						event.stopPropagation();
 						selectSuggestion(filteredSuggestions[selectedIndex]);
@@ -162,4 +167,3 @@ export default function NameAutocomplete({
 		</div>
 	);
 }
-

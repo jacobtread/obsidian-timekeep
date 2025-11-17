@@ -3,26 +3,26 @@ import { Store, createStore } from "@/store";
 import { TimekeepSettingsTab } from "@/settings-tab";
 import { SortOrder, defaultSettings, TimekeepSettings } from "@/settings";
 import {
-    load,
-    replaceTimekeepCodeblock,
-    extractTimekeepCodeblocks,
+	load,
+	replaceTimekeepCodeblock,
+	extractTimekeepCodeblocks,
 } from "@/timekeep/parser";
 import {
-    isKeepRunning,
-    isEntryRunning,
-    getRunningEntry,
-    getEntryDuration,
-    getTotalDuration,
-    extractNamesFromTimekeep,
+	isKeepRunning,
+	isEntryRunning,
+	getRunningEntry,
+	getEntryDuration,
+	getTotalDuration,
+	extractNamesFromTimekeep,
 } from "@/timekeep";
 import {
-    Vault,
-    TFile,
-    Notice,
-    Plugin,
-    PluginManifest,
-    App as ObsidianApp,
-    MarkdownPostProcessorContext,
+	Vault,
+	TFile,
+	Notice,
+	Plugin,
+	PluginManifest,
+	App as ObsidianApp,
+	MarkdownPostProcessorContext,
 } from "obsidian";
 
 import { CustomOutputFormat } from "./output";
@@ -34,271 +34,274 @@ import { TimekeepLocatorModal } from "./views/timekeep-locator-modal";
 import { TimekeepMarkdownView } from "./views/timekeep-markdown-view";
 
 export default class TimekeepPlugin extends Plugin {
-    settingsStore: Store<TimekeepSettings>;
-    customOutputFormats: Store<Record<string, CustomOutputFormat>>;
+	settingsStore: Store<TimekeepSettings>;
+	customOutputFormats: Store<Record<string, CustomOutputFormat>>;
 
-    replaceTimekeepCodeblock: (
-        timekeep: Timekeep,
-        content: string,
-        lineStart: number,
-        lineEnd: number
-    ) => string;
-    extractTimekeepCodeblocks: (value: string) => Timekeep[];
-    isKeepRunning: (timekeep: Timekeep) => boolean;
-    isEntryRunning: (entry: TimeEntry) => boolean;
-    getRunningEntry: (entries: TimeEntry[]) => TimeEntry | null;
-    getEntryDuration: (entry: TimeEntry, currentTime: Moment) => number;
-    getTotalDuration: (entries: TimeEntry[], currentTime: Moment) => number;
-    stopAllTimekeeps: (vault: Vault, currentTime: Moment) => Promise<number>;
-    stopFileTimekeeps: (
-        vault: Vault,
-        file: TFile,
-        currentTime: Moment
-    ) => Promise<number>;
-    getAllEntryNames: () => Promise<string[]>;
+	replaceTimekeepCodeblock: (
+		timekeep: Timekeep,
+		content: string,
+		lineStart: number,
+		lineEnd: number
+	) => string;
+	extractTimekeepCodeblocks: (value: string) => Timekeep[];
+	isKeepRunning: (timekeep: Timekeep) => boolean;
+	isEntryRunning: (entry: TimeEntry) => boolean;
+	getRunningEntry: (entries: TimeEntry[]) => TimeEntry | null;
+	getEntryDuration: (entry: TimeEntry, currentTime: Moment) => number;
+	getTotalDuration: (entries: TimeEntry[], currentTime: Moment) => number;
+	stopAllTimekeeps: (vault: Vault, currentTime: Moment) => Promise<number>;
+	stopFileTimekeeps: (
+		vault: Vault,
+		file: TFile,
+		currentTime: Moment
+	) => Promise<number>;
+	getAllEntryNames: () => Promise<string[]>;
 
-    constructor(app: ObsidianApp, manifest: PluginManifest) {
-        super(app, manifest);
+	constructor(app: ObsidianApp, manifest: PluginManifest) {
+		super(app, manifest);
 
-        const saveSettings = this.saveData.bind(this);
+		const saveSettings = this.saveData.bind(this);
 
-        const settingsStore = createStore(defaultSettings);
-        const customOutputFormats = createStore({});
+		const settingsStore = createStore(defaultSettings);
+		const customOutputFormats = createStore({});
 
-        // Subscribe to settings changes to save them
-        settingsStore.subscribe(() => {
-            saveSettings(settingsStore.getState());
-        });
+		// Subscribe to settings changes to save them
+		settingsStore.subscribe(() => {
+			saveSettings(settingsStore.getState());
+		});
 
-        this.customOutputFormats = customOutputFormats;
-        this.settingsStore = settingsStore;
+		this.customOutputFormats = customOutputFormats;
+		this.settingsStore = settingsStore;
 
-        // Expose API functions
-        this.replaceTimekeepCodeblock = replaceTimekeepCodeblock;
-        this.extractTimekeepCodeblocks = extractTimekeepCodeblocks;
-        this.isKeepRunning = isKeepRunning;
-        this.isEntryRunning = isEntryRunning;
-        this.getRunningEntry = getRunningEntry;
-        this.getEntryDuration = getEntryDuration;
-        this.getTotalDuration = getTotalDuration;
-        this.stopAllTimekeeps = stopAllTimekeeps;
-        this.stopFileTimekeeps = stopFileTimekeeps;
-        this.getAllEntryNames = () => this.getAllEntryNamesImpl();
-    }
+		// Expose API functions
+		this.replaceTimekeepCodeblock = replaceTimekeepCodeblock;
+		this.extractTimekeepCodeblocks = extractTimekeepCodeblocks;
+		this.isKeepRunning = isKeepRunning;
+		this.isEntryRunning = isEntryRunning;
+		this.getRunningEntry = getRunningEntry;
+		this.getEntryDuration = getEntryDuration;
+		this.getTotalDuration = getTotalDuration;
+		this.stopAllTimekeeps = stopAllTimekeeps;
+		this.stopFileTimekeeps = stopFileTimekeeps;
+		this.getAllEntryNames = () => this.getAllEntryNamesImpl();
+	}
 
-    async onload(): Promise<void> {
-        const loadedSettings: TimekeepSettings = Object.assign(
-            {},
-            defaultSettings,
-            await this.loadData()
-        );
+	async onload(): Promise<void> {
+		const loadedSettings: TimekeepSettings = Object.assign(
+			{},
+			defaultSettings,
+			await this.loadData()
+		);
 
-        // Compatibility with old reverse segment order
-        if (loadedSettings.reverseSegmentOrder) {
-            delete loadedSettings.reverseSegmentOrder;
-            loadedSettings.sortOrder = SortOrder.REVERSE_INSERTION;
-        }
+		// Compatibility with old reverse segment order
+		if (loadedSettings.reverseSegmentOrder) {
+			delete loadedSettings.reverseSegmentOrder;
+			loadedSettings.sortOrder = SortOrder.REVERSE_INSERTION;
+		}
 
-        // Load saved settings and combine with defaults
-        this.settingsStore.setState(loadedSettings);
+		// Load saved settings and combine with defaults
+		this.settingsStore.setState(loadedSettings);
 
-        this.addSettingTab(new TimekeepSettingsTab(this.app, this));
+		this.addSettingTab(new TimekeepSettingsTab(this.app, this));
 
-        this.registerMarkdownCodeBlockProcessor(
-            "timekeep",
-            (
-                source: string,
-                el: HTMLElement,
-                context: MarkdownPostProcessorContext
-            ) => {
-                const loadResult = load(source);
+		this.registerMarkdownCodeBlockProcessor(
+			"timekeep",
+			(
+				source: string,
+				el: HTMLElement,
+				context: MarkdownPostProcessorContext
+			) => {
+				const loadResult = load(source);
 
-                context.addChild(
-                    new TimekeepMarkdownView(
-                        el,
-                        this.app,
-                        this.settingsStore,
-                        this.customOutputFormats,
-                        context,
-                        loadResult
-                    )
-                );
-            }
-        );
+				context.addChild(
+					new TimekeepMarkdownView(
+						el,
+						this.app,
+						this.settingsStore,
+						this.customOutputFormats,
+						context,
+						loadResult
+					)
+				);
+			}
+		);
 
-        this.addCommand({
-            id: `insert`,
-            name: `Insert Tracker`,
-            editorCallback: (e) => {
-                e.replaceSelection('\n```timekeep\n{"entries": []}\n```\n');
-            },
-        });
+		this.addCommand({
+			id: `insert`,
+			name: `Insert Tracker`,
+			editorCallback: (e) => {
+				e.replaceSelection('\n```timekeep\n{"entries": []}\n```\n');
+			},
+		});
 
-        this.addCommand({
-            id: `find`,
-            name: `Find running trackers`,
-            callback: () => new TimekeepLocatorModal(this.app).open(),
-        });
+		this.addCommand({
+			id: `find`,
+			name: `Find running trackers`,
+			callback: () => new TimekeepLocatorModal(this.app).open(),
+		});
 
-        this.addCommand({
-            id: `create-merged`,
-            name: `Create Merged Tracker`,
-            callback: () =>
-                new TimekeepMergerModal(
-                    this.app,
-                    this.settingsStore,
-                    false
-                ).open(),
-        });
+		this.addCommand({
+			id: `create-merged`,
+			name: `Create Merged Tracker`,
+			callback: () =>
+				new TimekeepMergerModal(
+					this.app,
+					this.settingsStore,
+					false
+				).open(),
+		});
 
-        this.addCommand({
-            id: `export-merged-pdf`,
-            name: `Export Merged Tracker PDF`,
-            callback: () =>
-                new TimekeepMergerModal(
-                    this.app,
-                    this.settingsStore,
-                    true
-                ).open(),
-        });
+		this.addCommand({
+			id: `export-merged-pdf`,
+			name: `Export Merged Tracker PDF`,
+			callback: () =>
+				new TimekeepMergerModal(
+					this.app,
+					this.settingsStore,
+					true
+				).open(),
+		});
 
-        this.addCommand({
-            id: `stop-all-timekeeps`,
-            name: `Stop All Running Trackers`,
-            callback: () => {
-                const currentTime = moment();
-                stopAllTimekeeps(this.app.vault, currentTime)
-                    .then((totalStopped) => {
-                        if (totalStopped < 1) {
-                            new Notice("Nothing to stop.", 1500);
-                            return;
-                        }
+		this.addCommand({
+			id: `stop-all-timekeeps`,
+			name: `Stop All Running Trackers`,
+			callback: () => {
+				const currentTime = moment();
+				stopAllTimekeeps(this.app.vault, currentTime)
+					.then((totalStopped) => {
+						if (totalStopped < 1) {
+							new Notice("Nothing to stop.", 1500);
+							return;
+						}
 
-                        new Notice(
-                            `Stopped ${totalStopped} tracker${totalStopped !== 1 ? "s" : ""}`,
-                            1500
-                        );
-                    })
-                    .catch((error) => {
-                        let errorMessage = "";
-                        if (error instanceof Error) {
-                            errorMessage = error.message;
-                        } else if (typeof error === "string") {
-                            errorMessage = error;
-                        } else {
-                            error = "Unknown error occurred";
-                        }
+						new Notice(
+							`Stopped ${totalStopped} tracker${totalStopped !== 1 ? "s" : ""}`,
+							1500
+						);
+					})
+					.catch((error) => {
+						let errorMessage = "";
+						if (error instanceof Error) {
+							errorMessage = error.message;
+						} else if (typeof error === "string") {
+							errorMessage = error;
+						} else {
+							error = "Unknown error occurred";
+						}
 
-                        new Notice(
-                            "Failed to stop timekeeps: " + errorMessage,
-                            1500
-                        );
-                    });
-            },
-        });
+						new Notice(
+							"Failed to stop timekeeps: " + errorMessage,
+							1500
+						);
+					});
+			},
+		});
 
-        this.addCommand({
-            id: `stop-current-timekeeps`,
-            name: `Stop All Running Trackers (Current File Only)`,
-            callback: () => {
-                const currentTime = moment();
-                const currentFile =
-                    this.app.workspace.activeEditor?.file ?? null;
+		this.addCommand({
+			id: `stop-current-timekeeps`,
+			name: `Stop All Running Trackers (Current File Only)`,
+			callback: () => {
+				const currentTime = moment();
+				const currentFile =
+					this.app.workspace.activeEditor?.file ?? null;
 
-                if (currentFile === null) {
-                    new Notice("No active file detected", 1500);
-                    return;
-                }
+				if (currentFile === null) {
+					new Notice("No active file detected", 1500);
+					return;
+				}
 
-                stopFileTimekeeps(this.app.vault, currentFile, currentTime)
-                    .then((totalStopped) => {
-                        if (totalStopped < 1) {
-                            new Notice("Nothing to stop.", 1500);
-                            return;
-                        }
+				stopFileTimekeeps(this.app.vault, currentFile, currentTime)
+					.then((totalStopped) => {
+						if (totalStopped < 1) {
+							new Notice("Nothing to stop.", 1500);
+							return;
+						}
 
-                        new Notice(
-                            `Stopped ${totalStopped} tracker${totalStopped !== 1 ? "s" : ""}`,
-                            1500
-                        );
-                    })
-                    .catch((error) => {
-                        let errorMessage = "";
-                        if (error instanceof Error) {
-                            errorMessage = error.message;
-                        } else if (typeof error === "string") {
-                            errorMessage = error;
-                        } else {
-                            error = "Unknown error occurred";
-                        }
+						new Notice(
+							`Stopped ${totalStopped} tracker${totalStopped !== 1 ? "s" : ""}`,
+							1500
+						);
+					})
+					.catch((error) => {
+						let errorMessage = "";
+						if (error instanceof Error) {
+							errorMessage = error.message;
+						} else if (typeof error === "string") {
+							errorMessage = error;
+						} else {
+							error = "Unknown error occurred";
+						}
 
-                        new Notice(
-                            "Failed to stop timekeeps: " + errorMessage,
-                            1500
-                        );
-                    });
-            },
-        });
-    }
+						new Notice(
+							"Failed to stop timekeeps: " + errorMessage,
+							1500
+						);
+					});
+			},
+		});
+	}
 
-    registerCustomOutputFormat(id: string, format: CustomOutputFormat) {
-        this.customOutputFormats.setState((state) => {
-            return {
-                ...state,
-                [id]: format,
-            };
-        });
-    }
+	registerCustomOutputFormat(id: string, format: CustomOutputFormat) {
+		this.customOutputFormats.setState((state) => {
+			return {
+				...state,
+				[id]: format,
+			};
+		});
+	}
 
-    unregisterCustomOutputFormat(id: string) {
-        this.customOutputFormats.setState((state) => {
-            const newState = { ...state };
-            delete newState[id];
-            return newState;
-        });
-    }
+	unregisterCustomOutputFormat(id: string) {
+		this.customOutputFormats.setState((state) => {
+			const newState = { ...state };
+			delete newState[id];
+			return newState;
+		});
+	}
 
-    /**
-     * Gets all unique entry names from all timekeep blocks in the vault
-     * Excludes sub-task names like "Part 1", "Part 2", etc.
-     * 
-     * @returns Promise resolving to an array of unique entry names
-     */
-    private async getAllEntryNamesImpl(): Promise<string[]> {
-        const markdownFiles = this.app.vault.getMarkdownFiles();
-        const batchSize = 25;
-        const allNames = new Set<string>();
+	/**
+	 * Gets all unique entry names from all timekeep blocks in the vault
+	 * Excludes sub-task names like "Part 1", "Part 2", etc.
+	 *
+	 * @returns Promise resolving to an array of unique entry names
+	 */
+	private async getAllEntryNamesImpl(): Promise<string[]> {
+		const markdownFiles = this.app.vault.getMarkdownFiles();
+		const batchSize = 25;
+		const allNames = new Set<string>();
 
-        // Pattern to match sub-task names like "Part 1", "Part 2", etc.
-        const subTaskPattern = /^Part\s+\d+$/i;
+		// Pattern to match sub-task names like "Part 1", "Part 2", etc.
+		const subTaskPattern = /^Part\s+\d+$/i;
 
-        for (let i = 0; i < markdownFiles.length; i += batchSize) {
-            const batch = markdownFiles.slice(i, i + batchSize);
+		for (let i = 0; i < markdownFiles.length; i += batchSize) {
+			const batch = markdownFiles.slice(i, i + batchSize);
 
-            await Promise.allSettled(
-                batch.map(async (file) => {
-                    try {
-                        const content = await this.app.vault.cachedRead(file);
-                        const timekeeps = extractTimekeepCodeblocks(content);
+			await Promise.allSettled(
+				batch.map(async (file) => {
+					try {
+						const content = await this.app.vault.cachedRead(file);
+						const timekeeps = extractTimekeepCodeblocks(content);
 
-                        for (const timekeep of timekeeps) {
-                            const names = extractNamesFromTimekeep(timekeep);
-                            names.forEach((name) => {
-                                // Exclude sub-task names
-                                if (!subTaskPattern.test(name.trim())) {
-                                    allNames.add(name);
-                                }
-                            });
-                        }
-                    } catch (error) {
-                        // Silently skip files that can't be read
-                        console.error(`Failed to read file ${file.path}:`, error);
-                    }
-                })
-            );
-        }
+						for (const timekeep of timekeeps) {
+							const names = extractNamesFromTimekeep(timekeep);
+							names.forEach((name) => {
+								// Exclude sub-task names
+								if (!subTaskPattern.test(name.trim())) {
+									allNames.add(name);
+								}
+							});
+						}
+					} catch (error) {
+						// Silently skip files that can't be read
+						console.error(
+							`Failed to read file ${file.path}:`,
+							error
+						);
+					}
+				})
+			);
+		}
 
-        // Convert Set to sorted array
-        return Array.from(allNames).sort();
-    }
+		// Convert Set to sorted array
+		return Array.from(allNames).sort();
+	}
 }

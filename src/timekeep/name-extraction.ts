@@ -40,4 +40,3 @@ export function extractNamesFromTimekeep(timekeep: Timekeep): Set<string> {
 
 	return names;
 }
-
