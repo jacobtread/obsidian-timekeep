@@ -122,6 +122,31 @@ export class TimekeepMarkdownView extends MarkdownRenderChild {
 		this.root.unmount();
 	}
 
+	restoreScrollTimeout: ReturnType<typeof setTimeout> | null = null;
+	restoreScrollInfo: { top: number; left: number } | null = null;
+
+	saveEditorScroll() {
+		const activeEditor = this.app.workspace.activeEditor;
+		if (!activeEditor) return;
+		const editor = activeEditor.editor;
+		if (!editor) return;
+		this.restoreScrollInfo = editor.getScrollInfo();
+	}
+
+	restoreEditorScroll() {
+		if (this.restoreScrollInfo === null) return;
+		const activeEditor = this.app.workspace.activeEditor;
+
+		if (!activeEditor) return;
+		const editor = activeEditor.editor;
+
+		if (!editor) return;
+		editor.scrollTo(
+			this.restoreScrollInfo.left,
+			this.restoreScrollInfo.top
+		);
+	}
+
 	/**
 	 * Attempts to save the file normally, if this fails it also attempts
 	 * to save a fallback file
@@ -130,6 +155,8 @@ export class TimekeepMarkdownView extends MarkdownRenderChild {
 	 * @returns Promise of a boolean indicating weather the save was a success
 	 */
 	async trySave(timekeep: Timekeep): Promise<boolean> {
+		this.saveEditorScroll();
+
 		try {
 			await this.save(timekeep);
 
@@ -144,6 +171,12 @@ export class TimekeepMarkdownView extends MarkdownRenderChild {
 			}
 
 			return false;
+		} finally {
+			// Queue scroll restoration after 50ms (Should be enough for the codeblock to re-render)
+			this.restoreScrollTimeout = setTimeout(
+				this.restoreEditorScroll.bind(this),
+				50
+			);
 		}
 	}
 
