@@ -13,6 +13,7 @@ import {
 } from "@/timekeep";
 
 import ObsidianIcon from "./ObsidianIcon";
+import NameAutocomplete from "./NameAutocomplete";
 
 /**
  * Component for the timekeep start button and "name" field isolating
@@ -105,15 +106,11 @@ export default function TimekeepStart() {
 					<div className="timekeep-name-wrapper">
 						<label htmlFor="timekeepBlockName">Edit Name:</label>
 
-						<input
-							id="timekeepBlockName"
-							className="timekeep-name"
+						<NameAutocomplete
+							inputId="timekeepBlockName"
 							placeholder="Example Block"
-							type="text"
 							value={editingName}
-							onChange={(event) =>
-								setEditingName(event.target.value)
-							}
+							onChange={setEditingName}
 						/>
 					</div>
 
@@ -225,13 +222,11 @@ export default function TimekeepStart() {
 							)}
 					</label>
 
-					<input
-						id="timekeepBlockName"
-						className="timekeep-name"
+					<NameAutocomplete
+						inputId="timekeepBlockName"
 						placeholder="Example Block"
-						type="text"
 						value={name}
-						onChange={(event) => setName(event.target.value)}
+						onChange={setName}
 					/>
 				</div>
 
