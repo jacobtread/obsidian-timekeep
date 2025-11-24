@@ -3,13 +3,14 @@ import type { Moment } from "moment";
 import { Timekeep } from "@/timekeep/schema";
 import { getTotalDuration } from "@/timekeep";
 import { TimekeepSettings } from "@/settings";
-import { Page, View, Text, Document, StyleSheet } from "@react-pdf/renderer";
+import { Page, View, Text, Document } from "@react-pdf/renderer";
 import {
 	formatPdfDate,
 	formatDurationLong,
 	formatDurationShort,
 } from "@/utils";
 
+import { createStyles } from "./styles";
 import TimesheetPdfTable from "./TimesheetPdfTable";
 import TimesheetPdfDetailField from "./TimesheetPdfDetailField";
 
@@ -20,44 +21,6 @@ type Props = {
 	footnote: string;
 	settings: TimekeepSettings;
 };
-
-const styles = StyleSheet.create({
-	// Styles for a page
-	page: {
-		fontFamily: "Roboto",
-		padding: 15,
-	},
-
-	// Heading with the page title and timesheet title
-	heading: {
-		flexDirection: "row",
-		justifyContent: "space-between",
-		alignItems: "center",
-		marginBottom: 5,
-	},
-
-	// User specified title and "Timesheet"
-	title: {
-		fontFamily: "Roboto",
-		fontWeight: 700,
-		fontSize: 12,
-		marginBottom: 5,
-	},
-
-	// Detail items at the top (Date, Total Duration, Short Duration)
-	details: {
-		gap: 4,
-		marginBottom: 5,
-	},
-
-	// Footer note
-	footNote: {
-		marginTop: 10,
-		fontSize: 6,
-		fontFamily: "Roboto",
-		fontWeight: 700,
-	},
-});
 
 export default function TimesheetPdf({
 	title,
@@ -73,6 +36,8 @@ export default function TimesheetPdf({
 	const totalDuration = formatDurationLong(duration);
 	const totalDurationShort = formatDurationShort(duration);
 
+	const styles = createStyles(settings.pdfFontFamily);
+
 	return (
 		<Document>
 			<Page size="A4" style={styles.page}>
@@ -82,14 +47,20 @@ export default function TimesheetPdf({
 				</View>
 
 				<View style={styles.details}>
-					<TimesheetPdfDetailField name="Date" value={currentDate} />
+					<TimesheetPdfDetailField
+						name="Date"
+						value={currentDate}
+						styles={styles}
+					/>
 					<TimesheetPdfDetailField
 						name="Total Duration"
 						value={totalDuration}
+						styles={styles}
 					/>
 					<TimesheetPdfDetailField
 						name="Total Duration (hours)"
 						value={totalDurationShort}
+						styles={styles}
 					/>
 				</View>
 
@@ -98,6 +69,7 @@ export default function TimesheetPdf({
 					currentTime={currentTime}
 					totalDuration={totalDuration}
 					settings={settings}
+					styles={styles}
 				/>
 
 				<Text style={styles.footNote} wrap={false}>

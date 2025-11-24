@@ -2,8 +2,9 @@ import React from "react";
 import type { Moment } from "moment";
 import { Timekeep } from "@/timekeep/schema";
 import { TimekeepSettings } from "@/settings";
-import { View, Text, StyleSheet } from "@react-pdf/renderer";
+import { View, Text } from "@react-pdf/renderer";
 
+import { Styles } from "./styles";
 import { TimesheetPdfTableRow } from "./TimesheetPdfTableRow";
 
 type Props = {
@@ -11,65 +12,15 @@ type Props = {
 	currentTime: Moment;
 	totalDuration: string;
 	settings: TimekeepSettings;
+	styles: Styles;
 };
-
-const styles = StyleSheet.create({
-	// Container around the timesheet table
-	tableContainer: {
-		flexDirection: "row",
-		flexWrap: "wrap",
-		borderWidth: 1,
-		borderColor: "#ececec",
-	},
-
-	// Row within the table
-	tableRow: {
-		flexDirection: "row",
-		borderBottomColor: "#ececec",
-		borderBottomWidth: 1,
-		alignItems: "center",
-		height: 24,
-		fontSize: 8,
-		width: "100%",
-	},
-
-	// Header row
-	tableRowHeader: {
-		fontFamily: "Roboto",
-		fontWeight: 700,
-		backgroundColor: "#ececec",
-	},
-
-	// Base table cell
-	tableCell: {
-		padding: 15,
-	},
-
-	// Table cell that spans available width
-	tableCellBlock: {
-		width: "100%",
-	},
-
-	// Table cell that contains a timestamp
-	tableCellTime: {
-		width: "200px",
-		textAlign: "right",
-	},
-
-	// Table cell that contains a duration
-	tableCellDuration: {
-		width: "400px",
-		textAlign: "right",
-		fontWeight: 700,
-		fontFamily: "Roboto",
-	},
-});
 
 export default function TimesheetPdfTable({
 	data,
 	currentTime,
 	totalDuration,
 	settings,
+	styles,
 }: Props) {
 	// Render the table header
 	const renderHeader = (
@@ -96,6 +47,7 @@ export default function TimesheetPdfTable({
 			key={index}
 			currentTime={currentTime}
 			settings={settings}
+			styles={styles}
 		/>
 	));
 

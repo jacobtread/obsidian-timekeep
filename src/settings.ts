@@ -30,6 +30,11 @@ export enum SortOrder {
 	OLDEST_START = "OLDEST_START",
 }
 
+export enum FontFamily {
+	ROBOTO = "Roboto",
+	RUBIK = "Rubik",
+}
+
 export enum UnstartedOrder {
 	// Sort unstarted items to the start
 	FIRST = "FIRST",
@@ -47,6 +52,7 @@ export interface TimekeepSettings {
 	pdfExportBehavior: PdfExportBehavior;
 	pdfDateFormat: string;
 	pdfRowDateFormat: string;
+	pdfFontFamily: FontFamily;
 	reverseSegmentOrder?: boolean;
 	timestampFormat: string;
 	showDecimalHours: boolean;
@@ -64,6 +70,7 @@ export const defaultSettings: TimekeepSettings = {
 	pdfExportBehavior: PdfExportBehavior.OPEN_PATH,
 	pdfDateFormat: "DD/MM/YYYY",
 	pdfRowDateFormat: "DD/MM/YYYY HH:mm",
+	pdfFontFamily: FontFamily.ROBOTO,
 	timestampFormat: "YY-MM-DD HH:mm:ss",
 	editableTimestampFormat: "YYYY-MM-DD HH:mm:ss",
 	csvTitle: true,
