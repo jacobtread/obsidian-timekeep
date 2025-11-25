@@ -3,6 +3,7 @@ import TimekeepPlugin from "@/main";
 import { App, Setting, PluginSettingTab } from "obsidian";
 import {
 	SortOrder,
+	FontFamily,
 	DurationFormat,
 	UnstartedOrder,
 	defaultSettings,
@@ -165,6 +166,26 @@ export class TimekeepSettingsTab extends PluginSettingTab {
 					this.settingsStore.setState((currentValue) => ({
 						...currentValue,
 						pdfRowDateFormat: newPdfRowDateFormat,
+					}));
+				});
+			});
+
+		new Setting(this.containerEl)
+			.setName("Pdf font family")
+			.setDesc(
+				"Font family to use when exporting to pdf, the Rubik font family is recommended if you use Arabic characters"
+			)
+
+			.addDropdown((t) => {
+				t.addOptions({
+					[FontFamily.ROBOTO]: "Roboto",
+					[FontFamily.RUBIK]: "Rubik",
+				});
+				t.setValue(String(settings.pdfFontFamily));
+				t.onChange((v) => {
+					this.settingsStore.setState((currentValue) => ({
+						...currentValue,
+						pdfFontFamily: v as FontFamily,
 					}));
 				});
 			});

@@ -2,9 +2,11 @@ import React from "react";
 import { Moment } from "moment";
 import { Timekeep } from "@/timekeep/schema";
 import { TimekeepSettings } from "@/settings";
+import RubikBold from "@/fonts/Rubik-Bold.ttf";
 import { pdf, Font } from "@react-pdf/renderer";
 // Embedded fonts
 import RobotoBold from "@/fonts/Roboto-Bold.ttf";
+import RubikRegular from "@/fonts/Rubik-Regular.ttf";
 import RobotoRegular from "@/fonts/Roboto-Regular.ttf";
 
 import TimesheetPdf from "./TimesheetPdf";
@@ -19,6 +21,21 @@ Font.register({
 		},
 		{
 			src: RobotoBold,
+			fontWeight: 700,
+		},
+	],
+});
+
+// Register the Rubik font for Arabic character support (https://github.com/jacobtread/obsidian-timekeep/issues/61)
+Font.register({
+	family: "Rubik",
+	fonts: [
+		{
+			src: RubikRegular,
+			fontWeight: 400,
+		},
+		{
+			src: RubikBold,
 			fontWeight: 700,
 		},
 	],

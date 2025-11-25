@@ -3,65 +3,24 @@ import React, { Fragment } from "react";
 import { getEntryDuration } from "@/timekeep";
 import { TimekeepSettings } from "@/settings";
 import { TimeEntry } from "@/timekeep/schema";
-import { View, Text, StyleSheet } from "@react-pdf/renderer";
+import { View, Text } from "@react-pdf/renderer";
 import { formatPdfRowDate, formatDurationLong } from "@/utils";
+
+import { Styles } from "./styles";
 
 type Props = {
 	entry: TimeEntry;
 	currentTime: Moment;
 	settings: TimekeepSettings;
+	styles: Styles;
 };
 
-const styles = StyleSheet.create({
-	// Row within the table
-	tableRow: {
-		flexDirection: "row",
-		borderBottomColor: "#ececec",
-		borderBottomWidth: 1,
-		alignItems: "center",
-		height: 24,
-		fontSize: 8,
-		width: "100%",
-	},
-
-	// Wrapper for nested rows
-	tableRowWrapper: {
-		borderColor: "#f9f9f9",
-		borderWidth: 5,
-	},
-
-	// Base table cell
-	tableCell: {
-		padding: 15,
-	},
-
-	// Table cell that spans available width
-	tableCellBlock: {
-		width: "100%",
-	},
-
-	// Table cell that contains a timestamp
-	tableCellTime: {
-		width: "200px",
-		textAlign: "right",
-	},
-
-	// Table cell that contains a duration
-	tableCellDuration: {
-		width: "400px",
-		textAlign: "right",
-		fontWeight: 700,
-		fontFamily: "Roboto",
-	},
-
-	// Table indentation container
-	tableIndent: {
-		borderLeftWidth: 5,
-		borderLeftColor: "#999",
-	},
-});
-
-export function TimesheetPdfTableRow({ entry, currentTime, settings }: Props) {
+export function TimesheetPdfTableRow({
+	entry,
+	currentTime,
+	settings,
+	styles,
+}: Props) {
 	const duration = getEntryDuration(entry, currentTime);
 	const durationFormatted = formatDurationLong(duration);
 
@@ -86,6 +45,7 @@ export function TimesheetPdfTableRow({ entry, currentTime, settings }: Props) {
 					key={index}
 					currentTime={currentTime}
 					settings={settings}
+					styles={styles}
 				/>
 			))}
 		</View>
