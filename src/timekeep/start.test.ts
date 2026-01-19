@@ -42,6 +42,17 @@ describe("startNewNestedEntry", () => {
 		);
 	});
 
+	it("starting a new entry within a folder should create a subentry", async () => {
+		const { currentTime, targetEntry, input, expected } = await import(
+			"./__fixtures__/manipulating/start_entry/startNestedFolderEntry"
+		);
+
+		const output = startNewNestedEntry(currentTime, targetEntry.id, input);
+		expect(stripEntriesRuntimeData(output)).toEqual(
+			stripEntriesRuntimeData(expected)
+		);
+	});
+
 	it("starting a new entry should stop any running entries", async () => {
 		const { currentTime, targetEntry, input, expected } = await import(
 			"./__fixtures__/manipulating/start_entry/startNotStartedEntry"

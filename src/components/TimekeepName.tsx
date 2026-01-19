@@ -14,15 +14,23 @@ type Props = {
 export default function TimekeepName({ name }: Props) {
 	const segments = parseNameSegments(name);
 
-	return segments.map((segment, index) => {
-		switch (segment.type) {
-			case NameSegmentType.Text:
-				return <TimekeepNameText key={index} segment={segment} />;
+	return (
+		<>
+			{segments.map((segment, index) => {
+				switch (segment.type) {
+					case NameSegmentType.Text:
+						return (
+							<TimekeepNameText key={index} segment={segment} />
+						);
 
-			case NameSegmentType.Link:
-				return <TimekeepNameLink key={index} segment={segment} />;
-		}
-	});
+					case NameSegmentType.Link:
+						return (
+							<TimekeepNameLink key={index} segment={segment} />
+						);
+				}
+			})}
+		</>
+	);
 }
 
 function TimekeepNameText({ segment }: { segment: NameSegmentText }) {

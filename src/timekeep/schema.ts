@@ -35,6 +35,9 @@ const TIME_ENTRY_SINGLE = z
 			.transform((value) => (value === null ? null : moment(value))),
 		// Single entries have no children
 		subEntries: z.null(),
+		// Optional field to indicate the entry should stay as a group when non-started and should only create
+		// sub entries when starting
+		folder: z.boolean().optional(),
 	})
 	// At runtime a unique ID is inserted
 	.transform((entry) => ({
@@ -49,7 +52,11 @@ const TIME_ENTRY_GROUP_BASE = z.object({
 	endTime: z.null(),
 	// Optional field to indicate the entry is collapsed
 	collapsed: z.boolean().optional(),
+	// Optional field to indicate the entry should stay as a group when non-started and should only create
+	// sub entries when starting
+	folder: z.boolean().optional(),
 });
+
 // Schema for a time entry group
 const TIME_ENTRY_GROUP: z.ZodType<
 	TimeEntryGroup,

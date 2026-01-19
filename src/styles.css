@@ -219,6 +219,12 @@
 	vertical-align: middle;
 }
 
+.timekeep-folder-icon {
+	margin-right: 0.5rem;
+	cursor: pointer;
+	vertical-align: middle;
+}
+
 .timekeep-start-note {
 	font-size: 0.8rem;
 	color: #777;
