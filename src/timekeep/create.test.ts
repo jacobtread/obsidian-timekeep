@@ -51,6 +51,26 @@ describe("withSubEntry", () => {
 		);
 	});
 
+	it("adding first entry for folder should populate subentries", async () => {
+		const { input, currentTime, expected } = await import(
+			"./__fixtures__/manipulating/adding_sub_entry/addFolderPopulateSubEntries"
+		);
+		const output = withSubEntry(input, "New Entry", currentTime);
+		expect(stripEntryRuntimeData(output)).toEqual(
+			stripEntryRuntimeData(expected)
+		);
+	});
+
+	it("adding first entry for folder should extend subentries", async () => {
+		const { input, currentTime, expected } = await import(
+			"./__fixtures__/manipulating/adding_sub_entry/addFolderExtendSubEntries"
+		);
+		const output = withSubEntry(input, "New Entry 2", currentTime);
+		expect(stripEntryRuntimeData(output)).toEqual(
+			stripEntryRuntimeData(expected)
+		);
+	});
+
 	it("adding to group should extend sub entries", async () => {
 		const { input, currentTime, expected } = await import(
 			"./__fixtures__/manipulating/adding_sub_entry/addToGroupExtendSubEntries"

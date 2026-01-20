@@ -106,6 +106,14 @@ describe("removeEntry", () => {
 		const updated = removeEntry(entries, entryToRemove);
 		expect(updated).toEqual(expectedEntries);
 	});
+
+	it("should not collapse folder on empty entries", async () => {
+		const { entries, entryToRemove, expectedEntries } = await import(
+			"./__fixtures__/manipulating/remove_entry/removeEntryFolder"
+		);
+		const updated = removeEntry(entries, entryToRemove);
+		expect(updated).toEqual(expectedEntries);
+	});
 });
 
 describe("removeSubEntry", () => {

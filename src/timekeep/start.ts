@@ -49,8 +49,12 @@ export function startNewNestedEntry(
 		return entries;
 	}
 
-	// If the entry has been started or is a group create a new child entry
-	if (currentEntry.subEntries !== null || currentEntry.startTime !== null) {
+	// If the entry has been started, is a group, or is a folder group create a new child entry
+	if (
+		currentEntry.subEntries !== null ||
+		currentEntry.startTime !== null ||
+		currentEntry.folder
+	) {
 		return updateEntry(
 			entries,
 			// Ensure the current entry is ended

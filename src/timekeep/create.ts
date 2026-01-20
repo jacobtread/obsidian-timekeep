@@ -112,6 +112,15 @@ function getSubEntryName(name: string, groupEntry: TimeEntryGroup) {
  * @returns The group entry
  */
 function makeGroupEntry(entry: TimeEntry): TimeEntryGroup {
+	if (entry.folder) {
+		return {
+			...entry,
+			subEntries: entry.subEntries ?? [],
+			startTime: null,
+			endTime: null,
+		};
+	}
+
 	if (entry.subEntries !== null) {
 		return entry;
 	}
