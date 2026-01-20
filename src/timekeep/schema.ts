@@ -35,9 +35,6 @@ const TIME_ENTRY_SINGLE = z
 			.transform((value) => (value === null ? null : moment(value))),
 		// Single entries have no children
 		subEntries: z.null(),
-		// Optional field to indicate the entry should stay as a group when non-started and should only create
-		// sub entries when starting
-		folder: z.boolean().optional(),
 	})
 	// At runtime a unique ID is inserted
 	.transform((entry) => ({

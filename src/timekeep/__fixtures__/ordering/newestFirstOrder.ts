@@ -1,10 +1,11 @@
 import moment from "moment";
+import { TimeEntry } from "@/timekeep/schema";
 
 const currentTime = moment();
 
 const futureStartTime = currentTime.clone().add(5000, "ms");
 
-export const input = [
+export const input: TimeEntry[] = [
 	{
 		id: "9054dee3-8c15-493b-ad31-f070e08c2699",
 		name: "Part 1",
@@ -57,7 +58,7 @@ export const input = [
 	},
 ];
 
-export const expected = [
+export const expected: TimeEntry[] = [
 	{
 		id: "6054dee3-8c15-493b-ad31-f070e08c2699",
 		name: "Part 2",

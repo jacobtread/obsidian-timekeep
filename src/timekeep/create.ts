@@ -45,7 +45,7 @@ export function withEntry(
  * of entries + 1
  *
  * @param name User provided name
- * @param entires The list of entries
+ * @param entries The list of entries
  * @returns The new entry name
  */
 function getEntryName(name: string, entries: TimeEntry[]) {
@@ -112,15 +112,6 @@ function getSubEntryName(name: string, groupEntry: TimeEntryGroup) {
  * @returns The group entry
  */
 function makeGroupEntry(entry: TimeEntry): TimeEntryGroup {
-	if (entry.folder) {
-		return {
-			...entry,
-			subEntries: entry.subEntries ?? [],
-			startTime: null,
-			endTime: null,
-		};
-	}
-
 	if (entry.subEntries !== null) {
 		return entry;
 	}

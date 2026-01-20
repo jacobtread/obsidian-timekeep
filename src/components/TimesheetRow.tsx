@@ -94,7 +94,7 @@ export default function TimesheetRow({ entry, indent }: Props) {
 					className="timekeep-entry-name"
 					title={entry.name}
 					onClick={handleToggleCollapsed}>
-					{entry.folder && (
+					{entry.subEntries !== null && entry.folder && (
 						<ObsidianIcon
 							icon="folder"
 							className="timekeep-folder-icon"

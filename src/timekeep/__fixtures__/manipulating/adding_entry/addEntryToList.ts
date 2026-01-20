@@ -11,6 +11,13 @@ export const input: TimeEntry[] = [
 		endTime: currentTime,
 		subEntries: null,
 	},
+	{
+		id: "15b24c72-2e71-4070-8331-49eb48bf94c5",
+		name: "Part 2",
+		startTime: currentTime,
+		endTime: currentTime,
+		subEntries: null,
+	},
 ];
 
 export const expected: TimeEntry[] = [
@@ -22,8 +29,15 @@ export const expected: TimeEntry[] = [
 		subEntries: null,
 	},
 	{
-		id: "8054dee3-8c15-493b-ad31-f070e08c2699",
-		name: "Block 2",
+		id: "15b24c72-2e71-4070-8331-49eb48bf94c5",
+		name: "Part 2",
+		startTime: currentTime,
+		endTime: currentTime,
+		subEntries: null,
+	},
+	{
+		id: "76233ea4-5840-479a-a946-0f5b2610cfa7",
+		name: "New Test Entry",
 		startTime: currentTime,
 		endTime: null,
 		subEntries: null,

@@ -1,8 +1,9 @@
 import moment from "moment";
+import { TimeEntry } from "@/timekeep/schema";
 
 export const currentTime = moment();
 
-export const runningEntry = {
+export const runningEntry: TimeEntry = {
 	id: "9054dee3-8c15-493b-ad31-f070e08c2699",
 	name: "Running Entry",
 	startTime: currentTime,

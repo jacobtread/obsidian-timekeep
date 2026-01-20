@@ -158,13 +158,13 @@ export function removeSubEntry(entry: TimeEntry, target: TimeEntry): TimeEntry {
  * @returns The collapsed entry
  */
 function makeEntrySingle(target: TimeEntry): TimeEntry {
-	// Cannot collapse folders
-	if (target.folder) {
+	// Target has no entries to collapse
+	if (target.subEntries === null) {
 		return target;
 	}
 
-	// Target has no entries to collapse
-	if (target.subEntries === null) {
+	// Cannot collapse folders
+	if (target.folder) {
 		return target;
 	}
 

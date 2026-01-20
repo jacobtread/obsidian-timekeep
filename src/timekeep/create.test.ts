@@ -15,6 +15,14 @@ describe("createEntry", () => {
 			subEntries: null,
 		});
 	});
+
+	it("each created entry should have a unique id", () => {
+		const currentTime = moment();
+
+		const entry1 = createEntry("Block 1", currentTime);
+		const entry2 = createEntry("Block 2", currentTime);
+		expect(entry1.id).not.toBe(entry2.id);
+	});
 });
 
 describe("withEntry", () => {
@@ -33,7 +41,24 @@ describe("withEntry", () => {
 			"./__fixtures__/manipulating/adding_entry/addEmptyBlockName"
 		);
 
-		const output = withEntry(input, "", currentTime);
+		const output1 = withEntry(input, "", currentTime);
+		expect(stripEntriesRuntimeData(output1)).toEqual(
+			stripEntriesRuntimeData(expected)
+		);
+
+		// Empty whitespace string should also count as an empty name
+		const output2 = withEntry(input, " ".repeat(5), currentTime);
+		expect(stripEntriesRuntimeData(output2)).toEqual(
+			stripEntriesRuntimeData(expected)
+		);
+	});
+
+	it("should maintain existing entries when adding to a list", async () => {
+		const { input, currentTime, expected } = await import(
+			"./__fixtures__/manipulating/adding_entry/addEntryToList"
+		);
+
+		const output = withEntry(input, "New Test Entry", currentTime);
 		expect(stripEntriesRuntimeData(output)).toEqual(
 			stripEntriesRuntimeData(expected)
 		);

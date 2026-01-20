@@ -1,7 +1,8 @@
 import moment from "moment";
+import { TimeEntry } from "@/timekeep/schema";
 
 export const currentTime = moment();
-export const entryToRemove = {
+export const entryToRemove: TimeEntry = {
 	id: "76c19eb4-6bd1-49ac-bb63-68d6ef6335b8",
 	name: "Block 1",
 	startTime: currentTime,
@@ -9,7 +10,7 @@ export const entryToRemove = {
 	subEntries: null,
 };
 
-export const entries = [
+export const entries: TimeEntry[] = [
 	{
 		id: "74850306-d21e-41c3-a046-0057c03b950b",
 		name: "Block 3",
@@ -27,7 +28,7 @@ export const entries = [
 	},
 ];
 
-export const expectedEntries = [
+export const expectedEntries: TimeEntry[] = [
 	{
 		id: "74850306-d21e-41c3-a046-0057c03b950b",
 		name: "Block 3",

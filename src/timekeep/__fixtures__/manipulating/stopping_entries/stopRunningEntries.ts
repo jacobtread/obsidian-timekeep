@@ -1,9 +1,10 @@
 import moment from "moment";
+import { TimeEntry } from "@/timekeep/schema";
 
 export const currentTime = moment();
 export const endTime = moment().add(15, "hours");
 
-export const input = [
+export const input: TimeEntry[] = [
 	{
 		id: "9054dee3-8c15-493b-ad31-f070e08c2699",
 		name: "Entry",
@@ -35,7 +36,7 @@ export const input = [
 	},
 ];
 
-export const expected = [
+export const expected: TimeEntry[] = [
 	{
 		id: "9054dee3-8c15-493b-ad31-f070e08c2699",
 		name: "Entry",
