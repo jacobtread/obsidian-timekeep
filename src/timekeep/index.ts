@@ -21,3 +21,5 @@ export {
 	getTotalDuration,
 	getUniqueEntryHash,
 } from "./queries";
+
+export { extractNamesFromTimekeep } from "./name-extraction";
