@@ -225,3 +225,25 @@ export function getStartTime(entry: TimeEntry, newest: boolean): Moment | null {
 
 	return entry.startTime;
 }
+
+/**
+ * Collect the names of all entries within a collection
+ * of entries and any nested entries
+ *
+ * @param entries The entries to extract names from
+ * @param names The set to store collected names in
+ * @returns The list of names
+ */
+export function getEntriesNames(entries: TimeEntry[], names: Set<string>) {
+	const stack: TimeEntry[] = [...entries];
+
+	while (stack.length > 0) {
+		const entry: TimeEntry = stack.pop()!;
+
+		names.add(entry.name);
+
+		if (entry.subEntries !== null) {
+			stack.push(...entry.subEntries);
+		}
+	}
+}

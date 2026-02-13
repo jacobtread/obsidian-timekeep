@@ -194,7 +194,7 @@
 	flex-flow: column;
 	flex: auto;
 	gap: 0.5rem;
-	overflow: hidden;
+	overflow: visible;
 	overflow-wrap: anywhere;
 }
 
@@ -280,4 +280,42 @@
 
 .timekeep-merge-item-path {
 	opacity: 0.7;
+}
+
+.timekeep-name-containers {
+	display: flex;
+	position: relative;
+}
+
+.timekeep-suggestions {
+	position: absolute;
+	top: 100%;
+	left: 0;
+	z-index: 1000;
+
+	width: 100%;
+	max-height: 100px;
+	background-color: var(--color-base-20);
+	border: 1px solid var(--color-base-30);
+	overflow-y: scroll;
+	overflow-x: hidden;
+	scrollbar-gutter: stable;
+
+	padding: 0.5rem;
+	list-style: none;
+}
+
+.timekeep-suggestion {
+	height: calc((var(--font-ui-small) * var(--line-height-normal)) + 0.5rem);
+	width: 100%;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	cursor: pointer;
+	white-space: nowrap;
+	padding: 0.25rem 0.5rem;
+	font-size: var(--font-ui-small);
+}
+
+.timekeep-suggestion[aria-selected="true"] {
+	background-color: var(--color-base-40);
 }

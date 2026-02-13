@@ -2,6 +2,7 @@ import moment from "moment";
 import { useStore } from "@/store";
 import { formatTimestamp } from "@/utils";
 import React, { useMemo, useState, FormEvent } from "react";
+import { AutocompleteProvider } from "@/utils/autocomplete";
 import { useSettings } from "@/contexts/use-settings-context";
 import { useTimekeepStore } from "@/contexts/use-timekeep-store";
 import {
@@ -13,13 +14,18 @@ import {
 } from "@/timekeep";
 
 import ObsidianIcon from "./ObsidianIcon";
+import TimekeepNameInput from "./TimekeepNameInput";
+
+interface Props {
+	autocomplete: AutocompleteProvider;
+}
 
 /**
  * Component for the timekeep start button and "name" field isolating
  * them to prevent needing to re-render the table when typing out the
  * name field
  */
-export default function TimekeepStart() {
+export default function TimekeepStart({ autocomplete }: Props) {
 	const store = useTimekeepStore();
 	const timekeep = useStore(store);
 	const settings = useSettings();
@@ -105,15 +111,10 @@ export default function TimekeepStart() {
 					<div className="timekeep-name-wrapper">
 						<label htmlFor="timekeepBlockName">Edit Name:</label>
 
-						<input
-							id="timekeepBlockName"
-							className="timekeep-name"
-							placeholder="Example Block"
-							type="text"
+						<TimekeepNameInput
+							autocomplete={autocomplete}
 							value={editingName}
-							onChange={(event) =>
-								setEditingName(event.target.value)
-							}
+							onChange={setEditingName}
 						/>
 					</div>
 
@@ -225,13 +226,10 @@ export default function TimekeepStart() {
 							)}
 					</label>
 
-					<input
-						id="timekeepBlockName"
-						className="timekeep-name"
-						placeholder="Example Block"
-						type="text"
+					<TimekeepNameInput
+						autocomplete={autocomplete}
 						value={name}
-						onChange={(event) => setName(event.target.value)}
+						onChange={setName}
 					/>
 				</div>
 

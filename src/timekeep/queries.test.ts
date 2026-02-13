@@ -1,9 +1,11 @@
+import { TimeEntry } from "./schema";
 import {
 	getEntryById,
 	isKeepRunning,
 	getPathToEntry,
 	isEntryRunning,
 	getRunningEntry,
+	getEntriesNames,
 	getEntryDuration,
 	getTotalDuration,
 	getUniqueEntryHash,
@@ -200,5 +202,47 @@ describe("getUniqueEntryHash", () => {
 		);
 
 		expect(getUniqueEntryHash(left)).not.toBe(getUniqueEntryHash(right));
+	});
+});
+
+describe("getEntriesNames", () => {
+	it("empty list should return no names", () => {
+		const input: TimeEntry[] = [];
+		const expected: string[] = [];
+
+		const output = new Set<string>();
+
+		getEntriesNames(input, output);
+
+		// Sort output for consistent result
+		const outputSet = Array.from(output).sort();
+		expect(outputSet).toEqual(expected);
+	});
+
+	it("should return all names from a flat list", async () => {
+		const { input, expected } = await import(
+			"./__fixtures__/names/flatNames"
+		);
+
+		const output = new Set<string>();
+
+		getEntriesNames(input, output);
+
+		// Sort output for consistent result
+		const outputSet = Array.from(output).sort();
+		expect(outputSet).toEqual(expected);
+	});
+
+	it("should return all names including names from nested entries", async () => {
+		const { input, expected } = await import(
+			"./__fixtures__/names/nestedNames"
+		);
+
+		const output = new Set<string>();
+		getEntriesNames(input, output);
+
+		// Sort output for consistent result
+		const outputSet = Array.from(output).sort();
+		expect(outputSet).toEqual(expected);
 	});
 });

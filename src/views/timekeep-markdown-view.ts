@@ -6,6 +6,7 @@ import { App as ObsidianApp } from "obsidian";
 import { TimekeepSettings } from "@/settings";
 import { CustomOutputFormat } from "@/output";
 import { Root, createRoot } from "react-dom/client";
+import { AutocompleteProvider } from "@/utils/autocomplete";
 import { Timekeep, stripTimekeepRuntimeData } from "@/timekeep/schema";
 import { LoadResult, replaceTimekeepCodeblock } from "@/timekeep/parser";
 import {
@@ -30,12 +31,15 @@ export class TimekeepMarkdownView extends MarkdownRenderChild {
 	root: Root;
 	// Path to the file the timekeep is within
 	fileSourcePath: string;
+	// Autocomplete provider instance
+	autocomplete: AutocompleteProvider;
 
 	constructor(
 		containerEl: HTMLElement,
 		app: ObsidianApp,
 		settingsStore: Store<TimekeepSettings>,
 		customOutputFormats: Store<Record<string, CustomOutputFormat>>,
+		autocomplete: AutocompleteProvider,
 		context: MarkdownPostProcessorContext,
 		loadResult: LoadResult
 	) {
@@ -44,6 +48,7 @@ export class TimekeepMarkdownView extends MarkdownRenderChild {
 		this.settingsStore = settingsStore;
 		this.customOutputFormats = customOutputFormats;
 		this.context = context;
+		this.autocomplete = autocomplete;
 		this.loadResult = loadResult;
 		this.root = createRoot(containerEl);
 
@@ -103,6 +108,7 @@ export class TimekeepMarkdownView extends MarkdownRenderChild {
 						saveErrorStore,
 						settingsStore: this.settingsStore,
 						customOutputFormats: this.customOutputFormats,
+						autocomplete: this.autocomplete,
 						handleSaveTimekeep,
 					})
 				)
@@ -209,14 +215,14 @@ export class TimekeepMarkdownView extends MarkdownRenderChild {
 	}
 
 	/**
-	 * Fallback saving incase writing back to the timekeep block fails,
+	 * Fallback saving in case writing back to the timekeep block fails,
 	 * if writing back fails attempt to write to a backup temporary file
 	 * using the current date time
 	 *
 	 * @param timekeep The timekeep to save
 	 */
 	async saveFallback(timekeep: Timekeep) {
-		// Fallback incase of write failure, attempt to write to another file
+		// Fallback in case of write failure, attempt to write to another file
 		const backupFileName = `timekeep-write-backup-${moment().format("YYYY-MM-DD HH-mm-ss")}.json`;
 
 		// Write to the backup file

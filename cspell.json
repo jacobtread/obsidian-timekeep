@@ -8,6 +8,12 @@
     "timekeep",
     "timesheet",
     "unstarted",
-    "Timekeeps"
+    "Timekeeps",
+    "touchstart",
+    "mousedown",
+    "activedescendant"
+  ],
+  "userWords": [
+    "useAutocompleteSuggestions"
   ]
 }

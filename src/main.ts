@@ -26,6 +26,7 @@ import {
 
 import { CustomOutputFormat } from "./output";
 import { Timekeep, TimeEntry } from "./timekeep/schema";
+import { AutocompleteProvider } from "./utils/autocomplete";
 import { stopAllTimekeeps } from "./commands/stopAllTimekeeps";
 import { stopFileTimekeeps } from "./commands/stopFileTimekeeps";
 import { TimekeepMergerModal } from "./views/timekeep-merger-modal";
@@ -55,6 +56,8 @@ export default class TimekeepPlugin extends Plugin {
 		currentTime: Moment
 	) => Promise<number>;
 
+	autocomplete: AutocompleteProvider;
+
 	constructor(app: ObsidianApp, manifest: PluginManifest) {
 		super(app, manifest);
 
@@ -63,9 +66,13 @@ export default class TimekeepPlugin extends Plugin {
 		const settingsStore = createStore(defaultSettings);
 		const customOutputFormats = createStore({});
 
+		this.autocomplete = new AutocompleteProvider();
+		// TODO: Bind vault changes to handle refreshing the autocomplete provider
+
 		// Subscribe to settings changes to save them
 		settingsStore.subscribe(() => {
-			saveSettings(settingsStore.getState());
+			const settings = settingsStore.getState();
+			saveSettings(settings);
 		});
 
 		this.customOutputFormats = customOutputFormats;
@@ -116,6 +123,7 @@ export default class TimekeepPlugin extends Plugin {
 						this.app,
 						this.settingsStore,
 						this.customOutputFormats,
+						this.autocomplete,
 						context,
 						loadResult
 					)

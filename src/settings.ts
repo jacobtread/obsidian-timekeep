@@ -42,6 +42,15 @@ export enum UnstartedOrder {
 	LAST = "LAST",
 }
 
+export enum SuggestionsScope {
+	/// Don't provide any suggestions
+	DISABLED = "DISABLED",
+	/// Provide name suggestions from the entire vault
+	VAULT = "VAULT",
+	/// Only provide name suggestions from within the current file
+	FILE = "FILE",
+}
+
 export interface TimekeepSettings {
 	csvDelimiter: string;
 	csvTitle: boolean;
@@ -61,6 +70,8 @@ export interface TimekeepSettings {
 
 	sortOrder: SortOrder;
 	unstartedOrder: UnstartedOrder;
+
+	suggestionsScope: SuggestionsScope;
 }
 
 export const defaultSettings: TimekeepSettings = {
@@ -82,4 +93,5 @@ export const defaultSettings: TimekeepSettings = {
 
 	sortOrder: SortOrder.INSERTION,
 	unstartedOrder: UnstartedOrder.LAST,
+	suggestionsScope: SuggestionsScope.VAULT,
 };

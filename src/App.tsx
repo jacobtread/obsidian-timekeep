@@ -13,6 +13,8 @@ import { SettingsContext } from "@/contexts/use-settings-context";
 import { TimekeepStoreContext } from "@/contexts/use-timekeep-store";
 import TimesheetExportActions from "@/components/TimesheetExportActions";
 
+import { AutocompleteProvider } from "./utils/autocomplete";
+
 export type AppProps = {
 	// Obsidian app for creating modals
 	app: ObsidianApp;
@@ -26,6 +28,8 @@ export type AppProps = {
 	customOutputFormats: Store<Record<string, CustomOutputFormat>>;
 	// Callback to save the timekeep
 	handleSaveTimekeep: (value: Timekeep) => Promise<void>;
+	// Provider for autocomplete functionality
+	autocomplete: AutocompleteProvider;
 };
 
 /**
@@ -39,6 +43,7 @@ export default function App({
 	settingsStore,
 	customOutputFormats,
 	handleSaveTimekeep,
+	autocomplete,
 }: AppProps) {
 	const settings = useStore(settingsStore);
 	const customOutputFormatsState = useStore(customOutputFormats);
@@ -56,7 +61,7 @@ export default function App({
 					) : (
 						<div className="timekeep-container">
 							<TimesheetCounters />
-							<TimesheetStart />
+							<TimesheetStart autocomplete={autocomplete} />
 							<TimesheetTable />
 							<TimesheetExportActions
 								customOutputFormats={customOutputFormatsState}
