@@ -14,6 +14,8 @@ export enum DurationFormat {
 	SHORT = "SHORT",
 	// Short format without units (1.5)
 	DECIMAL = "DECIMAL",
+	// Not formatted at all should return empty string
+	NONE = "NONE",
 }
 
 export enum SortOrder {
@@ -53,9 +55,13 @@ export interface TimekeepSettings {
 	pdfDateFormat: string;
 	pdfRowDateFormat: string;
 	pdfFontFamily: FontFamily;
+	/**@deprecated use {@link sortOrder} instead */
 	reverseSegmentOrder?: boolean;
 	timestampFormat: string;
-	showDecimalHours: boolean;
+	/**@deprecated use {@link secondaryDurationFormat} instead */
+	showDecimalHours?: boolean;
+	primaryDurationFormat: DurationFormat;
+	secondaryDurationFormat: DurationFormat;
 	exportDurationFormat: DurationFormat;
 	formatCopiedJSON: boolean;
 
@@ -76,10 +82,35 @@ export const defaultSettings: TimekeepSettings = {
 	csvTitle: true,
 	csvDelimiter: ",",
 	limitTableSize: true,
-	showDecimalHours: true,
+	primaryDurationFormat: DurationFormat.LONG,
+	secondaryDurationFormat: DurationFormat.SHORT,
 	exportDurationFormat: DurationFormat.SHORT,
 	formatCopiedJSON: false,
 
 	sortOrder: SortOrder.INSERTION,
 	unstartedOrder: UnstartedOrder.LAST,
 };
+
+export function legacySettingsCompatibility(settings: TimekeepSettings): void {
+	// Compatibility with old reverse segment order
+	if (settings.hasOwnProperty('reverseSegmentOrder')) {
+		if (settings.reverseSegmentOrder) {
+			settings.sortOrder = SortOrder.REVERSE_INSERTION;
+		}
+		else {
+			settings.sortOrder = SortOrder.INSERTION;
+		}
+		delete settings.reverseSegmentOrder;
+	}
+
+	// Compatibility with old show decimal hours
+	if (settings.hasOwnProperty('showDecimalHours')) {
+		if (settings.showDecimalHours) {
+			settings.secondaryDurationFormat = DurationFormat.SHORT;
+		}
+		else {
+			settings.secondaryDurationFormat = DurationFormat.NONE;
+		}
+		delete settings.showDecimalHours;
+	}
+}

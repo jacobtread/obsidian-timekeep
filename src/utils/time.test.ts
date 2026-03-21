@@ -119,6 +119,11 @@ describe("format duration with format", () => {
 		[DurationFormat.DECIMAL, 1000 * 60 * 60 * 25.25, "25.25"],
 		[DurationFormat.DECIMAL, 1000 * 60 * 60 * 25.255, "25.25"],
 		[DurationFormat.DECIMAL, 1000 * 60 * 60 * 50.5, "50.50"],
+
+		[DurationFormat.NONE, 1000, ""],
+
+		["ANY" as DurationFormat, 1000, "failed"],
+		["" as DurationFormat, 1000, "failed"],
 	])(
 		'for duration "%s" should expected formatted "%s"',
 		(format, input, expected) => {

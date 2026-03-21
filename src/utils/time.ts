@@ -62,6 +62,10 @@ export function formatDuration(
 			return formatDurationShort(durationMS);
 		case DurationFormat.DECIMAL:
 			return formatDurationDecimal(durationMS);
+		case DurationFormat.NONE:
+			return '';
+		default:
+			return 'failed';
 	}
 }
 

@@ -1,7 +1,7 @@
 import moment, { Moment } from "moment";
 import { Store, createStore } from "@/store";
 import { TimekeepSettingsTab } from "@/settings-tab";
-import { SortOrder, defaultSettings, TimekeepSettings } from "@/settings";
+import { defaultSettings, TimekeepSettings, legacySettingsCompatibility } from "@/settings";
 import {
 	load,
 	replaceTimekeepCodeblock,
@@ -90,11 +90,7 @@ export default class TimekeepPlugin extends Plugin {
 			await this.loadData()
 		);
 
-		// Compatibility with old reverse segment order
-		if (loadedSettings.reverseSegmentOrder) {
-			delete loadedSettings.reverseSegmentOrder;
-			loadedSettings.sortOrder = SortOrder.REVERSE_INSERTION;
-		}
+		legacySettingsCompatibility(loadedSettings);
 
 		// Load saved settings and combine with defaults
 		this.settingsStore.setState(loadedSettings);

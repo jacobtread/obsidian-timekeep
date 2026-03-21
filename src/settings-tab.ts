@@ -55,16 +55,47 @@ export class TimekeepSettingsTab extends PluginSettingTab {
 			});
 
 		new Setting(this.containerEl)
-			.setName("Show decimal hours")
-			.setDesc(
-				"Whether to show the shortened hour only durations under the current and total timers (12h 8m 39s would be shown as 12.14h)"
-			)
-			.addToggle((t) => {
-				t.setValue(settings.showDecimalHours);
+			.setName("Primary duration format")
+			.setDesc("Format to show durations for the current and total timers")
+
+			.addDropdown((t) => {
+				t.addOptions({
+					[DurationFormat.LONG]:
+						"Long - Format including all units (1h 30m 25s)",
+					[DurationFormat.SHORT]:
+						"Short - Format just including hours (1.5h)",
+					[DurationFormat.DECIMAL]:
+						"Decimal - Short format without units (1.5)",
+				});
+				t.setValue(String(settings.primaryDurationFormat));
 				t.onChange((v) => {
 					this.settingsStore.setState((currentValue) => ({
 						...currentValue,
-						showDecimalHours: v,
+						primaryDurationFormat: v as DurationFormat,
+					}));
+				});
+			});
+
+		new Setting(this.containerEl)
+			.setName("Secondary duration format")
+			.setDesc("Format to show a second durations under the current and total timers")
+
+			.addDropdown((t) => {
+				t.addOptions({
+					[DurationFormat.LONG]:
+						"Long - Format including all units (1h 30m 25s)",
+					[DurationFormat.SHORT]:
+						"Short - Format just including hours (1.5h)",
+					[DurationFormat.DECIMAL]:
+						"Decimal - Short format without units (1.5)",
+					[DurationFormat.NONE]:
+						"None - No time is displayed",
+				});
+				t.setValue(String(settings.secondaryDurationFormat));
+				t.onChange((v) => {
+					this.settingsStore.setState((currentValue) => ({
+						...currentValue,
+						secondaryDurationFormat: v as DurationFormat,
 					}));
 				});
 			});
@@ -134,7 +165,7 @@ export class TimekeepSettingsTab extends PluginSettingTab {
 
 		// General Export settings section
 		new Setting(this.containerEl).setName("Export").setHeading();
-		
+
 		new Setting(this.containerEl)
 			.setName("CSV/Markdown duration format")
 			.setDesc("Format to show durations as when copying as CSV/Markdown")
@@ -294,7 +325,7 @@ export class TimekeepSettingsTab extends PluginSettingTab {
 					}));
 				});
 			});
-		
+
 		// CSV Export settings section
 		new Setting(this.containerEl).setName("CSV Export").setHeading();
 
@@ -331,7 +362,7 @@ export class TimekeepSettingsTab extends PluginSettingTab {
 					}));
 				});
 			});
-		
+
 		// JSON Export settings section
 		new Setting(this.containerEl).setName("JSON Export").setHeading();
 
