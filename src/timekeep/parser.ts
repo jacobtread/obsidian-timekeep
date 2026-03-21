@@ -11,7 +11,7 @@ export type LoadSuccess = { success: true; timekeep: Timekeep };
 export type LoadError = { success: false; error: string };
 
 /**
- * Attempts to load a {@see Timekeep} from the provided
+ * Attempts to load a {@link Timekeep} from the provided
  * JSON string
  *
  * @param value The JSON string to load from

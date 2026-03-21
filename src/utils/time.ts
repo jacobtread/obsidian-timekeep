@@ -89,7 +89,7 @@ export function formatDurationLong(durationMS: number): string {
 }
 
 /**
- * Same as {@see formatDurationDecimal} but with a "h" suffix
+ * Same as {@link formatDurationDecimal} but with a "h" suffix
  * indicating its hours
  *
  * @param durationMS The duration to format in milliseconds
