@@ -49,6 +49,7 @@ export function parseEditableTimestamp(
  *
  * @param format The format to use
  * @param durationMS The duration to format
+ * @throws unknown duration format when format is not supported
  * @returns The formatted duration
  */
 export function formatDuration(
@@ -65,7 +66,7 @@ export function formatDuration(
 		case DurationFormat.NONE:
 			return '';
 		default:
-			return 'failed';
+			throw new Error("unknown duration format");
 	}
 }
 

@@ -94,23 +94,13 @@ export const defaultSettings: TimekeepSettings = {
 export function legacySettingsCompatibility(settings: TimekeepSettings): void {
 	// Compatibility with old reverse segment order
 	if (settings.hasOwnProperty('reverseSegmentOrder')) {
-		if (settings.reverseSegmentOrder) {
-			settings.sortOrder = SortOrder.REVERSE_INSERTION;
-		}
-		else {
-			settings.sortOrder = SortOrder.INSERTION;
-		}
+		settings.sortOrder = settings.reverseSegmentOrder ? settings.sortOrder = SortOrder.REVERSE_INSERTION : settings.sortOrder = SortOrder.INSERTION;
 		delete settings.reverseSegmentOrder;
 	}
 
 	// Compatibility with old show decimal hours
 	if (settings.hasOwnProperty('showDecimalHours')) {
-		if (settings.showDecimalHours) {
-			settings.secondaryDurationFormat = DurationFormat.SHORT;
-		}
-		else {
-			settings.secondaryDurationFormat = DurationFormat.NONE;
-		}
+		settings.secondaryDurationFormat = settings.showDecimalHours ? DurationFormat.SHORT : DurationFormat.NONE;
 		delete settings.showDecimalHours;
 	}
 }

@@ -121,15 +121,22 @@ describe("format duration with format", () => {
 		[DurationFormat.DECIMAL, 1000 * 60 * 60 * 50.5, "50.50"],
 
 		[DurationFormat.NONE, 1000, ""],
-
-		["ANY" as DurationFormat, 1000, "failed"],
-		["" as DurationFormat, 1000, "failed"],
 	])(
-		'for duration "%s" should expected formatted "%s"',
+		'for format "%s" with duration "%s" should be expected formatted as "%s"',
 		(format, input, expected) => {
 			const output = formatDuration(format, input);
 
 			expect(output).toBe(expected);
+		}
+	);
+	test.each([
+		["ANY" as DurationFormat, 1000, "unknown duration format"],
+		["" as DurationFormat, 1000, "unknown duration format"],
+	])('for format "%s" with duration "%s" should thrown Error "%s"',
+		(format, input, error) => {
+			expect(() => {
+				formatDuration(format, input);
+			}).toThrow(error);
 		}
 	);
 });
