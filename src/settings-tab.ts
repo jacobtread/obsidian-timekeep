@@ -56,7 +56,9 @@ export class TimekeepSettingsTab extends PluginSettingTab {
 
 		new Setting(this.containerEl)
 			.setName("Primary duration format")
-			.setDesc("Format to show durations for the current and total timers")
+			.setDesc(
+				"Format to show durations for the current and total timers"
+			)
 
 			.addDropdown((t) => {
 				t.addOptions({
@@ -78,7 +80,9 @@ export class TimekeepSettingsTab extends PluginSettingTab {
 
 		new Setting(this.containerEl)
 			.setName("Secondary duration format")
-			.setDesc("Format to show a second durations under the current and total timers")
+			.setDesc(
+				"Format to show a second durations under the current and total timers"
+			)
 
 			.addDropdown((t) => {
 				t.addOptions({
@@ -88,8 +92,7 @@ export class TimekeepSettingsTab extends PluginSettingTab {
 						"Short - Format just including hours (1.5h)",
 					[DurationFormat.DECIMAL]:
 						"Decimal - Short format without units (1.5)",
-					[DurationFormat.NONE]:
-						"None - No time is displayed",
+					[DurationFormat.NONE]: "None - No time is displayed",
 				});
 				t.setValue(String(settings.secondaryDurationFormat));
 				t.onChange((v) => {

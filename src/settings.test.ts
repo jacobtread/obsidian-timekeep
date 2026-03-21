@@ -1,8 +1,13 @@
-import { SortOrder, DurationFormat, defaultSettings, TimekeepSettings, legacySettingsCompatibility } from "./settings";
+import {
+	SortOrder,
+	DurationFormat,
+	defaultSettings,
+	TimekeepSettings,
+	legacySettingsCompatibility,
+} from "./settings";
 
 describe("legacy settings compatibility conversion", () => {
-
-	test('Empty setting', () => {
+	test("Empty setting", () => {
 		// Checking the legacySettingsCompatibility does not add any settings without existing legacy settings
 		const setting = {};
 		const expected = {};
@@ -10,7 +15,7 @@ describe("legacy settings compatibility conversion", () => {
 		expect(setting).toStrictEqual(expected);
 	});
 
-	test('Default setting', () => {
+	test("Default setting", () => {
 		// Checking the default setting does not contain any legacy settings
 		const setting = Object.assign({}, defaultSettings);
 		legacySettingsCompatibility(setting);
@@ -18,21 +23,32 @@ describe("legacy settings compatibility conversion", () => {
 	});
 
 	test.each([
-		[{ reverseSegmentOrder: true, }, { sortOrder: SortOrder.REVERSE_INSERTION, }],
-		[{ reverseSegmentOrder: false, }, { sortOrder: SortOrder.INSERTION, }],
-		[{ showDecimalHours: true, }, { secondaryDurationFormat: DurationFormat.SHORT, }],
-		[{ showDecimalHours: false, }, { secondaryDurationFormat: DurationFormat.NONE, }],
-	])(
-		'for "%s" should expected "%s"',
-		(legacySetting, expected) => {
-			// Check the legacy setting gets replaced with the new setting
-			const partialSetting = Object.assign({}, legacySetting) as TimekeepSettings;
-			legacySettingsCompatibility(partialSetting);
-			expect(partialSetting).toStrictEqual(expected);
+		[
+			{ reverseSegmentOrder: true },
+			{ sortOrder: SortOrder.REVERSE_INSERTION },
+		],
+		[{ reverseSegmentOrder: false }, { sortOrder: SortOrder.INSERTION }],
+		[
+			{ showDecimalHours: true },
+			{ secondaryDurationFormat: DurationFormat.SHORT },
+		],
+		[
+			{ showDecimalHours: false },
+			{ secondaryDurationFormat: DurationFormat.NONE },
+		],
+	])('for "%s" should expected "%s"', (legacySetting, expected) => {
+		// Check the legacy setting gets replaced with the new setting
+		const partialSetting = Object.assign(
+			{},
+			legacySetting
+		) as TimekeepSettings;
+		legacySettingsCompatibility(partialSetting);
+		expect(partialSetting).toStrictEqual(expected);
 
-			const setting = Object.assign({}, defaultSettings, legacySetting);
-			legacySettingsCompatibility(setting);
-			expect(setting).toStrictEqual(Object.assign({}, defaultSettings, expected));
-		}
-	);
+		const setting = Object.assign({}, defaultSettings, legacySetting);
+		legacySettingsCompatibility(setting);
+		expect(setting).toStrictEqual(
+			Object.assign({}, defaultSettings, expected)
+		);
+	});
 });

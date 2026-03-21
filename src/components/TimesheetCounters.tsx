@@ -27,7 +27,10 @@ type TimingState = {
  * @param timekeep The timekeep to get the state for
  * @returns The timing state
  */
-function getTimingState(timekeep: Timekeep, settings: TimekeepSettings): TimingState {
+function getTimingState(
+	timekeep: Timekeep,
+	settings: TimekeepSettings
+): TimingState {
 	const currentTime = moment();
 	const total = getTotalDuration(timekeep.entries, currentTime);
 	const runningEntry = getRunningEntry(timekeep.entries);
@@ -38,7 +41,10 @@ function getTimingState(timekeep: Timekeep, settings: TimekeepSettings): TimingS
 	return {
 		running: runningEntry !== null,
 		currentPrimary: formatDuration(settings.primaryDurationFormat, current),
-		currentSecondary: formatDuration(settings.secondaryDurationFormat, current),
+		currentSecondary: formatDuration(
+			settings.secondaryDurationFormat,
+			current
+		),
 		totalPrimary: formatDuration(settings.primaryDurationFormat, total),
 		totalSecondary: formatDuration(settings.secondaryDurationFormat, total),
 	};
@@ -49,11 +55,14 @@ export default function TimesheetCounters() {
 	const timekeepStore = useTimekeepStore();
 	const timekeep = useStore(timekeepStore);
 
-	const [timing, setTiming] = useState<TimingState>(getTimingState(timekeep, settings));
+	const [timing, setTiming] = useState<TimingState>(
+		getTimingState(timekeep, settings)
+	);
 
 	// Update the current timings every second
 	useEffect(() => {
-		const updateTiming = () => setTiming(getTimingState(timekeep, settings));
+		const updateTiming = () =>
+			setTiming(getTimingState(timekeep, settings));
 
 		// Initial update
 		updateTiming();
@@ -75,7 +84,7 @@ export default function TimesheetCounters() {
 					<span className="timekeep-timer-value">
 						{timing.currentPrimary}
 					</span>
-					{timing.currentSecondary !== '' && (
+					{timing.currentSecondary !== "" && (
 						<span className="timekeep-timer-value-small">
 							{timing.currentSecondary}
 						</span>
@@ -88,7 +97,7 @@ export default function TimesheetCounters() {
 				<span className="timekeep-timer-value">
 					{timing.totalPrimary}
 				</span>
-				{timing.totalSecondary !== '' && (
+				{timing.totalSecondary !== "" && (
 					<span className="timekeep-timer-value-small">
 						{timing.totalSecondary}
 					</span>

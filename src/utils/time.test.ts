@@ -132,7 +132,8 @@ describe("format duration with format", () => {
 	test.each([
 		["ANY" as DurationFormat, 1000, "unknown duration format"],
 		["" as DurationFormat, 1000, "unknown duration format"],
-	])('for format "%s" with duration "%s" should thrown Error "%s"',
+	])(
+		'for format "%s" with duration "%s" should thrown Error "%s"',
 		(format, input, error) => {
 			expect(() => {
 				formatDuration(format, input);

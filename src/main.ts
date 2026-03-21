@@ -1,7 +1,11 @@
 import moment, { Moment } from "moment";
 import { Store, createStore } from "@/store";
 import { TimekeepSettingsTab } from "@/settings-tab";
-import { defaultSettings, TimekeepSettings, legacySettingsCompatibility } from "@/settings";
+import {
+	defaultSettings,
+	TimekeepSettings,
+	legacySettingsCompatibility,
+} from "@/settings";
 import {
 	load,
 	replaceTimekeepCodeblock,

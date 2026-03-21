@@ -64,7 +64,7 @@ export function formatDuration(
 		case DurationFormat.DECIMAL:
 			return formatDurationDecimal(durationMS);
 		case DurationFormat.NONE:
-			return '';
+			return "";
 		default:
 			throw new Error("unknown duration format");
 	}
