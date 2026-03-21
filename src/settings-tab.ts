@@ -22,10 +22,9 @@ export class TimekeepSettingsTab extends PluginSettingTab {
 
 	display(): void {
 		this.containerEl.empty();
-		this.containerEl.createEl("h2", { text: "Settings" });
-
 		const settings = this.settingsStore.getState();
 
+		// General settings section
 		new Setting(this.containerEl)
 			.setName("Timestamp display format")
 			.setDesc(
@@ -54,6 +53,143 @@ export class TimekeepSettingsTab extends PluginSettingTab {
 					}));
 				});
 			});
+
+		new Setting(this.containerEl)
+			.setName("Primary duration format")
+			.setDesc("Format to show durations for the current and total timers")
+
+			.addDropdown((t) => {
+				t.addOptions({
+					[DurationFormat.LONG]:
+						"Long - Format including all units (1h 30m 25s)",
+					[DurationFormat.SHORT]:
+						"Short - Format just including hours (1.5h)",
+					[DurationFormat.DECIMAL]:
+						"Decimal - Short format without units (1.5)",
+				});
+				t.setValue(String(settings.primaryDurationFormat));
+				t.onChange((v) => {
+					this.settingsStore.setState((currentValue) => ({
+						...currentValue,
+						primaryDurationFormat: v as DurationFormat,
+					}));
+				});
+			});
+
+		new Setting(this.containerEl)
+			.setName("Secondary duration format")
+			.setDesc("Format to show a second durations under the current and total timers")
+
+			.addDropdown((t) => {
+				t.addOptions({
+					[DurationFormat.LONG]:
+						"Long - Format including all units (1h 30m 25s)",
+					[DurationFormat.SHORT]:
+						"Short - Format just including hours (1.5h)",
+					[DurationFormat.DECIMAL]:
+						"Decimal - Short format without units (1.5)",
+					[DurationFormat.NONE]:
+						"None - No time is displayed",
+				});
+				t.setValue(String(settings.secondaryDurationFormat));
+				t.onChange((v) => {
+					this.settingsStore.setState((currentValue) => ({
+						...currentValue,
+						secondaryDurationFormat: v as DurationFormat,
+					}));
+				});
+			});
+
+		new Setting(this.containerEl)
+			.setName("Sort order")
+			.setDesc(
+				"How entries should be sorted both when viewing and exporting"
+			)
+
+			.addDropdown((t) => {
+				t.addOptions({
+					[SortOrder.INSERTION]:
+						"Insertion - Don't sort, leave entries in the order they were created",
+					[SortOrder.REVERSE_INSERTION]:
+						"Reverse Insertion - Opposite order to how entries were inserted",
+					[SortOrder.NEWEST_START]:
+						"Newest First - Sort most recently started entries to the start",
+					[SortOrder.OLDEST_START]:
+						"Newest Last - Sort most recently started entries to the end",
+				});
+				t.setValue(String(settings.sortOrder));
+				t.onChange((v) => {
+					this.settingsStore.setState((currentValue) => ({
+						...currentValue,
+						sortOrder: v as SortOrder,
+					}));
+				});
+			});
+
+		new Setting(this.containerEl)
+			.setName("Unstarted sort order")
+			.setDesc(
+				"Where in the order should unstarted entries be put (Only applied when using 'Newest First' or 'Newest Last' sort order)"
+			)
+
+			.addDropdown((t) => {
+				t.addOptions({
+					[UnstartedOrder.FIRST]:
+						"First - Put non started entries at the top of the list",
+					[UnstartedOrder.LAST]:
+						"Last - Put non started entries at the bottom of the list",
+				});
+				t.setValue(String(settings.unstartedOrder));
+				t.onChange((v) => {
+					this.settingsStore.setState((currentValue) => ({
+						...currentValue,
+						unstartedOrder: v as UnstartedOrder,
+					}));
+				});
+			});
+
+		new Setting(this.containerEl)
+			.setName("Limit table height")
+			.setDesc(
+				"Whether to limit the height of the table, will clamp the height and make the table scrollable"
+			)
+			.addToggle((t) => {
+				t.setValue(settings.limitTableSize);
+				t.onChange((v) => {
+					this.settingsStore.setState((currentValue) => ({
+						...currentValue,
+						limitTableSize: v,
+					}));
+				});
+			});
+
+		// General Export settings section
+		new Setting(this.containerEl).setName("Export").setHeading();
+
+		new Setting(this.containerEl)
+			.setName("CSV/Markdown duration format")
+			.setDesc("Format to show durations as when copying as CSV/Markdown")
+
+			.addDropdown((t) => {
+				t.addOptions({
+					[DurationFormat.LONG]:
+						"Long - Format including all units (1h 30m 25s)",
+					[DurationFormat.SHORT]:
+						"Short - Format just including hours (1.5h)",
+					[DurationFormat.DECIMAL]:
+						"Decimal - Short format without units (1.5)",
+				});
+				t.setValue(String(settings.exportDurationFormat));
+				t.onChange((v) => {
+					this.settingsStore.setState((currentValue) => ({
+						...currentValue,
+						exportDurationFormat: v as DurationFormat,
+					}));
+				});
+			});
+
+		// PDF Export settings section
+		new Setting(this.containerEl).setName("PDF Export").setHeading();
 
 		new Setting(this.containerEl)
 			.setName("PDF title")
@@ -190,6 +326,9 @@ export class TimekeepSettingsTab extends PluginSettingTab {
 				});
 			});
 
+		// CSV Export settings section
+		new Setting(this.containerEl).setName("CSV Export").setHeading();
+
 		new Setting(this.containerEl)
 			.setName("CSV heading row")
 			.setDesc(
@@ -224,105 +363,8 @@ export class TimekeepSettingsTab extends PluginSettingTab {
 				});
 			});
 
-		new Setting(this.containerEl)
-			.setName("Show decimal hours")
-			.setDesc(
-				"Whether to show the shortened hour only durations under the current and total timers (12h 8m 39s would be shown as 12.14h)"
-			)
-			.addToggle((t) => {
-				t.setValue(settings.showDecimalHours);
-				t.onChange((v) => {
-					this.settingsStore.setState((currentValue) => ({
-						...currentValue,
-						showDecimalHours: v,
-					}));
-				});
-			});
-
-		new Setting(this.containerEl)
-			.setName("Sort order")
-			.setDesc(
-				"How entries should be sorted both when viewing and exporting"
-			)
-
-			.addDropdown((t) => {
-				t.addOptions({
-					[SortOrder.INSERTION]:
-						"Insertion - Don't sort, leave entries in the order they were created",
-					[SortOrder.REVERSE_INSERTION]:
-						"Reverse Insertion - Opposite order to how entries were inserted",
-					[SortOrder.NEWEST_START]:
-						"Newest First - Sort most recently started entries to the start",
-					[SortOrder.OLDEST_START]:
-						"Newest Last - Sort most recently started entries to the end",
-				});
-				t.setValue(String(settings.sortOrder));
-				t.onChange((v) => {
-					this.settingsStore.setState((currentValue) => ({
-						...currentValue,
-						sortOrder: v as SortOrder,
-					}));
-				});
-			});
-
-		new Setting(this.containerEl)
-			.setName("Unstarted sort order")
-			.setDesc(
-				"Where in the order should unstarted entries be put (Only applied when using 'Newest First' or 'Newest Last' sort order)"
-			)
-
-			.addDropdown((t) => {
-				t.addOptions({
-					[UnstartedOrder.FIRST]:
-						"First - Put non started entries at the top of the list",
-					[UnstartedOrder.LAST]:
-						"Last - Put non started entries at the bottom of the list",
-				});
-				t.setValue(String(settings.unstartedOrder));
-				t.onChange((v) => {
-					this.settingsStore.setState((currentValue) => ({
-						...currentValue,
-						unstartedOrder: v as UnstartedOrder,
-					}));
-				});
-			});
-
-		new Setting(this.containerEl)
-			.setName("Limit table height")
-			.setDesc(
-				"Whether to limit the height of the table, will clamp the height and make the table scrollable"
-			)
-			.addToggle((t) => {
-				t.setValue(settings.limitTableSize);
-				t.onChange((v) => {
-					this.settingsStore.setState((currentValue) => ({
-						...currentValue,
-						limitTableSize: v,
-					}));
-				});
-			});
-
-		new Setting(this.containerEl)
-			.setName("CSV/Markdown duration format")
-			.setDesc("Format to show durations as when copying as CSV/Markdown")
-
-			.addDropdown((t) => {
-				t.addOptions({
-					[DurationFormat.LONG]:
-						"Long - Format including all units (1h 30m 25s)",
-					[DurationFormat.SHORT]:
-						"Short - Format just including hours (1.5h)",
-					[DurationFormat.DECIMAL]:
-						"Decimal - Short format without units (1.5)",
-				});
-				t.setValue(String(settings.exportDurationFormat));
-				t.onChange((v) => {
-					this.settingsStore.setState((currentValue) => ({
-						...currentValue,
-						exportDurationFormat: v as DurationFormat,
-					}));
-				});
-			});
+		// JSON Export settings section
+		new Setting(this.containerEl).setName("JSON Export").setHeading();
 
 		new Setting(this.containerEl)
 			.setName("Format copied JSON")

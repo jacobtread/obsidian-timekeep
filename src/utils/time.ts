@@ -49,6 +49,7 @@ export function parseEditableTimestamp(
  *
  * @param format The format to use
  * @param durationMS The duration to format
+ * @throws unknown duration format when format is not supported
  * @returns The formatted duration
  */
 export function formatDuration(
@@ -62,6 +63,10 @@ export function formatDuration(
 			return formatDurationShort(durationMS);
 		case DurationFormat.DECIMAL:
 			return formatDurationDecimal(durationMS);
+		case DurationFormat.NONE:
+			return '';
+		default:
+			throw new Error("unknown duration format");
 	}
 }
 
@@ -85,7 +90,7 @@ export function formatDurationLong(durationMS: number): string {
 }
 
 /**
- * Same as {@see formatDurationDecimal} but with a "h" suffix
+ * Same as {@link formatDurationDecimal} but with a "h" suffix
  * indicating its hours
  *
  * @param durationMS The duration to format in milliseconds

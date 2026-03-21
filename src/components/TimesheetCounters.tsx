@@ -1,10 +1,11 @@
 import moment from "moment";
 import { useStore } from "@/store";
+import { formatDuration } from "@/utils";
 import { Timekeep } from "@/timekeep/schema";
+import { TimekeepSettings } from "@/settings";
 import React, { useState, useEffect } from "react";
 import { useSettings } from "@/contexts/use-settings-context";
 import { useTimekeepStore } from "@/contexts/use-timekeep-store";
-import { formatDurationLong, formatDurationShort } from "@/utils";
 import {
 	isKeepRunning,
 	getRunningEntry,
@@ -14,10 +15,10 @@ import {
 
 type TimingState = {
 	running: boolean;
-	current: string;
-	currentShort: string;
-	total: string;
-	totalShort: string;
+	currentPrimary: string;
+	currentSecondary: string;
+	totalPrimary: string;
+	totalSecondary: string;
 };
 
 /**
@@ -26,7 +27,7 @@ type TimingState = {
  * @param timekeep The timekeep to get the state for
  * @returns The timing state
  */
-function getTimingState(timekeep: Timekeep): TimingState {
+function getTimingState(timekeep: Timekeep, settings: TimekeepSettings): TimingState {
 	const currentTime = moment();
 	const total = getTotalDuration(timekeep.entries, currentTime);
 	const runningEntry = getRunningEntry(timekeep.entries);
@@ -36,10 +37,10 @@ function getTimingState(timekeep: Timekeep): TimingState {
 
 	return {
 		running: runningEntry !== null,
-		current: formatDurationLong(current),
-		currentShort: formatDurationShort(current),
-		total: formatDurationLong(total),
-		totalShort: formatDurationShort(total),
+		currentPrimary: formatDuration(settings.primaryDurationFormat, current),
+		currentSecondary: formatDuration(settings.secondaryDurationFormat, current),
+		totalPrimary: formatDuration(settings.primaryDurationFormat, total),
+		totalSecondary: formatDuration(settings.secondaryDurationFormat, total),
 	};
 }
 
@@ -48,11 +49,11 @@ export default function TimesheetCounters() {
 	const timekeepStore = useTimekeepStore();
 	const timekeep = useStore(timekeepStore);
 
-	const [timing, setTiming] = useState<TimingState>(getTimingState(timekeep));
+	const [timing, setTiming] = useState<TimingState>(getTimingState(timekeep, settings));
 
 	// Update the current timings every second
 	useEffect(() => {
-		const updateTiming = () => setTiming(getTimingState(timekeep));
+		const updateTiming = () => setTiming(getTimingState(timekeep, settings));
 
 		// Initial update
 		updateTiming();
@@ -65,18 +66,18 @@ export default function TimesheetCounters() {
 				clearInterval(intervalID);
 			};
 		}
-	}, [timekeep]);
+	}, [timekeep, settings]);
 
 	return (
 		<div className="timekeep-timers">
 			{timing.running && (
 				<div className="timekeep-timer">
 					<span className="timekeep-timer-value">
-						{timing.current}
+						{timing.currentPrimary}
 					</span>
-					{settings.showDecimalHours && (
+					{timing.currentSecondary !== '' && (
 						<span className="timekeep-timer-value-small">
-							{timing.currentShort}
+							{timing.currentSecondary}
 						</span>
 					)}
 					<span>Current</span>
@@ -84,10 +85,12 @@ export default function TimesheetCounters() {
 			)}
 
 			<div className="timekeep-timer">
-				<span className="timekeep-timer-value">{timing.total}</span>
-				{settings.showDecimalHours && (
+				<span className="timekeep-timer-value">
+					{timing.totalPrimary}
+				</span>
+				{timing.totalSecondary !== '' && (
 					<span className="timekeep-timer-value-small">
-						{timing.totalShort}
+						{timing.totalSecondary}
 					</span>
 				)}
 				<span>Total</span>
