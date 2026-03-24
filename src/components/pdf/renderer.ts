@@ -210,6 +210,7 @@ function createPdfTable(
     return {
         table: {
             headerRows: 1,
+            widths: ["*", 70, 70, 50],
             body: [
                 [
                     {
@@ -220,13 +221,13 @@ function createPdfTable(
                     {
                         text: "Start Time",
                         style: ["tableCell", "tableCellHeader"],
-                        alignment: "right",
+                        alignment: "center",
                         border: [false, false, false, true],
                     },
                     {
                         text: "End Time",
                         style: ["tableCell", "tableCellHeader"],
-                        alignment: "right",
+                        alignment: "center",
                         border: [false, false, false, true],
                     },
                     {
@@ -276,13 +277,15 @@ function createPdfTable(
             hLineColor: function (rowIndex, node, columnIndex) {
                 return "#ececec";
             },
-            paddingBottom: () => 5,
-            paddingLeft: () => 5,
-            paddingTop: () => 5,
-            paddingRight: () => 5,
+            paddingBottom: cellPadding,
+            paddingLeft: cellPadding,
+            paddingTop: cellPadding,
+            paddingRight: cellPadding,
         },
     };
 }
+
+const cellPadding = () => 8;
 
 type TableEntryRow = {
     row: TableCell[];
@@ -358,14 +361,12 @@ function createTableEntryCells(
         {
             text: startTime,
             style: ["tableCell", "tableCellTime"],
-            alignment: "right",
-            border: [false, false, false, true],
+            alignment: "center",
         },
         {
             text: endTime,
             style: ["tableCell", "tableCellTime"],
-            alignment: "right",
-            border: [false, false, false, true],
+            alignment: "center",
         },
         {
             text: durationFormatted,
