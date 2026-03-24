@@ -38,9 +38,8 @@ const createCodeBlock = (
 
 describe("extracting code blocks", () => {
 	it("should extract codeblock contents", async () => {
-		const { text, inputTimekeep1, inputTimekeep2 } = await import(
-			"./__fixtures__/extracting/codeblockContents"
-		);
+		const { text, inputTimekeep1, inputTimekeep2 } =
+			await import("./__fixtures__/extracting/codeblockContents");
 
 		const output = extractTimekeepCodeblocks(text);
 
@@ -54,9 +53,8 @@ describe("extracting code blocks", () => {
 	});
 
 	it("should ignore codeblocks that are not closed", async () => {
-		const { text, inputTimekeep1 } = await import(
-			"./__fixtures__/extracting/unclosedCodeBlock"
-		);
+		const { text, inputTimekeep1 } =
+			await import("./__fixtures__/extracting/unclosedCodeBlock");
 		const output = extractTimekeepCodeblocks(text);
 
 		expect(stripTimekeepRuntimeData(output[0])).toStrictEqual(

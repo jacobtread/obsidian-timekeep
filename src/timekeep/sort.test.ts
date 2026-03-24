@@ -9,9 +9,8 @@ import { getEntriesSorted } from "./sort";
 
 describe("getEntriesSorted", () => {
 	it("should be in reverse order", async () => {
-		const { input, expected } = await import(
-			"./__fixtures__/ordering/reverseOrder"
-		);
+		const { input, expected } =
+			await import("./__fixtures__/ordering/reverseOrder");
 
 		const settings: TimekeepSettings = defaultSettings;
 		settings.sortOrder = SortOrder.REVERSE_INSERTION;
@@ -21,9 +20,8 @@ describe("getEntriesSorted", () => {
 	});
 
 	it("should be in newest first order", async () => {
-		const { input, expected } = await import(
-			"./__fixtures__/ordering/newestFirstOrder"
-		);
+		const { input, expected } =
+			await import("./__fixtures__/ordering/newestFirstOrder");
 
 		const settings: TimekeepSettings = defaultSettings;
 		settings.sortOrder = SortOrder.NEWEST_START;
@@ -33,9 +31,8 @@ describe("getEntriesSorted", () => {
 	});
 
 	it("should be in newest last order", async () => {
-		const { input, expected } = await import(
-			"./__fixtures__/ordering/newestLastOrder"
-		);
+		const { input, expected } =
+			await import("./__fixtures__/ordering/newestLastOrder");
 
 		const settings: TimekeepSettings = defaultSettings;
 		settings.sortOrder = SortOrder.OLDEST_START;
@@ -45,9 +42,8 @@ describe("getEntriesSorted", () => {
 	});
 
 	it("should be in newest last order with nulls first", async () => {
-		const { input, expected } = await import(
-			"./__fixtures__/ordering/newestLastNullsFirst"
-		);
+		const { input, expected } =
+			await import("./__fixtures__/ordering/newestLastNullsFirst");
 
 		const settings: TimekeepSettings = defaultSettings;
 		settings.sortOrder = SortOrder.OLDEST_START;
@@ -58,9 +54,8 @@ describe("getEntriesSorted", () => {
 	});
 
 	it("order should not change", async () => {
-		const { input, expected } = await import(
-			"./__fixtures__/ordering/orderShouldNotChange"
-		);
+		const { input, expected } =
+			await import("./__fixtures__/ordering/orderShouldNotChange");
 
 		const settings: TimekeepSettings = defaultSettings;
 		settings.sortOrder = SortOrder.INSERTION;
