@@ -3,9 +3,8 @@ import { startNewEntry, startNewNestedEntry } from "./start";
 
 describe("startNewEntry", () => {
 	it("starting a new entry should stop any running entries", async () => {
-		const { currentTime, stopped, name, input, expected } = await import(
-			"./__fixtures__/manipulating/start_entry/startShouldStopRunning"
-		);
+		const { currentTime, stopped, name, input, expected } =
+			await import("./__fixtures__/manipulating/start_entry/startShouldStopRunning");
 
 		const output = startNewEntry(name, currentTime, input);
 		const stoppedEntry = output.find((entry) => entry.id === stopped);
@@ -19,9 +18,8 @@ describe("startNewEntry", () => {
 	});
 
 	it("starting a new entry should add a new entry", async () => {
-		const { currentTime, name, input, expected } = await import(
-			"./__fixtures__/manipulating/start_entry/startShouldStopRunning"
-		);
+		const { currentTime, name, input, expected } =
+			await import("./__fixtures__/manipulating/start_entry/startShouldStopRunning");
 
 		const output = startNewEntry(name, currentTime, input);
 		expect(stripEntriesRuntimeData(output)).toEqual(
@@ -32,9 +30,8 @@ describe("startNewEntry", () => {
 
 describe("startNewNestedEntry", () => {
 	it("starting a new entry should stop any running entries", async () => {
-		const { currentTime, targetEntry, input, expected } = await import(
-			"./__fixtures__/manipulating/start_entry/startNotStartedEntry"
-		);
+		const { currentTime, targetEntry, input, expected } =
+			await import("./__fixtures__/manipulating/start_entry/startNotStartedEntry");
 
 		const output = startNewNestedEntry(currentTime, targetEntry.id, input);
 		expect(stripEntriesRuntimeData(output)).toEqual(
@@ -43,9 +40,8 @@ describe("startNewNestedEntry", () => {
 	});
 
 	it("starting a new entry within a folder should create a subentry", async () => {
-		const { currentTime, targetEntry, input, expected } = await import(
-			"./__fixtures__/manipulating/start_entry/startNestedFolderEntry"
-		);
+		const { currentTime, targetEntry, input, expected } =
+			await import("./__fixtures__/manipulating/start_entry/startNestedFolderEntry");
 
 		const output = startNewNestedEntry(currentTime, targetEntry.id, input);
 		expect(stripEntriesRuntimeData(output)).toEqual(
@@ -54,9 +50,8 @@ describe("startNewNestedEntry", () => {
 	});
 
 	it("starting a new entry should stop any running entries", async () => {
-		const { currentTime, targetEntry, input, expected } = await import(
-			"./__fixtures__/manipulating/start_entry/startNotStartedEntry"
-		);
+		const { currentTime, targetEntry, input, expected } =
+			await import("./__fixtures__/manipulating/start_entry/startNotStartedEntry");
 
 		const output = startNewNestedEntry(currentTime, targetEntry.id, input);
 		expect(stripEntriesRuntimeData(output)).toEqual(
@@ -65,9 +60,8 @@ describe("startNewNestedEntry", () => {
 	});
 
 	it("starting a new entry should stop any running entries", async () => {
-		const { currentTime, targetEntryId, input, expected } = await import(
-			"./__fixtures__/manipulating/start_entry/startNestedNonExistent"
-		);
+		const { currentTime, targetEntryId, input, expected } =
+			await import("./__fixtures__/manipulating/start_entry/startNestedNonExistent");
 
 		const output = startNewNestedEntry(currentTime, targetEntryId, input);
 		expect(stripEntriesRuntimeData(output)).toEqual(
@@ -77,9 +71,7 @@ describe("startNewNestedEntry", () => {
 
 	it("starting a new entry should stop any running entries", async () => {
 		const { currentTime, stopped, targetEntry, input, expected } =
-			await import(
-				"./__fixtures__/manipulating/start_entry/startNestedShouldStopRunning"
-			);
+			await import("./__fixtures__/manipulating/start_entry/startNestedShouldStopRunning");
 
 		const output = startNewNestedEntry(currentTime, targetEntry.id, input);
 
@@ -97,9 +89,8 @@ describe("startNewNestedEntry", () => {
 	});
 
 	it("starting a new entry should add a new entry", async () => {
-		const { currentTime, targetEntry, input, expected } = await import(
-			"./__fixtures__/manipulating/start_entry/startNestedShouldStopRunning"
-		);
+		const { currentTime, targetEntry, input, expected } =
+			await import("./__fixtures__/manipulating/start_entry/startNestedShouldStopRunning");
 
 		const output = startNewNestedEntry(currentTime, targetEntry.id, input);
 		expect(stripEntriesRuntimeData(output)).toEqual(

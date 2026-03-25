@@ -27,9 +27,8 @@ describe("createEntry", () => {
 
 describe("withEntry", () => {
 	it("should add new entry to entries", async () => {
-		const { input, currentTime, expected } = await import(
-			"./__fixtures__/manipulating/adding_entry/addNewEntry"
-		);
+		const { input, currentTime, expected } =
+			await import("./__fixtures__/manipulating/adding_entry/addNewEntry");
 		const output = withEntry(input, "New Entry", currentTime);
 		expect(stripEntriesRuntimeData(output)).toEqual(
 			stripEntriesRuntimeData(expected)
@@ -37,9 +36,8 @@ describe("withEntry", () => {
 	});
 
 	it("should generate block name when empty", async () => {
-		const { input, currentTime, expected } = await import(
-			"./__fixtures__/manipulating/adding_entry/addEmptyBlockName"
-		);
+		const { input, currentTime, expected } =
+			await import("./__fixtures__/manipulating/adding_entry/addEmptyBlockName");
 
 		const output1 = withEntry(input, "", currentTime);
 		expect(stripEntriesRuntimeData(output1)).toEqual(
@@ -54,9 +52,8 @@ describe("withEntry", () => {
 	});
 
 	it("should maintain existing entries when adding to a list", async () => {
-		const { input, currentTime, expected } = await import(
-			"./__fixtures__/manipulating/adding_entry/addEntryToList"
-		);
+		const { input, currentTime, expected } =
+			await import("./__fixtures__/manipulating/adding_entry/addEntryToList");
 
 		const output = withEntry(input, "New Test Entry", currentTime);
 		expect(stripEntriesRuntimeData(output)).toEqual(
@@ -67,9 +64,8 @@ describe("withEntry", () => {
 
 describe("withSubEntry", () => {
 	it("adding first entry should convert to group", async () => {
-		const { input, currentTime, expected } = await import(
-			"./__fixtures__/manipulating/adding_sub_entry/addConvertToGroup"
-		);
+		const { input, currentTime, expected } =
+			await import("./__fixtures__/manipulating/adding_sub_entry/addConvertToGroup");
 		const output = withSubEntry(input, "New Entry", currentTime);
 		expect(stripEntryRuntimeData(output)).toEqual(
 			stripEntryRuntimeData(expected)
@@ -77,9 +73,8 @@ describe("withSubEntry", () => {
 	});
 
 	it("adding first entry for folder should populate subentries", async () => {
-		const { input, currentTime, expected } = await import(
-			"./__fixtures__/manipulating/adding_sub_entry/addFolderPopulateSubEntries"
-		);
+		const { input, currentTime, expected } =
+			await import("./__fixtures__/manipulating/adding_sub_entry/addFolderPopulateSubEntries");
 		const output = withSubEntry(input, "New Entry", currentTime);
 		expect(stripEntryRuntimeData(output)).toEqual(
 			stripEntryRuntimeData(expected)
@@ -87,9 +82,8 @@ describe("withSubEntry", () => {
 	});
 
 	it("adding first entry for folder should extend subentries", async () => {
-		const { input, currentTime, expected } = await import(
-			"./__fixtures__/manipulating/adding_sub_entry/addFolderExtendSubEntries"
-		);
+		const { input, currentTime, expected } =
+			await import("./__fixtures__/manipulating/adding_sub_entry/addFolderExtendSubEntries");
 		const output = withSubEntry(input, "New Entry 2", currentTime);
 		expect(stripEntryRuntimeData(output)).toEqual(
 			stripEntryRuntimeData(expected)
@@ -97,9 +91,8 @@ describe("withSubEntry", () => {
 	});
 
 	it("adding to group should extend sub entries", async () => {
-		const { input, currentTime, expected } = await import(
-			"./__fixtures__/manipulating/adding_sub_entry/addToGroupExtendSubEntries"
-		);
+		const { input, currentTime, expected } =
+			await import("./__fixtures__/manipulating/adding_sub_entry/addToGroupExtendSubEntries");
 
 		const output = withSubEntry(input, "New Entry", currentTime);
 		expect(stripEntryRuntimeData(output)).toEqual(
@@ -108,9 +101,8 @@ describe("withSubEntry", () => {
 	});
 
 	it("empty name should generate a part name (single)", async () => {
-		const { input, currentTime, expected } = await import(
-			"./__fixtures__/manipulating/adding_sub_entry/emptyNameCreatePartNameSingle"
-		);
+		const { input, currentTime, expected } =
+			await import("./__fixtures__/manipulating/adding_sub_entry/emptyNameCreatePartNameSingle");
 
 		const output = withSubEntry(input, "", currentTime);
 		expect(stripEntryRuntimeData(output)).toEqual(
@@ -119,9 +111,8 @@ describe("withSubEntry", () => {
 	});
 
 	it("empty name should generate a part name (group)", async () => {
-		const { input, currentTime, expected } = await import(
-			"./__fixtures__/manipulating/adding_sub_entry/emptyNameCreatePartNameGroup"
-		);
+		const { input, currentTime, expected } =
+			await import("./__fixtures__/manipulating/adding_sub_entry/emptyNameCreatePartNameGroup");
 
 		const output = withSubEntry(input, "", currentTime);
 		expect(stripEntryRuntimeData(output)).toEqual(
