@@ -1,18 +1,43 @@
 import moment from "moment";
-import * as path from "path";
-import { existsSync } from "fs";
-import { Notice, Platform } from "obsidian";
+import { App, Notice, Platform } from "obsidian";
 import { Timekeep } from "@/timekeep/schema";
-import { mkdir, writeFile } from "fs/promises";
 import { TimekeepSettings, PdfExportBehavior } from "@/settings";
+import { createPdfExport, createPdfExportBlob } from "@/components/pdf/renderer";
+import { pickFileName } from "@/utils/file-name-prompt-modal";
 
-export async function exportPdf(timekeep: Timekeep, settings: TimekeepSettings) {
-	// Pdf exports don't work in mobile mode
-	if (Platform.isMobileApp) return;
+export async function exportPdf(app: App, timekeep: Timekeep, settings: TimekeepSettings) {
+	if (Platform.isMobileApp) {
+		return exportPdfMobile(app, timekeep, settings);
+	} else {
+		return exportPdfDesktop(timekeep, settings);
+	}
+}
 
+async function exportPdfMobile(app: App, timekeep: Timekeep, settings: TimekeepSettings) {
+	const currentTime = moment();
+	const blob = await createPdfExportBlob(timekeep, settings, currentTime);
+	const buffer = await blob.arrayBuffer();
+	const fileName = await pickFileName(app);
+
+	if (!fileName) return;
+
+	const folder = settings.pdfMobileExportsFolder;
+	const path = `${folder}/${fileName}`;
+
+	if (!app.vault.getAbstractFileByPath(folder)) {
+		await app.vault.createFolder(folder);
+	}
+
+	await app.vault.createBinary(path, buffer);
+	new Notice("Saved exported PDF");
+}
+
+async function exportPdfDesktop(timekeep: Timekeep, settings: TimekeepSettings) {
 	// Dynamic imports to prevent them from causing errors when loaded (Because they are unsupported on mobile)
-	const electron = require("electron");
-	const pdfModule = require("@/components/pdf");
+	const electron = await import("electron");
+	const { mkdir, writeFile } = await import("fs/promises");
+	const { existsSync } = await import("fs");
+	const path = await import("path");
 
 	const currentTime = moment();
 
@@ -33,7 +58,7 @@ export async function exportPdf(timekeep: Timekeep, settings: TimekeepSettings) 
 		return;
 	}
 
-	const buffer = await pdfModule.createPdf(timekeep, settings, currentTime);
+	const buffer = await createPdfExport(timekeep, settings, currentTime);
 
 	const fullOutputPath = path.normalize(outputPath);
 	const fullOutputDir = path.dirname(fullOutputPath);

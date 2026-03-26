@@ -55,6 +55,8 @@ export interface TimekeepSettings {
 	pdfDateFormat: string;
 	pdfRowDateFormat: string;
 	pdfFontFamily: FontFamily;
+	pdfMobileExportsFolder: string;
+
 	/**@deprecated use {@link sortOrder} instead */
 	reverseSegmentOrder?: boolean;
 	timestampFormat: string;
@@ -77,6 +79,7 @@ export const defaultSettings: TimekeepSettings = {
 	pdfDateFormat: "DD/MM/YYYY",
 	pdfRowDateFormat: "DD/MM/YYYY HH:mm",
 	pdfFontFamily: FontFamily.ROBOTO,
+	pdfMobileExportsFolder: "TimekeepExports",
 	timestampFormat: "YY-MM-DD HH:mm:ss",
 	editableTimestampFormat: "YYYY-MM-DD HH:mm:ss",
 	csvTitle: true,

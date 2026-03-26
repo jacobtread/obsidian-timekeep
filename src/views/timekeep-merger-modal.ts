@@ -106,7 +106,7 @@ export class TimekeepMergerModal extends Modal {
 
 				if (this.exportPdf) {
 					// Export a pdf
-					void exportPdf(timekeep, this.settings.getState());
+					void exportPdf(this.app, timekeep, this.settings.getState());
 				} else {
 					// Insert into editor
 					const editor = this.app.workspace.activeEditor?.editor;

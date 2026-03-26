@@ -11,7 +11,7 @@ export default defineConfig((env) => ({
 		outDir: "dist",
 		sourcemap: env.mode === "production" ? false : "inline",
 		target: "es2018",
-		minify: true,
+		minify: env.mode === "production",
 		lib: {
 			entry: "src/main.ts",
 			formats: ["cjs"],

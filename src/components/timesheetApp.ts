@@ -71,6 +71,7 @@ export class TimesheetApp extends Component {
 
 		const exportActions = new TimesheetExportActions(
 			wrapperEl,
+			this.app,
 			this.timekeep,
 			this.settings,
 			this.customOutputFormats

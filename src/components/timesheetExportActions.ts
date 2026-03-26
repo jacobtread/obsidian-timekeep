@@ -2,7 +2,7 @@ import { CustomOutputFormat } from "@/output";
 import { TimekeepSettings } from "@/settings";
 import { Store } from "@/store";
 import { stripTimekeepRuntimeData, Timekeep } from "@/timekeep/schema";
-import { Component, Notice, Platform } from "obsidian";
+import { type App, Component, Notice } from "obsidian";
 import moment from "moment";
 import { createCSV, createMarkdownTable } from "@/export";
 import { exportPdf } from "@/export/pdf";
@@ -14,6 +14,8 @@ export class TimesheetExportActions extends Component {
 	/** Parent container element */
 	#containerEl: HTMLElement;
 
+	/** Access to the app instance */
+	app: App;
 	/** Access to the timekeep */
 	timekeep: Store<Timekeep>;
 	/** Access to the timekeep settings */
@@ -28,6 +30,7 @@ export class TimesheetExportActions extends Component {
 
 	constructor(
 		containerEl: HTMLElement,
+		app: App,
 		timekeep: Store<Timekeep>,
 		settings: Store<TimekeepSettings>,
 		customOutputFormats: Store<Record<string, CustomOutputFormat>>
@@ -36,6 +39,7 @@ export class TimesheetExportActions extends Component {
 
 		this.#containerEl = containerEl;
 
+		this.app = app;
 		this.timekeep = timekeep;
 		this.settings = settings;
 		this.customOutputFormats = customOutputFormats;
@@ -67,18 +71,9 @@ export class TimesheetExportActions extends Component {
 		});
 
 		this.registerDomEvent(copyMarkdownButton, "click", this.onCopyMarkdown.bind(this));
-
 		this.registerDomEvent(copyCSVButton, "click", this.onCopyCSV.bind(this));
-
 		this.registerDomEvent(copyJSONButton, "click", this.onCopyJSON.bind(this));
-
 		this.registerDomEvent(savePdfButton, "click", this.onSavePDF.bind(this));
-
-		// Disable and hide the save as PDF button on mobile
-		if (Platform.isMobileApp) {
-			savePdfButton.disabled = true;
-			savePdfButton.hidden = true;
-		}
 
 		const createCustomButtons = this.createCustomOutputFormatButtons.bind(this);
 		const unsubscribeCustomFormats = this.customOutputFormats.subscribe(createCustomButtons);
@@ -170,6 +165,6 @@ export class TimesheetExportActions extends Component {
 		const timekeep = this.timekeep.getState();
 		const settings = this.settings.getState();
 
-		void exportPdf(timekeep, settings);
+		void exportPdf(this.app, timekeep, settings);
 	}
 }

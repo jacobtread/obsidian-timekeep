@@ -304,6 +304,28 @@ export class TimekeepSettingsTab extends PluginSettingTab {
 				});
 			});
 
+		new Setting(this.containerEl)
+			.setName("Pdf mobile exports folder")
+			.setDesc(
+				createFragment((f) => {
+					f.createSpan({
+						text: "Where to store exported PDF files on mobile devices (The regular prompt doesn't work here)",
+					});
+				})
+			)
+			.addText((t) => {
+				t.setValue(String(settings.pdfMobileExportsFolder));
+				t.onChange((v) => {
+					// Only use a custom format if the value is not blank
+					const newExportsFolder = v.length ? v : defaultSettings.pdfMobileExportsFolder;
+
+					this.settingsStore.setState((currentValue) => ({
+						...currentValue,
+						pdfMobileExportsFolder: newExportsFolder,
+					}));
+				});
+			});
+
 		// CSV Export settings section
 		new Setting(this.containerEl).setName("CSV Export").setHeading();
 

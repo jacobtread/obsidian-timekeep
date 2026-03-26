@@ -17,7 +17,6 @@ import RubikBold from "@/fonts/Rubik-Bold.ttf";
 import RobotoRegular from "@/fonts/Roboto-Regular.ttf";
 import { getEntryDuration, getTotalDuration } from "@/timekeep";
 import { formatDurationLong, formatDurationShort, formatPdfDate, formatPdfRowDate } from "@/utils";
-import { Readable } from "stream";
 
 const fonts: TFontDictionary = {
 	Roboto: {
@@ -48,10 +47,21 @@ export async function createPdfExport(
 	settings: TimekeepSettings,
 	currentTime: Moment
 ): Promise<NodeJS.ReadableStream> {
+	const { Readable } = await import("stream");
 	const definition = createPdfDefinition(timekeep, settings, currentTime);
 	const pdf = pdfMake.createPdf(definition, {});
 	const stream = await pdf.getBuffer();
 	return Readable.from([stream]);
+}
+
+export async function createPdfExportBlob(
+	timekeep: Timekeep,
+	settings: TimekeepSettings,
+	currentTime: Moment
+): Promise<Blob> {
+	const definition = createPdfDefinition(timekeep, settings, currentTime);
+	const pdf = pdfMake.createPdf(definition, {});
+	return await pdf.getBlob();
 }
 
 export function createPdfDefinition(
