@@ -1,11 +1,8 @@
-import App from "@/App";
 import moment from "moment";
-import React, { StrictMode } from "react";
 import { Store, createStore } from "@/store";
 import { App as ObsidianApp } from "obsidian";
 import { TimekeepSettings } from "@/settings";
 import { CustomOutputFormat } from "@/output";
-import { Root, createRoot } from "react-dom/client";
 import { Timekeep, stripTimekeepRuntimeData } from "@/timekeep/schema";
 import { LoadResult, replaceTimekeepCodeblock } from "@/timekeep/parser";
 import {
@@ -14,6 +11,8 @@ import {
 	MarkdownRenderChild,
 	MarkdownPostProcessorContext,
 } from "obsidian";
+import { Timesheet } from "@/components/timesheet";
+import { TimesheetLoadError } from "@/components/timesheetLoadError";
 
 export class TimekeepMarkdownView extends MarkdownRenderChild {
 	// Obsidian app instance
@@ -26,8 +25,9 @@ export class TimekeepMarkdownView extends MarkdownRenderChild {
 	context: MarkdownPostProcessorContext;
 	// Timekeep load result
 	loadResult: LoadResult;
-	// React root
-	root: Root;
+	/** The rendered timesheet component */
+	timesheet: Timesheet | TimesheetLoadError | undefined;
+
 	// Path to the file the timekeep is within
 	fileSourcePath: string;
 
@@ -45,7 +45,6 @@ export class TimekeepMarkdownView extends MarkdownRenderChild {
 		this.customOutputFormats = customOutputFormats;
 		this.context = context;
 		this.loadResult = loadResult;
-		this.root = createRoot(containerEl);
 
 		// Set initial file path
 		this.fileSourcePath = context.sourcePath;
@@ -67,7 +66,7 @@ export class TimekeepMarkdownView extends MarkdownRenderChild {
 			)
 		);
 
-		// Render the react content
+		// Render the content
 		if (this.loadResult.success) {
 			const timekeep = this.loadResult.timekeep;
 
@@ -93,33 +92,27 @@ export class TimekeepMarkdownView extends MarkdownRenderChild {
 				handleSaveTimekeep(timekeepStore.getState());
 			});
 
-			this.root.render(
-				React.createElement(
-					StrictMode,
-					{},
-					React.createElement(App, {
-						app: this.app,
-						timekeepStore,
-						saveErrorStore,
-						settingsStore: this.settingsStore,
-						customOutputFormats: this.customOutputFormats,
-						handleSaveTimekeep,
-					})
-				)
-			);
-		} else {
-			this.root.render(
-				React.createElement(
-					"p",
-					{ className: "timekeep-container" },
-					"Failed to load timekeep: " + this.loadResult.error
-				)
-			);
-		}
-	}
+			const timesheet = new Timesheet(
+				this.containerEl,
 
-	onunload(): void {
-		this.root.unmount();
+				this.app,
+				timekeepStore,
+				saveErrorStore,
+				this.settingsStore,
+				this.customOutputFormats,
+				handleSaveTimekeep
+			);
+
+			this.addChild(timesheet);
+			this.timesheet = timesheet;
+		} else {
+			const timesheet = new TimesheetLoadError(
+				this.containerEl,
+				this.loadResult.error
+			);
+			this.addChild(timesheet);
+			this.timesheet = timesheet;
+		}
 	}
 
 	restoreScrollTimeout: ReturnType<typeof setTimeout> | null = null;
@@ -209,14 +202,14 @@ export class TimekeepMarkdownView extends MarkdownRenderChild {
 	}
 
 	/**
-	 * Fallback saving incase writing back to the timekeep block fails,
+	 * Fallback saving in case writing back to the timekeep block fails,
 	 * if writing back fails attempt to write to a backup temporary file
 	 * using the current date time
 	 *
 	 * @param timekeep The timekeep to save
 	 */
 	async saveFallback(timekeep: Timekeep) {
-		// Fallback incase of write failure, attempt to write to another file
+		// Fallback in case of write failure, attempt to write to another file
 		const backupFileName = `timekeep-write-backup-${moment().format("YYYY-MM-DD HH-mm-ss")}.json`;
 
 		// Write to the backup file

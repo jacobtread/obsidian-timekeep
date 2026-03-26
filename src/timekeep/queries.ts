@@ -1,5 +1,4 @@
 import type { Moment } from "moment";
-import { strHash } from "@/utils/text";
 import { Timekeep, TimeEntry } from "@/timekeep/schema";
 
 /**
@@ -163,29 +162,6 @@ export function getTotalDuration(
 			totalDuration + getEntryDuration(entry, currentTime),
 		0
 	);
-}
-
-/**
- * Creates a semi-unique hash for the provided `entry` used on
- * the React side as keys to reduce re-rendering for entries
- * that haven't changed
- *
- * @param entry The entry to hash
- * @returns The hash value
- */
-export function getUniqueEntryHash(entry: TimeEntry): number {
-	if (entry.subEntries === null) {
-		return strHash(
-			`${entry.name}${entry.startTime?.valueOf()}${entry.endTime?.valueOf()}`
-		);
-	}
-
-	const subEntriesHash = entry.subEntries.reduce(
-		(acc, subEntry) => acc + getUniqueEntryHash(subEntry),
-		0
-	);
-
-	return strHash(`${entry.name}${subEntriesHash}`);
 }
 
 /**

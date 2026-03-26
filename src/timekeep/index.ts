@@ -19,5 +19,4 @@ export {
 	getRunningEntry,
 	getEntryDuration,
 	getTotalDuration,
-	getUniqueEntryHash,
 } from "./queries";

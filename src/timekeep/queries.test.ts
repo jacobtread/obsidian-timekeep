@@ -6,7 +6,6 @@ import {
 	getRunningEntry,
 	getEntryDuration,
 	getTotalDuration,
-	getUniqueEntryHash,
 } from "./queries";
 
 describe("getEntryById", () => {
@@ -165,21 +164,5 @@ describe("getTotalDuration", () => {
 		const output = getTotalDuration(input, currentTime);
 
 		expect(output).toBe(expected);
-	});
-});
-
-describe("getUniqueEntryHash", () => {
-	it("hash should match when content matches", async () => {
-		const { left, right } =
-			await import("./__fixtures__/hashing/hashMatches");
-
-		expect(getUniqueEntryHash(left)).toBe(getUniqueEntryHash(right));
-	});
-
-	it("hash shouldn't match when content is different", async () => {
-		const { left, right } =
-			await import("./__fixtures__/hashing/hashDoesNotMatch");
-
-		expect(getUniqueEntryHash(left)).not.toBe(getUniqueEntryHash(right));
 	});
 });
