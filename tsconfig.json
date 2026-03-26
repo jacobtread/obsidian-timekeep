@@ -13,9 +13,9 @@
         "lib": ["DOM", "ES5", "ES6"],
         "allowSyntheticDefaultImports": true,
         "paths": {
-            "@/*": ["src/*"],
+            "@/*": ["src/*"]
         },
-        "esModuleInterop": true,
+        "esModuleInterop": true
     },
-    "include": ["src/**/*", "types/**/*"],
+    "include": ["src/**/*", "types/**/*"]
 }
