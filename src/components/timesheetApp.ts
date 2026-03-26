@@ -8,88 +8,91 @@ import { TimesheetStart } from "./timesheetStart";
 import { TimesheetTable } from "./timesheetTable";
 import { TimesheetExportActions } from "./timesheetExportActions";
 
+/**
+ * View component for the timesheet app as a whole
+ */
 export class TimesheetApp extends Component {
-    /** Parent container element */
-    #containerEl: HTMLElement;
+	/** Parent container element */
+	#containerEl: HTMLElement;
 
-    /** Access to the app instance */
-    app: App;
-    /** Access to the timekeep */
-    timekeep: Store<Timekeep>;
-    /** Access to the timekeep settings */
-    settings: Store<TimekeepSettings>;
-    /** Access to custom output formats */
-    customOutputFormats: Store<Record<string, CustomOutputFormat>>;
+	/** Access to the app instance */
+	app: App;
+	/** Access to the timekeep */
+	timekeep: Store<Timekeep>;
+	/** Access to the timekeep settings */
+	settings: Store<TimekeepSettings>;
+	/** Access to custom output formats */
+	customOutputFormats: Store<Record<string, CustomOutputFormat>>;
 
-    /** Callback to save the timekeep */
-    handleSaveTimekeep: (value: Timekeep) => Promise<void>;
+	/** Callback to save the timekeep */
+	handleSaveTimekeep: (value: Timekeep) => Promise<void>;
 
-    /** Wrapper element containing the component content */
-    #wrapperEl: HTMLElement | undefined;
+	/** Wrapper element containing the component content */
+	#wrapperEl: HTMLElement | undefined;
 
-    constructor(
-        containerEl: HTMLElement,
-        app: App,
-        timekeep: Store<Timekeep>,
-        settings: Store<TimekeepSettings>,
-        customOutputFormats: Store<Record<string, CustomOutputFormat>>,
-        handleSaveTimekeep: (value: Timekeep) => Promise<void>
-    ) {
-        super();
+	constructor(
+		containerEl: HTMLElement,
+		app: App,
+		timekeep: Store<Timekeep>,
+		settings: Store<TimekeepSettings>,
+		customOutputFormats: Store<Record<string, CustomOutputFormat>>,
+		handleSaveTimekeep: (value: Timekeep) => Promise<void>
+	) {
+		super();
 
-        this.#containerEl = containerEl;
+		this.#containerEl = containerEl;
 
-        this.app = app;
-        this.timekeep = timekeep;
-        this.settings = settings;
-        this.customOutputFormats = customOutputFormats;
-        this.handleSaveTimekeep = handleSaveTimekeep;
-    }
+		this.app = app;
+		this.timekeep = timekeep;
+		this.settings = settings;
+		this.customOutputFormats = customOutputFormats;
+		this.handleSaveTimekeep = handleSaveTimekeep;
+	}
 
-    onunload(): void {
-        super.onunload();
-        this.#wrapperEl?.remove();
-    }
+	onunload(): void {
+		super.onunload();
+		this.#wrapperEl?.remove();
+	}
 
-    onload(): void {
-        super.onload();
+	onload(): void {
+		super.onload();
 
-        const wrapperEl = this.#containerEl.createDiv({
-            cls: "timekeep-container",
-        });
+		const wrapperEl = this.#containerEl.createDiv({
+			cls: "timekeep-container",
+		});
 
-        this.#wrapperEl = wrapperEl;
+		this.#wrapperEl = wrapperEl;
 
-        const counters = new TimesheetCounters(
-            wrapperEl,
-            this.settings,
-            this.timekeep
-        );
+		const counters = new TimesheetCounters(
+			wrapperEl,
+			this.settings,
+			this.timekeep
+		);
 
-        const start = new TimesheetStart(
-            wrapperEl,
-            this.app,
-            this.timekeep,
-            this.settings
-        );
+		const start = new TimesheetStart(
+			wrapperEl,
+			this.app,
+			this.timekeep,
+			this.settings
+		);
 
-        const table = new TimesheetTable(
-            wrapperEl,
-            this.app,
-            this.timekeep,
-            this.settings
-        );
+		const table = new TimesheetTable(
+			wrapperEl,
+			this.app,
+			this.timekeep,
+			this.settings
+		);
 
-        const exportActions = new TimesheetExportActions(
-            wrapperEl,
-            this.timekeep,
-            this.settings,
-            this.customOutputFormats
-        );
+		const exportActions = new TimesheetExportActions(
+			wrapperEl,
+			this.timekeep,
+			this.settings,
+			this.customOutputFormats
+		);
 
-        this.addChild(counters);
-        this.addChild(start);
-        this.addChild(table);
-        this.addChild(exportActions);
-    }
+		this.addChild(counters);
+		this.addChild(start);
+		this.addChild(table);
+		this.addChild(exportActions);
+	}
 }

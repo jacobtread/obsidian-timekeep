@@ -1,174 +1,176 @@
-import { TimekeepSettings } from "@/settings";
-import { Store } from "@/store";
-import {
-    getPathToEntry,
-    getRunningEntry,
-    startNewEntry,
-    stopRunningEntries,
-    updateEntry,
-} from "@/timekeep";
-import { TimeEntry, Timekeep } from "@/timekeep/schema";
-import { App, Component } from "obsidian";
+import type { TimeEntry, Timekeep } from "@/timekeep/schema";
+import type { TimekeepSettings } from "@/settings";
+import type { Store } from "@/store";
+import { type App, Component } from "obsidian";
+
+import { getPathToEntry, stopRunningEntries } from "@/timekeep";
 import moment from "moment";
 import { createObsidianIcon } from "./obsidianIcon";
 import { formatTimestamp } from "@/utils";
 
+/**
+ * The "Running" timer section of the timesheet start are
+ */
 export class TimesheetStartRunning extends Component {
-    /** Parent container element */
-    #containerEl: HTMLElement;
+	/** Parent container element */
+	#containerEl: HTMLElement;
 
-    /** Access to the app instance */
-    app: App;
-    /** Access to the timekeep */
-    timekeep: Store<Timekeep>;
-    /** Access to the timekeep settings */
-    settings: Store<TimekeepSettings>;
+	/** Access to the app instance */
+	app: App;
+	/** Access to the timekeep */
+	timekeep: Store<Timekeep>;
+	/** Access to the timekeep settings */
+	settings: Store<TimekeepSettings>;
 
-    /** Form container element */
-    #formEl: HTMLElement | undefined;
+	/** Form container element */
+	#formEl: HTMLElement | undefined;
 
-    /** Element to display the formatted start time */
-    #timeValueEl: HTMLSpanElement | undefined;
-    /** Element to render the entry path within */
-    #pathEl: HTMLSpanElement | undefined;
+	/** Element to display the formatted start time */
+	#timeValueEl: HTMLSpanElement | undefined;
+	/** Element to render the entry path within */
+	#pathEl: HTMLSpanElement | undefined;
 
-    /** The current running entry */
-    entry: TimeEntry;
+	/** The current running entry */
+	entry: TimeEntry;
 
-    /** Callback to start editing the current entry */
-    onStartEditing: VoidFunction;
+	/** Callback to start editing the current entry */
+	onStartEditing: VoidFunction;
 
-    constructor(
-        containerEl: HTMLElement,
+	constructor(
+		containerEl: HTMLElement,
 
-        app: App,
-        timekeep: Store<Timekeep>,
-        settings: Store<TimekeepSettings>,
+		app: App,
+		timekeep: Store<Timekeep>,
+		settings: Store<TimekeepSettings>,
 
-        entry: TimeEntry,
+		entry: TimeEntry,
 
-        onStartEditing: VoidFunction
-    ) {
-        super();
+		onStartEditing: VoidFunction
+	) {
+		super();
 
-        this.app = app;
-        this.timekeep = timekeep;
-        this.settings = settings;
-        this.#containerEl = containerEl;
+		this.app = app;
+		this.timekeep = timekeep;
+		this.settings = settings;
+		this.#containerEl = containerEl;
 
-        this.entry = entry;
-        this.onStartEditing = onStartEditing;
-    }
+		this.entry = entry;
+		this.onStartEditing = onStartEditing;
+	}
 
-    onload(): void {
-        super.onload();
+	onload(): void {
+		super.onload();
 
-        const formEl = this.#containerEl.createEl("form", {
-            cls: "timekeep-start-area",
-        });
-        formEl.setAttribute("data-area", "running");
-        this.#formEl = formEl;
-        this.registerDomEvent(formEl, "submit", this.onStop.bind(this));
+		const formEl = this.#containerEl.createEl("form", {
+			cls: "timekeep-start-area",
+		});
+		formEl.setAttribute("data-area", "running");
+		this.#formEl = formEl;
+		this.registerDomEvent(formEl, "submit", this.onStop.bind(this));
 
-        const wrapperEl = formEl.createDiv({
-            cls: ["active-entry", "timekeep-name-wrapper"],
-        });
+		const wrapperEl = formEl.createDiv({
+			cls: ["active-entry", "timekeep-name-wrapper"],
+		});
 
-        const runningSpanEl = wrapperEl.createSpan();
-        runningSpanEl.createEl("b", { text: "Currently Running: " });
+		const runningSpanEl = wrapperEl.createSpan();
+		runningSpanEl.createEl("b", { text: "Currently Running: " });
 
-        const detailsEl = wrapperEl.createDiv({ cls: "active-entry__details" });
-        const detailsNameEl = detailsEl.createSpan({
-            cls: "active-entry__name",
-        });
-        detailsNameEl.createEl("b", { text: "Name: " });
-        detailsNameEl.appendText(" ");
+		const detailsEl = wrapperEl.createDiv({ cls: "active-entry__details" });
+		const detailsNameEl = detailsEl.createSpan({
+			cls: "active-entry__name",
+		});
+		detailsNameEl.createEl("b", { text: "Name: " });
+		detailsNameEl.appendText(" ");
 
-        const pathEl = detailsNameEl.createSpan({
-            cls: "timekeep-path-to-entry",
-        });
-        this.#pathEl = pathEl;
+		const pathEl = detailsNameEl.createSpan({
+			cls: "timekeep-path-to-entry",
+		});
+		this.#pathEl = pathEl;
 
-        const timeEl = detailsEl.createSpan({ cls: "active-entry__name" });
-        timeEl.createEl("b", { text: "Started at: " });
+		const timeEl = detailsEl.createSpan({ cls: "active-entry__name" });
+		timeEl.createEl("b", { text: "Started at: " });
 
-        const timeValueEl = timeEl.createSpan();
-        this.#timeValueEl = timeValueEl;
+		const timeValueEl = timeEl.createSpan();
+		this.#timeValueEl = timeValueEl;
 
-        const editButton = formEl.createEl("button", {
-            cls: ["timekeep-start", "timekeep-start--edit"],
-            title: "Edit",
-            type: "button",
-        });
-        createObsidianIcon(editButton, "edit", "button-icon");
-        this.registerDomEvent(editButton, "click", this.onStartEditing);
+		const editButton = formEl.createEl("button", {
+			cls: ["timekeep-start", "timekeep-start--edit"],
+			title: "Edit",
+		});
+		editButton.type = "button";
+		createObsidianIcon(editButton, "edit", "button-icon");
+		this.registerDomEvent(editButton, "click", this.onStartEditing);
 
-        const stopButton = formEl.createEl("button", {
-            cls: ["timekeep-start", "timekeep-start--stop"],
-            title: "Stop",
-            type: "submit",
-        });
-        createObsidianIcon(stopButton, "stop-circle", "button-icon");
+		const stopButton = formEl.createEl("button", {
+			cls: ["timekeep-start", "timekeep-start--stop"],
+			title: "Stop",
+		});
+		stopButton.type = "submit";
+		createObsidianIcon(stopButton, "stop-circle", "button-icon");
 
-        const onUpdate = this.onUpdate.bind(this);
+		const onUpdate = this.onUpdate.bind(this);
 
-        const unsubscribeTimekeep = this.timekeep.subscribe(onUpdate);
-        const unsubscribeSettings = this.settings.subscribe(onUpdate);
+		const unsubscribeTimekeep = this.timekeep.subscribe(onUpdate);
+		const unsubscribeSettings = this.settings.subscribe(onUpdate);
 
-        onUpdate();
+		onUpdate();
 
-        this.register(() => {
-            unsubscribeSettings();
-            unsubscribeTimekeep();
-        });
-    }
+		this.register(() => {
+			unsubscribeSettings();
+			unsubscribeTimekeep();
+		});
+	}
 
-    onunload(): void {
-        super.onunload();
-        this.#formEl?.remove();
-    }
+	onunload(): void {
+		super.onunload();
+		this.#formEl?.remove();
+	}
 
-    onUpdate() {
-        if (!this.#timeValueEl || !this.#pathEl) return;
+	/**
+	 * Handles updates that occur when either the timekeep data changes
+	 * or the settings change
+	 */
+	onUpdate() {
+		if (!this.#timeValueEl || !this.#pathEl) return;
 
-        const currentEntry = this.entry;
-        if (!currentEntry.startTime) return;
+		const currentEntry = this.entry;
+		if (!currentEntry.startTime) return;
 
-        const timekeep = this.timekeep.getState();
-        const settings = this.settings.getState();
+		const timekeep = this.timekeep.getState();
+		const settings = this.settings.getState();
 
-        this.#timeValueEl.textContent = formatTimestamp(
-            currentEntry.startTime,
-            settings
-        );
+		this.#timeValueEl.textContent = formatTimestamp(
+			currentEntry.startTime,
+			settings
+		);
 
-        // Clear existing path
-        this.#pathEl.empty();
+		// Clear existing path
+		this.#pathEl.empty();
 
-        const pathToEntry = getPathToEntry(timekeep.entries, currentEntry);
-        if (pathToEntry && pathToEntry.length > 0) {
-            for (let i = 0; i < pathToEntry.length; i++) {
-                const path = pathToEntry[i];
-                const text = `${path.name} ${
-                    i < pathToEntry.length - 1 ? " >" : ""
-                }`;
-                this.#pathEl.createSpan({ text });
-            }
-        }
-    }
+		const pathToEntry = getPathToEntry(timekeep.entries, currentEntry);
+		if (pathToEntry && pathToEntry.length > 0) {
+			for (let i = 0; i < pathToEntry.length; i++) {
+				const path = pathToEntry[i];
+				const text = `${path.name} ${
+					i < pathToEntry.length - 1 ? " >" : ""
+				}`;
+				this.#pathEl.createSpan({ text });
+			}
+		}
+	}
 
-    onStop(event: Event) {
-        // Prevent form submission from reloading Obsidian
-        event.preventDefault();
-        event.stopPropagation();
+	onStop(event: Event) {
+		// Prevent form submission from reloading Obsidian
+		event.preventDefault();
+		event.stopPropagation();
 
-        this.timekeep.setState((timekeep) => {
-            const currentTime = moment();
+		this.timekeep.setState((timekeep) => {
+			const currentTime = moment();
 
-            return {
-                ...timekeep,
-                entries: stopRunningEntries(timekeep.entries, currentTime),
-            };
-        });
-    }
+			return {
+				...timekeep,
+				entries: stopRunningEntries(timekeep.entries, currentTime),
+			};
+		});
+	}
 }

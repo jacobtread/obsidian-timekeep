@@ -9,23 +9,23 @@ import { Timekeep, TimeEntry } from "@/timekeep/schema";
  * @returns The found entry or undefined
  */
 export function getEntryById(
-    entryId: string,
-    entries: TimeEntry[]
+	entryId: string,
+	entries: TimeEntry[]
 ): TimeEntry | undefined {
-    for (const entry of entries) {
-        if (entry.id === entryId) {
-            return entry;
-        }
+	for (const entry of entries) {
+		if (entry.id === entryId) {
+			return entry;
+		}
 
-        if (entry.subEntries) {
-            const nestedEntry = getEntryById(entryId, entry.subEntries);
-            if (nestedEntry) {
-                return nestedEntry;
-            }
-        }
-    }
+		if (entry.subEntries) {
+			const nestedEntry = getEntryById(entryId, entry.subEntries);
+			if (nestedEntry) {
+				return nestedEntry;
+			}
+		}
+	}
 
-    return undefined;
+	return undefined;
 }
 
 /**
@@ -36,37 +36,37 @@ export function getEntryById(
  * @returns The path to the entry
  */
 export function getPathToEntry(
-    entries: TimeEntry[],
-    target: TimeEntry
+	entries: TimeEntry[],
+	target: TimeEntry
 ): { id: string; name: string }[] {
-    const path: { id: string; name: string }[] = [];
+	const path: { id: string; name: string }[] = [];
 
-    function dfs(entry: TimeEntry): boolean {
-        path.push({ id: entry.id, name: entry.name });
+	function dfs(entry: TimeEntry): boolean {
+		path.push({ id: entry.id, name: entry.name });
 
-        if (entry.id === target.id) {
-            return true;
-        }
+		if (entry.id === target.id) {
+			return true;
+		}
 
-        if (entry.subEntries) {
-            for (const sub of entry.subEntries) {
-                if (dfs(sub)) {
-                    return true;
-                }
-            }
-        }
+		if (entry.subEntries) {
+			for (const sub of entry.subEntries) {
+				if (dfs(sub)) {
+					return true;
+				}
+			}
+		}
 
-        path.pop();
-        return false;
-    }
+		path.pop();
+		return false;
+	}
 
-    for (const entry of entries) {
-        if (dfs(entry)) {
-            return path;
-        }
-    }
+	for (const entry of entries) {
+		if (dfs(entry)) {
+			return path;
+		}
+	}
 
-    return [];
+	return [];
 }
 
 /**
@@ -78,19 +78,19 @@ export function getPathToEntry(
  * @return The running entry if found or null
  */
 export function getRunningEntry(entries: TimeEntry[]): TimeEntry | null {
-    const stack: TimeEntry[] = [...entries];
+	const stack: TimeEntry[] = [...entries];
 
-    while (stack.length > 0) {
-        const entry: TimeEntry = stack.pop()!;
+	while (stack.length > 0) {
+		const entry: TimeEntry = stack.pop()!;
 
-        if (entry.subEntries !== null) {
-            stack.push(...entry.subEntries);
-        } else if (entry.startTime !== null && entry.endTime === null) {
-            return entry;
-        }
-    }
+		if (entry.subEntries !== null) {
+			stack.push(...entry.subEntries);
+		} else if (entry.startTime !== null && entry.endTime === null) {
+			return entry;
+		}
+	}
 
-    return null;
+	return null;
 }
 
 /**
@@ -101,11 +101,11 @@ export function getRunningEntry(entries: TimeEntry[]): TimeEntry | null {
  * @returns Whether the entry or any sub-entries are running
  */
 export function isEntryRunning(entry: TimeEntry) {
-    if (entry.subEntries !== null) {
-        return getRunningEntry(entry.subEntries) !== null;
-    }
+	if (entry.subEntries !== null) {
+		return getRunningEntry(entry.subEntries) !== null;
+	}
 
-    return entry.startTime !== null && entry.endTime === null;
+	return entry.startTime !== null && entry.endTime === null;
 }
 
 /**
@@ -116,7 +116,7 @@ export function isEntryRunning(entry: TimeEntry) {
  * @returns Whether the timekeep is running
  */
 export function isKeepRunning(timekeep: Timekeep): boolean {
-    return getRunningEntry(timekeep.entries) !== null;
+	return getRunningEntry(timekeep.entries) !== null;
 }
 
 /**
@@ -128,21 +128,21 @@ export function isKeepRunning(timekeep: Timekeep): boolean {
  * @returns The duration in milliseconds
  */
 export function getEntryDuration(
-    entry: TimeEntry,
-    currentTime: Moment
+	entry: TimeEntry,
+	currentTime: Moment
 ): number {
-    if (entry.subEntries !== null) {
-        return getTotalDuration(entry.subEntries, currentTime);
-    }
+	if (entry.subEntries !== null) {
+		return getTotalDuration(entry.subEntries, currentTime);
+	}
 
-    // Entry is not started
-    if (entry.startTime === null) {
-        return 0;
-    }
+	// Entry is not started
+	if (entry.startTime === null) {
+		return 0;
+	}
 
-    // Get the end time or use current time if not ended
-    const endTime = entry.endTime ?? currentTime;
-    return endTime.diff(entry.startTime);
+	// Get the end time or use current time if not ended
+	const endTime = entry.endTime ?? currentTime;
+	return endTime.diff(entry.startTime);
 }
 
 /**
@@ -154,14 +154,14 @@ export function getEntryDuration(
  * @returns The total duration in milliseconds
  */
 export function getTotalDuration(
-    entries: TimeEntry[],
-    currentTime: Moment
+	entries: TimeEntry[],
+	currentTime: Moment
 ): number {
-    return entries.reduce(
-        (totalDuration, entry) =>
-            totalDuration + getEntryDuration(entry, currentTime),
-        0
-    );
+	return entries.reduce(
+		(totalDuration, entry) =>
+			totalDuration + getEntryDuration(entry, currentTime),
+		0
+	);
 }
 
 /**
@@ -174,30 +174,30 @@ export function getTotalDuration(
  * @returns The start time or null if none were available
  */
 export function getStartTime(entry: TimeEntry, newest: boolean): Moment | null {
-    // Find the latest start time from entry
-    if (entry.subEntries !== null) {
-        return entry.subEntries.reduce(
-            (previousValue, currentValue) => {
-                if (previousValue === null) {
-                    return currentValue.startTime;
-                }
+	// Find the latest start time from entry
+	if (entry.subEntries !== null) {
+		return entry.subEntries.reduce(
+			(previousValue, currentValue) => {
+				if (previousValue === null) {
+					return currentValue.startTime;
+				}
 
-                // Use the current value if its newer
-                if (currentValue.startTime !== null) {
-                    const timeDiff = newest
-                        ? previousValue.diff(currentValue.startTime)
-                        : currentValue.startTime.diff(previousValue);
+				// Use the current value if its newer
+				if (currentValue.startTime !== null) {
+					const timeDiff = newest
+						? previousValue.diff(currentValue.startTime)
+						: currentValue.startTime.diff(previousValue);
 
-                    if (timeDiff > 0) {
-                        return currentValue.startTime;
-                    }
-                }
+					if (timeDiff > 0) {
+						return currentValue.startTime;
+					}
+				}
 
-                return previousValue;
-            },
-            null as Moment | null
-        );
-    }
+				return previousValue;
+			},
+			null as Moment | null
+		);
+	}
 
-    return entry.startTime;
+	return entry.startTime;
 }
