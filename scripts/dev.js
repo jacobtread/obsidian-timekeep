@@ -1,98 +1,75 @@
-const path = require("path");
-const fs = require('fs/promises');
-const esbuild = require("esbuild");
-const chokidar = require("chokidar");
-
-const esbuildConfig = require('../esbuild.config');
+import path from "path";
+import fs from "fs/promises";
+import { build } from "vite";
+import { fileURLToPath } from "url";
 
 async function dev() {
-    const rootPath = path.join(__dirname, "../");
+    const __filename = fileURLToPath(import.meta.url);
+    const __dirname = path.dirname(__filename);
+    const rootPath = path.resolve(__dirname, "../");
     const manifestPath = path.join(rootPath, "manifest.json");
     const outputPath = path.join(rootPath, "dist");
-    const srcPath = path.join(rootPath, "src");
 
-    const manifestContents = await fs.readFile(manifestPath);
+    const manifestContents = await fs.readFile(manifestPath, "utf-8");
     const manifest = JSON.parse(manifestContents);
 
     const vaultPath = path.join(rootPath, "test-vault");
-    const pluginPath = path.join(vaultPath, ".obsidian", "plugins", manifest.id);
+    const pluginPath = path.join(
+        vaultPath,
+        ".obsidian",
+        "plugins",
+        manifest.id
+    );
 
-    // Setup path to the plugin
-    const pluginPathExists = await dirExists(pluginPath);
-    if (!pluginPathExists) {
-        fs.mkdir(pluginPath, { recursive: true });
-    }
-
-    // Setup output path
-    const outputExists = await dirExists(outputPath);
-    if (!outputExists) {
-        fs.mkdir(outputPath, { recursive: true });
-    }
+    await ensureDir(pluginPath);
+    await ensureDir(outputPath);
 
     const inputFiles = [
-        path.join(outputPath, 'main.js'),
-        path.join(outputPath, 'styles.css'),
+        path.join(outputPath, "main.js"),
+        path.join(outputPath, "styles.css"),
         manifestPath,
     ];
 
-    // Setup esbuild
-    const ctx = await esbuild.context({
-        ...esbuildConfig,
-        entryPoints:
-            [
-                path.join(srcPath, "main.ts"),
-                path.join(srcPath, 'styles.css')
-            ],
-        bundle: true,
-        outdir: path.join(outputPath),
+    build({
+        mode: "development",
+        configFile: path.resolve(rootPath, "vite.config.js"),
+        build: {
+            watch: {},
+        },
+        plugins: [
+            {
+                name: "build-finish-copy",
+                closeBundle() {
+                    console.info("Build finished copying files");
+                    copyFiles();
+                },
+            },
+        ],
     });
 
-
-    // Perform an initial rebuild
-    await ctx.rebuild();
-
-    // Copy initial files
-    for (const filePath of inputFiles) {
-        const filename = path.basename(filePath);
-        const destPath = path.join(pluginPath, filename);
-        try {
-            await fs.copyFile(filePath, destPath);
-        } catch (e) {
-            console.error(`❌ Failed to copy ${filename}:`, e.message);
+    const copyFiles = async () => {
+        for (const filePath of inputFiles) {
+            const destPath = path.join(pluginPath, path.basename(filePath));
+            try {
+                await fs.copyFile(filePath, destPath);
+                console.info(`✓ Updated ${path.basename(filePath)}`);
+            } catch (e) {
+                console.error(
+                    `Failed to copy ${path.basename(filePath)}:`,
+                    e.message
+                );
+            }
         }
+    };
 
-    }
-
-    // Setup watchers for changed files
-    const watcher = chokidar.watch(inputFiles, { ignoreInitial: true });
-    watcher.on("change", async (changedPath) => {
-        const filename = path.basename(changedPath);
-        const destPath = path.join(pluginPath, filename);
-        try {
-            await fs.copyFile(changedPath, destPath);
-            console.log(`🔁 Updated ${filename}`);
-        } catch (e) {
-            console.error(`❌ Failed to copy ${filename}:`, e.message);
-        }
-    });
-
-
-    // Start esbuild watching for changes and re-building
-    await ctx.watch();
-
-    console.log("🚀 Dev server started. Watching for changes...");
+    console.info("🚀 Dev server started. Watching for changes...");
 }
 
-async function dirExists(path) {
+async function ensureDir(dir) {
     try {
-        const stat = await fs.stat(path);
-        return stat.isDirectory();
-    } catch (err) {
-        if (err.code === 'ENOENT') return false;
-        throw err;
-    }
+        await fs.mkdir(dir, { recursive: true });
+    } catch {}
 }
-
 
 dev().catch((err) => {
     console.error(err);

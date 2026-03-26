@@ -8,6 +8,7 @@ import {
 	replaceTimekeepCodeblock,
 	extractTimekeepCodeblocks,
 } from "./parser";
+import { expect, it, test, describe } from "vitest";
 
 /**
  * Generates a code block surrounding the provided JSON
@@ -184,7 +185,7 @@ describe("loading timekeep", () => {
 	it("should tolerate a timekeep with leading or trailing whitespaces", () => {
 		const input = `
 		      \`\`\`timekeep
-		 \`\`\` 
+		 \`\`\`
 		`;
 		// Start not code fences
 		replaceTimekeepCodeblock({ entries: [] }, input, 1, 2);

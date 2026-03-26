@@ -1,10 +1,14 @@
 import moment from "moment";
 import { v4 as uuid } from "uuid";
 import { TIMEKEEP } from "@/timekeep/schema";
+import { expect, it, describe, vi } from "vitest";
 
-jest.mock("uuid", () => ({
-	v4: jest.fn(() => "mocked-uuid"),
-}));
+vi.mock(import("uuid"), async (importOriginal) => {
+	return {
+		...(await importOriginal()),
+		v4: vi.fn(() => "mocked-uuid"),
+	};
+});
 
 describe("schema transform", () => {
 	it("transforms input with an added id", () => {

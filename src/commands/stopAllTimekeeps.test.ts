@@ -3,6 +3,7 @@ import fs from "node:fs/promises";
 
 import { MockVault } from "./__mocks__/obsidian";
 import { stopAllTimekeeps } from "./stopAllTimekeeps";
+import { expect, it, describe } from "vitest";
 
 describe("stopAllTimekeeps", () => {
 	it("should stop nothing when no markdown files", async () => {

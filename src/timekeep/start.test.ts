@@ -1,5 +1,6 @@
 import { stripEntriesRuntimeData } from "./schema";
 import { startNewEntry, startNewNestedEntry } from "./start";
+import { expect, it, describe } from "vitest";
 
 describe("startNewEntry", () => {
 	it("starting a new entry should stop any running entries", async () => {

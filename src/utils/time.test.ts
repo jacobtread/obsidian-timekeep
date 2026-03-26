@@ -13,6 +13,8 @@ import {
 	formatEditableTimestamp,
 } from "./time";
 
+import { expect, it, test, describe } from "vitest";
+
 it("should format time", () => {
 	const input = moment("2024-03-31T02:34:45.413Z").utc();
 	const expected = "24-03-31 02:34:45";

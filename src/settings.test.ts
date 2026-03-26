@@ -5,6 +5,7 @@ import {
 	TimekeepSettings,
 	legacySettingsCompatibility,
 } from "./settings";
+import { expect, test, describe } from "vitest";
 
 describe("legacy settings compatibility conversion", () => {
 	test("Empty setting", () => {

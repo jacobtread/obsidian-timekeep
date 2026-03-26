@@ -1,4 +1,5 @@
 import { NameSegmentType, parseNameSegments } from "./name";
+import { expect, it, test, describe } from "vitest";
 
 describe("parseNameSegments", () => {
 	it("should parse plain text without modification", () => {

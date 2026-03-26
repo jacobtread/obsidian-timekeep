@@ -1,4 +1,5 @@
 import type { TFile, Vault } from "obsidian";
+import { vi } from "vitest";
 
 function createTFile(vault: Vault, path: string): TFile {
 	const nameIndex = path.lastIndexOf("/");
@@ -30,30 +31,30 @@ export class MockVault {
 		this._files = initialFiles;
 	}
 
-	getMarkdownFiles = jest.fn(() => {
+	getMarkdownFiles = vi.fn(() => {
 		return Object.keys(this._files).map((path) =>
 			createTFile(this.asVault(), path)
 		);
 	});
 
-	process = jest.fn(async (file: TFile, func: (data: string) => string) => {
+	process = vi.fn(async (file: TFile, func: (data: string) => string) => {
 		const content = await this.read(file);
 		const data = func(content);
 		await this.write(file, data);
 		return data;
 	});
 
-	read = jest.fn(async (file: TFile) => {
+	read = vi.fn(async (file: TFile) => {
 		this._cache[file.path] = this._files[file.path];
 		return this._files[file.path] ?? "";
 	});
 
-	write = jest.fn(async (file: TFile, data: string) => {
+	write = vi.fn(async (file: TFile, data: string) => {
 		this._files[file.path] = data;
 		this._cache[file.path] = data;
 	});
 
-	cachedRead = jest.fn(async (file: TFile) => {
+	cachedRead = vi.fn(async (file: TFile) => {
 		if (this._cache[file.path]) {
 			return this._cache[file.path];
 		}

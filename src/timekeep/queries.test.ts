@@ -7,6 +7,7 @@ import {
 	getEntryDuration,
 	getTotalDuration,
 } from "./queries";
+import { expect, it, test, describe } from "vitest";
 
 describe("getEntryById", () => {
 	it("find top level entry", async () => {

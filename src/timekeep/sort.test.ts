@@ -4,7 +4,7 @@ import {
 	defaultSettings,
 	TimekeepSettings,
 } from "@/settings";
-
+import { expect, it, describe } from "vitest";
 import { getEntriesSorted } from "./sort";
 
 describe("getEntriesSorted", () => {
