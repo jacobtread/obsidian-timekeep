@@ -1,6 +1,5 @@
 {
 	"compilerOptions": {
-		"baseUrl": ".",
 		"inlineSourceMap": true,
 		"inlineSources": true,
 		"module": "ESNext",
@@ -13,7 +12,7 @@
 		"lib": ["DOM", "ES5", "ES6"],
 		"allowSyntheticDefaultImports": true,
 		"paths": {
-			"@/*": ["src/*"]
+			"@/*": ["./src/*"]
 		},
 		"esModuleInterop": true
 	},

@@ -69,11 +69,11 @@ export class TimesheetSaveError extends Component {
 
 	onRetrySave() {
 		// Attempt to save the current timekeep
-		this.handleSaveTimekeep(this.timekeep.getState());
+		void this.handleSaveTimekeep(this.timekeep.getState());
 	}
 
 	onCopy() {
-		navigator.clipboard.writeText(
+		void navigator.clipboard.writeText(
 			JSON.stringify(stripTimekeepRuntimeData(this.timekeep.getState()))
 		);
 	}

@@ -170,6 +170,6 @@ export class TimesheetExportActions extends Component {
 		const timekeep = this.timekeep.getState();
 		const settings = this.settings.getState();
 
-		exportPdf(timekeep, settings);
+		void exportPdf(timekeep, settings);
 	}
 }

@@ -57,7 +57,7 @@ export default class TimekeepPlugin extends Plugin {
 
 		// Subscribe to settings changes to save them
 		settingsStore.subscribe(() => {
-			saveSettings(settingsStore.getState());
+			void saveSettings(settingsStore.getState());
 		});
 
 		this.customOutputFormats = customOutputFormats;

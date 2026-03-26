@@ -25,7 +25,7 @@ async function dev() {
 		manifestPath,
 	];
 
-	build({
+	void build({
 		mode: "development",
 		configFile: path.resolve(rootPath, "vite.config.js"),
 		build: {
@@ -36,7 +36,7 @@ async function dev() {
 				name: "build-finish-copy",
 				closeBundle() {
 					console.info("Build finished copying files");
-					copyFiles();
+					void copyFiles();
 				},
 			},
 		],

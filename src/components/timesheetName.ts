@@ -84,6 +84,6 @@ export class TimekeepName extends Component {
 		if (activeFile === null) return;
 
 		// Open internal link
-		this.app.workspace.openLinkText(url, activeFile.path);
+		void this.app.workspace.openLinkText(url, activeFile.path);
 	}
 }

@@ -78,7 +78,7 @@ export class TimekeepMarkdownView extends MarkdownRenderChild {
 
 			// Subscribe to save when timekeep changes
 			timekeepStore.subscribe(() => {
-				handleSaveTimekeep(timekeepStore.getState());
+				void handleSaveTimekeep(timekeepStore.getState());
 			});
 
 			const timesheet = new Timesheet(
@@ -141,7 +141,7 @@ export class TimekeepMarkdownView extends MarkdownRenderChild {
 			console.error("Failed to save timekeep", e);
 
 			try {
-				this.saveFallback(timekeep);
+				await this.saveFallback(timekeep);
 			} catch (e) {
 				console.error("Couldn't save timekeep fallback", e);
 			}
@@ -192,6 +192,9 @@ export class TimekeepMarkdownView extends MarkdownRenderChild {
 		const backupFileName = `timekeep-write-backup-${moment().format("YYYY-MM-DD HH-mm-ss")}.json`;
 
 		// Write to the backup file
-		this.app.vault.create(backupFileName, JSON.stringify(stripTimekeepRuntimeData(timekeep)));
+		await this.app.vault.create(
+			backupFileName,
+			JSON.stringify(stripTimekeepRuntimeData(timekeep))
+		);
 	}
 }

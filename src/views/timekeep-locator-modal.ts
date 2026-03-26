@@ -68,6 +68,6 @@ export class TimekeepLocatorModal extends SuggestModal<TimekeepResult> {
 	}
 
 	onChooseSuggestion(item: TimekeepResult, _evt: MouseEvent | KeyboardEvent) {
-		this.app.workspace.getLeaf().openFile(item.file);
+		void this.app.workspace.getLeaf().openFile(item.file);
 	}
 }

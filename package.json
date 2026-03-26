@@ -30,6 +30,7 @@
 		"obsidian": "latest",
 		"oxfmt": "^0.42.0",
 		"oxlint": "^1.57.0",
+		"oxlint-tsgolint": "^0.17.4",
 		"typescript": "5.9.2",
 		"vite": "^8.0.2",
 		"vitest": "^4.1.1"
