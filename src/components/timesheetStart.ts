@@ -63,6 +63,7 @@ export class TimesheetStart extends Component {
             cls: "timekeep-start-area",
         });
         formEl.setAttribute("data-area", "start");
+        this.registerDomEvent(formEl, "submit", this.onStart.bind(this));
 
         const nameWrapperEl = formEl.createDiv({
             cls: "timekeep-name-wrapper",
@@ -86,6 +87,7 @@ export class TimesheetStart extends Component {
             type: "text",
         });
         nameInputEl.id = "timekeepBlockName";
+        this.#nameInputEl = nameInputEl;
 
         const startButton = formEl.createEl("button", {
             cls: "timekeep-start",
