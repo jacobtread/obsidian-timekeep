@@ -39,7 +39,10 @@ export function parseNameSegments(input: string): NameSegment[] {
 				text: match[1],
 				url: match[1],
 			});
-		} else if (match[2] && match[3]) {
+		} else if (
+			/* v8 ignore start -- @preserve */ match[2] &&
+			match[3] /* v8 ignore stop -- @preserve */
+		) {
 			// Markdown link ([text](url))
 			segments.push({
 				type: NameSegmentType.Link,

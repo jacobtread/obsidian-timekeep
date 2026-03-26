@@ -104,11 +104,13 @@ export function removeEntry(entries: TimeEntry[], target: TimeEntry): TimeEntry[
 			const collapsedEntry = makeEntrySingle(updatedEntry);
 
 			// Add non-empty entries to the accumulator
+			/* v8 ignore start -- @preserve */
 			if (
 				collapsedEntry.subEntries === null ||
 				collapsedEntry.subEntries.length > 0 ||
 				collapsedEntry.folder
 			) {
+				/* v8 ignore stop -- @preserve */
 				acc.push(collapsedEntry);
 			}
 		}

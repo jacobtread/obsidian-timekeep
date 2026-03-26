@@ -16,6 +16,7 @@ export function getEntryById(entryId: string, entries: TimeEntry[]): TimeEntry |
 
 		if (entry.subEntries) {
 			const nestedEntry = getEntryById(entryId, entry.subEntries);
+
 			if (nestedEntry) {
 				return nestedEntry;
 			}
