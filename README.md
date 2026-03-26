@@ -81,16 +81,7 @@ Example Time Block,24-03-17 19:32:36,24-03-17 19:32:37,0s
 The JSON export format simply copies the JSON stored inside the timekeep:
 
 ```json
-{
-    "entries": [
-        {
-            "name": "Example Time Block",
-            "startTime": "2024-03-17T06:32:36.118Z",
-            "endTime": "2024-03-17T06:32:37.012Z",
-            "subEntries": null
-        }
-    ]
-}
+{"entries":[{"name":"Example Time Block","startTime":"2024-03-17T06:32:36.118Z","endTime":"2024-03-17T06:32:37.012Z","subEntries":null}]}
 ```
 
 ### Generated PDFs
@@ -109,16 +100,7 @@ If you would like to create a timekeep through a template plugin, you can do so 
 If you have frequently used entry names you can define them in your template by specifying `null` for both the `startTime` and `endTime`:
 
 ```json
-{
-    "entries": [
-        {
-            "name": "Non started block",
-            "startTime": null,
-            "endTime": null,
-            "subEntries": null
-        }
-    ]
-}
+{"entries":[{"name":"Example Time Block","startTime":"2024-03-17T06:32:36.118Z","endTime":"2024-03-17T06:32:37.012Z","subEntries":null}]}
 ```
 
 This will create an entry that is not yet started; you can start it by clicking the play button without having to type out the name.
