@@ -14,8 +14,7 @@ export async function stopAllTimekeeps(vault: Vault, currentTime: Moment) {
 	const markdownFiles = vault.getMarkdownFiles();
 	const batchSize = 10;
 
-	const processFile = (file: TFile) =>
-		stopFileTimekeeps(vault, file, currentTime);
+	const processFile = (file: TFile) => stopFileTimekeeps(vault, file, currentTime);
 
 	let totalStopped = 0;
 

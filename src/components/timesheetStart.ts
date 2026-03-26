@@ -117,9 +117,7 @@ export class TimesheetStart extends Component {
 	 *
 	 * @param content The new content to show
 	 */
-	private swapContent(
-		content: TimesheetStartRunning | TimekeepStartEditing | undefined
-	) {
+	private swapContent(content: TimesheetStartRunning | TimekeepStartEditing | undefined) {
 		if (this.#content) {
 			this.removeChild(this.#content);
 		}
@@ -149,12 +147,9 @@ export class TimesheetStart extends Component {
 		const currentEntry = getRunningEntry(timekeep.entries);
 		const isTimekeepRunning = currentEntry !== null;
 
-		this.#blockPauseWarningEl.hidden =
-			currentEntry === null || currentEntry.startTime === null;
+		this.#blockPauseWarningEl.hidden = currentEntry === null || currentEntry.startTime === null;
 
-		this.#startButtonEl.title = isTimekeepRunning
-			? "Stop and start"
-			: "Start";
+		this.#startButtonEl.title = isTimekeepRunning ? "Stop and start" : "Start";
 	}
 
 	setEmptyView() {

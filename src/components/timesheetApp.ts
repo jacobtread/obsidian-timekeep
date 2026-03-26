@@ -63,25 +63,11 @@ export class TimesheetApp extends Component {
 
 		this.#wrapperEl = wrapperEl;
 
-		const counters = new TimesheetCounters(
-			wrapperEl,
-			this.settings,
-			this.timekeep
-		);
+		const counters = new TimesheetCounters(wrapperEl, this.settings, this.timekeep);
 
-		const start = new TimesheetStart(
-			wrapperEl,
-			this.app,
-			this.timekeep,
-			this.settings
-		);
+		const start = new TimesheetStart(wrapperEl, this.app, this.timekeep, this.settings);
 
-		const table = new TimesheetTable(
-			wrapperEl,
-			this.app,
-			this.timekeep,
-			this.settings
-		);
+		const table = new TimesheetTable(wrapperEl, this.app, this.timekeep, this.settings);
 
 		const exportActions = new TimesheetExportActions(
 			wrapperEl,

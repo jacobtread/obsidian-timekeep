@@ -139,10 +139,7 @@ export class TimesheetStartRunning extends Component {
 		const timekeep = this.timekeep.getState();
 		const settings = this.settings.getState();
 
-		this.#timeValueEl.textContent = formatTimestamp(
-			currentEntry.startTime,
-			settings
-		);
+		this.#timeValueEl.textContent = formatTimestamp(currentEntry.startTime, settings);
 
 		// Clear existing path
 		this.#pathEl.empty();
@@ -151,9 +148,7 @@ export class TimesheetStartRunning extends Component {
 		if (pathToEntry && pathToEntry.length > 0) {
 			for (let i = 0; i < pathToEntry.length; i++) {
 				const path = pathToEntry[i];
-				const text = `${path.name} ${
-					i < pathToEntry.length - 1 ? " >" : ""
-				}`;
+				const text = `${path.name} ${i < pathToEntry.length - 1 ? " >" : ""}`;
 				this.#pathEl.createSpan({ text });
 			}
 		}

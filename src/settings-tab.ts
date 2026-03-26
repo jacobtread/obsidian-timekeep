@@ -43,9 +43,7 @@ export class TimekeepSettingsTab extends PluginSettingTab {
 				t.setValue(String(settings.timestampFormat));
 				t.onChange((v) => {
 					// Only use a custom format if the value is not blank
-					const newFormat = v.length
-						? v
-						: defaultSettings.timestampFormat;
+					const newFormat = v.length ? v : defaultSettings.timestampFormat;
 
 					this.settingsStore.setState((currentValue) => ({
 						...currentValue,
@@ -56,18 +54,13 @@ export class TimekeepSettingsTab extends PluginSettingTab {
 
 		new Setting(this.containerEl)
 			.setName("Primary duration format")
-			.setDesc(
-				"Format to show durations for the current and total timers"
-			)
+			.setDesc("Format to show durations for the current and total timers")
 
 			.addDropdown((t) => {
 				t.addOptions({
-					[DurationFormat.LONG]:
-						"Long - Format including all units (1h 30m 25s)",
-					[DurationFormat.SHORT]:
-						"Short - Format just including hours (1.5h)",
-					[DurationFormat.DECIMAL]:
-						"Decimal - Short format without units (1.5)",
+					[DurationFormat.LONG]: "Long - Format including all units (1h 30m 25s)",
+					[DurationFormat.SHORT]: "Short - Format just including hours (1.5h)",
+					[DurationFormat.DECIMAL]: "Decimal - Short format without units (1.5)",
 				});
 				t.setValue(String(settings.primaryDurationFormat));
 				t.onChange((v) => {
@@ -80,18 +73,13 @@ export class TimekeepSettingsTab extends PluginSettingTab {
 
 		new Setting(this.containerEl)
 			.setName("Secondary duration format")
-			.setDesc(
-				"Format to show a second durations under the current and total timers"
-			)
+			.setDesc("Format to show a second durations under the current and total timers")
 
 			.addDropdown((t) => {
 				t.addOptions({
-					[DurationFormat.LONG]:
-						"Long - Format including all units (1h 30m 25s)",
-					[DurationFormat.SHORT]:
-						"Short - Format just including hours (1.5h)",
-					[DurationFormat.DECIMAL]:
-						"Decimal - Short format without units (1.5)",
+					[DurationFormat.LONG]: "Long - Format including all units (1h 30m 25s)",
+					[DurationFormat.SHORT]: "Short - Format just including hours (1.5h)",
+					[DurationFormat.DECIMAL]: "Decimal - Short format without units (1.5)",
 					[DurationFormat.NONE]: "None - No time is displayed",
 				});
 				t.setValue(String(settings.secondaryDurationFormat));
@@ -105,9 +93,7 @@ export class TimekeepSettingsTab extends PluginSettingTab {
 
 		new Setting(this.containerEl)
 			.setName("Sort order")
-			.setDesc(
-				"How entries should be sorted both when viewing and exporting"
-			)
+			.setDesc("How entries should be sorted both when viewing and exporting")
 
 			.addDropdown((t) => {
 				t.addOptions({
@@ -175,12 +161,9 @@ export class TimekeepSettingsTab extends PluginSettingTab {
 
 			.addDropdown((t) => {
 				t.addOptions({
-					[DurationFormat.LONG]:
-						"Long - Format including all units (1h 30m 25s)",
-					[DurationFormat.SHORT]:
-						"Short - Format just including hours (1.5h)",
-					[DurationFormat.DECIMAL]:
-						"Decimal - Short format without units (1.5)",
+					[DurationFormat.LONG]: "Long - Format including all units (1h 30m 25s)",
+					[DurationFormat.SHORT]: "Short - Format just including hours (1.5h)",
+					[DurationFormat.DECIMAL]: "Decimal - Short format without units (1.5)",
 				});
 				t.setValue(String(settings.exportDurationFormat));
 				t.onChange((v) => {
@@ -219,9 +202,7 @@ export class TimekeepSettingsTab extends PluginSettingTab {
 				t.setValue(String(settings.pdfFootnote));
 				t.onChange((v) => {
 					// Only use a custom format if the value is not blank
-					const newPdfFootnote = v.length
-						? v
-						: defaultSettings.pdfFootnote;
+					const newPdfFootnote = v.length ? v : defaultSettings.pdfFootnote;
 
 					this.settingsStore.setState((currentValue) => ({
 						...currentValue,
@@ -237,10 +218,8 @@ export class TimekeepSettingsTab extends PluginSettingTab {
 			.addDropdown((t) => {
 				t.addOptions({
 					[PdfExportBehavior.NONE]: "Do nothing",
-					[PdfExportBehavior.OPEN_FILE]:
-						"Open exported file with default app",
-					[PdfExportBehavior.OPEN_PATH]:
-						"Open directory containing the exported file",
+					[PdfExportBehavior.OPEN_FILE]: "Open exported file with default app",
+					[PdfExportBehavior.OPEN_PATH]: "Open directory containing the exported file",
 				});
 				t.setValue(String(settings.pdfExportBehavior));
 				t.onChange((v) => {
@@ -269,9 +248,7 @@ export class TimekeepSettingsTab extends PluginSettingTab {
 				t.setValue(String(settings.pdfDateFormat));
 				t.onChange((v) => {
 					// Only use a custom format if the value is not blank
-					const newPdfDateFormat = v.length
-						? v
-						: defaultSettings.pdfDateFormat;
+					const newPdfDateFormat = v.length ? v : defaultSettings.pdfDateFormat;
 
 					this.settingsStore.setState((currentValue) => ({
 						...currentValue,
@@ -298,9 +275,7 @@ export class TimekeepSettingsTab extends PluginSettingTab {
 				t.setValue(String(settings.pdfRowDateFormat));
 				t.onChange((v) => {
 					// Only use a custom format if the value is not blank
-					const newPdfRowDateFormat = v.length
-						? v
-						: defaultSettings.pdfRowDateFormat;
+					const newPdfRowDateFormat = v.length ? v : defaultSettings.pdfRowDateFormat;
 
 					this.settingsStore.setState((currentValue) => ({
 						...currentValue,
@@ -334,9 +309,7 @@ export class TimekeepSettingsTab extends PluginSettingTab {
 
 		new Setting(this.containerEl)
 			.setName("CSV heading row")
-			.setDesc(
-				"Whether to use the first row of generated CSV as a title row"
-			)
+			.setDesc("Whether to use the first row of generated CSV as a title row")
 			.addToggle((t) => {
 				t.setValue(settings.csvTitle);
 				t.onChange((v) => {
@@ -355,9 +328,7 @@ export class TimekeepSettingsTab extends PluginSettingTab {
 			.addText((t) => {
 				t.setValue(String(settings.csvDelimiter));
 				t.onChange((v) => {
-					const newCsvDelimiter = v.length
-						? v
-						: defaultSettings.csvDelimiter;
+					const newCsvDelimiter = v.length ? v : defaultSettings.csvDelimiter;
 
 					this.settingsStore.setState((currentValue) => ({
 						...currentValue,
@@ -371,9 +342,7 @@ export class TimekeepSettingsTab extends PluginSettingTab {
 
 		new Setting(this.containerEl)
 			.setName("Format copied JSON")
-			.setDesc(
-				"Whether to format the JSON contents before copying them to clipboard."
-			)
+			.setDesc("Whether to format the JSON contents before copying them to clipboard.")
 			.addToggle((t) => {
 				t.setValue(settings.formatCopiedJSON);
 				t.onChange((v) => {

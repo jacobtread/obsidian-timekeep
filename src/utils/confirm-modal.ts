@@ -10,11 +10,7 @@ export class ConfirmModal extends Modal {
 	// Whether an option was picked
 	picked: boolean;
 
-	constructor(
-		app: App,
-		message: string,
-		callback: (choice: boolean) => void
-	) {
+	constructor(app: App, message: string, callback: (choice: boolean) => void) {
 		super(app);
 		this.message = message;
 		this.callback = callback;

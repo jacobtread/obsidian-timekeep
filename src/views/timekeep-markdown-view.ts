@@ -5,12 +5,7 @@ import { TimekeepSettings } from "@/settings";
 import { CustomOutputFormat } from "@/output";
 import { Timekeep, stripTimekeepRuntimeData } from "@/timekeep/schema";
 import { LoadResult, replaceTimekeepCodeblock } from "@/timekeep/parser";
-import {
-	TFile,
-	TAbstractFile,
-	MarkdownRenderChild,
-	MarkdownPostProcessorContext,
-} from "obsidian";
+import { TFile, TAbstractFile, MarkdownRenderChild, MarkdownPostProcessorContext } from "obsidian";
 import { Timesheet } from "@/components/timesheet";
 import { TimesheetLoadError } from "@/components/timesheetLoadError";
 
@@ -53,17 +48,11 @@ export class TimekeepMarkdownView extends MarkdownRenderChild {
 	onload(): void {
 		// Hook file renaming to update the file we are saving to if its renamed
 		this.registerEvent(
-			this.app.vault.on(
-				"rename",
-				(file: TAbstractFile, oldName: string) => {
-					if (
-						file instanceof TFile &&
-						oldName == this.fileSourcePath
-					) {
-						this.fileSourcePath = file.path;
-					}
+			this.app.vault.on("rename", (file: TAbstractFile, oldName: string) => {
+				if (file instanceof TFile && oldName == this.fileSourcePath) {
+					this.fileSourcePath = file.path;
 				}
-			)
+			})
 		);
 
 		// Render the content
@@ -106,10 +95,7 @@ export class TimekeepMarkdownView extends MarkdownRenderChild {
 			this.addChild(timesheet);
 			this.timesheet = timesheet;
 		} else {
-			const timesheet = new TimesheetLoadError(
-				this.containerEl,
-				this.loadResult.error
-			);
+			const timesheet = new TimesheetLoadError(this.containerEl, this.loadResult.error);
 			this.addChild(timesheet);
 			this.timesheet = timesheet;
 		}
@@ -134,10 +120,7 @@ export class TimekeepMarkdownView extends MarkdownRenderChild {
 		const editor = activeEditor.editor;
 
 		if (!editor) return;
-		editor.scrollTo(
-			this.restoreScrollInfo.left,
-			this.restoreScrollInfo.top
-		);
+		editor.scrollTo(this.restoreScrollInfo.left, this.restoreScrollInfo.top);
 	}
 
 	/**
@@ -166,10 +149,7 @@ export class TimekeepMarkdownView extends MarkdownRenderChild {
 			return false;
 		} finally {
 			// Queue scroll restoration after 50ms (Should be enough for the codeblock to re-render)
-			this.restoreScrollTimeout = setTimeout(
-				this.restoreEditorScroll.bind(this),
-				50
-			);
+			this.restoreScrollTimeout = setTimeout(this.restoreEditorScroll.bind(this), 50);
 		}
 	}
 
@@ -182,8 +162,7 @@ export class TimekeepMarkdownView extends MarkdownRenderChild {
 		const sectionInfo = this.context.getSectionInfo(this.containerEl);
 
 		// Ensure we actually have a section to write to
-		if (sectionInfo === null)
-			throw new Error("Section to write did not exist");
+		if (sectionInfo === null) throw new Error("Section to write did not exist");
 
 		const file = this.app.vault.getFileByPath(this.fileSourcePath);
 
@@ -213,9 +192,6 @@ export class TimekeepMarkdownView extends MarkdownRenderChild {
 		const backupFileName = `timekeep-write-backup-${moment().format("YYYY-MM-DD HH-mm-ss")}.json`;
 
 		// Write to the backup file
-		this.app.vault.create(
-			backupFileName,
-			JSON.stringify(stripTimekeepRuntimeData(timekeep))
-		);
+		this.app.vault.create(backupFileName, JSON.stringify(stripTimekeepRuntimeData(timekeep)));
 	}
 }

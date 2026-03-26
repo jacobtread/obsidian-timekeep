@@ -1,16 +1,8 @@
 import moment, { Moment } from "moment";
 import { Store, createStore } from "@/store";
 import { TimekeepSettingsTab } from "@/settings-tab";
-import {
-	defaultSettings,
-	TimekeepSettings,
-	legacySettingsCompatibility,
-} from "@/settings";
-import {
-	load,
-	replaceTimekeepCodeblock,
-	extractTimekeepCodeblocks,
-} from "@/timekeep/parser";
+import { defaultSettings, TimekeepSettings, legacySettingsCompatibility } from "@/settings";
+import { load, replaceTimekeepCodeblock, extractTimekeepCodeblocks } from "@/timekeep/parser";
 import {
 	isKeepRunning,
 	isEntryRunning,
@@ -53,11 +45,7 @@ export default class TimekeepPlugin extends Plugin {
 	getEntryDuration: (entry: TimeEntry, currentTime: Moment) => number;
 	getTotalDuration: (entries: TimeEntry[], currentTime: Moment) => number;
 	stopAllTimekeeps: (vault: Vault, currentTime: Moment) => Promise<number>;
-	stopFileTimekeeps: (
-		vault: Vault,
-		file: TFile,
-		currentTime: Moment
-	) => Promise<number>;
+	stopFileTimekeeps: (vault: Vault, file: TFile, currentTime: Moment) => Promise<number>;
 
 	constructor(app: ObsidianApp, manifest: PluginManifest) {
 		super(app, manifest);
@@ -103,11 +91,7 @@ export default class TimekeepPlugin extends Plugin {
 
 		this.registerMarkdownCodeBlockProcessor(
 			"timekeep",
-			(
-				source: string,
-				el: HTMLElement,
-				context: MarkdownPostProcessorContext
-			) => {
+			(source: string, el: HTMLElement, context: MarkdownPostProcessorContext) => {
 				const loadResult = load(source);
 
 				context.addChild(
@@ -140,23 +124,13 @@ export default class TimekeepPlugin extends Plugin {
 		this.addCommand({
 			id: `create-merged`,
 			name: `Create Merged Tracker`,
-			callback: () =>
-				new TimekeepMergerModal(
-					this.app,
-					this.settingsStore,
-					false
-				).open(),
+			callback: () => new TimekeepMergerModal(this.app, this.settingsStore, false).open(),
 		});
 
 		this.addCommand({
 			id: `export-merged-pdf`,
 			name: `Export Merged Tracker PDF`,
-			callback: () =>
-				new TimekeepMergerModal(
-					this.app,
-					this.settingsStore,
-					true
-				).open(),
+			callback: () => new TimekeepMergerModal(this.app, this.settingsStore, true).open(),
 		});
 
 		this.addCommand({
@@ -186,10 +160,7 @@ export default class TimekeepPlugin extends Plugin {
 							error = "Unknown error occurred";
 						}
 
-						new Notice(
-							"Failed to stop timekeeps: " + errorMessage,
-							1500
-						);
+						new Notice("Failed to stop timekeeps: " + errorMessage, 1500);
 					});
 			},
 		});
@@ -199,8 +170,7 @@ export default class TimekeepPlugin extends Plugin {
 			name: `Stop All Running Trackers (Current File Only)`,
 			callback: () => {
 				const currentTime = moment();
-				const currentFile =
-					this.app.workspace.activeEditor?.file ?? null;
+				const currentFile = this.app.workspace.activeEditor?.file ?? null;
 
 				if (currentFile === null) {
 					new Notice("No active file detected", 1500);
@@ -229,10 +199,7 @@ export default class TimekeepPlugin extends Plugin {
 							error = "Unknown error occurred";
 						}
 
-						new Notice(
-							"Failed to stop timekeeps: " + errorMessage,
-							1500
-						);
+						new Notice("Failed to stop timekeeps: " + errorMessage, 1500);
 					});
 			},
 		});

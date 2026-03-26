@@ -29,11 +29,7 @@ export function createEntry(name: string, startTime: Moment): TimeEntry {
  * @param startTime The start time of the new entry
  * @returns The new collection of entries
  */
-export function withEntry(
-	entries: TimeEntry[],
-	name: string,
-	startTime: Moment
-): TimeEntry[] {
+export function withEntry(entries: TimeEntry[], name: string, startTime: Moment): TimeEntry[] {
 	const entryName = getEntryName(name, entries);
 	return [...entries, createEntry(entryName, startTime)];
 }
@@ -66,11 +62,7 @@ function getEntryName(name: string, entries: TimeEntry[]) {
  * @param startTime The start time for the new entry
  * @returns The updated/created entry
  */
-export function withSubEntry(
-	parent: TimeEntry,
-	name: string,
-	startTime: Moment
-): TimeEntry {
+export function withSubEntry(parent: TimeEntry, name: string, startTime: Moment): TimeEntry {
 	const groupEntry = makeGroupEntry(parent);
 	const entryName = getSubEntryName(name, groupEntry);
 	const newEntry = createEntry(entryName, startTime);

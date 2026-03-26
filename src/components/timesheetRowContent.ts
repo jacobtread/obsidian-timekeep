@@ -84,11 +84,7 @@ export class TimesheetRowContent extends Component {
 			title: entry.name,
 		});
 
-		this.registerDomEvent(
-			nameEl,
-			"click",
-			this.onToggleCollapsed.bind(this)
-		);
+		this.registerDomEvent(nameEl, "click", this.onToggleCollapsed.bind(this));
 
 		if (entry.subEntries !== null && entry.folder) {
 			createObsidianIcon(nameEl, "folder", "timekeep-folder-icon");
@@ -131,10 +127,7 @@ export class TimesheetRowContent extends Component {
 			cls: ["timekeep-col", "timekeep-col--duration"],
 		});
 
-		const duration = new TimesheetRowDurationComponent(
-			durationColEl,
-			entry
-		);
+		const duration = new TimesheetRowDurationComponent(durationColEl, entry);
 
 		this.addChild(duration);
 
@@ -158,30 +151,18 @@ export class TimesheetRowContent extends Component {
 
 		createObsidianIcon(editButton, "edit", "button-icon");
 
-		this.registerDomEvent(
-			startButton,
-			"click",
-			this.onClickStart.bind(this)
-		);
+		this.registerDomEvent(startButton, "click", this.onClickStart.bind(this));
 
 		this.registerDomEvent(editButton, "click", this.onBeginEditing);
 
 		this.updateTimes();
 		this.updateState();
 
-		const unsubscribeSettings = this.settings.subscribe(
-			this.updateTimes.bind(this)
-		);
+		const unsubscribeSettings = this.settings.subscribe(this.updateTimes.bind(this));
 
 		this.register(unsubscribeSettings);
 
-		this.#columns.push(
-			nameColEl,
-			startTimeColEl,
-			endTimeColEl,
-			durationColEl,
-			actionsColEl
-		);
+		this.#columns.push(nameColEl, startTimeColEl, endTimeColEl, durationColEl, actionsColEl);
 	}
 
 	onunload(): void {
@@ -203,9 +184,7 @@ export class TimesheetRowContent extends Component {
 			? formatTimestamp(entry.startTime, settings)
 			: "";
 
-		this.#endTimeEl.textContent = entry.endTime
-			? formatTimestamp(entry.endTime, settings)
-			: "";
+		this.#endTimeEl.textContent = entry.endTime ? formatTimestamp(entry.endTime, settings) : "";
 	}
 
 	updateState() {
@@ -213,12 +192,10 @@ export class TimesheetRowContent extends Component {
 
 		const entry = this.entry;
 
-		const isSelfRunning =
-			entry.subEntries === null && isEntryRunning(entry);
+		const isSelfRunning = entry.subEntries === null && isEntryRunning(entry);
 
 		const isRunningWithin =
-			entry.subEntries !== null &&
-			getRunningEntry(entry.subEntries) !== null;
+			entry.subEntries !== null && getRunningEntry(entry.subEntries) !== null;
 
 		const isInvalidEntry =
 			entry.startTime !== null &&
@@ -229,10 +206,7 @@ export class TimesheetRowContent extends Component {
 
 		rowEl.setAttribute("data-running", String(isSelfRunning));
 		rowEl.setAttribute("data-running-within", String(isRunningWithin));
-		rowEl.setAttribute(
-			"data-sub-entires",
-			String(this.entry.subEntries !== null)
-		);
+		rowEl.setAttribute("data-sub-entires", String(this.entry.subEntries !== null));
 		rowEl.setAttribute("data-invalid", String(isInvalidEntry));
 	}
 
@@ -252,11 +226,7 @@ export class TimesheetRowContent extends Component {
 
 		this.timekeep.setState((timekeep) => {
 			const currentTime = moment();
-			const entries = startNewNestedEntry(
-				currentTime,
-				entry.id,
-				timekeep.entries
-			);
+			const entries = startNewNestedEntry(currentTime, entry.id, timekeep.entries);
 
 			return {
 				...timekeep,

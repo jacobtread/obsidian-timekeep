@@ -13,9 +13,7 @@ describe("startNewEntry", () => {
 		expect(stoppedEntry).toBeDefined();
 		expect(stoppedEntry!.endTime).not.toBeNull();
 
-		expect(stripEntriesRuntimeData(output)).toEqual(
-			stripEntriesRuntimeData(expected)
-		);
+		expect(stripEntriesRuntimeData(output)).toEqual(stripEntriesRuntimeData(expected));
 	});
 
 	it("starting a new entry should add a new entry", async () => {
@@ -23,9 +21,7 @@ describe("startNewEntry", () => {
 			await import("./__fixtures__/manipulating/start_entry/startShouldStopRunning");
 
 		const output = startNewEntry(name, currentTime, input);
-		expect(stripEntriesRuntimeData(output)).toEqual(
-			stripEntriesRuntimeData(expected)
-		);
+		expect(stripEntriesRuntimeData(output)).toEqual(stripEntriesRuntimeData(expected));
 	});
 });
 
@@ -35,9 +31,7 @@ describe("startNewNestedEntry", () => {
 			await import("./__fixtures__/manipulating/start_entry/startNotStartedEntry");
 
 		const output = startNewNestedEntry(currentTime, targetEntry.id, input);
-		expect(stripEntriesRuntimeData(output)).toEqual(
-			stripEntriesRuntimeData(expected)
-		);
+		expect(stripEntriesRuntimeData(output)).toEqual(stripEntriesRuntimeData(expected));
 	});
 
 	it("starting a new entry within a folder should create a subentry", async () => {
@@ -45,9 +39,7 @@ describe("startNewNestedEntry", () => {
 			await import("./__fixtures__/manipulating/start_entry/startNestedFolderEntry");
 
 		const output = startNewNestedEntry(currentTime, targetEntry.id, input);
-		expect(stripEntriesRuntimeData(output)).toEqual(
-			stripEntriesRuntimeData(expected)
-		);
+		expect(stripEntriesRuntimeData(output)).toEqual(stripEntriesRuntimeData(expected));
 	});
 
 	it("starting a new entry should stop any running entries", async () => {
@@ -55,9 +47,7 @@ describe("startNewNestedEntry", () => {
 			await import("./__fixtures__/manipulating/start_entry/startNotStartedEntry");
 
 		const output = startNewNestedEntry(currentTime, targetEntry.id, input);
-		expect(stripEntriesRuntimeData(output)).toEqual(
-			stripEntriesRuntimeData(expected)
-		);
+		expect(stripEntriesRuntimeData(output)).toEqual(stripEntriesRuntimeData(expected));
 	});
 
 	it("starting a new entry should stop any running entries", async () => {
@@ -65,9 +55,7 @@ describe("startNewNestedEntry", () => {
 			await import("./__fixtures__/manipulating/start_entry/startNestedNonExistent");
 
 		const output = startNewNestedEntry(currentTime, targetEntryId, input);
-		expect(stripEntriesRuntimeData(output)).toEqual(
-			stripEntriesRuntimeData(expected)
-		);
+		expect(stripEntriesRuntimeData(output)).toEqual(stripEntriesRuntimeData(expected));
 	});
 
 	it("starting a new entry should stop any running entries", async () => {
@@ -77,16 +65,12 @@ describe("startNewNestedEntry", () => {
 		const output = startNewNestedEntry(currentTime, targetEntry.id, input);
 
 		const outerEntry = output[0];
-		const stoppedEntry = outerEntry.subEntries?.find(
-			(entry) => entry.id === stopped
-		);
+		const stoppedEntry = outerEntry.subEntries?.find((entry) => entry.id === stopped);
 
 		expect(stoppedEntry).toBeDefined();
 		expect(stoppedEntry!.endTime).not.toBeNull();
 
-		expect(stripEntriesRuntimeData(output)).toEqual(
-			stripEntriesRuntimeData(expected)
-		);
+		expect(stripEntriesRuntimeData(output)).toEqual(stripEntriesRuntimeData(expected));
 	});
 
 	it("starting a new entry should add a new entry", async () => {
@@ -94,8 +78,6 @@ describe("startNewNestedEntry", () => {
 			await import("./__fixtures__/manipulating/start_entry/startNestedShouldStopRunning");
 
 		const output = startNewNestedEntry(currentTime, targetEntry.id, input);
-		expect(stripEntriesRuntimeData(output)).toEqual(
-			stripEntriesRuntimeData(expected)
-		);
+		expect(stripEntriesRuntimeData(output)).toEqual(stripEntriesRuntimeData(expected));
 	});
 });

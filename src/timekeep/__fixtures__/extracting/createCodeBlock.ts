@@ -7,11 +7,7 @@
  * @param linesAfter Number of lines after the codeblock
  * @returns The generated codeblock
  */
-export function createCodeBlock(
-	json: string,
-	linesBefore: number,
-	linesAfter: number
-) {
+export function createCodeBlock(json: string, linesBefore: number, linesAfter: number) {
 	let output = "";
 	for (let i = 0; i < linesBefore; i++) {
 		output += "\n";

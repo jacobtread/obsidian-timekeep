@@ -1,4 +1,3 @@
-
 ```dataviewjs
 // Get the currently open file
 const targetFile = this.app.vault.getFileByPath("Obsidian Timekeep.md");
@@ -32,7 +31,7 @@ function formatDuration(totalTime) {
 for (const timekeep of timekeeps) {
 	// Create the entries
 	const data = timekeep.entries
-		.map((entry) => {	
+		.map((entry) => {
 			let duration = timekeepPlugin.getEntryDuration(entry, currentTime);
 			return [entry.name, duration];
 		})

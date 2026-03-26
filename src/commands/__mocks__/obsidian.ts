@@ -32,9 +32,7 @@ export class MockVault {
 	}
 
 	getMarkdownFiles = vi.fn(() => {
-		return Object.keys(this._files).map((path) =>
-			createTFile(this.asVault(), path)
-		);
+		return Object.keys(this._files).map((path) => createTFile(this.asVault(), path));
 	});
 
 	process = vi.fn(async (file: TFile, func: (data: string) => string) => {

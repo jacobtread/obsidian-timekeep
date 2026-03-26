@@ -60,14 +60,11 @@ describe("format duration", () => {
 		[1000 * 60 * 60 * 2, "2h 0s"],
 		[1000 * 60 * 60 * 2.5, "2h 30m 0s"],
 		[1000 * 60 * 60 * 2.505, "2h 30m 18s"],
-	])(
-		'for duration "%s" should expected formatted "%s"',
-		(input, expected) => {
-			const output = formatDurationLong(input);
+	])('for duration "%s" should expected formatted "%s"', (input, expected) => {
+		const output = formatDurationLong(input);
 
-			expect(output).toBe(expected);
-		}
-	);
+		expect(output).toBe(expected);
+	});
 });
 
 describe("format duration short", () => {
@@ -76,14 +73,11 @@ describe("format duration short", () => {
 		[1000 * 60 * 60 * 25.25, "25.25h"],
 		[1000 * 60 * 60 * 25.255, "25.25h"],
 		[1000 * 60 * 60 * 50.5, "50.50h"],
-	])(
-		'for duration "%s" should expected formatted "%s"',
-		(input, expected) => {
-			const output = formatDurationShort(input);
+	])('for duration "%s" should expected formatted "%s"', (input, expected) => {
+		const output = formatDurationShort(input);
 
-			expect(output).toBe(expected);
-		}
-	);
+		expect(output).toBe(expected);
+	});
 });
 
 describe("format duration decimal", () => {
@@ -92,14 +86,11 @@ describe("format duration decimal", () => {
 		[1000 * 60 * 60 * 25.25, "25.25"],
 		[1000 * 60 * 60 * 25.255, "25.25"],
 		[1000 * 60 * 60 * 50.5, "50.50"],
-	])(
-		'for duration "%s" should expected formatted "%s"',
-		(input, expected) => {
-			const output = formatDurationDecimal(input);
+	])('for duration "%s" should expected formatted "%s"', (input, expected) => {
+		const output = formatDurationDecimal(input);
 
-			expect(output).toBe(expected);
-		}
-	);
+		expect(output).toBe(expected);
+	});
 });
 
 describe("format duration with format", () => {
@@ -134,14 +125,11 @@ describe("format duration with format", () => {
 	test.each([
 		["ANY" as DurationFormat, 1000, "unknown duration format"],
 		["" as DurationFormat, 1000, "unknown duration format"],
-	])(
-		'for format "%s" with duration "%s" should thrown Error "%s"',
-		(format, input, error) => {
-			expect(() => {
-				formatDuration(format, input);
-			}).toThrow(error);
-		}
-	);
+	])('for format "%s" with duration "%s" should thrown Error "%s"', (format, input, error) => {
+		expect(() => {
+			formatDuration(format, input);
+		}).toThrow(error);
+	});
 });
 
 describe("format pdf date", () => {
@@ -169,14 +157,11 @@ describe("format pdf row date", () => {
 		["2024-01-12 14:34:45", "12/01/2024 14:34"],
 		["2024-09-24 18:34:45", "24/09/2024 18:34"],
 		["2023-09-24 20:34:45", "24/09/2023 20:34"],
-	])(
-		'for date time "%s" should expected formatted "%s"',
-		(input, expected) => {
-			const settings: TimekeepSettings = defaultSettings;
-			settings.pdfRowDateFormat = "DD/MM/YYYY HH:mm";
-			const output = formatPdfRowDate(moment(input), settings);
+	])('for date time "%s" should expected formatted "%s"', (input, expected) => {
+		const settings: TimekeepSettings = defaultSettings;
+		settings.pdfRowDateFormat = "DD/MM/YYYY HH:mm";
+		const output = formatPdfRowDate(moment(input), settings);
 
-			expect(output).toBe(expected);
-		}
-	);
+		expect(output).toBe(expected);
+	});
 });

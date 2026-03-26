@@ -5,10 +5,7 @@ import { getStartTime } from "./queries";
 
 type TimeEntryWithIndex = TimeEntry & { index: number };
 
-type EntriesComparator = (
-	a: TimeEntryWithIndex,
-	b: TimeEntryWithIndex
-) => number;
+type EntriesComparator = (a: TimeEntryWithIndex, b: TimeEntryWithIndex) => number;
 
 /**
  * Provides a sorted copy of the provided entries list.
@@ -20,10 +17,7 @@ type EntriesComparator = (
  * @param settings The timekeep settings for which order to use
  * @returns The sorted entries list
  */
-export function getEntriesSorted(
-	entries: TimeEntry[],
-	settings: TimekeepSettings
-): TimeEntry[] {
+export function getEntriesSorted(entries: TimeEntry[], settings: TimekeepSettings): TimeEntry[] {
 	// List order should be unchanged
 	if (settings.sortOrder === SortOrder.INSERTION) {
 		return entries;
@@ -56,9 +50,7 @@ function getEntriesSortedReverseInsertion(entries: TimeEntry[]): TimeEntry[] {
 			if (entry.subEntries !== null) {
 				return {
 					...entry,
-					subEntries: getEntriesSortedReverseInsertion(
-						entry.subEntries
-					),
+					subEntries: getEntriesSortedReverseInsertion(entry.subEntries),
 				};
 			}
 
@@ -86,10 +78,7 @@ function getEntriesSortedComparator(
 				if (entry.subEntries !== null) {
 					return {
 						...entry,
-						subEntries: getEntriesSortedComparator(
-							entry.subEntries,
-							comparator
-						),
+						subEntries: getEntriesSortedComparator(entry.subEntries, comparator),
 						index,
 					};
 				}
@@ -125,9 +114,7 @@ function createEntriesComparator(
 
 		// Sort newest when both have a start time
 		if (aStartTime && bStartTime) {
-			return newest
-				? bStartTime.diff(aStartTime)
-				: aStartTime.diff(bStartTime);
+			return newest ? bStartTime.diff(aStartTime) : aStartTime.diff(bStartTime);
 		}
 
 		if (aStartTime) {

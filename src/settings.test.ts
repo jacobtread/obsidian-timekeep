@@ -24,32 +24,18 @@ describe("legacy settings compatibility conversion", () => {
 	});
 
 	test.each([
-		[
-			{ reverseSegmentOrder: true },
-			{ sortOrder: SortOrder.REVERSE_INSERTION },
-		],
+		[{ reverseSegmentOrder: true }, { sortOrder: SortOrder.REVERSE_INSERTION }],
 		[{ reverseSegmentOrder: false }, { sortOrder: SortOrder.INSERTION }],
-		[
-			{ showDecimalHours: true },
-			{ secondaryDurationFormat: DurationFormat.SHORT },
-		],
-		[
-			{ showDecimalHours: false },
-			{ secondaryDurationFormat: DurationFormat.NONE },
-		],
+		[{ showDecimalHours: true }, { secondaryDurationFormat: DurationFormat.SHORT }],
+		[{ showDecimalHours: false }, { secondaryDurationFormat: DurationFormat.NONE }],
 	])('for "%s" should expected "%s"', (legacySetting, expected) => {
 		// Check the legacy setting gets replaced with the new setting
-		const partialSetting = Object.assign(
-			{},
-			legacySetting
-		) as TimekeepSettings;
+		const partialSetting = Object.assign({}, legacySetting) as TimekeepSettings;
 		legacySettingsCompatibility(partialSetting);
 		expect(partialSetting).toStrictEqual(expected);
 
 		const setting = Object.assign({}, defaultSettings, legacySetting);
 		legacySettingsCompatibility(setting);
-		expect(setting).toStrictEqual(
-			Object.assign({}, defaultSettings, expected)
-		);
+		expect(setting).toStrictEqual(Object.assign({}, defaultSettings, expected));
 	});
 });

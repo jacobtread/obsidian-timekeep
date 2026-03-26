@@ -60,9 +60,5 @@ export function startNewNestedEntry(
 	}
 
 	// If the entry hasn't been started then start it
-	return updateEntry(
-		entries,
-		currentEntry.id,
-		createEntry(currentEntry.name, currentTime)
-	);
+	return updateEntry(entries, currentEntry.id, createEntry(currentEntry.name, currentTime));
 }

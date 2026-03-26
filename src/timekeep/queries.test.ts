@@ -1,169 +1,164 @@
 import {
-    getEntryById,
-    isKeepRunning,
-    getPathToEntry,
-    isEntryRunning,
-    getRunningEntry,
-    getEntryDuration,
-    getTotalDuration,
+	getEntryById,
+	isKeepRunning,
+	getPathToEntry,
+	isEntryRunning,
+	getRunningEntry,
+	getEntryDuration,
+	getTotalDuration,
 } from "./queries";
 import { expect, it, describe } from "vitest";
 
 describe("getEntryById", () => {
-    it("find top level entry", async () => {
-        const { input, targetEntry, targetEntryId } =
-            await import("./__fixtures__/checking/findEntryById");
+	it("find top level entry", async () => {
+		const { input, targetEntry, targetEntryId } =
+			await import("./__fixtures__/checking/findEntryById");
 
-        const output = getEntryById(targetEntryId, input);
-        expect(output).toEqual(targetEntry);
-    });
+		const output = getEntryById(targetEntryId, input);
+		expect(output).toEqual(targetEntry);
+	});
 
-    it("find nested entry", async () => {
-        const { input, targetEntry, targetEntryId } =
-            await import("./__fixtures__/checking/findEntryByIdNested");
+	it("find nested entry", async () => {
+		const { input, targetEntry, targetEntryId } =
+			await import("./__fixtures__/checking/findEntryByIdNested");
 
-        const output = getEntryById(targetEntryId, input);
-        expect(output).toEqual(targetEntry);
-    });
+		const output = getEntryById(targetEntryId, input);
+		expect(output).toEqual(targetEntry);
+	});
 
-    it("find entry non existent", async () => {
-        const { input, targetEntryId } =
-            await import("./__fixtures__/checking/findEntryByIdMissing");
+	it("find entry non existent", async () => {
+		const { input, targetEntryId } =
+			await import("./__fixtures__/checking/findEntryByIdMissing");
 
-        const output = getEntryById(targetEntryId, input);
-        expect(output).toBeUndefined();
-    });
+		const output = getEntryById(targetEntryId, input);
+		expect(output).toBeUndefined();
+	});
 });
 
 describe("getPathToEntry", () => {
-    it("path not found", async () => {
-        const { targetEntry, entries, expected } =
-            await import("./__fixtures__/path/pathNotFound");
-        const output = getPathToEntry(entries, targetEntry);
-        expect(output).toEqual(expected);
-    });
+	it("path not found", async () => {
+		const { targetEntry, entries, expected } = await import("./__fixtures__/path/pathNotFound");
+		const output = getPathToEntry(entries, targetEntry);
+		expect(output).toEqual(expected);
+	});
 
-    it("top level path found", () => {});
+	it("top level path found", () => {});
 
-    it("deep path found", () => {});
+	it("deep path found", () => {});
 
-    it("should find running entry path", async () => {
-        const { input, runningEntry, path } =
-            await import("./__fixtures__/checking/findRunningEntryPath");
+	it("should find running entry path", async () => {
+		const { input, runningEntry, path } =
+			await import("./__fixtures__/checking/findRunningEntryPath");
 
-        const output = getPathToEntry(input, runningEntry);
-        expect(output).toEqual(path);
-    });
+		const output = getPathToEntry(input, runningEntry);
+		expect(output).toEqual(path);
+	});
 });
 
 describe("isEntryRunning", () => {
-    it("should determine entry running state", async () => {
-        const { running, notRunning } =
-            await import("./__fixtures__/checking/runningState");
+	it("should determine entry running state", async () => {
+		const { running, notRunning } = await import("./__fixtures__/checking/runningState");
 
-        expect(isEntryRunning(running)).toBe(true);
-        expect(isEntryRunning(notRunning)).toBe(false);
-    });
+		expect(isEntryRunning(running)).toBe(true);
+		expect(isEntryRunning(notRunning)).toBe(false);
+	});
 
-    it("should determine entry running state (nested)", async () => {
-        const { runningNested, stoppedNested } =
-            await import("./__fixtures__/checking/runningState");
+	it("should determine entry running state (nested)", async () => {
+		const { runningNested, stoppedNested } =
+			await import("./__fixtures__/checking/runningState");
 
-        expect(isEntryRunning(runningNested)).toBe(true);
-        expect(isEntryRunning(stoppedNested)).toBe(false);
-    });
+		expect(isEntryRunning(runningNested)).toBe(true);
+		expect(isEntryRunning(stoppedNested)).toBe(false);
+	});
 });
 
 describe("getRunningEntry", () => {
-    it("should find running entry", async () => {
-        const { input, runningEntry } =
-            await import("./__fixtures__/checking/shouldFindRunningEntry");
+	it("should find running entry", async () => {
+		const { input, runningEntry } =
+			await import("./__fixtures__/checking/shouldFindRunningEntry");
 
-        const output = getRunningEntry(input);
+		const output = getRunningEntry(input);
 
-        expect(output).toBe(runningEntry);
-    });
+		expect(output).toBe(runningEntry);
+	});
 
-    it("should find nested running entry", async () => {
-        const { input, runningEntry } =
-            await import("./__fixtures__/checking/shouldFindRunningEntryNested");
+	it("should find nested running entry", async () => {
+		const { input, runningEntry } =
+			await import("./__fixtures__/checking/shouldFindRunningEntryNested");
 
-        const output = getRunningEntry(input);
+		const output = getRunningEntry(input);
 
-        expect(output).toBe(runningEntry);
-    });
+		expect(output).toBe(runningEntry);
+	});
 
-    it("should not find running entry", async () => {
-        const { input } =
-            await import("./__fixtures__/checking/shouldNotFindRunningEntry");
+	it("should not find running entry", async () => {
+		const { input } = await import("./__fixtures__/checking/shouldNotFindRunningEntry");
 
-        const output = getRunningEntry(input);
+		const output = getRunningEntry(input);
 
-        expect(output).toBe(null);
-    });
+		expect(output).toBe(null);
+	});
 });
 
 describe("isKeepRunning", () => {
-    it("should show keep running", async () => {
-        const { input } =
-            await import("./__fixtures__/checking/shouldBeRunning");
+	it("should show keep running", async () => {
+		const { input } = await import("./__fixtures__/checking/shouldBeRunning");
 
-        expect(isKeepRunning(input)).toBe(true);
-    });
+		expect(isKeepRunning(input)).toBe(true);
+	});
 
-    it("should show keep not running", async () => {
-        const { input } =
-            await import("./__fixtures__/checking/shouldNotBeRunning");
+	it("should show keep not running", async () => {
+		const { input } = await import("./__fixtures__/checking/shouldNotBeRunning");
 
-        expect(isKeepRunning(input)).toBe(false);
-    });
+		expect(isKeepRunning(input)).toBe(false);
+	});
 });
 
 describe("getEntryDuration", () => {
-    it("should get entry duration", async () => {
-        const { input, currentTime, durationMs } =
-            await import("./__fixtures__/duration/shouldGetEntryDuration");
+	it("should get entry duration", async () => {
+		const { input, currentTime, durationMs } =
+			await import("./__fixtures__/duration/shouldGetEntryDuration");
 
-        const output = getEntryDuration(input, currentTime);
+		const output = getEntryDuration(input, currentTime);
 
-        expect(output).toBe(durationMs);
-    });
+		expect(output).toBe(durationMs);
+	});
 
-    it("duration of non started entry should be zero", async () => {
-        const { input, currentTime, durationMs } =
-            await import("./__fixtures__/duration/nonStartedZeroDuration");
+	it("duration of non started entry should be zero", async () => {
+		const { input, currentTime, durationMs } =
+			await import("./__fixtures__/duration/nonStartedZeroDuration");
 
-        const output = getEntryDuration(input, currentTime);
+		const output = getEntryDuration(input, currentTime);
 
-        expect(output).toBe(durationMs);
-    });
+		expect(output).toBe(durationMs);
+	});
 
-    it("duration should include children", async () => {
-        const { input, currentTime, expected } =
-            await import("./__fixtures__/duration/durationIncludeChildren");
+	it("duration should include children", async () => {
+		const { input, currentTime, expected } =
+			await import("./__fixtures__/duration/durationIncludeChildren");
 
-        const output = getEntryDuration(input, currentTime);
+		const output = getEntryDuration(input, currentTime);
 
-        expect(output).toBe(expected);
-    });
+		expect(output).toBe(expected);
+	});
 
-    it("duration should use current as end for unfinished entries", async () => {
-        const { input, endTime, durationMs } =
-            await import("./__fixtures__/duration/currentEndUnfinished");
+	it("duration should use current as end for unfinished entries", async () => {
+		const { input, endTime, durationMs } =
+			await import("./__fixtures__/duration/currentEndUnfinished");
 
-        const output = getEntryDuration(input, endTime);
+		const output = getEntryDuration(input, endTime);
 
-        expect(output).toBe(durationMs);
-    });
+		expect(output).toBe(durationMs);
+	});
 });
 
 describe("getTotalDuration", () => {
-    it("should get total duration", async () => {
-        const { input, currentTime, expected } =
-            await import("./__fixtures__/duration/totalDuration");
+	it("should get total duration", async () => {
+		const { input, currentTime, expected } =
+			await import("./__fixtures__/duration/totalDuration");
 
-        const output = getTotalDuration(input, currentTime);
+		const output = getTotalDuration(input, currentTime);
 
-        expect(output).toBe(expected);
-    });
+		expect(output).toBe(expected);
+	});
 });

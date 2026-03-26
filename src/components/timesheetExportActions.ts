@@ -66,29 +66,13 @@ export class TimesheetExportActions extends Component {
 			text: "Save PDF",
 		});
 
-		this.registerDomEvent(
-			copyMarkdownButton,
-			"click",
-			this.onCopyMarkdown.bind(this)
-		);
+		this.registerDomEvent(copyMarkdownButton, "click", this.onCopyMarkdown.bind(this));
 
-		this.registerDomEvent(
-			copyCSVButton,
-			"click",
-			this.onCopyCSV.bind(this)
-		);
+		this.registerDomEvent(copyCSVButton, "click", this.onCopyCSV.bind(this));
 
-		this.registerDomEvent(
-			copyJSONButton,
-			"click",
-			this.onCopyJSON.bind(this)
-		);
+		this.registerDomEvent(copyJSONButton, "click", this.onCopyJSON.bind(this));
 
-		this.registerDomEvent(
-			savePdfButton,
-			"click",
-			this.onSavePDF.bind(this)
-		);
+		this.registerDomEvent(savePdfButton, "click", this.onSavePDF.bind(this));
 
 		// Disable and hide the save as PDF button on mobile
 		if (Platform.isMobileApp) {
@@ -96,10 +80,8 @@ export class TimesheetExportActions extends Component {
 			savePdfButton.hidden = true;
 		}
 
-		const createCustomButtons =
-			this.createCustomOutputFormatButtons.bind(this);
-		const unsubscribeCustomFormats =
-			this.customOutputFormats.subscribe(createCustomButtons);
+		const createCustomButtons = this.createCustomOutputFormatButtons.bind(this);
+		const unsubscribeCustomFormats = this.customOutputFormats.subscribe(createCustomButtons);
 		this.register(unsubscribeCustomFormats);
 		createCustomButtons();
 	}

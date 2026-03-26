@@ -8,10 +8,7 @@ import { expect, it, describe } from "vitest";
 describe("stopAllTimekeeps", () => {
 	it("should stop nothing when no markdown files", async () => {
 		const vault = new MockVault();
-		const amount = await stopAllTimekeeps(
-			vault.asVault(),
-			moment("2025-11-07T00:31:03.714Z")
-		);
+		const amount = await stopAllTimekeeps(vault.asVault(), moment("2025-11-07T00:31:03.714Z"));
 
 		expect(amount).toBe(0);
 	});
@@ -23,10 +20,7 @@ describe("stopAllTimekeeps", () => {
 		vault.addFile("TEST_MARKDOWN_2.md", "");
 		vault.addFile("TEST_MARKDOWN_3.md", "");
 
-		const amount = await stopAllTimekeeps(
-			vault.asVault(),
-			moment("2025-11-07T00:31:03.714Z")
-		);
+		const amount = await stopAllTimekeeps(vault.asVault(), moment("2025-11-07T00:31:03.714Z"));
 
 		expect(amount).toBe(0);
 	});
@@ -55,10 +49,7 @@ describe("stopAllTimekeeps", () => {
 		const file2 = vault.addFile("TEST_MARKDOWN_2.md", TEST_MARKDOWN_3);
 		const file3 = vault.addFile("TEST_MARKDOWN_3.md", TEST_MARKDOWN_3);
 
-		const amount = await stopAllTimekeeps(
-			vault.asVault(),
-			moment("2025-11-07T00:31:03.714Z")
-		);
+		const amount = await stopAllTimekeeps(vault.asVault(), moment("2025-11-07T00:31:03.714Z"));
 
 		const output1 = await vault.read(file1);
 		expect(output1).toEqual(TEST_MARKDOWN_1_STOPPED);
@@ -103,10 +94,7 @@ describe("stopAllTimekeeps", () => {
 		const file2 = vault.addFile("TEST_MARKDOWN_2.md", TEST_MARKDOWN_2);
 		const file3 = vault.addFile("TEST_MARKDOWN_3.md", TEST_MARKDOWN_3);
 
-		const amount = await stopAllTimekeeps(
-			vault.asVault(),
-			moment("2025-11-07T00:31:03.714Z")
-		);
+		const amount = await stopAllTimekeeps(vault.asVault(), moment("2025-11-07T00:31:03.714Z"));
 
 		const output1 = await vault.read(file1);
 		expect(output1).toEqual(TEST_MARKDOWN_1_STOPPED);
@@ -137,10 +125,7 @@ describe("stopAllTimekeeps", () => {
 		vault.read.mockReturnValueOnce(Promise.resolve(""));
 
 		await expect(
-			stopAllTimekeeps(
-				vault.asVault(),
-				moment("2025-11-07T00:31:03.714Z")
-			)
+			stopAllTimekeeps(vault.asVault(), moment("2025-11-07T00:31:03.714Z"))
 		).rejects.toThrow();
 	});
 });

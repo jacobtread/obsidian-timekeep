@@ -55,18 +55,15 @@ const TIME_ENTRY_GROUP_BASE = z.object({
 });
 
 // Schema for a time entry group
-const TIME_ENTRY_GROUP: z.ZodType<TimeEntryGroup> =
-	TIME_ENTRY_GROUP_BASE.extend({
-		subEntries: z.lazy(() =>
-			z.array(z.union([TIME_ENTRY_SINGLE, TIME_ENTRY_GROUP]))
-		),
-	})
-		// At runtime a unique ID is inserted
-		/* istanbul ignore next */
-		.transform((entry) => ({
-			...entry,
-			id: uuid(),
-		}));
+const TIME_ENTRY_GROUP: z.ZodType<TimeEntryGroup> = TIME_ENTRY_GROUP_BASE.extend({
+	subEntries: z.lazy(() => z.array(z.union([TIME_ENTRY_SINGLE, TIME_ENTRY_GROUP]))),
+})
+	// At runtime a unique ID is inserted
+	/* istanbul ignore next */
+	.transform((entry) => ({
+		...entry,
+		id: uuid(),
+	}));
 
 // Schema for time entries
 const TIME_ENTRY = z.union([TIME_ENTRY_SINGLE, TIME_ENTRY_GROUP]);

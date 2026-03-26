@@ -3,12 +3,7 @@ import type { Store } from "@/store";
 import type { Timekeep } from "@/timekeep/schema";
 import { Component } from "obsidian";
 import moment from "moment";
-import {
-	getEntryDuration,
-	getRunningEntry,
-	getTotalDuration,
-	isKeepRunning,
-} from "@/timekeep";
+import { getEntryDuration, getRunningEntry, getTotalDuration, isKeepRunning } from "@/timekeep";
 import { formatDuration } from "@/utils";
 import { TimesheetTimer } from "./timesheetTimer";
 
@@ -96,10 +91,7 @@ export class TimesheetCounters extends Component {
 		// Only schedule further updates if we are running
 		const timekeep = this.timekeep.getState();
 		if (isKeepRunning(timekeep)) {
-			const intervalID = window.setInterval(
-				this.updateTimers.bind(this),
-				1000
-			);
+			const intervalID = window.setInterval(this.updateTimers.bind(this), 1000);
 
 			this.currentContentInterval = intervalID;
 			this.registerInterval(intervalID);
@@ -116,9 +108,7 @@ export class TimesheetCounters extends Component {
 		const currentTime = moment();
 		const total = getTotalDuration(timekeep.entries, currentTime);
 		const runningEntry = getRunningEntry(timekeep.entries);
-		const current = runningEntry
-			? getEntryDuration(runningEntry, currentTime)
-			: 0;
+		const current = runningEntry ? getEntryDuration(runningEntry, currentTime) : 0;
 
 		this.currentTimer.setHidden(runningEntry === null);
 		this.currentTimer.setValues(

@@ -27,10 +27,7 @@ function createFooter(
 	currentTime: Moment,
 	durationFormat: DurationFormat
 ): RawTableRow {
-	const total: string = formatDuration(
-		durationFormat,
-		getTotalDuration(entries, currentTime)
-	);
+	const total: string = formatDuration(durationFormat, getTotalDuration(entries, currentTime));
 	return ["**Total**", "", "", `**${total}**`];
 }
 
@@ -73,11 +70,7 @@ export function createMarkdownTable(
 		// Markdown raw table contents
 		...createRawTable(timekeep.entries, settings, currentTime),
 		// Markdown footer row
-		createFooter(
-			timekeep.entries,
-			currentTime,
-			settings.exportDurationFormat
-		),
+		createFooter(timekeep.entries, currentTime, settings.exportDurationFormat),
 	];
 
 	// Array of indexes for all the columns (0 - TOTAL_COLUMNS)

@@ -98,9 +98,7 @@ export class TimesheetRowContainer extends Component {
 	 *
 	 * @param content The new content to show
 	 */
-	private swapContent(
-		content: TimesheetRowContent | TimesheetRowContentEditing | undefined
-	) {
+	private swapContent(content: TimesheetRowContent | TimesheetRowContentEditing | undefined) {
 		if (this.#content) {
 			this.removeChild(this.#content);
 		}

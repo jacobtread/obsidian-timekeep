@@ -26,11 +26,7 @@ export class TimekeepMergerModal extends Modal {
 	private exportPdf: boolean;
 	private settings: Store<TimekeepSettings>;
 
-	constructor(
-		app: App,
-		settings: Store<TimekeepSettings>,
-		exportPdf = false
-	) {
+	constructor(app: App, settings: Store<TimekeepSettings>, exportPdf = false) {
 		super(app);
 
 		this.exportPdf = exportPdf;
@@ -102,10 +98,7 @@ export class TimekeepMergerModal extends Modal {
 				};
 
 				for (const result of this.selectedResults) {
-					timekeep.entries = [
-						...timekeep.entries,
-						...result.timekeep.entries,
-					];
+					timekeep.entries = [...timekeep.entries, ...result.timekeep.entries];
 				}
 
 				// Close after taking the results as closing resets the list
@@ -148,8 +141,7 @@ export class TimekeepMergerModal extends Modal {
 
 	updateSelectAll() {
 		if (this.selectContainer) {
-			this.selectContainer.style.display =
-				this.filteredResults.length > 0 ? "flex" : "none";
+			this.selectContainer.style.display = this.filteredResults.length > 0 ? "flex" : "none";
 		}
 
 		const isAllSelected = this.isAllSelected();
@@ -168,9 +160,7 @@ export class TimekeepMergerModal extends Modal {
 		}
 
 		for (const result of this.filteredResults) {
-			const selected = this.selectedResults.find(
-				(selected) => selected.id === result.id
-			);
+			const selected = this.selectedResults.find((selected) => selected.id === result.id);
 
 			if (selected === undefined) {
 				return false;
@@ -192,9 +182,7 @@ export class TimekeepMergerModal extends Modal {
 		if (checked) {
 			// Find all results that aren't already selected
 			const toBeSelected = this.filteredResults.filter((result) => {
-				const selected = this.selectedResults.find(
-					(selected) => selected.id === result.id
-				);
+				const selected = this.selectedResults.find((selected) => selected.id === result.id);
 				return selected === undefined;
 			});
 
@@ -279,8 +267,7 @@ export class TimekeepMergerModal extends Modal {
 				type: "checkbox",
 			});
 			checkbox.checked =
-				this.selectedResults.find((other) => other.id === result.id) !==
-				undefined;
+				this.selectedResults.find((other) => other.id === result.id) !== undefined;
 			checkbox.id = `timekeep-${result.id}`;
 
 			checkbox.onchange = () => {

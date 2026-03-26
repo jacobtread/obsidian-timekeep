@@ -23,11 +23,7 @@ export function updateEntry(
 		if (entry.subEntries !== null) {
 			return {
 				...entry,
-				subEntries: updateEntry(
-					entry.subEntries,
-					previousEntryId,
-					newEntry
-				),
+				subEntries: updateEntry(entry.subEntries, previousEntryId, newEntry),
 			};
 		}
 
@@ -43,10 +39,7 @@ export function updateEntry(
  * @param collapsed The collapse state
  * @returns The new updated entry
  */
-export function setEntryCollapsed(
-	entry: TimeEntry,
-	collapsed: boolean
-): TimeEntry {
+export function setEntryCollapsed(entry: TimeEntry, collapsed: boolean): TimeEntry {
 	// Entry cannot be collapsed
 	if (entry.subEntries === null) {
 		return entry;
@@ -69,10 +62,7 @@ export function setEntryCollapsed(
  * @param entries The entries to stop
  * @returns The new list of stopped entries
  */
-export function stopRunningEntries(
-	entries: TimeEntry[],
-	endTime: Moment
-): TimeEntry[] {
+export function stopRunningEntries(entries: TimeEntry[], endTime: Moment): TimeEntry[] {
 	return entries.map((entry) => {
 		// Stop the sub entries
 		if (entry.subEntries) {
@@ -105,10 +95,7 @@ export function stopRunningEntries(
  * @param target The target entry to remove
  * @returns The new list with the entry removed
  */
-export function removeEntry(
-	entries: TimeEntry[],
-	target: TimeEntry
-): TimeEntry[] {
+export function removeEntry(entries: TimeEntry[], target: TimeEntry): TimeEntry[] {
 	return entries.reduce((acc: TimeEntry[], entry: TimeEntry) => {
 		if (entry.id !== target.id) {
 			// Filter sub entries for matching entries

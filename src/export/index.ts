@@ -25,9 +25,7 @@ export function createRawTable(
 	settings: TimekeepSettings,
 	currentTime: Moment
 ): RawTableRow[] {
-	return entries.flatMap((entry) =>
-		createRawTableEntries(entry, settings, currentTime)
-	);
+	return entries.flatMap((entry) => createRawTableEntries(entry, settings, currentTime));
 }
 
 /**
@@ -51,8 +49,7 @@ export function createRawTableEntries(
 			entry.startTime ? formatTimestamp(entry.startTime, settings) : "",
 			entry.endTime ? formatTimestamp(entry.endTime, settings) : "",
 			// Include duration for entries that are finished
-			(entry.startTime !== null && entry.endTime !== null) ||
-			entry.subEntries !== null
+			(entry.startTime !== null && entry.endTime !== null) || entry.subEntries !== null
 				? formatDuration(
 						settings.exportDurationFormat,
 						getEntryDuration(entry, currentTime)

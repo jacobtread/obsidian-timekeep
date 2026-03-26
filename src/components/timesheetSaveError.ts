@@ -57,11 +57,7 @@ export class TimesheetSaveError extends Component {
 			text: "Copy Timekeep",
 		});
 
-		this.registerDomEvent(
-			retryButton,
-			"click",
-			this.onRetrySave.bind(this)
-		);
+		this.registerDomEvent(retryButton, "click", this.onRetrySave.bind(this));
 
 		this.registerDomEvent(copyButton, "click", this.onCopy.bind(this));
 	}

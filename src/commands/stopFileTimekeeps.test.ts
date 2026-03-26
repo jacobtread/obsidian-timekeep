@@ -26,10 +26,7 @@ describe("stopFileTimekeeps", () => {
 			"utf-8"
 		);
 
-		const file1 = vault.addFile(
-			"TEST_MARKDOWN_1.md",
-			TEST_MARKDOWN_1_STOPPED
-		);
+		const file1 = vault.addFile("TEST_MARKDOWN_1.md", TEST_MARKDOWN_1_STOPPED);
 
 		const amount = await stopFileTimekeeps(
 			vault.asVault(),
@@ -81,11 +78,7 @@ describe("stopFileTimekeeps", () => {
 		);
 
 		const file = vault.addFile("TEST_MARKDOWN_2.md", TEST_MARKDOWN_2);
-		await stopFileTimekeeps(
-			vault.asVault(),
-			file,
-			moment("2025-11-07T00:31:03.714Z")
-		);
+		await stopFileTimekeeps(vault.asVault(), file, moment("2025-11-07T00:31:03.714Z"));
 
 		const output = await vault.read(file);
 		expect(output).toEqual(TEST_MARKDOWN_2_STOPPED);
@@ -108,11 +101,7 @@ describe("stopFileTimekeeps", () => {
 		vault.read.mockReturnValueOnce(Promise.resolve(""));
 
 		await expect(
-			stopFileTimekeeps(
-				vault.asVault(),
-				file,
-				moment("2025-11-07T00:31:03.714Z")
-			)
+			stopFileTimekeeps(vault.asVault(), file, moment("2025-11-07T00:31:03.714Z"))
 		).rejects.toThrow();
 	});
 });

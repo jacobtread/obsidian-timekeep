@@ -46,10 +46,7 @@ export class TimesheetRowDurationComponent extends Component {
 
 		// Only schedule further updates if we are running
 		if (isRunning) {
-			const intervalID = window.setInterval(
-				this.updateTime.bind(this),
-				1000
-			);
+			const intervalID = window.setInterval(this.updateTime.bind(this), 1000);
 
 			this.currentContentInterval = intervalID;
 			this.registerInterval(intervalID);

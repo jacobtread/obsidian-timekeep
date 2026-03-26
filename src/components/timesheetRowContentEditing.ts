@@ -129,11 +129,7 @@ export class TimesheetRowContentEditing extends Component {
 		createObsidianIcon(deleteButton, "trash", "text-button-icon");
 		deleteButton.appendText("Delete");
 
-		this.registerDomEvent(
-			deleteButton,
-			"click",
-			this.onConfirmDelete.bind(this)
-		);
+		this.registerDomEvent(deleteButton, "click", this.onConfirmDelete.bind(this));
 
 		const onUpdateState = this.onUpdateState.bind(this);
 		const unsubscribeSettings = this.settings.subscribe(onUpdateState);
@@ -196,11 +192,7 @@ export class TimesheetRowContentEditing extends Component {
 	}
 
 	onSubmit(event: Event) {
-		if (
-			!this.#nameInputEl ||
-			!this.#startTimeInputEl ||
-			!this.#endTimeInputEl
-		) {
+		if (!this.#nameInputEl || !this.#startTimeInputEl || !this.#endTimeInputEl) {
 			return;
 		}
 
@@ -219,10 +211,7 @@ export class TimesheetRowContentEditing extends Component {
 		// Update the start and end times for non groups
 		if (newEntry.subEntries === null) {
 			if (entry.startTime !== null) {
-				const startTimeValue = parseEditableTimestamp(
-					startTime,
-					settings
-				);
+				const startTimeValue = parseEditableTimestamp(startTime, settings);
 				if (startTimeValue.isValid()) {
 					newEntry.startTime = startTimeValue;
 				}

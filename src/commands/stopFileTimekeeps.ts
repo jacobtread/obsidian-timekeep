@@ -2,10 +2,7 @@ import { Moment } from "moment";
 import { TFile, Vault } from "obsidian";
 import { Timekeep } from "@/timekeep/schema";
 import { getRunningEntry, stopRunningEntries } from "@/timekeep";
-import {
-	replaceTimekeepCodeblock,
-	extractTimekeepCodeblocksWithPosition,
-} from "@/timekeep/parser";
+import { replaceTimekeepCodeblock, extractTimekeepCodeblocksWithPosition } from "@/timekeep/parser";
 
 /**
  * Stops all timekeeps in the provided file if there are any running.
@@ -18,27 +15,20 @@ import {
  * @param currentTime The current time to use as the stopped time
  * @returns The total number of stopped timekeeps
  */
-export async function stopFileTimekeeps(
-	vault: Vault,
-	file: TFile,
-	currentTime: Moment
-) {
+export async function stopFileTimekeeps(vault: Vault, file: TFile, currentTime: Moment) {
 	const content = await vault.cachedRead(file);
 	const initialTimekeeps = extractTimekeepCodeblocksWithPosition(content);
 
 	// Collect the indexes of running timekeeps
-	const runningIndexes = initialTimekeeps.reduce<number[]>(
-		(runningIndexes, timekeep, index) => {
-			const entry = getRunningEntry(timekeep.timekeep.entries);
+	const runningIndexes = initialTimekeeps.reduce<number[]>((runningIndexes, timekeep, index) => {
+		const entry = getRunningEntry(timekeep.timekeep.entries);
 
-			if (entry !== null) {
-				runningIndexes.push(index);
-			}
+		if (entry !== null) {
+			runningIndexes.push(index);
+		}
 
-			return runningIndexes;
-		},
-		[]
-	);
+		return runningIndexes;
+	}, []);
 
 	// Nothing to process
 	if (runningIndexes.length < 1) {
@@ -64,12 +54,7 @@ export async function stopFileTimekeeps(
 				entries: stopRunningEntries(timekeep.entries, currentTime),
 			};
 
-			content = replaceTimekeepCodeblock(
-				stoppedTimekeep,
-				content,
-				startLine,
-				endLine
-			);
+			content = replaceTimekeepCodeblock(stoppedTimekeep, content, startLine, endLine);
 		}
 
 		return content;

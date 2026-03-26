@@ -6,10 +6,7 @@ import { Timekeep } from "@/timekeep/schema";
 import { mkdir, writeFile } from "fs/promises";
 import { TimekeepSettings, PdfExportBehavior } from "@/settings";
 
-export async function exportPdf(
-	timekeep: Timekeep,
-	settings: TimekeepSettings
-) {
+export async function exportPdf(timekeep: Timekeep, settings: TimekeepSettings) {
 	// Pdf exports don't work in mobile mode
 	if (Platform.isMobileApp) return;
 

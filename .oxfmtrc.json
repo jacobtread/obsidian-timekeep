@@ -1,0 +1,9 @@
+{
+	"$schema": "./node_modules/oxfmt/configuration_schema.json",
+	"tabWidth": 4,
+	"trailingComma": "es5",
+	"semi": true,
+	"singleQuote": false,
+	"bracketSameLine": true,
+	"ignorePatterns": ["dist/**", "*.min.js", "README.md", "types/**"]
+}

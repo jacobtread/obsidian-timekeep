@@ -8,10 +8,7 @@ import { Timekeep, TimeEntry } from "@/timekeep/schema";
  * @param entries List of entries to search
  * @returns The found entry or undefined
  */
-export function getEntryById(
-	entryId: string,
-	entries: TimeEntry[]
-): TimeEntry | undefined {
+export function getEntryById(entryId: string, entries: TimeEntry[]): TimeEntry | undefined {
 	for (const entry of entries) {
 		if (entry.id === entryId) {
 			return entry;
@@ -127,10 +124,7 @@ export function isKeepRunning(timekeep: Timekeep): boolean {
  * @param currentTime The current time to use for unfinished entries
  * @returns The duration in milliseconds
  */
-export function getEntryDuration(
-	entry: TimeEntry,
-	currentTime: Moment
-): number {
+export function getEntryDuration(entry: TimeEntry, currentTime: Moment): number {
 	if (entry.subEntries !== null) {
 		return getTotalDuration(entry.subEntries, currentTime);
 	}
@@ -153,13 +147,9 @@ export function getEntryDuration(
  * @param currentTime The current time to use for unfinished entries
  * @returns The total duration in milliseconds
  */
-export function getTotalDuration(
-	entries: TimeEntry[],
-	currentTime: Moment
-): number {
+export function getTotalDuration(entries: TimeEntry[], currentTime: Moment): number {
 	return entries.reduce(
-		(totalDuration, entry) =>
-			totalDuration + getEntryDuration(entry, currentTime),
+		(totalDuration, entry) => totalDuration + getEntryDuration(entry, currentTime),
 		0
 	);
 }

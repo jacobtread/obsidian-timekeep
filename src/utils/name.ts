@@ -29,8 +29,7 @@ export function parseNameSegments(input: string): NameSegment[] {
 
 		// Handle the text before the current link
 		const beforeLink = input.slice(lastIndex, index);
-		if (beforeLink)
-			segments.push({ type: NameSegmentType.Text, text: beforeLink });
+		if (beforeLink) segments.push({ type: NameSegmentType.Text, text: beforeLink });
 
 		// Handle the matched link
 		if (match[1]) {

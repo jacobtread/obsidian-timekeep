@@ -151,15 +151,8 @@ export class TimesheetTable extends Component {
 			this.addChild(row);
 			this.#rows.push(row);
 
-			if (
-				entry.subEntries &&
-				!entry.collapsed &&
-				entry.subEntries.length > 0
-			) {
-				const sortedEntries = getEntriesSorted(
-					entry.subEntries,
-					settings
-				);
+			if (entry.subEntries && !entry.collapsed && entry.subEntries.length > 0) {
+				const sortedEntries = getEntriesSorted(entry.subEntries, settings);
 
 				for (let i = sortedEntries.length - 1; i >= 0; i--) {
 					stack.push({

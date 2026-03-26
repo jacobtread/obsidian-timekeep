@@ -8,10 +8,7 @@ import { DurationFormat, TimekeepSettings } from "@/settings";
  * @param settings The timekeep settings
  * @returns The formatted timestamp
  */
-export function formatTimestamp(
-	timestamp: Moment,
-	settings: TimekeepSettings
-): string {
+export function formatTimestamp(timestamp: Moment, settings: TimekeepSettings): string {
 	return timestamp.format(settings.timestampFormat);
 }
 
@@ -23,10 +20,7 @@ export function formatTimestamp(
  * @param settings The timekeep settings
  * @returns The formatted timestamp
  */
-export function formatEditableTimestamp(
-	timestamp: Moment,
-	settings: TimekeepSettings
-): string {
+export function formatEditableTimestamp(timestamp: Moment, settings: TimekeepSettings): string {
 	return timestamp.format(settings.editableTimestampFormat);
 }
 
@@ -37,10 +31,7 @@ export function formatEditableTimestamp(
  * @param settings The timekeep settings
  * @returns The timestamp
  */
-export function parseEditableTimestamp(
-	formatted: string,
-	settings: TimekeepSettings
-): Moment {
+export function parseEditableTimestamp(formatted: string, settings: TimekeepSettings): Moment {
 	return moment(formatted, settings.editableTimestampFormat, true);
 }
 
@@ -52,10 +43,7 @@ export function parseEditableTimestamp(
  * @throws unknown duration format when format is not supported
  * @returns The formatted duration
  */
-export function formatDuration(
-	format: DurationFormat,
-	durationMS: number
-): string {
+export function formatDuration(format: DurationFormat, durationMS: number): string {
 	switch (format) {
 		case DurationFormat.LONG:
 			return formatDurationLong(durationMS);
@@ -124,10 +112,7 @@ export function formatDurationDecimal(durationMS: number): string {
  * @param settings The settings
  * @returns The formatted date
  */
-export function formatPdfDate(
-	value: Moment,
-	settings: TimekeepSettings
-): string {
+export function formatPdfDate(value: Moment, settings: TimekeepSettings): string {
 	return value.format(settings.pdfDateFormat);
 }
 
@@ -140,9 +125,6 @@ export function formatPdfDate(
  * @param settings The settings
  * @returns The formatted timestamp
  */
-export function formatPdfRowDate(
-	value: Moment,
-	settings: TimekeepSettings
-): string {
+export function formatPdfRowDate(value: Moment, settings: TimekeepSettings): string {
 	return value.format(settings.pdfRowDateFormat);
 }
