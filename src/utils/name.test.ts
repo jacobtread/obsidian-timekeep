@@ -126,4 +126,16 @@ describe("parseNameSegments", () => {
 		const result = parseNameSegments(input);
 		expect(result).toEqual([]);
 	});
+
+	it("Markdown link with missing text", () => {
+		const input = "[](https://example.com)";
+		const result = parseNameSegments(input);
+		expect(result).toEqual([{ type: NameSegmentType.Text, text: "[](https://example.com)" }]);
+	});
+
+	it("Markdown link with missing URL", () => {
+		const input = "[Text]()";
+		const result = parseNameSegments(input);
+		expect(result).toEqual([{ type: NameSegmentType.Text, text: "[Text]()" }]);
+	});
 });
