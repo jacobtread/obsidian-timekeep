@@ -8,7 +8,7 @@ import {
 	replaceTimekeepCodeblock,
 	extractTimekeepCodeblocks,
 } from "./parser";
-import { expect, it, describe } from "vitest";
+import { expect, it, describe, vi } from "vitest";
 
 /**
  * Generates a code block surrounding the provided JSON
@@ -158,7 +158,11 @@ describe("loading timekeep", () => {
 	it("should give error on invalid timekeep (JSON)", () => {
 		const data = "{";
 
+		const spy = vi.spyOn(console, "error").mockImplementation(() => {});
 		const result = load(data);
+
+		// Should attempt to log the error
+		expect(spy).toHaveBeenCalled();
 
 		expect(result.success).toBe(false);
 
