@@ -54,5 +54,10 @@ export default defineConfig((env) => ({
 		},
 	},
 
-	test: {},
+	test: {
+		coverage: {
+			// Exclude mocks and fixtures from coverage
+			exclude: ["**/__mocks__/**", "**/__fixtures__/**"],
+		},
+	},
 }));
