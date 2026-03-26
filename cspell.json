@@ -8,6 +8,7 @@
     "timekeep",
     "timesheet",
     "unstarted",
-    "Timekeeps"
+    "Timekeeps",
+    "pdfmake"
   ]
 }

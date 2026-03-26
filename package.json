@@ -8,7 +8,8 @@
         "dev": "node scripts/dev.js",
         "build": "node scripts/build.js",
         "version": "node scripts/version-bump.js && git add manifest.json versions.json",
-        "lint": "eslint src",
+        "lint": "oxlint src",
+        "lint:fix": "oxlint --fix src",
         "format": "prettier -w src",
         "test": "vitest run --coverage"
     },
@@ -18,12 +19,11 @@
     "devDependencies": {
         "@types/node": "^20.19.37",
         "@types/pdfmake": "^0.3.2",
-        "@typescript-eslint/eslint-plugin": "8.57.2",
-        "@typescript-eslint/parser": "8.57.2",
         "@vitest/coverage-v8": "^4.1.1",
         "eslint-config-prettier": "^10.1.8",
         "eslint-plugin-perfectionist": "^5.7.0",
         "obsidian": "latest",
+        "oxlint": "^1.57.0",
         "prettier": "^3.8.1",
         "typescript": "5.9.2",
         "vite": "^8.0.2",
