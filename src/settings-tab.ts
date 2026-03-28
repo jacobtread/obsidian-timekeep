@@ -400,7 +400,7 @@ export class TimekeepSettingsTab extends PluginSettingTab {
 			});
 
 		new Setting(this.containerEl)
-			.setName("Index Concurrency")
+			.setName("Index concurrency")
 			.setDesc(
 				"Maximum files to read concurrently on initialization (decrease this if you find you are lagging when opening your vault because of timekeep)"
 			)
