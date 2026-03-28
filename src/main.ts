@@ -23,12 +23,14 @@ import { load, replaceTimekeepCodeblock, extractTimekeepCodeblocks } from "@/tim
 
 import { stopAllTimekeeps } from "./commands/stopAllTimekeeps";
 import { stopFileTimekeeps } from "./commands/stopFileTimekeeps";
+import { TimesheetStatusBarItem } from "./components/timesheetStatusBarItem";
 import { CustomOutputFormat } from "./output";
 import { TimekeepRegistry } from "./service/registry";
 import { Timekeep, TimeEntry } from "./timekeep/schema";
 import { TimekeepLocatorModal } from "./views/timekeep-locator-modal";
 import { TimekeepMarkdownView } from "./views/timekeep-markdown-view";
 import { TimekeepMergerModal } from "./views/timekeep-merger-modal";
+import { TimekeepStatusBarView } from "./views/timekeep-status-bar-view";
 
 export default class TimekeepPlugin extends Plugin {
 	settingsStore: Store<TimekeepSettings>;
@@ -105,6 +107,11 @@ export default class TimekeepPlugin extends Plugin {
 			this.registry = new TimekeepRegistry(this.app.vault);
 			this.registry.concurrencyLimit = settings.registryConcurrencyLimit;
 			this.registry.onload();
+
+			if (settings.statusBarEnabled) {
+				const containerEl = this.addStatusBarItem();
+				new TimekeepStatusBarView(containerEl, this.app, this.registry, this.settingsStore);
+			}
 		});
 
 		this.registerMarkdownCodeBlockProcessor(

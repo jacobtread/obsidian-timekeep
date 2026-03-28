@@ -419,5 +419,26 @@ export class TimekeepSettingsTab extends PluginSettingTab {
 					}));
 				});
 			});
+
+		// Status bar section
+		new Setting(this.containerEl)
+			.setName("Status Bar")
+			.setDesc(
+				"Timekeep can show status bar entries for running timers within your vault. This requires that the registry option above is enabled"
+			)
+			.setHeading();
+
+		new Setting(this.containerEl)
+			.setName("Enabled")
+			.setDesc("Whether to enable status bar entries.")
+			.addToggle((t) => {
+				t.setValue(settings.statusBarEnabled);
+				t.onChange((v) => {
+					this.settingsStore.setState((currentValue) => ({
+						...currentValue,
+						statusBarEnabled: v,
+					}));
+				});
+			});
 	}
 }

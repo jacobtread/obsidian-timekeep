@@ -7,7 +7,7 @@ import {
 	type TimekeepWithPosition,
 } from "@/timekeep/parser";
 
-type TimekeepRegistryEntry = {
+export type TimekeepRegistryEntry = {
 	file: TFile;
 	timekeeps: TimekeepWithPosition[];
 };

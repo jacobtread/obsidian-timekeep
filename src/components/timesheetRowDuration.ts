@@ -54,6 +54,11 @@ export class TimesheetRowDurationComponent extends Component {
 		}
 	}
 
+	onunload(): void {
+		super.onunload();
+		this.#timeEl?.remove();
+	}
+
 	/**
 	 * Updates the current time duration value based
 	 * on the current time

@@ -72,6 +72,8 @@ export interface TimekeepSettings {
 
 	registryEnabled: boolean;
 	registryConcurrencyLimit: number;
+
+	statusBarEnabled: boolean;
 }
 
 export const defaultSettings: TimekeepSettings = {
@@ -98,6 +100,8 @@ export const defaultSettings: TimekeepSettings = {
 
 	registryEnabled: true,
 	registryConcurrencyLimit: 15,
+
+	statusBarEnabled: true,
 };
 
 export function legacySettingsCompatibility(settings: TimekeepSettings): void {
