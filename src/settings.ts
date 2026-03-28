@@ -69,6 +69,9 @@ export interface TimekeepSettings {
 
 	sortOrder: SortOrder;
 	unstartedOrder: UnstartedOrder;
+
+	registryEnabled: boolean;
+	registryConcurrencyLimit: number;
 }
 
 export const defaultSettings: TimekeepSettings = {
@@ -92,6 +95,9 @@ export const defaultSettings: TimekeepSettings = {
 
 	sortOrder: SortOrder.INSERTION,
 	unstartedOrder: UnstartedOrder.LAST,
+
+	registryEnabled: true,
+	registryConcurrencyLimit: 15,
 };
 
 export function legacySettingsCompatibility(settings: TimekeepSettings): void {

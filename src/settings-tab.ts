@@ -375,5 +375,49 @@ export class TimekeepSettingsTab extends PluginSettingTab {
 					}));
 				});
 			});
+
+		// Registry settings section
+		new Setting(this.containerEl)
+			.setName("Registry")
+			.setDesc(
+				"Timekeep uses an internal registry to track timekeep instances within your vault for functionality like autocomplete"
+			)
+			.setHeading();
+
+		new Setting(this.containerEl)
+			.setName("Enabled")
+			.setDesc(
+				"Whether to enable the registry, this can be disabled to reduce memory usage if you don't need the features that depend on it."
+			)
+			.addToggle((t) => {
+				t.setValue(settings.registryEnabled);
+				t.onChange((v) => {
+					this.settingsStore.setState((currentValue) => ({
+						...currentValue,
+						registryEnabled: v,
+					}));
+				});
+			});
+
+		new Setting(this.containerEl)
+			.setName("Index Concurrency")
+			.setDesc(
+				"Maximum files to read concurrently on initialization (decrease this if you find you are lagging when opening your vault because of timekeep)"
+			)
+
+			.addText((t) => {
+				t.setValue(String(settings.registryConcurrencyLimit));
+				t.onChange((v) => {
+					const value = Number(v);
+
+					this.settingsStore.setState((currentValue) => ({
+						...currentValue,
+						registryConcurrencyLimit:
+							Number.isFinite(value) && Number.isSafeInteger(value)
+								? value
+								: defaultSettings.registryConcurrencyLimit,
+					}));
+				});
+			});
 	}
 }
