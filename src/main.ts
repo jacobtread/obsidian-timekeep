@@ -24,6 +24,7 @@ import { load, replaceTimekeepCodeblock, extractTimekeepCodeblocks } from "@/tim
 import { stopAllTimekeeps } from "./commands/stopAllTimekeeps";
 import { stopFileTimekeeps } from "./commands/stopFileTimekeeps";
 import { CustomOutputFormat } from "./output";
+import { TimekeepRegistry } from "./service/registry";
 import { Timekeep, TimeEntry } from "./timekeep/schema";
 import { TimekeepLocatorModal } from "./views/timekeep-locator-modal";
 import { TimekeepMarkdownView } from "./views/timekeep-markdown-view";
@@ -47,6 +48,9 @@ export default class TimekeepPlugin extends Plugin {
 	getTotalDuration: (entries: TimeEntry[], currentTime: Moment) => number;
 	stopAllTimekeeps: (vault: Vault, currentTime: Moment) => Promise<number>;
 	stopFileTimekeeps: (vault: Vault, file: TFile, currentTime: Moment) => Promise<number>;
+
+	/** Registry of all timekeeps within the vault */
+	registry: TimekeepRegistry | null = null;
 
 	constructor(app: ObsidianApp, manifest: PluginManifest) {
 		super(app, manifest);
@@ -89,6 +93,19 @@ export default class TimekeepPlugin extends Plugin {
 		this.settingsStore.setState(loadedSettings);
 
 		this.addSettingTab(new TimekeepSettingsTab(this.app, this));
+
+		this.app.workspace.onLayoutReady(() => {
+			const settings = this.settingsStore.getState();
+
+			if (!settings.registryEnabled) {
+				return;
+			}
+
+			// Initialize the registry (After the layout is ready and the vault is loaded)
+			this.registry = new TimekeepRegistry(this.app.vault);
+			this.registry.concurrencyLimit = settings.registryConcurrencyLimit;
+			this.registry.onload();
+		});
 
 		this.registerMarkdownCodeBlockProcessor(
 			"timekeep",
