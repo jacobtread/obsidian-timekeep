@@ -165,7 +165,10 @@ export class TimekeepRegistry {
 		);
 
 		const promises = markdownFiles.map(processFile);
-		return Promise.all(promises);
+		const entries = await Promise.all(promises);
+
+		// Exclude any files without timekeeps
+		return entries.filter((entry) => entry.timekeeps.length > 0);
 	}
 
 	/**
