@@ -1,12 +1,14 @@
-import type { TimeEntry, Timekeep } from "@/timekeep/schema";
-import type { TimekeepSettings } from "@/settings";
-import type { Store } from "@/store";
+import moment from "moment";
 import { type App, Component } from "obsidian";
 
+import type { TimekeepSettings } from "@/settings";
+import type { Store } from "@/store";
+import type { TimeEntry, Timekeep } from "@/timekeep/schema";
+
 import { getPathToEntry, stopRunningEntries } from "@/timekeep";
-import moment from "moment";
-import { createObsidianIcon } from "./obsidianIcon";
 import { formatTimestamp } from "@/utils";
+
+import { createObsidianIcon } from "./obsidianIcon";
 
 /**
  * The "Running" timer section of the timesheet start are

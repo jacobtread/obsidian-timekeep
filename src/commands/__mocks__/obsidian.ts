@@ -1,4 +1,5 @@
 import type { TFile, Vault } from "obsidian";
+
 import { vi } from "vitest";
 
 function createTFile(vault: Vault, path: string): TFile {

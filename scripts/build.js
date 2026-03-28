@@ -1,7 +1,7 @@
-import path from "path";
 import fs from "fs/promises";
-import { build } from "vite";
+import path from "path";
 import { fileURLToPath } from "url";
+import { build } from "vite";
 
 async function buildPlugin() {
 	const __filename = fileURLToPath(import.meta.url);

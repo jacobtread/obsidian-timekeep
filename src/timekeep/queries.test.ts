@@ -1,3 +1,5 @@
+import { expect, it, describe } from "vitest";
+
 import {
 	getEntryById,
 	isKeepRunning,
@@ -7,7 +9,6 @@ import {
 	getEntryDuration,
 	getTotalDuration,
 } from "./queries";
-import { expect, it, describe } from "vitest";
 
 describe("getEntryById", () => {
 	it("find top level entry", async () => {

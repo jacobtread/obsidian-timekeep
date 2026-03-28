@@ -1,10 +1,11 @@
-import { Store } from "@/store";
+import { App, TFile, Modal, TextComponent, ButtonComponent } from "obsidian";
 import { v4 as uuid } from "uuid";
+
 import { exportPdf } from "@/export/pdf";
 import { TimekeepSettings } from "@/settings";
+import { Store } from "@/store";
 import { extractTimekeepCodeblocks } from "@/timekeep/parser";
 import { Timekeep, stripTimekeepRuntimeData } from "@/timekeep/schema";
-import { App, TFile, Modal, TextComponent, ButtonComponent } from "obsidian";
 
 interface TimekeepResult {
 	timekeep: Timekeep;

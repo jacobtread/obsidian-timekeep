@@ -1,8 +1,4 @@
-import type { TimeEntry, Timekeep } from "@/timekeep/schema";
-import type { TimekeepSettings } from "@/settings";
 import type { Moment } from "moment";
-
-import pdfMake from "pdfmake";
 import type {
 	DynamicContent,
 	TableCell,
@@ -10,13 +6,19 @@ import type {
 	TFontDictionary,
 } from "pdfmake/interfaces";
 
-// Embedded fonts
-import RobotoBold from "@/fonts/Roboto-Bold.ttf";
-import RubikRegular from "@/fonts/Rubik-Regular.ttf";
-import RubikBold from "@/fonts/Rubik-Bold.ttf";
-import RobotoRegular from "@/fonts/Roboto-Regular.ttf";
+import pdfMake from "pdfmake";
+
+import type { TimekeepSettings } from "@/settings";
+import type { TimeEntry, Timekeep } from "@/timekeep/schema";
+
 import { getEntryDuration, getTotalDuration } from "@/timekeep";
 import { formatDurationLong, formatDurationShort, formatPdfDate, formatPdfRowDate } from "@/utils";
+
+// Embedded fonts
+import RobotoBold from "@/fonts/Roboto-Bold.ttf";
+import RobotoRegular from "@/fonts/Roboto-Regular.ttf";
+import RubikBold from "@/fonts/Rubik-Bold.ttf";
+import RubikRegular from "@/fonts/Rubik-Regular.ttf";
 
 const fonts: TFontDictionary = {
 	Roboto: {

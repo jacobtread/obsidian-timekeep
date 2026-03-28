@@ -1,7 +1,8 @@
-import { getRunningEntry } from "@/timekeep";
 import { App, TFile, SuggestModal } from "obsidian";
-import { Timekeep, TimeEntry } from "@/timekeep/schema";
+
+import { getRunningEntry } from "@/timekeep";
 import { extractTimekeepCodeblocks } from "@/timekeep/parser";
+import { Timekeep, TimeEntry } from "@/timekeep/schema";
 
 interface TimekeepResult {
 	timekeep: Timekeep;

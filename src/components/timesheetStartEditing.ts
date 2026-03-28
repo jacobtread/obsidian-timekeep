@@ -1,8 +1,11 @@
-import type { TimekeepSettings } from "@/settings";
-import type { Timekeep } from "@/timekeep/schema";
-import type { Store } from "@/store";
 import { type App, Component } from "obsidian";
+
+import type { TimekeepSettings } from "@/settings";
+import type { Store } from "@/store";
+import type { Timekeep } from "@/timekeep/schema";
+
 import { getRunningEntry, updateEntry } from "@/timekeep";
+
 import { createObsidianIcon } from "./obsidianIcon";
 
 /**

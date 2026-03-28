@@ -1,8 +1,10 @@
+import { App, Component } from "obsidian";
+
 import { CustomOutputFormat } from "@/output";
 import { TimekeepSettings } from "@/settings";
 import { Store } from "@/store";
 import { Timekeep } from "@/timekeep/schema";
-import { App, Component } from "obsidian";
+
 import { TimesheetApp } from "./timesheetApp";
 import { TimesheetSaveError } from "./timesheetSaveError";
 

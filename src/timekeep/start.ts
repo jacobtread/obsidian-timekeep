@@ -1,9 +1,10 @@
 import type { Moment } from "moment";
+
 import { TimeEntry } from "@/timekeep/schema";
 
+import { withEntry, createEntry, withSubEntry } from "./create";
 import { getEntryById } from "./queries";
 import { updateEntry, stopRunningEntries } from "./update";
-import { withEntry, createEntry, withSubEntry } from "./create";
 
 /**
  * Start a new entry in the provided set of entires

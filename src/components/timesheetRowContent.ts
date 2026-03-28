@@ -1,3 +1,8 @@
+import moment from "moment";
+import { App, Component } from "obsidian";
+
+import { TimekeepSettings } from "@/settings";
+import { Store } from "@/store";
 import {
 	getRunningEntry,
 	isEntryRunning,
@@ -6,14 +11,11 @@ import {
 	updateEntry,
 } from "@/timekeep";
 import { TimeEntry, Timekeep } from "@/timekeep/schema";
-import { App, Component } from "obsidian";
+import { formatTimestamp } from "@/utils";
+
 import { createObsidianIcon } from "./obsidianIcon";
 import { TimekeepName } from "./timesheetName";
-import { formatTimestamp } from "@/utils";
-import { Store } from "@/store";
-import { TimekeepSettings } from "@/settings";
 import { TimesheetRowDurationComponent } from "./timesheetRowDuration";
-import moment from "moment";
 
 /**
  * Component for the contents of a timesheet row

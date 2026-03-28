@@ -1,12 +1,14 @@
+import { App, Component } from "obsidian";
+
 import { CustomOutputFormat } from "@/output";
 import { TimekeepSettings } from "@/settings";
 import { Store } from "@/store";
 import { Timekeep } from "@/timekeep/schema";
-import { App, Component } from "obsidian";
+
 import { TimesheetCounters } from "./timesheetCounters";
+import { TimesheetExportActions } from "./timesheetExportActions";
 import { TimesheetStart } from "./timesheetStart";
 import { TimesheetTable } from "./timesheetTable";
-import { TimesheetExportActions } from "./timesheetExportActions";
 
 /**
  * View component for the timesheet app as a whole

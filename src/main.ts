@@ -1,15 +1,4 @@
 import moment, { Moment } from "moment";
-import { Store, createStore } from "@/store";
-import { TimekeepSettingsTab } from "@/settings-tab";
-import { defaultSettings, TimekeepSettings, legacySettingsCompatibility } from "@/settings";
-import { load, replaceTimekeepCodeblock, extractTimekeepCodeblocks } from "@/timekeep/parser";
-import {
-	isKeepRunning,
-	isEntryRunning,
-	getRunningEntry,
-	getEntryDuration,
-	getTotalDuration,
-} from "@/timekeep";
 import {
 	Vault,
 	TFile,
@@ -20,13 +9,25 @@ import {
 	MarkdownPostProcessorContext,
 } from "obsidian";
 
-import { CustomOutputFormat } from "./output";
-import { Timekeep, TimeEntry } from "./timekeep/schema";
+import { defaultSettings, TimekeepSettings, legacySettingsCompatibility } from "@/settings";
+import { TimekeepSettingsTab } from "@/settings-tab";
+import { Store, createStore } from "@/store";
+import {
+	isKeepRunning,
+	isEntryRunning,
+	getRunningEntry,
+	getEntryDuration,
+	getTotalDuration,
+} from "@/timekeep";
+import { load, replaceTimekeepCodeblock, extractTimekeepCodeblocks } from "@/timekeep/parser";
+
 import { stopAllTimekeeps } from "./commands/stopAllTimekeeps";
 import { stopFileTimekeeps } from "./commands/stopFileTimekeeps";
-import { TimekeepMergerModal } from "./views/timekeep-merger-modal";
+import { CustomOutputFormat } from "./output";
+import { Timekeep, TimeEntry } from "./timekeep/schema";
 import { TimekeepLocatorModal } from "./views/timekeep-locator-modal";
 import { TimekeepMarkdownView } from "./views/timekeep-markdown-view";
+import { TimekeepMergerModal } from "./views/timekeep-merger-modal";
 
 export default class TimekeepPlugin extends Plugin {
 	settingsStore: Store<TimekeepSettings>;

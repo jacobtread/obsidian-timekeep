@@ -1,8 +1,8 @@
 import moment from "moment";
+import { expect, it, describe } from "vitest";
 
 import { withEntry, createEntry, withSubEntry } from "./create";
 import { stripEntryRuntimeData, stripEntriesRuntimeData } from "./schema";
-import { expect, it, describe } from "vitest";
 
 describe("createEntry", () => {
 	it("creating entry should use current time", () => {

@@ -1,6 +1,6 @@
-import { Store } from "@/store";
-import TimekeepPlugin from "@/main";
 import { App, Setting, PluginSettingTab } from "obsidian";
+
+import TimekeepPlugin from "@/main";
 import {
 	SortOrder,
 	FontFamily,
@@ -10,6 +10,7 @@ import {
 	TimekeepSettings,
 	PdfExportBehavior,
 } from "@/settings";
+import { Store } from "@/store";
 
 export class TimekeepSettingsTab extends PluginSettingTab {
 	settingsStore: Store<TimekeepSettings>;

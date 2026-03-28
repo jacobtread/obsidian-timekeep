@@ -1,11 +1,13 @@
+import { App, Component } from "obsidian";
+
+import { TimekeepSettings } from "@/settings";
+import { Store } from "@/store";
 import { removeEntry, updateEntry } from "@/timekeep";
 import { TimeEntry, Timekeep } from "@/timekeep/schema";
-import { App, Component } from "obsidian";
-import { createObsidianIcon } from "./obsidianIcon";
 import { formatEditableTimestamp, parseEditableTimestamp } from "@/utils";
-import { Store } from "@/store";
-import { TimekeepSettings } from "@/settings";
 import { ConfirmModal } from "@/utils/confirm-modal";
+
+import { createObsidianIcon } from "./obsidianIcon";
 
 /**
  * Component for a timesheet row entry that is currently

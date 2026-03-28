@@ -1,8 +1,9 @@
 import type { Moment } from "moment";
-import { TimeEntry } from "@/timekeep/schema";
+
 import { TimekeepSettings } from "@/settings";
-import { formatDuration, formatTimestamp } from "@/utils";
 import { getEntryDuration, getEntriesSorted } from "@/timekeep";
+import { TimeEntry } from "@/timekeep/schema";
+import { formatDuration, formatTimestamp } from "@/utils";
 
 export { createCSV } from "./csv";
 export { createMarkdownTable } from "./markdown-table";

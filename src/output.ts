@@ -1,7 +1,7 @@
 import { Moment } from "moment";
 
-import { Timekeep } from "./timekeep/schema";
 import { TimekeepSettings } from "./settings";
+import { Timekeep } from "./timekeep/schema";
 
 export interface CustomOutputFormat {
 	/**

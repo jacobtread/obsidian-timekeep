@@ -1,5 +1,7 @@
-import { SortOrder, UnstartedOrder, defaultSettings, TimekeepSettings } from "@/settings";
 import { expect, it, describe } from "vitest";
+
+import { SortOrder, UnstartedOrder, defaultSettings, TimekeepSettings } from "@/settings";
+
 import { getEntriesSorted } from "./sort";
 
 describe("getEntriesSorted", () => {

@@ -1,6 +1,6 @@
 import moment from "moment";
+import { expect, it, describe, vi } from "vitest";
 
-import { Timekeep, stripTimekeepRuntimeData } from "./schema";
 import {
 	load,
 	LoadError,
@@ -8,7 +8,7 @@ import {
 	replaceTimekeepCodeblock,
 	extractTimekeepCodeblocks,
 } from "./parser";
-import { expect, it, describe, vi } from "vitest";
+import { Timekeep, stripTimekeepRuntimeData } from "./schema";
 
 /**
  * Generates a code block surrounding the provided JSON

@@ -1,4 +1,5 @@
 import moment from "moment";
+
 import { TimeEntry } from "@/timekeep/schema";
 
 export const currentTime = moment();

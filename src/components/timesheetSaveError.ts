@@ -1,6 +1,8 @@
-import type { Store } from "@/store";
-import { stripTimekeepRuntimeData, type Timekeep } from "@/timekeep/schema";
 import { Component } from "obsidian";
+
+import type { Store } from "@/store";
+
+import { stripTimekeepRuntimeData, type Timekeep } from "@/timekeep/schema";
 
 type HandleSaveTimekeep = (value: Timekeep) => Promise<void>;
 

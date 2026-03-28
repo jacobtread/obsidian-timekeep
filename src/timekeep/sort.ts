@@ -1,5 +1,5 @@
-import { TimeEntry } from "@/timekeep/schema";
 import { SortOrder, UnstartedOrder, TimekeepSettings } from "@/settings";
+import { TimeEntry } from "@/timekeep/schema";
 
 import { getStartTime } from "./queries";
 

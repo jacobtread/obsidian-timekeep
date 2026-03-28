@@ -1,7 +1,8 @@
 import moment from "moment";
 import { v4 as uuid } from "uuid";
-import { TIMEKEEP } from "@/timekeep/schema";
 import { expect, it, describe, vi } from "vitest";
+
+import { TIMEKEEP } from "@/timekeep/schema";
 
 vi.mock(import("uuid"), async (importOriginal) => {
 	return {

@@ -1,3 +1,5 @@
+import { expect, it, describe } from "vitest";
+
 import { TimeEntryGroup } from "./schema";
 import {
 	updateEntry,
@@ -6,7 +8,6 @@ import {
 	setEntryCollapsed,
 	stopRunningEntries,
 } from "./update";
-import { expect, it, describe } from "vitest";
 
 describe("updateEntry", () => {
 	it("updating existing entry should succeed", async () => {

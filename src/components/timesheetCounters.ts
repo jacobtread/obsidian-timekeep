@@ -1,10 +1,13 @@
+import moment from "moment";
+import { Component } from "obsidian";
+
 import type { TimekeepSettings } from "@/settings";
 import type { Store } from "@/store";
 import type { Timekeep } from "@/timekeep/schema";
-import { Component } from "obsidian";
-import moment from "moment";
+
 import { getEntryDuration, getRunningEntry, getTotalDuration, isKeepRunning } from "@/timekeep";
 import { formatDuration } from "@/utils";
+
 import { TimesheetTimer } from "./timesheetTimer";
 
 /**

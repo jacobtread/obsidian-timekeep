@@ -1,8 +1,9 @@
 import { Moment } from "moment";
 import { TFile, Vault } from "obsidian";
-import { Timekeep } from "@/timekeep/schema";
+
 import { getRunningEntry, stopRunningEntries } from "@/timekeep";
 import { replaceTimekeepCodeblock, extractTimekeepCodeblocksWithPosition } from "@/timekeep/parser";
+import { Timekeep } from "@/timekeep/schema";
 
 /**
  * Stops all timekeeps in the provided file if there are any running.

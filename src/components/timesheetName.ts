@@ -1,3 +1,5 @@
+import { App, Component } from "obsidian";
+
 import {
 	NameSegment,
 	NameSegmentLink,
@@ -5,7 +7,6 @@ import {
 	NameSegmentType,
 	parseNameSegments,
 } from "@/utils/name";
-import { App, Component } from "obsidian";
 
 /**
  * Component for rendering the name of a timekeep entry, this

@@ -1,9 +1,9 @@
 import moment from "moment";
 import fs from "node:fs/promises";
+import { expect, it, describe } from "vitest";
 
 import { MockVault } from "./__mocks__/obsidian";
 import { stopAllTimekeeps } from "./stopAllTimekeeps";
-import { expect, it, describe } from "vitest";
 
 describe("stopAllTimekeeps", () => {
 	it("should stop nothing when no markdown files", async () => {

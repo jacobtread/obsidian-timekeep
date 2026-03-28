@@ -1,8 +1,9 @@
 import moment from "moment";
 import { App, Notice, Platform } from "obsidian";
-import { Timekeep } from "@/timekeep/schema";
-import { TimekeepSettings, PdfExportBehavior } from "@/settings";
+
 import { createPdfExport, createPdfExportBlob } from "@/components/pdf/renderer";
+import { TimekeepSettings, PdfExportBehavior } from "@/settings";
+import { Timekeep } from "@/timekeep/schema";
 import { pickFileName } from "@/utils/file-name-prompt-modal";
 
 export async function exportPdf(app: App, timekeep: Timekeep, settings: TimekeepSettings) {

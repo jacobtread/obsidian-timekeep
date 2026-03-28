@@ -1,9 +1,12 @@
+import { type App, Component } from "obsidian";
+
 import type { TimekeepSettings } from "@/settings";
 import type { Store } from "@/store";
 import type { Timekeep } from "@/timekeep/schema";
-import { type App, Component } from "obsidian";
-import { TimesheetRowContainer } from "./timesheetRowContainer";
+
 import { getEntriesSorted } from "@/timekeep";
+
+import { TimesheetRowContainer } from "./timesheetRowContainer";
 
 /**
  * Table component for rendering the contents of the timekeep
