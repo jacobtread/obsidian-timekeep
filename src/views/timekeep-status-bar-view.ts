@@ -1,0 +1,95 @@
+import { App, MarkdownView } from "obsidian";
+
+import { TimesheetStatusBarItem } from "@/components/timesheetStatusBarItem";
+import { TimekeepRegistry, TimekeepRegistryEntry } from "@/service/registry";
+import { TimekeepSettings } from "@/settings";
+import { Store } from "@/store";
+import { getRunningEntry } from "@/timekeep";
+import { TimekeepWithPosition } from "@/timekeep/parser";
+import { TimeEntry } from "@/timekeep/schema";
+
+export class TimekeepStatusBarView {
+	/** Parent container element */
+	#containerEl: HTMLElement;
+
+	/** Access to the app instance */
+	app: App;
+	/** Access to the app registry */
+	registry: TimekeepRegistry;
+	/** Access to the timekeep settings */
+	settings: Store<TimekeepSettings>;
+
+	/** Currently rendered items */
+	items: TimesheetStatusBarItem[] = [];
+
+	constructor(
+		containerEl: HTMLElement,
+		app: App,
+		registry: TimekeepRegistry,
+		settings: Store<TimekeepSettings>
+	) {
+		this.#containerEl = containerEl;
+
+		this.app = app;
+		this.registry = registry;
+		this.settings = settings;
+
+		// Render the initial state
+		this.render(this.registry.entries.getState());
+
+		// Subscribe to changes to re-render
+		this.registry.entries.subscribe(() => {
+			this.render(this.registry.entries.getState());
+		});
+	}
+
+	render(entries: TimekeepRegistryEntry[]) {
+		// Unload the current children
+		for (const item of this.items) {
+			item.unload();
+		}
+
+		// Load the new children
+		for (const entry of entries) {
+			for (const timekeep of entry.timekeeps) {
+				const runningEntry = getRunningEntry(timekeep.timekeep.entries);
+				if (runningEntry === null) continue;
+
+				const item = new TimesheetStatusBarItem(
+					this.#containerEl,
+					runningEntry,
+					() => {
+						void this.onOpen(entry, timekeep);
+					},
+					() => {
+						this.onStop(entry, timekeep, runningEntry);
+					}
+				);
+
+				this.items.push(item);
+				item.load();
+			}
+		}
+	}
+
+	onStop(_entry: TimekeepRegistryEntry, _timekeep: TimekeepWithPosition, _timeEntry: TimeEntry) {
+		// TODO: For future implementation, ...being able to stop entries
+	}
+
+	async onOpen(entry: TimekeepRegistryEntry, timekeep: TimekeepWithPosition) {
+		const leaf = this.app.workspace.getLeaf();
+		await leaf.openFile(entry.file);
+
+		const view = leaf.view;
+
+		if (view instanceof MarkdownView) {
+			const editor = view.editor;
+
+			const line = timekeep.startLine;
+
+			// Focus the line we opened to
+			editor.setCursor({ line: Math.max(line - 1, 0), ch: 0 });
+			editor.scrollIntoView({ from: { line, ch: 0 }, to: { line, ch: 0 } }, true);
+		}
+	}
+}

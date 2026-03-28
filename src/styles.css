@@ -286,3 +286,16 @@
 	width: 100%;
 	margin-bottom: 1rem;
 }
+
+.timekeep-status-item {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+}
+
+.timekeep-status-item__content {
+	display: flex;
+	align-items: center;
+	gap: 0.25rem;
+	cursor: pointer;
+}
