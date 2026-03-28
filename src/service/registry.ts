@@ -17,28 +17,28 @@ type TimekeepRegistryEntry = {
  */
 export class TimekeepRegistry {
 	/** Vault that the registry is operating on */
-	vault: Vault;
+	#vault: Vault;
 
 	/** Store for entries within the registry */
 	entries: Store<TimekeepRegistryEntry[]>;
 
 	/** Tracked events */
-	events: EventRef[] = [];
+	#events: EventRef[] = [];
 
 	/** Concurrency limit for registry indexing */
 	concurrencyLimit: number = 10;
 
 	constructor(vault: Vault) {
-		this.vault = vault;
+		this.#vault = vault;
 		this.entries = createStore([]);
 	}
 
 	onload() {
 		// Attach vault events
-		const createEvent = this.vault.on("create", this.onFileCreated.bind(this));
-		const modifyEvent = this.vault.on("modify", this.onFileModified.bind(this));
-		const deleteEvent = this.vault.on("delete", this.onFileRemoved.bind(this));
-		this.events.push(createEvent, modifyEvent, deleteEvent);
+		const createEvent = this.#vault.on("create", this.onFileCreated.bind(this));
+		const modifyEvent = this.#vault.on("modify", this.onFileModified.bind(this));
+		const deleteEvent = this.#vault.on("delete", this.onFileRemoved.bind(this));
+		this.#events.push(createEvent, modifyEvent, deleteEvent);
 
 		// Load the registry from the vault
 		void this.loadFromVault()
@@ -54,7 +54,7 @@ export class TimekeepRegistry {
 	 *
 	 * @param file The file that was created
 	 */
-	onFileCreated(file: TAbstractFile) {
+	private onFileCreated(file: TAbstractFile) {
 		if (!(file instanceof TFile)) {
 			return;
 		}
@@ -70,7 +70,7 @@ export class TimekeepRegistry {
 	 *
 	 * @param file The modified file
 	 */
-	onFileModified(file: TAbstractFile) {
+	private onFileModified(file: TAbstractFile) {
 		if (!(file instanceof TFile)) {
 			return;
 		}
@@ -86,7 +86,7 @@ export class TimekeepRegistry {
 	 *
 	 * @param file The removed file
 	 */
-	onFileRemoved(file: TAbstractFile) {
+	private onFileRemoved(file: TAbstractFile) {
 		if (!(file instanceof TFile)) {
 			return;
 		}
@@ -105,7 +105,7 @@ export class TimekeepRegistry {
 	 */
 	async loadFromVault() {
 		const entries = await TimekeepRegistry.getTimekeepsWithinVault(
-			this.vault,
+			this.#vault,
 			true,
 			this.concurrencyLimit
 		);
@@ -119,7 +119,7 @@ export class TimekeepRegistry {
 	 * @param file
 	 */
 	async updateFromFile(file: TFile) {
-		const timekeeps = await TimekeepRegistry.getTimekeepsWithinFile(this.vault, file, true);
+		const timekeeps = await TimekeepRegistry.getTimekeepsWithinFile(this.#vault, file, true);
 
 		this.entries.setState((entries) => {
 			const filteredEntries: TimekeepRegistryEntry[] = entries.filter(
