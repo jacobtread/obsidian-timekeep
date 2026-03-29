@@ -15,43 +15,49 @@ import {
 	formatEditableTimestamp,
 } from "./time";
 
-it("should format time", () => {
-	const input = moment("2024-03-31T02:34:45.413Z").utc();
-	const expected = "24-03-31 02:34:45";
+describe("formatTimestamp", () => {
+	it("should format time", () => {
+		const input = moment("2024-03-31T02:34:45.413Z").utc();
+		const expected = "24-03-31 02:34:45";
 
-	const settings: TimekeepSettings = defaultSettings;
-	settings.timestampFormat = "YY-MM-DD HH:mm:ss";
+		const settings: TimekeepSettings = defaultSettings;
+		settings.timestampFormat = "YY-MM-DD HH:mm:ss";
 
-	const output = formatTimestamp(input, settings);
+		const output = formatTimestamp(input, settings);
 
-	expect(output).toBe(expected);
+		expect(output).toBe(expected);
+	});
 });
 
-it("should format editable time", () => {
-	const input = moment("2024-03-31T02:34:45.413Z").utc();
-	const expected = "2024-03-31 02:34:45";
+describe("formatEditableTimestamp", () => {
+	it("should format editable time", () => {
+		const input = moment("2024-03-31T02:34:45.413Z").utc();
+		const expected = "2024-03-31 02:34:45";
 
-	const settings: TimekeepSettings = defaultSettings;
-	settings.editableTimestampFormat = "YYYY-MM-DD HH:mm:ss";
+		const settings: TimekeepSettings = defaultSettings;
+		settings.editableTimestampFormat = "YYYY-MM-DD HH:mm:ss";
 
-	const output = formatEditableTimestamp(input, settings);
+		const output = formatEditableTimestamp(input, settings);
 
-	expect(output).toBe(expected);
+		expect(output).toBe(expected);
+	});
 });
 
-it("should unformat editable time", () => {
-	const input = "2024-03-31 02:34:45";
-	const expected = moment("2024-03-31 02:34:45", "YYYY-MM-DD HH:mm:ss");
+describe("parseEditableTimestamp", () => {
+	it("should parse editable time", () => {
+		const input = "2024-03-31 02:34:45";
+		const expected = moment("2024-03-31 02:34:45", "YYYY-MM-DD HH:mm:ss");
 
-	const settings: TimekeepSettings = defaultSettings;
-	settings.editableTimestampFormat = "YYYY-MM-DD HH:mm:ss";
+		const settings: TimekeepSettings = defaultSettings;
+		settings.editableTimestampFormat = "YYYY-MM-DD HH:mm:ss";
 
-	const output = parseEditableTimestamp(input, settings).utc();
+		const output = parseEditableTimestamp(input, settings).utc();
 
-	expect(output.toDate()).toStrictEqual(expected.toDate());
+		expect(output.toDate()).toStrictEqual(expected.toDate());
+	});
 });
 
-describe("format duration", () => {
+describe("formatDurationLong", () => {
 	test.each([
 		[1000, "1s"],
 		[1000 * 12, "12s"],
@@ -67,7 +73,7 @@ describe("format duration", () => {
 	});
 });
 
-describe("format duration short", () => {
+describe("formatDurationShort", () => {
 	test.each([
 		[1000 * 60 * 60 * 2, "2.00h"],
 		[1000 * 60 * 60 * 25.25, "25.25h"],
@@ -80,7 +86,7 @@ describe("format duration short", () => {
 	});
 });
 
-describe("format duration decimal", () => {
+describe("formatDurationDecimal", () => {
 	test.each([
 		[1000 * 60 * 60 * 2, "2.00"],
 		[1000 * 60 * 60 * 25.25, "25.25"],
@@ -93,7 +99,7 @@ describe("format duration decimal", () => {
 	});
 });
 
-describe("format duration with format", () => {
+describe("formatDuration", () => {
 	test.each([
 		[DurationFormat.LONG, 1000, "1s"],
 		[DurationFormat.LONG, 1000 * 12, "12s"],
@@ -132,7 +138,7 @@ describe("format duration with format", () => {
 	});
 });
 
-describe("format pdf date", () => {
+describe("formatPdfDate", () => {
 	test.each([
 		["2024-03-31 02:34:45", "31/03/2024"],
 		["2024-02-29 02:34:45", "29/02/2024"],
@@ -149,7 +155,7 @@ describe("format pdf date", () => {
 	});
 });
 
-describe("format pdf row date", () => {
+describe("formatPdfRowDate", () => {
 	test.each([
 		["2024-03-31 02:34:45", "31/03/2024 02:34"],
 		["2024-02-29 08:34:45", "29/02/2024 08:34"],
