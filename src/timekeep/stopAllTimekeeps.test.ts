@@ -28,20 +28,20 @@ describe("stopAllTimekeeps", () => {
 	it("should stop one timekeep when one is running", async () => {
 		const vault = new MockVault();
 		const TEST_MARKDOWN_1 = await fs.readFile(
-			"src/commands/__fixtures__/TEST_MARKDOWN_1.md",
+			"src/timekeep/__fixtures__/stop/TEST_MARKDOWN_1.md",
 			"utf-8"
 		);
 		const TEST_MARKDOWN_1_STOPPED = await fs.readFile(
-			"src/commands/__fixtures__/TEST_MARKDOWN_1_STOPPED.md",
+			"src/timekeep/__fixtures__/stop/TEST_MARKDOWN_1_STOPPED.md",
 			"utf-8"
 		);
 
 		const TEST_MARKDOWN_3 = await fs.readFile(
-			"src/commands/__fixtures__/TEST_MARKDOWN_3.md",
+			"src/timekeep/__fixtures__/stop/TEST_MARKDOWN_3.md",
 			"utf-8"
 		);
 		const TEST_MARKDOWN_3_STOPPED = await fs.readFile(
-			"src/commands/__fixtures__/TEST_MARKDOWN_3_STOPPED.md",
+			"src/timekeep/__fixtures__/stop/TEST_MARKDOWN_3_STOPPED.md",
 			"utf-8"
 		);
 
@@ -66,27 +66,27 @@ describe("stopAllTimekeeps", () => {
 	it("should stop multiple timekeeps when multiple are running", async () => {
 		const vault = new MockVault();
 		const TEST_MARKDOWN_1 = await fs.readFile(
-			"src/commands/__fixtures__/TEST_MARKDOWN_1.md",
+			"src/timekeep/__fixtures__/stop/TEST_MARKDOWN_1.md",
 			"utf-8"
 		);
 		const TEST_MARKDOWN_1_STOPPED = await fs.readFile(
-			"src/commands/__fixtures__/TEST_MARKDOWN_1_STOPPED.md",
+			"src/timekeep/__fixtures__/stop/TEST_MARKDOWN_1_STOPPED.md",
 			"utf-8"
 		);
 		const TEST_MARKDOWN_2 = await fs.readFile(
-			"src/commands/__fixtures__/TEST_MARKDOWN_2.md",
+			"src/timekeep/__fixtures__/stop/TEST_MARKDOWN_2.md",
 			"utf-8"
 		);
 		const TEST_MARKDOWN_2_STOPPED = await fs.readFile(
-			"src/commands/__fixtures__/TEST_MARKDOWN_2_STOPPED.md",
+			"src/timekeep/__fixtures__/stop/TEST_MARKDOWN_2_STOPPED.md",
 			"utf-8"
 		);
 		const TEST_MARKDOWN_3 = await fs.readFile(
-			"src/commands/__fixtures__/TEST_MARKDOWN_3.md",
+			"src/timekeep/__fixtures__/stop/TEST_MARKDOWN_3.md",
 			"utf-8"
 		);
 		const TEST_MARKDOWN_3_STOPPED = await fs.readFile(
-			"src/commands/__fixtures__/TEST_MARKDOWN_3_STOPPED.md",
+			"src/timekeep/__fixtures__/stop/TEST_MARKDOWN_3_STOPPED.md",
 			"utf-8"
 		);
 
@@ -112,7 +112,7 @@ describe("stopAllTimekeeps", () => {
 		const vault = new MockVault();
 
 		const TEST_MARKDOWN_2 = await fs.readFile(
-			"src/commands/__fixtures__/TEST_MARKDOWN_2.md",
+			"src/timekeep/__fixtures__/stop/TEST_MARKDOWN_2.md",
 			"utf-8"
 		);
 

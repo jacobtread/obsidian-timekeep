@@ -10,11 +10,8 @@ import createMerged from "@/commands/createMerged";
 import exportMergedPdf from "@/commands/exportMergedPdf";
 import findRunningTrackers from "@/commands/findRunningTrackers";
 import insertTracker from "@/commands/insertTracker";
-import { stopAllTimekeeps, default as stopAllTimekeepsCommand } from "@/commands/stopAllTimekeeps";
-import {
-	stopFileTimekeeps,
-	default as stopFileTimekeepsCommand,
-} from "@/commands/stopFileTimekeeps";
+import stopAllTimekeepsCommand from "@/commands/stopAllTimekeeps";
+import stopFileTimekeepsCommand from "@/commands/stopFileTimekeeps";
 import { TimekeepAutocomplete } from "@/service/autocomplete";
 import { TimekeepRegistry } from "@/service/registry";
 import { defaultSettings, TimekeepSettings, legacySettingsCompatibility } from "@/settings";
@@ -28,6 +25,8 @@ import {
 	getTotalDuration,
 } from "@/timekeep";
 import { replaceTimekeepCodeblock, extractTimekeepCodeblocks } from "@/timekeep/parser";
+import { stopAllTimekeeps } from "@/timekeep/stopAllTimekeeps";
+import { stopFileTimekeeps } from "@/timekeep/stopFileTimekeeps";
 import { TimekeepMarkdownView } from "@/views/timekeep-markdown-view";
 import { TimekeepStatusBarView } from "@/views/timekeep-status-bar-view";
 
