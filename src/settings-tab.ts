@@ -440,5 +440,26 @@ export class TimekeepSettingsTab extends PluginSettingTab {
 					}));
 				});
 			});
+
+		// Autocomplete section
+		new Setting(this.containerEl)
+			.setName("Autocomplete")
+			.setDesc(
+				"Timekeep can autocomplete entry names from existing timekeeps. This requires that the registry option above is enabled"
+			)
+			.setHeading();
+
+		new Setting(this.containerEl)
+			.setName("Enabled")
+			.setDesc("Whether to enable autocomplete.")
+			.addToggle((t) => {
+				t.setValue(settings.autocompleteEnabled);
+				t.onChange((v) => {
+					this.settingsStore.setState((currentValue) => ({
+						...currentValue,
+						autocompleteEnabled: v,
+					}));
+				});
+			});
 	}
 }

@@ -1,6 +1,7 @@
-import { EventRef, TAbstractFile, TFile, Vault } from "obsidian";
+import { Component, TAbstractFile, TFile, Vault } from "obsidian";
 import { limitFunction } from "p-limit";
 
+import { TimekeepSettings } from "@/settings";
 import { createStore, Store } from "@/store";
 import {
 	extractTimekeepCodeblocksWithPosition,
@@ -15,30 +16,41 @@ export type TimekeepRegistryEntry = {
 /**
  * Obsidian vault registry of all timekeep instances
  */
-export class TimekeepRegistry {
+export class TimekeepRegistry extends Component {
 	/** Vault that the registry is operating on */
 	#vault: Vault;
 
 	/** Store for entries within the registry */
 	entries: Store<TimekeepRegistryEntry[]>;
 
-	/** Tracked events */
-	#events: EventRef[] = [];
+	/** Settings access */
+	settings: Store<TimekeepSettings>;
 
-	/** Concurrency limit for registry indexing */
-	concurrencyLimit: number = 10;
+	/** Whether the store is initialized */
+	initialized: boolean;
 
-	constructor(vault: Vault) {
+	constructor(vault: Vault, settings: Store<TimekeepSettings>) {
+		super();
 		this.#vault = vault;
 		this.entries = createStore([]);
+		this.settings = settings;
 	}
 
 	onload() {
+		const settings = this.settings.getState();
+		if (!settings.registryEnabled) {
+			return;
+		}
+
 		// Attach vault events
 		const createEvent = this.#vault.on("create", this.onFileCreated.bind(this));
 		const modifyEvent = this.#vault.on("modify", this.onFileModified.bind(this));
 		const deleteEvent = this.#vault.on("delete", this.onFileRemoved.bind(this));
-		this.#events.push(createEvent, modifyEvent, deleteEvent);
+
+		// Register events for unloading
+		this.registerEvent(createEvent);
+		this.registerEvent(modifyEvent);
+		this.registerEvent(deleteEvent);
 
 		// Load the registry from the vault
 		void this.loadFromVault()
@@ -93,7 +105,6 @@ export class TimekeepRegistry {
 
 		this.entries.setState((entries) => {
 			const newEntries = entries.filter((entry) => {
-				console.log(file, entry.file, file === entry.file);
 				return entry.file !== file;
 			});
 			return newEntries;
@@ -104,10 +115,11 @@ export class TimekeepRegistry {
 	 * Load the registry from the current vault
 	 */
 	async loadFromVault() {
+		const settings = this.settings.getState();
 		const entries = await TimekeepRegistry.getTimekeepsWithinVault(
 			this.#vault,
 			true,
-			this.concurrencyLimit
+			settings.registryConcurrencyLimit
 		);
 		this.entries.setState(entries);
 	}

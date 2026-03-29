@@ -23,8 +23,8 @@ import { load, replaceTimekeepCodeblock, extractTimekeepCodeblocks } from "@/tim
 
 import { stopAllTimekeeps } from "./commands/stopAllTimekeeps";
 import { stopFileTimekeeps } from "./commands/stopFileTimekeeps";
-import { TimesheetStatusBarItem } from "./components/timesheetStatusBarItem";
 import { CustomOutputFormat } from "./output";
+import { TimekeepAutocomplete } from "./service/autocomplete";
 import { TimekeepRegistry } from "./service/registry";
 import { Timekeep, TimeEntry } from "./timekeep/schema";
 import { TimekeepLocatorModal } from "./views/timekeep-locator-modal";
@@ -53,6 +53,9 @@ export default class TimekeepPlugin extends Plugin {
 
 	/** Registry of all timekeeps within the vault */
 	registry: TimekeepRegistry | null = null;
+
+	/** Currently loaded status bar view if present */
+	#statusBarView: TimekeepStatusBarView | null = null;
 
 	constructor(app: ObsidianApp, manifest: PluginManifest) {
 		super(app, manifest);
@@ -96,6 +99,16 @@ export default class TimekeepPlugin extends Plugin {
 
 		this.addSettingTab(new TimekeepSettingsTab(this.app, this));
 
+		const registry = new TimekeepRegistry(this.app.vault, this.settingsStore);
+		this.registry = registry;
+
+		const autocomplete = new TimekeepAutocomplete(this.registry, this.settingsStore);
+		this.addChild(autocomplete);
+
+		const onLoadStatusBar = this.onLoadStatusBar.bind(this);
+		this.settingsStore.subscribe(onLoadStatusBar);
+		onLoadStatusBar();
+
 		this.app.workspace.onLayoutReady(() => {
 			const settings = this.settingsStore.getState();
 
@@ -103,15 +116,8 @@ export default class TimekeepPlugin extends Plugin {
 				return;
 			}
 
-			// Initialize the registry (After the layout is ready and the vault is loaded)
-			this.registry = new TimekeepRegistry(this.app.vault);
-			this.registry.concurrencyLimit = settings.registryConcurrencyLimit;
-			this.registry.onload();
-
-			if (settings.statusBarEnabled) {
-				const containerEl = this.addStatusBarItem();
-				new TimekeepStatusBarView(containerEl, this.app, this.registry, this.settingsStore);
-			}
+			// Initialize the registry (Only after the layout is ready and the vault is loaded)
+			this.addChild(registry);
 		});
 
 		this.registerMarkdownCodeBlockProcessor(
@@ -125,6 +131,7 @@ export default class TimekeepPlugin extends Plugin {
 						this.app,
 						this.settingsStore,
 						this.customOutputFormats,
+						autocomplete,
 						context,
 						loadResult
 					)
@@ -245,5 +252,24 @@ export default class TimekeepPlugin extends Plugin {
 			delete newState[id];
 			return newState;
 		});
+	}
+
+	private onLoadStatusBar() {
+		if (!this.registry) {
+			throw new Error("registry is not initialized");
+		}
+
+		if (this.#statusBarView) {
+			this.removeChild(this.#statusBarView);
+			this.#statusBarView = null;
+		}
+
+		const settings = this.settingsStore.getState();
+		if (!settings.statusBarEnabled) return;
+
+		const containerEl = this.addStatusBarItem();
+		const statusBarView = new TimekeepStatusBarView(containerEl, this.app, this.registry);
+		this.addChild(statusBarView);
+		this.#statusBarView = statusBarView;
 	}
 }

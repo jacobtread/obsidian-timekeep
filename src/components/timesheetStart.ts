@@ -5,9 +5,11 @@ import type { TimekeepSettings } from "@/settings";
 import type { Store } from "@/store";
 import type { Timekeep } from "@/timekeep/schema";
 
+import { TimekeepAutocomplete } from "@/service/autocomplete";
 import { getRunningEntry, startNewEntry } from "@/timekeep";
 
 import { createObsidianIcon } from "./obsidianIcon";
+import { TimesheetNameInput } from "./timesheetNameInput";
 import { TimekeepStartEditing } from "./timesheetStartEditing";
 import { TimesheetStartRunning } from "./timesheetStartRunning";
 
@@ -24,6 +26,8 @@ export class TimesheetStart extends Component {
 	timekeep: Store<Timekeep>;
 	/** Access to the timekeep settings */
 	settings: Store<TimekeepSettings>;
+	/** Access to autocomplete */
+	autocomplete: TimekeepAutocomplete;
 
 	/** Wrapper for the component content */
 	#wrapperEl: HTMLElement | undefined;
@@ -31,7 +35,8 @@ export class TimesheetStart extends Component {
 	#contentEl: HTMLElement | undefined;
 
 	/** Name input for starting entries */
-	#nameInputEl: HTMLInputElement | undefined;
+	#nameInput: TimesheetNameInput | undefined;
+
 	/** Warning message element  */
 	#blockPauseWarningEl: HTMLElement | undefined;
 	/** Start button element */
@@ -44,13 +49,16 @@ export class TimesheetStart extends Component {
 		containerEl: HTMLElement,
 		app: App,
 		timekeep: Store<Timekeep>,
-		settings: Store<TimekeepSettings>
+		settings: Store<TimekeepSettings>,
+		autocomplete: TimekeepAutocomplete
 	) {
 		super();
 
 		this.app = app;
 		this.timekeep = timekeep;
 		this.settings = settings;
+		this.autocomplete = autocomplete;
+
 		this.#containerEl = containerEl;
 	}
 
@@ -87,13 +95,9 @@ export class TimesheetStart extends Component {
 
 		blockPauseWarningEl.hidden = true;
 
-		const nameInputEl = nameWrapperEl.createEl("input", {
-			cls: "timekeep-name",
-			placeholder: "Example Block",
-			type: "text",
-		});
-		nameInputEl.id = "timekeepBlockName";
-		this.#nameInputEl = nameInputEl;
+		const nameInput = new TimesheetNameInput(nameWrapperEl, this.autocomplete);
+		this.#nameInput = nameInput;
+		this.addChild(nameInput);
 
 		const startButton = formEl.createEl("button", {
 			cls: "timekeep-start",
@@ -212,17 +216,15 @@ export class TimesheetStart extends Component {
 		event.preventDefault();
 		event.stopPropagation();
 
-		const nameInputEl = this.#nameInputEl;
-		if (!nameInputEl) return;
-
-		const name = nameInputEl.value;
+		if (!this.#nameInput) return;
+		const name = this.#nameInput.getValue();
 
 		this.timekeep.setState((timekeep) => {
 			const currentTime = moment();
 			const entries = startNewEntry(name, currentTime, timekeep.entries);
 
 			// Reset name input
-			nameInputEl.value = "";
+			this.#nameInput?.resetValue();
 
 			return {
 				...timekeep,
