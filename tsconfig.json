@@ -5,6 +5,7 @@
 		"module": "ESNext",
 		"target": "ESNext",
 		"allowJs": true,
+		"noEmit": true,
 		"noImplicitAny": true,
 		"moduleResolution": "node",
 		"isolatedModules": true,
