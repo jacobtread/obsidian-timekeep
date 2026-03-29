@@ -2,6 +2,7 @@ import { Component } from "obsidian";
 
 import { TimeEntry } from "@/timekeep/schema";
 
+import { createObsidianIcon } from "./obsidianIcon";
 import { TimesheetRowDurationComponent } from "./timesheetRowDuration";
 
 export class TimesheetStatusBarItem extends Component {
@@ -47,10 +48,12 @@ export class TimesheetStatusBarItem extends Component {
 		const wrapperEl = this.#containerEl.createDiv({ cls: "timekeep-status-item" });
 		this.#wrapperEl = wrapperEl;
 
-		// const stopButton = wrapperEl.createEl("button", {
-		// 	cls: "timekeep-status-item__button",
-		// });
-		// this.registerDomEvent(stopButton, "click", this.onStop);
+		const stopIcon = createObsidianIcon(wrapperEl, "stop-circle", [
+			"timekeep-status-item__button",
+			"button-icon",
+		]);
+		this.registerDomEvent(stopIcon, "click", this.onStop);
+		stopIcon.title = "Stop Entry";
 
 		const contentEl = wrapperEl.createDiv({
 			cls: "timekeep-status-item__content",

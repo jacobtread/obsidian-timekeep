@@ -1,14 +1,21 @@
-import { App, Component, MarkdownView } from "obsidian";
+import moment from "moment";
+import { App, Component, MarkdownView, Notice } from "obsidian";
 
 import { TimesheetStatusBarItem } from "@/components/timesheetStatusBarItem";
 import { TimekeepRegistry, TimekeepRegistryEntry } from "@/service/registry";
-import { getRunningEntry } from "@/timekeep";
-import { TimekeepWithPosition } from "@/timekeep/parser";
-import { TimeEntry } from "@/timekeep/schema";
+import { getRunningEntry, stopRunningEntries } from "@/timekeep";
+import {
+	extractTimekeepCodeblocksWithPosition,
+	replaceTimekeepCodeblock,
+	TimekeepWithPosition,
+} from "@/timekeep/parser";
 
 export class TimekeepStatusBarView extends Component {
 	/** Parent container element */
 	#containerEl: HTMLElement;
+
+	/** Wrapper container element for entries */
+	#wrapperEl: HTMLElement;
 
 	/** Access to the app instance */
 	app: App;
@@ -30,6 +37,9 @@ export class TimekeepStatusBarView extends Component {
 	onload(): void {
 		super.onload();
 
+		const wrapperEl = this.#containerEl.createDiv({ cls: "timekeep-status-bar" });
+		this.#wrapperEl = wrapperEl;
+
 		const render = this.render.bind(this);
 		const unsubscribe = this.registry.entries.subscribe(render);
 		this.register(unsubscribe);
@@ -42,6 +52,9 @@ export class TimekeepStatusBarView extends Component {
 	}
 
 	render() {
+		const wrapperEl = this.#wrapperEl;
+		if (!wrapperEl) return;
+
 		const entries = this.registry.entries.getState();
 
 		// Unload the current children
@@ -56,13 +69,13 @@ export class TimekeepStatusBarView extends Component {
 				if (runningEntry === null) continue;
 
 				const item = new TimesheetStatusBarItem(
-					this.#containerEl,
+					wrapperEl,
 					runningEntry,
 					() => {
 						void this.onOpen(entry, timekeep);
 					},
 					() => {
-						this.onStop(entry, timekeep, runningEntry);
+						void this.onStop(entry, timekeep);
 					}
 				);
 
@@ -72,8 +85,48 @@ export class TimekeepStatusBarView extends Component {
 		}
 	}
 
-	onStop(_entry: TimekeepRegistryEntry, _timekeep: TimekeepWithPosition, _timeEntry: TimeEntry) {
-		// TODO: For future implementation, ...being able to stop entries
+	async onStop(entry: TimekeepRegistryEntry, timekeep: TimekeepWithPosition) {
+		try {
+			await this.tryStop(entry, timekeep);
+		} catch (e) {
+			console.error("Failed to stop timekeep", e);
+		}
+	}
+
+	async tryStop(entry: TimekeepRegistryEntry, position: TimekeepWithPosition) {
+		const file = entry.file;
+
+		// Ensure the file still exists
+		if (file === null) throw new Error("File no longer exists");
+
+		// Replace the stored timekeep block with the new one
+		await this.app.vault.process(file, (data) => {
+			const timekeeps = extractTimekeepCodeblocksWithPosition(data);
+			const targetTimekeep = timekeeps.find(
+				(target) =>
+					target.startLine === position.startLine && target.endLine === position.endLine
+			);
+
+			// Don't modify the file if we can't find the timekeep
+			if (targetTimekeep === undefined) {
+				new Notice("Failed to stop timekeep: Unable to find timekeep within file", 1500);
+				return data;
+			}
+
+			const currentTime = moment();
+			const initialTimekeep = targetTimekeep.timekeep;
+			const updatedTimekeep = {
+				...initialTimekeep,
+				entries: stopRunningEntries(initialTimekeep.entries, currentTime),
+			};
+
+			return replaceTimekeepCodeblock(
+				updatedTimekeep,
+				data,
+				targetTimekeep.startLine,
+				targetTimekeep.endLine
+			);
+		});
 	}
 
 	async onOpen(entry: TimekeepRegistryEntry, timekeep: TimekeepWithPosition) {

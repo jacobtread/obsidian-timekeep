@@ -11,7 +11,7 @@ import { setIcon } from "obsidian";
 export function createObsidianIcon(
 	containerEl: HTMLElement,
 	icon: string,
-	className?: string
+	className?: string | string[]
 ): HTMLDivElement {
 	const wrapperEl = containerEl.createDiv();
 	wrapperEl.setCssStyles({
@@ -27,7 +27,13 @@ export function createObsidianIcon(
 	const firstChild = wrapperEl.firstElementChild;
 
 	// Assign the custom class if available
-	if (firstChild && className) firstChild.addClass(className);
+	if (firstChild && className) {
+		if (Array.isArray(className)) {
+			firstChild.addClass(...className);
+		} else {
+			firstChild.addClass(className);
+		}
+	}
 
 	return wrapperEl;
 }
