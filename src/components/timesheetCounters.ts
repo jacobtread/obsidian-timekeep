@@ -6,7 +6,7 @@ import type { Store } from "@/store";
 import type { Timekeep } from "@/timekeep/schema";
 
 import { getEntryDuration, getRunningEntry, getTotalDuration, isKeepRunning } from "@/timekeep";
-import { formatDuration } from "@/utils";
+import { formatDuration } from "@/utils/time";
 
 import { TimesheetTimer } from "./timesheetTimer";
 

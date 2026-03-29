@@ -4,7 +4,7 @@ import { RawTableRow, TOTAL_COLUMNS, createRawTable } from "@/export";
 import { DurationFormat, TimekeepSettings } from "@/settings";
 import { getTotalDuration } from "@/timekeep";
 import { Timekeep, TimeEntry } from "@/timekeep/schema";
-import { formatDuration } from "@/utils";
+import { formatDuration } from "@/utils/time";
 
 /**
  * Creates the table header row

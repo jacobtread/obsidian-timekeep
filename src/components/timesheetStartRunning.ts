@@ -6,7 +6,7 @@ import type { Store } from "@/store";
 import type { TimeEntry, Timekeep } from "@/timekeep/schema";
 
 import { getPathToEntry, stopRunningEntries } from "@/timekeep";
-import { formatTimestamp } from "@/utils";
+import { formatTimestamp } from "@/utils/time";
 
 import { createObsidianIcon } from "./obsidianIcon";
 

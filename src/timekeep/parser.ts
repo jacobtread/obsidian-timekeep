@@ -1,5 +1,5 @@
 import { TIMEKEEP, Timekeep, stripTimekeepRuntimeData } from "@/timekeep/schema";
-import { isEmptyString } from "@/utils";
+import { isEmptyString } from "@/utils/text";
 
 export type LoadResult = LoadSuccess | LoadError;
 

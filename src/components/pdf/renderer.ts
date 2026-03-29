@@ -12,7 +12,12 @@ import type { TimekeepSettings } from "@/settings";
 import type { TimeEntry, Timekeep } from "@/timekeep/schema";
 
 import { getEntryDuration, getTotalDuration } from "@/timekeep";
-import { formatDurationLong, formatDurationShort, formatPdfDate, formatPdfRowDate } from "@/utils";
+import {
+	formatDurationLong,
+	formatDurationShort,
+	formatPdfDate,
+	formatPdfRowDate,
+} from "@/utils/time";
 
 // Embedded fonts
 import RobotoBold from "@/fonts/Roboto-Bold.ttf";

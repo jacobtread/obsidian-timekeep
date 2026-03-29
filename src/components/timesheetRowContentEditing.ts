@@ -4,8 +4,8 @@ import { TimekeepSettings } from "@/settings";
 import { Store } from "@/store";
 import { removeEntry, updateEntry } from "@/timekeep";
 import { TimeEntry, Timekeep } from "@/timekeep/schema";
-import { formatEditableTimestamp, parseEditableTimestamp } from "@/utils";
 import { ConfirmModal } from "@/utils/confirm-modal";
+import { formatEditableTimestamp, parseEditableTimestamp } from "@/utils/time";
 
 import { createObsidianIcon } from "./obsidianIcon";
 

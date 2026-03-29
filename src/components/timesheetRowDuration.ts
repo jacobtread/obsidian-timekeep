@@ -3,7 +3,7 @@ import { Component } from "obsidian";
 
 import { getEntryDuration, isEntryRunning } from "@/timekeep";
 import { TimeEntry } from "@/timekeep/schema";
-import { formatDurationLong } from "@/utils";
+import { formatDurationLong } from "@/utils/time";
 
 /**
  * Component for rendering the live-updating duration on

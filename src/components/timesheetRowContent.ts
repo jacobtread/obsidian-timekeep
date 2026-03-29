@@ -11,7 +11,7 @@ import {
 	updateEntry,
 } from "@/timekeep";
 import { TimeEntry, Timekeep } from "@/timekeep/schema";
-import { formatTimestamp } from "@/utils";
+import { formatTimestamp } from "@/utils/time";
 
 import { createObsidianIcon } from "./obsidianIcon";
 import { TimekeepName } from "./timesheetName";
