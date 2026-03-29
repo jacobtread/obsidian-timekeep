@@ -337,3 +337,9 @@
 .timekeep-suggestion[aria-selected="true"] {
 	background-color: var(--color-base-40);
 }
+
+.timekeep-status-item__button {
+	cursor: pointer;
+	width: 12px !important;
+	height: 12px !important;
+}
