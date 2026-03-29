@@ -1,14 +1,12 @@
-import { App, MarkdownView } from "obsidian";
+import { App, Component, MarkdownView } from "obsidian";
 
 import { TimesheetStatusBarItem } from "@/components/timesheetStatusBarItem";
 import { TimekeepRegistry, TimekeepRegistryEntry } from "@/service/registry";
-import { TimekeepSettings } from "@/settings";
-import { Store } from "@/store";
 import { getRunningEntry } from "@/timekeep";
 import { TimekeepWithPosition } from "@/timekeep/parser";
 import { TimeEntry } from "@/timekeep/schema";
 
-export class TimekeepStatusBarView {
+export class TimekeepStatusBarView extends Component {
 	/** Parent container element */
 	#containerEl: HTMLElement;
 
@@ -16,34 +14,36 @@ export class TimekeepStatusBarView {
 	app: App;
 	/** Access to the app registry */
 	registry: TimekeepRegistry;
-	/** Access to the timekeep settings */
-	settings: Store<TimekeepSettings>;
 
 	/** Currently rendered items */
 	items: TimesheetStatusBarItem[] = [];
 
-	constructor(
-		containerEl: HTMLElement,
-		app: App,
-		registry: TimekeepRegistry,
-		settings: Store<TimekeepSettings>
-	) {
+	constructor(containerEl: HTMLElement, app: App, registry: TimekeepRegistry) {
+		super();
+
 		this.#containerEl = containerEl;
 
 		this.app = app;
 		this.registry = registry;
-		this.settings = settings;
-
-		// Render the initial state
-		this.render(this.registry.entries.getState());
-
-		// Subscribe to changes to re-render
-		this.registry.entries.subscribe(() => {
-			this.render(this.registry.entries.getState());
-		});
 	}
 
-	render(entries: TimekeepRegistryEntry[]) {
+	onload(): void {
+		super.onload();
+
+		const render = this.render.bind(this);
+		const unsubscribe = this.registry.entries.subscribe(render);
+		this.register(unsubscribe);
+		render();
+	}
+
+	onunload(): void {
+		super.onunload();
+		this.#containerEl?.remove();
+	}
+
+	render() {
+		const entries = this.registry.entries.getState();
+
 		// Unload the current children
 		for (const item of this.items) {
 			item.unload();

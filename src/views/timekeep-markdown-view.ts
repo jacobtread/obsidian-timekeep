@@ -5,6 +5,7 @@ import { TFile, TAbstractFile, MarkdownRenderChild, MarkdownPostProcessorContext
 import { Timesheet } from "@/components/timesheet";
 import { TimesheetLoadError } from "@/components/timesheetLoadError";
 import { CustomOutputFormat } from "@/output";
+import { TimekeepAutocomplete } from "@/service/autocomplete";
 import { TimekeepSettings } from "@/settings";
 import { Store, createStore } from "@/store";
 import { LoadResult, replaceTimekeepCodeblock } from "@/timekeep/parser";
@@ -23,6 +24,8 @@ export class TimekeepMarkdownView extends MarkdownRenderChild {
 	loadResult: LoadResult;
 	/** The rendered timesheet component */
 	timesheet: Timesheet | TimesheetLoadError | undefined;
+	/** Autocomplete */
+	autocomplete: TimekeepAutocomplete;
 
 	// Path to the file the timekeep is within
 	fileSourcePath: string;
@@ -32,6 +35,7 @@ export class TimekeepMarkdownView extends MarkdownRenderChild {
 		app: ObsidianApp,
 		settingsStore: Store<TimekeepSettings>,
 		customOutputFormats: Store<Record<string, CustomOutputFormat>>,
+		autocomplete: TimekeepAutocomplete,
 		context: MarkdownPostProcessorContext,
 		loadResult: LoadResult
 	) {
@@ -39,6 +43,7 @@ export class TimekeepMarkdownView extends MarkdownRenderChild {
 		this.app = app;
 		this.settingsStore = settingsStore;
 		this.customOutputFormats = customOutputFormats;
+		this.autocomplete = autocomplete;
 		this.context = context;
 		this.loadResult = loadResult;
 
@@ -84,12 +89,12 @@ export class TimekeepMarkdownView extends MarkdownRenderChild {
 
 			const timesheet = new Timesheet(
 				this.containerEl,
-
 				this.app,
 				timekeepStore,
 				saveErrorStore,
 				this.settingsStore,
 				this.customOutputFormats,
+				this.autocomplete,
 				handleSaveTimekeep
 			);
 

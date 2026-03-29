@@ -1,6 +1,7 @@
 import { App, Component } from "obsidian";
 
 import { CustomOutputFormat } from "@/output";
+import { TimekeepAutocomplete } from "@/service/autocomplete";
 import { TimekeepSettings } from "@/settings";
 import { Store } from "@/store";
 import { Timekeep } from "@/timekeep/schema";
@@ -26,6 +27,8 @@ export class Timesheet extends Component {
 	settings: Store<TimekeepSettings>;
 	/** Access to custom output formats */
 	customOutputFormats: Store<Record<string, CustomOutputFormat>>;
+	/** Autocomplete */
+	autocomplete: TimekeepAutocomplete;
 
 	/** Callback to save the timekeep */
 	handleSaveTimekeep: (value: Timekeep) => Promise<void>;
@@ -40,6 +43,7 @@ export class Timesheet extends Component {
 		saveError: Store<boolean>,
 		settings: Store<TimekeepSettings>,
 		customOutputFormats: Store<Record<string, CustomOutputFormat>>,
+		autocomplete: TimekeepAutocomplete,
 		handleSaveTimekeep: (value: Timekeep) => Promise<void>
 	) {
 		super();
@@ -51,6 +55,7 @@ export class Timesheet extends Component {
 		this.saveError = saveError;
 		this.settings = settings;
 		this.customOutputFormats = customOutputFormats;
+		this.autocomplete = autocomplete;
 		this.handleSaveTimekeep = handleSaveTimekeep;
 	}
 
@@ -83,6 +88,7 @@ export class Timesheet extends Component {
 				this.timekeep,
 				this.settings,
 				this.customOutputFormats,
+				this.autocomplete,
 				this.handleSaveTimekeep
 			);
 		}

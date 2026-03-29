@@ -21,6 +21,16 @@ type StoreState<T> = {
 	listeners: VoidFunction[];
 };
 
+export function derived<T, V>(store: Store<T>, derive: (value: T) => V): Store<V> {
+	const derivedStore = createStore(derive(store.getState()));
+	store.subscribe(() => {
+		const newValue = derive(store.getState());
+		derivedStore.setState(newValue);
+	});
+
+	return derivedStore;
+}
+
 /**
  * Creates a new store
  *

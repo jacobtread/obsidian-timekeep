@@ -9,6 +9,7 @@
 		"timesheet",
 		"unstarted",
 		"Timekeeps",
-		"pdfmake"
+		"pdfmake",
+		"activedescendant"
 	]
 }
