@@ -4,6 +4,7 @@ import moment from "moment";
 import { Notice } from "obsidian";
 
 import { stopAllTimekeeps } from "@/timekeep/stopAllTimekeeps";
+import { getErrorMessage } from "@/utils/error";
 
 async function asyncCallback(app: App) {
 	const currentTime = moment();
@@ -17,15 +18,7 @@ async function asyncCallback(app: App) {
 
 		new Notice(`Stopped ${totalStopped} tracker${totalStopped !== 1 ? "s" : ""}`, 1500);
 	} catch (error) {
-		let errorMessage = "";
-		if (error instanceof Error) {
-			errorMessage = error.message;
-		} else if (typeof error === "string") {
-			errorMessage = error;
-		} else {
-			errorMessage = "Unknown error occurred";
-		}
-
+		const errorMessage = getErrorMessage(error);
 		new Notice("Failed to stop timekeeps: " + errorMessage, 1500);
 	}
 }
