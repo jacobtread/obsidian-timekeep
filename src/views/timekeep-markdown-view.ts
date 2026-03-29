@@ -1,19 +1,22 @@
+import type { App } from "obsidian";
+import type { TAbstractFile, MarkdownPostProcessorContext } from "obsidian";
+
 import moment from "moment";
-import { App as ObsidianApp } from "obsidian";
-import { TFile, TAbstractFile, MarkdownRenderChild, MarkdownPostProcessorContext } from "obsidian";
+import { TFile, MarkdownRenderChild } from "obsidian";
+
+import type { CustomOutputFormat } from "@/output";
+import type { TimekeepSettings } from "@/settings";
 
 import { Timesheet } from "@/components/timesheet";
 import { TimesheetLoadError } from "@/components/timesheetLoadError";
-import { CustomOutputFormat } from "@/output";
 import { TimekeepAutocomplete } from "@/service/autocomplete";
-import { TimekeepSettings } from "@/settings";
-import { Store, createStore } from "@/store";
-import { LoadResult, replaceTimekeepCodeblock } from "@/timekeep/parser";
-import { Timekeep, stripTimekeepRuntimeData } from "@/timekeep/schema";
+import { type Store, createStore } from "@/store";
+import { type LoadResult, load, replaceTimekeepCodeblock } from "@/timekeep/parser";
+import { type Timekeep, stripTimekeepRuntimeData } from "@/timekeep/schema";
 
 export class TimekeepMarkdownView extends MarkdownRenderChild {
 	// Obsidian app instance
-	app: ObsidianApp;
+	app: App;
 	// Timekeep settings store
 	settingsStore: Store<TimekeepSettings>;
 	// Custom output formats store
@@ -32,7 +35,7 @@ export class TimekeepMarkdownView extends MarkdownRenderChild {
 
 	constructor(
 		containerEl: HTMLElement,
-		app: ObsidianApp,
+		app: App,
 		settingsStore: Store<TimekeepSettings>,
 		customOutputFormats: Store<Record<string, CustomOutputFormat>>,
 		autocomplete: TimekeepAutocomplete,
@@ -49,6 +52,37 @@ export class TimekeepMarkdownView extends MarkdownRenderChild {
 
 		// Set initial file path
 		this.fileSourcePath = context.sourcePath;
+	}
+
+	/**
+ * Create a markdown code block processor for this view
+ *
+ * @param app
+ * @param settingsStore
+ * @param customOutputFormats
+ * @param autocomplete
+ * @returns
+ */
+	static markdownPostProcessor(
+		app: App,
+		settingsStore: Store<TimekeepSettings>,
+		customOutputFormats: Store<Record<string, CustomOutputFormat>>,
+		autocomplete: TimekeepAutocomplete
+	): (source: string, el: HTMLElement, ctx: MarkdownPostProcessorContext) => void {
+		return (source: string, el: HTMLElement, context: MarkdownPostProcessorContext) => {
+			const loadResult = load(source);
+			context.addChild(
+				new TimekeepMarkdownView(
+					el,
+					app,
+					settingsStore,
+					customOutputFormats,
+					autocomplete,
+					context,
+					loadResult
+				)
+			);
+		};
 	}
 
 	onload(): void {

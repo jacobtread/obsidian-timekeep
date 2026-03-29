@@ -1,9 +1,12 @@
-import { Moment } from "moment";
-import { TFile, Vault } from "obsidian";
+import type { Moment } from "moment";
+
+import moment from "moment";
+import { Notice, type App, type Command, type TFile, type Vault } from "obsidian";
+
+import type { Timekeep } from "@/timekeep/schema";
 
 import { getRunningEntry, stopRunningEntries } from "@/timekeep";
 import { replaceTimekeepCodeblock, extractTimekeepCodeblocksWithPosition } from "@/timekeep/parser";
-import { Timekeep } from "@/timekeep/schema";
 
 /**
  * Stops all timekeeps in the provided file if there are any running.
@@ -62,4 +65,45 @@ export async function stopFileTimekeeps(vault: Vault, file: TFile, currentTime: 
 	});
 
 	return runningIndexes.length;
+}
+
+export default function (app: App): Command {
+	return {
+		id: `stop-current-timekeeps`,
+		name: `Stop All Running Trackers (Current File Only)`,
+		callback: () => {
+			const currentTime = moment();
+			const currentFile = app.workspace.activeEditor?.file ?? null;
+
+			if (currentFile === null) {
+				new Notice("No active file detected", 1500);
+				return;
+			}
+
+			stopFileTimekeeps(app.vault, currentFile, currentTime)
+				.then((totalStopped) => {
+					if (totalStopped < 1) {
+						new Notice("Nothing to stop.", 1500);
+						return;
+					}
+
+					new Notice(
+						`Stopped ${totalStopped} tracker${totalStopped !== 1 ? "s" : ""}`,
+						1500
+					);
+				})
+				.catch((error) => {
+					let errorMessage = "";
+					if (error instanceof Error) {
+						errorMessage = error.message;
+					} else if (typeof error === "string") {
+						errorMessage = error;
+					} else {
+						error = "Unknown error occurred";
+					}
+
+					new Notice("Failed to stop timekeeps: " + errorMessage, 1500);
+				});
+		},
+	};
 }

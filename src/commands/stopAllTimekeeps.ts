@@ -1,5 +1,7 @@
-import { Moment } from "moment";
-import { TFile, Vault } from "obsidian";
+import type { App, Command, TFile, Vault } from "obsidian";
+
+import moment, { Moment } from "moment";
+import { Notice } from "obsidian";
 
 import { stopFileTimekeeps } from "./stopFileTimekeeps";
 
@@ -32,4 +34,38 @@ export async function stopAllTimekeeps(vault: Vault, currentTime: Moment) {
 	}
 
 	return totalStopped;
+}
+
+export default function (app: App): Command {
+	return {
+		id: `stop-all-timekeeps`,
+		name: `Stop All Running Trackers`,
+		callback: () => {
+			const currentTime = moment();
+			stopAllTimekeeps(app.vault, currentTime)
+				.then((totalStopped) => {
+					if (totalStopped < 1) {
+						new Notice("Nothing to stop.", 1500);
+						return;
+					}
+
+					new Notice(
+						`Stopped ${totalStopped} tracker${totalStopped !== 1 ? "s" : ""}`,
+						1500
+					);
+				})
+				.catch((error) => {
+					let errorMessage = "";
+					if (error instanceof Error) {
+						errorMessage = error.message;
+					} else if (typeof error === "string") {
+						errorMessage = error;
+					} else {
+						error = "Unknown error occurred";
+					}
+
+					new Notice("Failed to stop timekeeps: " + errorMessage, 1500);
+				});
+		},
+	};
 }

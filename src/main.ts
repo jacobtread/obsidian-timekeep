@@ -1,17 +1,25 @@
-import moment, { Moment } from "moment";
-import {
-	Vault,
-	TFile,
-	Notice,
-	Plugin,
-	PluginManifest,
-	App as ObsidianApp,
-	MarkdownPostProcessorContext,
-} from "obsidian";
+import type { Moment } from "moment";
+import type { Vault, TFile, PluginManifest, App } from "obsidian";
 
+import { Plugin } from "obsidian";
+
+import type { CustomOutputFormat } from "@/output";
+import type { Timekeep, TimeEntry } from "@/timekeep/schema";
+
+import createMerged from "@/commands/createMerged";
+import exportMergedPdf from "@/commands/exportMergedPdf";
+import findRunningTrackers from "@/commands/findRunningTrackers";
+import insertTracker from "@/commands/insertTracker";
+import { stopAllTimekeeps, default as stopAllTimekeepsCommand } from "@/commands/stopAllTimekeeps";
+import {
+	stopFileTimekeeps,
+	default as stopFileTimekeepsCommand,
+} from "@/commands/stopFileTimekeeps";
+import { TimekeepAutocomplete } from "@/service/autocomplete";
+import { TimekeepRegistry } from "@/service/registry";
 import { defaultSettings, TimekeepSettings, legacySettingsCompatibility } from "@/settings";
 import { TimekeepSettingsTab } from "@/settings-tab";
-import { Store, createStore } from "@/store";
+import { type Store, createStore } from "@/store";
 import {
 	isKeepRunning,
 	isEntryRunning,
@@ -19,22 +27,15 @@ import {
 	getEntryDuration,
 	getTotalDuration,
 } from "@/timekeep";
-import { load, replaceTimekeepCodeblock, extractTimekeepCodeblocks } from "@/timekeep/parser";
-
-import { stopAllTimekeeps } from "./commands/stopAllTimekeeps";
-import { stopFileTimekeeps } from "./commands/stopFileTimekeeps";
-import { CustomOutputFormat } from "./output";
-import { TimekeepAutocomplete } from "./service/autocomplete";
-import { TimekeepRegistry } from "./service/registry";
-import { Timekeep, TimeEntry } from "./timekeep/schema";
-import { TimekeepLocatorModal } from "./views/timekeep-locator-modal";
-import { TimekeepMarkdownView } from "./views/timekeep-markdown-view";
-import { TimekeepMergerModal } from "./views/timekeep-merger-modal";
-import { TimekeepStatusBarView } from "./views/timekeep-status-bar-view";
+import { replaceTimekeepCodeblock, extractTimekeepCodeblocks } from "@/timekeep/parser";
+import { TimekeepMarkdownView } from "@/views/timekeep-markdown-view";
+import { TimekeepStatusBarView } from "@/views/timekeep-status-bar-view";
 
 export default class TimekeepPlugin extends Plugin {
-	settingsStore: Store<TimekeepSettings>;
-	customOutputFormats: Store<Record<string, CustomOutputFormat>>;
+	/** Store containing the plugin settings */
+	settingsStore: Store<TimekeepSettings> = createStore(defaultSettings);
+	/** Store containing custom output formats */
+	customOutputFormats: Store<Record<string, CustomOutputFormat>> = createStore({});
 
 	replaceTimekeepCodeblock: (
 		timekeep: Timekeep,
@@ -52,12 +53,12 @@ export default class TimekeepPlugin extends Plugin {
 	stopFileTimekeeps: (vault: Vault, file: TFile, currentTime: Moment) => Promise<number>;
 
 	/** Registry of all timekeeps within the vault */
-	registry: TimekeepRegistry | null = null;
+	registry: TimekeepRegistry;
 
 	/** Currently loaded status bar view if present */
 	#statusBarView: TimekeepStatusBarView | null = null;
 
-	constructor(app: ObsidianApp, manifest: PluginManifest) {
+	constructor(app: App, manifest: PluginManifest) {
 		super(app, manifest);
 
 		const saveSettings = this.saveData.bind(this);
@@ -73,6 +74,8 @@ export default class TimekeepPlugin extends Plugin {
 		this.customOutputFormats = customOutputFormats;
 		this.settingsStore = settingsStore;
 
+		this.registry = new TimekeepRegistry(app.vault, settingsStore);
+
 		// Expose API functions
 		this.replaceTimekeepCodeblock = replaceTimekeepCodeblock;
 		this.extractTimekeepCodeblocks = extractTimekeepCodeblocks;
@@ -86,21 +89,9 @@ export default class TimekeepPlugin extends Plugin {
 	}
 
 	async onload(): Promise<void> {
-		const loadedSettings: TimekeepSettings = Object.assign(
-			{},
-			defaultSettings,
-			await this.loadData()
-		);
-
-		legacySettingsCompatibility(loadedSettings);
-
-		// Load saved settings and combine with defaults
+		const loadedSettings = await this.loadSettings();
 		this.settingsStore.setState(loadedSettings);
-
 		this.addSettingTab(new TimekeepSettingsTab(this.app, this));
-
-		const registry = new TimekeepRegistry(this.app.vault, this.settingsStore);
-		this.registry = registry;
 
 		const autocomplete = new TimekeepAutocomplete(this.registry, this.settingsStore);
 		this.addChild(autocomplete);
@@ -109,132 +100,64 @@ export default class TimekeepPlugin extends Plugin {
 		this.settingsStore.subscribe(onLoadStatusBar);
 		onLoadStatusBar();
 
-		this.app.workspace.onLayoutReady(() => {
-			const settings = this.settingsStore.getState();
+		// Hook ready event
+		this.app.workspace.onLayoutReady(this.onReady.bind(this));
 
-			if (!settings.registryEnabled) {
-				return;
-			}
-
-			// Initialize the registry (Only after the layout is ready and the vault is loaded)
-			this.addChild(registry);
-		});
-
-		this.registerMarkdownCodeBlockProcessor(
+		// Register code block processing
+		const codeBlockProcessor = TimekeepMarkdownView.markdownPostProcessor(
+			this.app,
+			this.settingsStore,
+			this.customOutputFormats,
+			autocomplete
+		);
+		const markdownPostProcessor = this.registerMarkdownCodeBlockProcessor(
 			"timekeep",
-			(source: string, el: HTMLElement, context: MarkdownPostProcessorContext) => {
-				const loadResult = load(source);
-
-				context.addChild(
-					new TimekeepMarkdownView(
-						el,
-						this.app,
-						this.settingsStore,
-						this.customOutputFormats,
-						autocomplete,
-						context,
-						loadResult
-					)
-				);
-			}
+			codeBlockProcessor
 		);
 
-		this.addCommand({
-			id: `insert`,
-			name: `Insert Tracker`,
-			editorCallback: (e) => {
-				e.replaceSelection('\n```timekeep\n{"entries": []}\n```\n');
-			},
-		});
+		// Set high priority sort order
+		markdownPostProcessor.sortOrder = -100;
 
-		this.addCommand({
-			id: `find`,
-			name: `Find running trackers`,
-			callback: () => new TimekeepLocatorModal(this.app).open(),
-		});
+		// Register commands
+		this.addCommand(insertTracker());
+		this.addCommand(findRunningTrackers(this.app));
+		this.addCommand(createMerged(this.app, this.settingsStore));
+		this.addCommand(exportMergedPdf(this.app, this.settingsStore));
+		this.addCommand(stopAllTimekeepsCommand(this.app));
+		this.addCommand(stopFileTimekeepsCommand(this.app));
+	}
 
-		this.addCommand({
-			id: `create-merged`,
-			name: `Create Merged Tracker`,
-			callback: () => new TimekeepMergerModal(this.app, this.settingsStore, false).open(),
-		});
+	private onReady() {
+		const settings = this.settingsStore.getState();
 
-		this.addCommand({
-			id: `export-merged-pdf`,
-			name: `Export Merged Tracker PDF`,
-			callback: () => new TimekeepMergerModal(this.app, this.settingsStore, true).open(),
-		});
+		if (!settings.registryEnabled || !this.registry) {
+			return;
+		}
 
-		this.addCommand({
-			id: `stop-all-timekeeps`,
-			name: `Stop All Running Trackers`,
-			callback: () => {
-				const currentTime = moment();
-				stopAllTimekeeps(this.app.vault, currentTime)
-					.then((totalStopped) => {
-						if (totalStopped < 1) {
-							new Notice("Nothing to stop.", 1500);
-							return;
-						}
+		// Initialize the registry (Only after the layout is ready and the vault is loaded)
+		this.addChild(this.registry);
+	}
 
-						new Notice(
-							`Stopped ${totalStopped} tracker${totalStopped !== 1 ? "s" : ""}`,
-							1500
-						);
-					})
-					.catch((error) => {
-						let errorMessage = "";
-						if (error instanceof Error) {
-							errorMessage = error.message;
-						} else if (typeof error === "string") {
-							errorMessage = error;
-						} else {
-							error = "Unknown error occurred";
-						}
+	private async loadSettings(): Promise<TimekeepSettings> {
+		const loadedData = await this.loadData();
+		const loadedSettings: TimekeepSettings = Object.assign({}, defaultSettings, loadedData);
+		legacySettingsCompatibility(loadedSettings);
+		return loadedSettings;
+	}
 
-						new Notice("Failed to stop timekeeps: " + errorMessage, 1500);
-					});
-			},
-		});
+	private onLoadStatusBar() {
+		if (this.#statusBarView) {
+			this.removeChild(this.#statusBarView);
+			this.#statusBarView = null;
+		}
 
-		this.addCommand({
-			id: `stop-current-timekeeps`,
-			name: `Stop All Running Trackers (Current File Only)`,
-			callback: () => {
-				const currentTime = moment();
-				const currentFile = this.app.workspace.activeEditor?.file ?? null;
+		const settings = this.settingsStore.getState();
+		if (!settings.statusBarEnabled) return;
 
-				if (currentFile === null) {
-					new Notice("No active file detected", 1500);
-					return;
-				}
-
-				stopFileTimekeeps(this.app.vault, currentFile, currentTime)
-					.then((totalStopped) => {
-						if (totalStopped < 1) {
-							new Notice("Nothing to stop.", 1500);
-							return;
-						}
-
-						new Notice(
-							`Stopped ${totalStopped} tracker${totalStopped !== 1 ? "s" : ""}`,
-							1500
-						);
-					})
-					.catch((error) => {
-						let errorMessage = "";
-						if (error instanceof Error) {
-							errorMessage = error.message;
-						} else if (typeof error === "string") {
-							errorMessage = error;
-						} else {
-							error = "Unknown error occurred";
-						}
-
-						new Notice("Failed to stop timekeeps: " + errorMessage, 1500);
-					});
-			},
-		});
+		const containerEl = this.addStatusBarItem();
+		const statusBarView = new TimekeepStatusBarView(containerEl, this.app, this.registry);
+		this.addChild(statusBarView);
+		this.#statusBarView = statusBarView;
 	}
 
 	registerCustomOutputFormat(id: string, format: CustomOutputFormat) {
@@ -252,24 +175,5 @@ export default class TimekeepPlugin extends Plugin {
 			delete newState[id];
 			return newState;
 		});
-	}
-
-	private onLoadStatusBar() {
-		if (!this.registry) {
-			throw new Error("registry is not initialized");
-		}
-
-		if (this.#statusBarView) {
-			this.removeChild(this.#statusBarView);
-			this.#statusBarView = null;
-		}
-
-		const settings = this.settingsStore.getState();
-		if (!settings.statusBarEnabled) return;
-
-		const containerEl = this.addStatusBarItem();
-		const statusBarView = new TimekeepStatusBarView(containerEl, this.app, this.registry);
-		this.addChild(statusBarView);
-		this.#statusBarView = statusBarView;
 	}
 }
