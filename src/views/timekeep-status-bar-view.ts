@@ -14,6 +14,9 @@ export class TimekeepStatusBarView extends Component {
 	/** Parent container element */
 	#containerEl: HTMLElement;
 
+	/** Wrapper container element for entries */
+	#wrapperEl: HTMLElement;
+
 	/** Access to the app instance */
 	app: App;
 	/** Access to the app registry */
@@ -34,6 +37,9 @@ export class TimekeepStatusBarView extends Component {
 	onload(): void {
 		super.onload();
 
+		const wrapperEl = this.#containerEl.createDiv({ cls: "timekeep-status-bar" });
+		this.#wrapperEl = wrapperEl;
+
 		const render = this.render.bind(this);
 		const unsubscribe = this.registry.entries.subscribe(render);
 		this.register(unsubscribe);
@@ -46,6 +52,9 @@ export class TimekeepStatusBarView extends Component {
 	}
 
 	render() {
+		const wrapperEl = this.#wrapperEl;
+		if (!wrapperEl) return;
+
 		const entries = this.registry.entries.getState();
 
 		// Unload the current children
@@ -60,7 +69,7 @@ export class TimekeepStatusBarView extends Component {
 				if (runningEntry === null) continue;
 
 				const item = new TimesheetStatusBarItem(
-					this.#containerEl,
+					wrapperEl,
 					runningEntry,
 					() => {
 						void this.onOpen(entry, timekeep);
