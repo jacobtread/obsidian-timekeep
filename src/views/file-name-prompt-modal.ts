@@ -12,6 +12,12 @@ export class FileNamePromptModal extends Modal {
 		this.callback = callback;
 	}
 
+	static pick(app: App): Promise<string | null> {
+		return new Promise((resolve) => {
+			new FileNamePromptModal(app, resolve).open();
+		});
+	}
+
 	onOpen(): void {
 		const { contentEl } = this;
 		contentEl.createEl("p", { text: "Enter name to save the exported PDF file as:" });
@@ -49,10 +55,4 @@ export class FileNamePromptModal extends Modal {
 			this.callback(null);
 		}
 	}
-}
-
-export async function pickFileName(app: App): Promise<string | null> {
-	return new Promise((resolve) => {
-		new FileNamePromptModal(app, resolve).open();
-	});
 }

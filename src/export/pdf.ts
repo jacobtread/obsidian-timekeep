@@ -4,7 +4,7 @@ import { App, Notice, Platform } from "obsidian";
 import { createPdfExport, createPdfExportBlob } from "@/components/pdf/renderer";
 import { TimekeepSettings, PdfExportBehavior } from "@/settings";
 import { Timekeep } from "@/timekeep/schema";
-import { pickFileName } from "@/views/file-name-prompt-modal";
+import { FileNamePromptModal } from "@/views/file-name-prompt-modal";
 
 export async function exportPdf(app: App, timekeep: Timekeep, settings: TimekeepSettings) {
 	if (Platform.isMobileApp) {
@@ -18,7 +18,7 @@ async function exportPdfMobile(app: App, timekeep: Timekeep, settings: TimekeepS
 	const currentTime = moment();
 	const blob = await createPdfExportBlob(timekeep, settings, currentTime);
 	const buffer = await blob.arrayBuffer();
-	const fileName = await pickFileName(app);
+	const fileName = await FileNamePromptModal.pick(app);
 
 	if (!fileName) return;
 
