@@ -87,6 +87,7 @@ export class TimesheetTable extends Component {
 	 * timekeep data are updated
 	 */
 	onUpdate() {
+		this.clearRows();
 		this.updateWrapperSize();
 		this.renderRows();
 	}

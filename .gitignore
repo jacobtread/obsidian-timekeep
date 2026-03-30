@@ -25,3 +25,4 @@ dist
 coverage
 
 test-vault/.obsidian
+test-vault/*

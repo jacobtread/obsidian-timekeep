@@ -5,16 +5,15 @@ import { TimekeepAutocomplete } from "@/service/autocomplete";
 import { TimekeepSettings } from "@/settings";
 import { Store } from "@/store";
 import { Timekeep } from "@/timekeep/schema";
+import { ConfirmModal } from "@/views/confirm-modal";
 
-import { TimesheetCounters } from "./timesheetCounters";
-import { TimesheetExportActions } from "./timesheetExportActions";
-import { TimesheetStart } from "./timesheetStart";
-import { TimesheetTable } from "./timesheetTable";
+import { createObsidianIcon } from "./obsidianIcon";
+import { TimesheetApp } from "./timesheetApp";
 
 /**
  * View component for the timesheet app as a whole
  */
-export class TimesheetApp extends Component {
+export class TimesheetFileEntry extends Component {
 	/** Parent container element */
 	#containerEl: HTMLElement;
 
@@ -32,13 +31,20 @@ export class TimesheetApp extends Component {
 	/** Wrapper element containing the component content */
 	#wrapperEl: HTMLElement | undefined;
 
+	timesheetApp: TimesheetApp | undefined;
+
+	onDelete: VoidFunction;
+
 	constructor(
 		containerEl: HTMLElement,
+
 		app: App,
 		timekeep: Store<Timekeep>,
 		settings: Store<TimekeepSettings>,
 		customOutputFormats: Store<Record<string, CustomOutputFormat>>,
-		autocomplete: TimekeepAutocomplete
+		autocomplete: TimekeepAutocomplete,
+
+		onDelete: VoidFunction
 	) {
 		super();
 
@@ -49,6 +55,8 @@ export class TimesheetApp extends Component {
 		this.settings = settings;
 		this.customOutputFormats = customOutputFormats;
 		this.autocomplete = autocomplete;
+
+		this.onDelete = onDelete;
 	}
 
 	onunload(): void {
@@ -60,34 +68,42 @@ export class TimesheetApp extends Component {
 		super.onload();
 
 		const wrapperEl = this.#containerEl.createDiv({
-			cls: "timekeep-container",
+			cls: "timekeep-file-entry",
 		});
-
 		this.#wrapperEl = wrapperEl;
 
-		const counters = new TimesheetCounters(wrapperEl, this.settings, this.timekeep);
+		const deleteButton = wrapperEl.createEl("button", { cls: "" });
+		createObsidianIcon(deleteButton, "trash", "text-button-icon");
+		deleteButton.appendText("Delete");
 
-		const start = new TimesheetStart(
+		this.registerDomEvent(deleteButton, "click", this.onConfirmDelete.bind(this));
+
+		this.timesheetApp = new TimesheetApp(
 			wrapperEl,
 			this.app,
 			this.timekeep,
 			this.settings,
+			this.customOutputFormats,
 			this.autocomplete
 		);
+		this.addChild(this.timesheetApp);
+	}
 
-		const table = new TimesheetTable(wrapperEl, this.app, this.timekeep, this.settings);
-
-		const exportActions = new TimesheetExportActions(
-			wrapperEl,
+	onConfirmDelete() {
+		const modal = new ConfirmModal(
 			this.app,
-			this.timekeep,
-			this.settings,
-			this.customOutputFormats
+			"Are you sure you want to delete this timesheet?",
+			this.onConfirmedDelete.bind(this)
 		);
+		modal.setTitle("Confirm Delete");
+		modal.open();
+	}
 
-		this.addChild(counters);
-		this.addChild(start);
-		this.addChild(table);
-		this.addChild(exportActions);
+	onConfirmedDelete(confirmed: boolean) {
+		if (!confirmed) {
+			return;
+		}
+
+		this.onDelete();
 	}
 }
