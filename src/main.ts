@@ -1,7 +1,7 @@
 import type { Moment } from "moment";
 import type { Vault, TFile, PluginManifest, App } from "obsidian";
 
-import { Plugin } from "obsidian";
+import { Plugin, TFolder } from "obsidian";
 
 import type { CustomOutputFormat } from "@/output";
 import type { Store } from "@/store";
@@ -139,6 +139,32 @@ export default class TimekeepPlugin extends Plugin {
 		});
 
 		this.registerExtensions(["timekeep"], "timekeep");
+
+		this.app.workspace.on("file-menu", (menu, file) => {
+			if (!(file instanceof TFolder)) return;
+
+			menu.addItem((item) => {
+				item.setTitle("New Timekeep")
+					.setIcon("clock")
+					.onClick(async () => {
+						const folderPath = file.path;
+
+						const isNameTaken = (name: string) =>
+							file.children.find((child) => child.name === name) !== undefined;
+
+						let name = "Untitled.timekeep";
+						let index = 1;
+
+						while (isNameTaken(name)) {
+							name = `Untitled ${index}.timekeep`;
+							index += 1;
+						}
+
+						const filePath = `${folderPath}${name}`;
+						await this.app.vault.create(filePath, "");
+					});
+			});
+		});
 	}
 
 	private onReady() {
