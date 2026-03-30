@@ -20,7 +20,7 @@ export class TimekeepFileView extends EditableFileView {
 
 	/** Loading result for the timekeep data */
 	loadResult: Store<LoadResult | null>;
-
+	/** Container wrapper element */
 	wrapperEl: HTMLElement | undefined;
 
 	/** The rendered timesheet component */
@@ -116,6 +116,10 @@ export class TimekeepFileView extends EditableFileView {
 	}
 
 	getDisplayText(): string {
+		if (this.file) {
+			return this.file.basename;
+		}
+
 		return "Timekeep";
 	}
 
