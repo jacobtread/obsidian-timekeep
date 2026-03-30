@@ -62,6 +62,12 @@ export class TimesheetRowContainer extends Component {
 		this.onViewContent();
 	}
 
+	onunload(): void {
+		super.onunload();
+
+		this.#rowEl?.remove();
+	}
+
 	onViewEditing() {
 		const rowEl = this.#rowEl;
 		if (!rowEl) return;

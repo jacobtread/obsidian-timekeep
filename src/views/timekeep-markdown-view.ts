@@ -55,14 +55,14 @@ export class TimekeepMarkdownView extends MarkdownRenderChild {
 	}
 
 	/**
- * Create a markdown code block processor for this view
- *
- * @param app
- * @param settingsStore
- * @param customOutputFormats
- * @param autocomplete
- * @returns
- */
+	 * Create a markdown code block processor for this view
+	 *
+	 * @param app
+	 * @param settingsStore
+	 * @param customOutputFormats
+	 * @param autocomplete
+	 * @returns
+	 */
 	static markdownPostProcessor(
 		app: App,
 		settingsStore: Store<TimekeepSettings>,

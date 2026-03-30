@@ -349,3 +349,19 @@
 	gap: 0.5rem;
 	align-items: center;
 }
+
+.timekeep-file {
+	display: flex;
+	gap: 1rem;
+	flex-flow: column;
+
+	max-width: var(--file-line-width);
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.timekeep-file-entries {
+	display: flex;
+	gap: 1rem;
+	flex-flow: column;
+}

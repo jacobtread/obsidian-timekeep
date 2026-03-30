@@ -88,8 +88,7 @@ export class Timesheet extends Component {
 				this.timekeep,
 				this.settings,
 				this.customOutputFormats,
-				this.autocomplete,
-				this.handleSaveTimekeep
+				this.autocomplete
 			);
 		}
 

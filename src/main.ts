@@ -31,6 +31,8 @@ import { stopFileTimekeeps } from "@/timekeep/stopFileTimekeeps";
 import { TimekeepMarkdownView } from "@/views/timekeep-markdown-view";
 import { TimekeepStatusBarView } from "@/views/timekeep-status-bar-view";
 
+import { TimekeepFileView } from "./views/timekeep-file-view";
+
 export default class TimekeepPlugin extends Plugin {
 	/** Store containing the plugin settings */
 	settingsStore: Store<TimekeepSettings> = createStore(defaultSettings);
@@ -125,6 +127,18 @@ export default class TimekeepPlugin extends Plugin {
 		this.addCommand(exportMergedPdf(this.app, this.settingsStore));
 		this.addCommand(stopAllTimekeepsCommand(this.app));
 		this.addCommand(stopFileTimekeepsCommand(this.app));
+
+		// Custom timekeep file format
+		this.registerView("timekeep", (leaf) => {
+			return new TimekeepFileView(
+				leaf,
+				this.settingsStore,
+				this.customOutputFormats,
+				autocomplete
+			);
+		});
+
+		this.registerExtensions(["timekeep"], "timekeep");
 	}
 
 	private onReady() {
