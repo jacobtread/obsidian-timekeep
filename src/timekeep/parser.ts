@@ -44,8 +44,11 @@ export function load(value: string): LoadResult {
 	return { success: true, timekeep };
 }
 
-export interface TimekeepWithPosition {
+export interface TimekeepWithPosition extends TimekeepPosition {
 	timekeep: Timekeep;
+}
+
+export interface TimekeepPosition {
 	startLine: number;
 	endLine: number;
 }

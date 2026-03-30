@@ -5,7 +5,7 @@ import { createStore, Store } from "@/store";
 import { getEntriesNames } from "@/timekeep/queries";
 import { isNumberText } from "@/utils/number";
 
-import { TimekeepRegistry } from "./registry";
+import { TimekeepEntryItemType, TimekeepRegistry } from "./registry";
 
 /**
  * Autocomplete registry to provide entry name autocomplete based
@@ -55,8 +55,13 @@ export class TimekeepAutocomplete extends Component {
 		const namesSet = new Set<string>();
 
 		for (const entry of entries) {
-			for (const timekeep of entry.timekeeps) {
-				getEntriesNames(timekeep.timekeep.entries, namesSet);
+			if (entry.type === TimekeepEntryItemType.MARKDOWN) {
+				for (const timekeep of entry.timekeeps) {
+					getEntriesNames(timekeep.timekeep.entries, namesSet);
+				}
+			} else if (entry.type === TimekeepEntryItemType.FILE) {
+				const timekeep = entry.timekeep;
+				getEntriesNames(timekeep.entries, namesSet);
 			}
 		}
 
