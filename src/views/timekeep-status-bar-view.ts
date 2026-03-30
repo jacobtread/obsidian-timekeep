@@ -3,12 +3,13 @@ import { App, Component, MarkdownView, Notice } from "obsidian";
 
 import { TimesheetStatusBarItem } from "@/components/timesheetStatusBarItem";
 import { TimekeepRegistry, TimekeepRegistryEntry } from "@/service/registry";
-import { getRunningEntry, stopRunningEntries } from "@/timekeep";
 import {
 	extractTimekeepCodeblocksWithPosition,
 	replaceTimekeepCodeblock,
 	TimekeepWithPosition,
 } from "@/timekeep/parser";
+import { getRunningEntry } from "@/timekeep/queries";
+import { stopRunningEntries } from "@/timekeep/update";
 
 export class TimekeepStatusBarView extends Component {
 	/** Parent container element */

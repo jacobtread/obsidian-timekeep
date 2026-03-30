@@ -11,7 +11,7 @@ import pdfMake from "pdfmake";
 import type { TimekeepSettings } from "@/settings";
 import type { TimeEntry, Timekeep } from "@/timekeep/schema";
 
-import { getEntryDuration, getTotalDuration } from "@/timekeep";
+import { getEntryDuration, getTotalDuration } from "@/timekeep/queries";
 import {
 	formatDurationLong,
 	formatDurationShort,

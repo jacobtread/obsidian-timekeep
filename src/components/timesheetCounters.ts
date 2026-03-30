@@ -5,7 +5,12 @@ import type { TimekeepSettings } from "@/settings";
 import type { Store } from "@/store";
 import type { Timekeep } from "@/timekeep/schema";
 
-import { getEntryDuration, getRunningEntry, getTotalDuration, isKeepRunning } from "@/timekeep";
+import {
+	getEntryDuration,
+	getRunningEntry,
+	getTotalDuration,
+	isKeepRunning,
+} from "@/timekeep/queries";
 import { formatDuration } from "@/utils/time";
 
 import { TimesheetTimer } from "./timesheetTimer";

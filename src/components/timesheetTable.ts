@@ -4,7 +4,7 @@ import type { TimekeepSettings } from "@/settings";
 import type { Store } from "@/store";
 import type { Timekeep } from "@/timekeep/schema";
 
-import { getEntriesSorted } from "@/timekeep";
+import { getEntriesSorted } from "@/timekeep/sort";
 
 import { TimesheetRowContainer } from "./timesheetRowContainer";
 

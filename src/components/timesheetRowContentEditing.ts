@@ -2,8 +2,8 @@ import { App, Component } from "obsidian";
 
 import { TimekeepSettings } from "@/settings";
 import { Store } from "@/store";
-import { removeEntry, updateEntry } from "@/timekeep";
 import { TimeEntry, Timekeep } from "@/timekeep/schema";
+import { removeEntry, updateEntry } from "@/timekeep/update";
 import { formatEditableTimestamp, parseEditableTimestamp } from "@/utils/time";
 import { ConfirmModal } from "@/views/confirm-modal";
 

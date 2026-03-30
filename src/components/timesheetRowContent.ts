@@ -3,14 +3,10 @@ import { App, Component } from "obsidian";
 
 import { TimekeepSettings } from "@/settings";
 import { Store } from "@/store";
-import {
-	getRunningEntry,
-	isEntryRunning,
-	setEntryCollapsed,
-	startNewNestedEntry,
-	updateEntry,
-} from "@/timekeep";
+import { getRunningEntry, isEntryRunning } from "@/timekeep/queries";
 import { TimeEntry, Timekeep } from "@/timekeep/schema";
+import { startNewNestedEntry } from "@/timekeep/start";
+import { setEntryCollapsed, updateEntry } from "@/timekeep/update";
 import { formatTimestamp } from "@/utils/time";
 
 import { createObsidianIcon } from "./obsidianIcon";

@@ -4,7 +4,8 @@ import type { TimekeepSettings } from "@/settings";
 import type { Store } from "@/store";
 import type { Timekeep } from "@/timekeep/schema";
 
-import { getRunningEntry, updateEntry } from "@/timekeep";
+import { getRunningEntry } from "@/timekeep/queries";
+import { updateEntry } from "@/timekeep/update";
 
 import { createObsidianIcon } from "./obsidianIcon";
 

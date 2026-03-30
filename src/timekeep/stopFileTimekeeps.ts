@@ -3,8 +3,9 @@ import type { TFile, Vault } from "obsidian";
 
 import type { Timekeep } from "@/timekeep/schema";
 
-import { getRunningEntry, stopRunningEntries } from "@/timekeep";
 import { replaceTimekeepCodeblock, extractTimekeepCodeblocksWithPosition } from "@/timekeep/parser";
+import { getRunningEntry } from "@/timekeep/queries";
+import { stopRunningEntries } from "@/timekeep/update";
 
 /**
  * Stops all timekeeps in the provided file if there are any running.

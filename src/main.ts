@@ -4,6 +4,7 @@ import type { Vault, TFile, PluginManifest, App } from "obsidian";
 import { Plugin } from "obsidian";
 
 import type { CustomOutputFormat } from "@/output";
+import type { Store } from "@/store";
 import type { Timekeep, TimeEntry } from "@/timekeep/schema";
 
 import createMerged from "@/commands/createMerged";
@@ -16,15 +17,15 @@ import { TimekeepAutocomplete } from "@/service/autocomplete";
 import { TimekeepRegistry } from "@/service/registry";
 import { defaultSettings, TimekeepSettings, legacySettingsCompatibility } from "@/settings";
 import { TimekeepSettingsTab } from "@/settings-tab";
-import { type Store, createStore } from "@/store";
+import { createStore } from "@/store";
+import { replaceTimekeepCodeblock, extractTimekeepCodeblocks } from "@/timekeep/parser";
 import {
 	isKeepRunning,
 	isEntryRunning,
 	getRunningEntry,
 	getEntryDuration,
 	getTotalDuration,
-} from "@/timekeep";
-import { replaceTimekeepCodeblock, extractTimekeepCodeblocks } from "@/timekeep/parser";
+} from "@/timekeep/queries";
 import { stopAllTimekeeps } from "@/timekeep/stopAllTimekeeps";
 import { stopFileTimekeeps } from "@/timekeep/stopFileTimekeeps";
 import { TimekeepMarkdownView } from "@/views/timekeep-markdown-view";

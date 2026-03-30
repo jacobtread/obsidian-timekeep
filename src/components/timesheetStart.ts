@@ -6,7 +6,8 @@ import type { Store } from "@/store";
 import type { Timekeep } from "@/timekeep/schema";
 
 import { TimekeepAutocomplete } from "@/service/autocomplete";
-import { getRunningEntry, startNewEntry } from "@/timekeep";
+import { getRunningEntry } from "@/timekeep/queries";
+import { startNewEntry } from "@/timekeep/start";
 
 import { createObsidianIcon } from "./obsidianIcon";
 import { TimesheetNameInput } from "./timesheetNameInput";

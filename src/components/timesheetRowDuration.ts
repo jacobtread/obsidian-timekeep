@@ -1,7 +1,7 @@
 import moment from "moment";
 import { Component } from "obsidian";
 
-import { getEntryDuration, isEntryRunning } from "@/timekeep";
+import { getEntryDuration, isEntryRunning } from "@/timekeep/queries";
 import { TimeEntry } from "@/timekeep/schema";
 import { formatDurationLong } from "@/utils/time";
 
