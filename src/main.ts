@@ -140,17 +140,19 @@ export default class TimekeepPlugin extends Plugin {
 
 		this.registerExtensions(["timekeep"], "timekeep");
 
-		this.app.workspace.on("file-menu", (menu, file) => {
-			if (!(file instanceof TFolder)) return;
+		this.app.workspace.on("file-menu", (menu, parent) => {
+			if (!(parent instanceof TFolder)) return;
+
+			const folder = parent;
 
 			menu.addItem((item) => {
 				item.setTitle("New Timekeep")
 					.setIcon("clock")
 					.onClick(async () => {
-						const folderPath = file.path;
+						const folderPath = folder.path;
 
 						const isNameTaken = (name: string) =>
-							file.children.find((child) => child.name === name) !== undefined;
+							folder.children.find((child) => child.name === name) !== undefined;
 
 						let name = "Untitled.timekeep";
 						let index = 1;
@@ -161,7 +163,11 @@ export default class TimekeepPlugin extends Plugin {
 						}
 
 						const filePath = `${folderPath}${name}`;
-						await this.app.vault.create(filePath, "");
+						const file = await this.app.vault.create(filePath, "");
+
+						// Open the created file
+						const leaf = this.app.workspace.getLeaf();
+						await leaf.openFile(file);
 					});
 			});
 		});
