@@ -14,34 +14,41 @@ import {
 import { stripTimekeepRuntimeData, Timekeep } from "@/timekeep/schema";
 import { stopRunningEntries } from "@/timekeep/update";
 
+/** Entry within the timekeep registry */
 export type TimekeepRegistryEntry = {
 	file: TFile;
 } & (TimekeepRegistryEntryFile | TimekeepRegistryEntryMarkdown);
 
-export type TimekeepRegistryEntryFile = {
-	type: TimekeepEntryItemType.FILE;
-	timekeep: Timekeep;
-};
-
-export type TimekeepRegistryEntryMarkdown = {
-	type: TimekeepEntryItemType.MARKDOWN;
-	timekeeps: TimekeepWithPosition[];
-};
-
+/** Types of entries */
 export enum TimekeepEntryItemType {
 	FILE,
 	MARKDOWN,
 }
 
+/** Registry entry for a single timekeep file */
+export type TimekeepRegistryEntryFile = {
+	type: TimekeepEntryItemType.FILE;
+	timekeep: Timekeep;
+};
+
+/** Registry entry for a markdown file with multiple timekeeps */
+export type TimekeepRegistryEntryMarkdown = {
+	type: TimekeepEntryItemType.MARKDOWN;
+	timekeeps: TimekeepWithPosition[];
+};
+
+/** Reference to a registry entry along with its file */
 export type TimekeepRegistryItemRef = { file: TFile } & (
 	| TimekeepRegistryItemFileRef
 	| TimekeepRegistryItemMarkdownRef
 );
 
+/** Reference to a timekeep file entry */
 export type TimekeepRegistryItemFileRef = {
 	type: TimekeepEntryItemType.FILE;
 };
 
+/** Reference to a timekeep markdown file entry */
 export type TimekeepRegistryItemMarkdownRef = {
 	type: TimekeepEntryItemType.MARKDOWN;
 	position: TimekeepPosition;
@@ -280,13 +287,13 @@ export class TimekeepRegistry extends Component {
 	}
 
 	/**
-	 * Collect all timekeep's within the provided file in the
-	 * provided vault
+	 * Create a timekeep registry entry from the provided file capturing
+	 * the timekeeps within if present
 	 *
 	 * @param vault The vault to search within
 	 * @param file The file to search within
 	 * @param cached Whether to perform a cached read
-	 * @returns The collection of timekeeps with their positions in each file
+	 * @returns The timekeep registry entry or null if unavailable
 	 */
 	static async getFileRegistryEntry(
 		vault: Vault,
@@ -306,8 +313,14 @@ export class TimekeepRegistry extends Component {
 				return null;
 			}
 
-			return { type: TimekeepEntryItemType.MARKDOWN, file, timekeeps };
-		} else if (file.extension === "timekeep") {
+			return {
+				type: TimekeepEntryItemType.MARKDOWN,
+				file,
+				timekeeps
+			};
+		}
+
+		if (file.extension === "timekeep") {
 			const loadResult = load(content);
 			if (!loadResult.success) {
 				return null;
@@ -319,8 +332,8 @@ export class TimekeepRegistry extends Component {
 				file,
 				timekeep,
 			};
-		} else {
-			return null;
 		}
+
+		return null;
 	}
 }
