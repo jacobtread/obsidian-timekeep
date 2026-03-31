@@ -171,7 +171,10 @@ export class TimekeepRegistry extends Component {
 			const filteredEntries: TimekeepRegistryEntry[] = entries.filter(
 				(entry) => entry.file !== file
 			);
-			const newEntries = [...filteredEntries, entry];
+			const newEntries = [...filteredEntries];
+			if (entry) {
+				newEntries.push(entry);
+			}
 			return newEntries;
 		});
 	}
@@ -183,55 +186,63 @@ export class TimekeepRegistry extends Component {
 
 		// Replace the stored timekeep block with the new one
 		await this.#vault.process(file, (data) => {
-			if (ref.type === TimekeepEntryItemType.MARKDOWN) {
-				const position = ref.position;
-				const timekeeps = extractTimekeepCodeblocksWithPosition(data);
-				const targetTimekeep = timekeeps.find(
-					(target) =>
-						target.startLine === position.startLine &&
-						target.endLine === position.endLine
-				);
+			switch (ref.type) {
+				case TimekeepEntryItemType.MARKDOWN: {
+					const position = ref.position;
+					const timekeeps = extractTimekeepCodeblocksWithPosition(data);
+					const targetTimekeep = timekeeps.find(
+						(target) =>
+							target.startLine === position.startLine &&
+							target.endLine === position.endLine
+					);
 
-				// Don't modify the file if we can't find the timekeep
-				if (targetTimekeep === undefined) {
-					console.error("Failed to stop timekeep: Unable to find timekeep within file");
-					return data;
+					// Don't modify the file if we can't find the timekeep
+					if (targetTimekeep === undefined) {
+						console.error(
+							"Failed to stop timekeep: Unable to find timekeep within file"
+						);
+						return data;
+					}
+
+					const currentTime = moment();
+					const initialTimekeep = targetTimekeep.timekeep;
+					const updatedTimekeep = {
+						...initialTimekeep,
+						entries: stopRunningEntries(initialTimekeep.entries, currentTime),
+					};
+
+					return replaceTimekeepCodeblock(
+						updatedTimekeep,
+						data,
+						targetTimekeep.startLine,
+						targetTimekeep.endLine
+					);
 				}
 
-				const currentTime = moment();
-				const initialTimekeep = targetTimekeep.timekeep;
-				const updatedTimekeep = {
-					...initialTimekeep,
-					entries: stopRunningEntries(initialTimekeep.entries, currentTime),
-				};
+				case TimekeepEntryItemType.FILE: {
+					const loadResult = load(data);
+					if (!loadResult.success) {
+						console.error(
+							"Failed to stop timekeep: Unable to parse timekeep within file"
+						);
+						return data;
+					}
 
-				return replaceTimekeepCodeblock(
-					updatedTimekeep,
-					data,
-					targetTimekeep.startLine,
-					targetTimekeep.endLine
-				);
-			}
-			// File entry handling
-			else if (ref.type === TimekeepEntryItemType.FILE) {
-				const loadResult = load(data);
-				if (!loadResult.success) {
-					console.error("Failed to stop timekeep: Unable to parse timekeep within file");
-					return data;
+					const currentTime = moment();
+					const initialTimekeep = loadResult.timekeep;
+					const updatedTimekeep = {
+						...initialTimekeep,
+						entries: stopRunningEntries(initialTimekeep.entries, currentTime),
+					};
+
+					const stripped = stripTimekeepRuntimeData(updatedTimekeep);
+					const serialized = JSON.stringify(stripped);
+					return serialized;
 				}
 
-				const currentTime = moment();
-				const initialTimekeep = loadResult.timekeep;
-				const updatedTimekeep = {
-					...initialTimekeep,
-					entries: stopRunningEntries(initialTimekeep.entries, currentTime),
-				};
-
-				const stripped = stripTimekeepRuntimeData(updatedTimekeep);
-				const serialized = JSON.stringify(stripped);
-				return serialized;
-			} else {
-				throw new Error("unknown entry type");
+				default: {
+					throw new Error("unknown entry type");
+				}
 			}
 		});
 	}
@@ -255,7 +266,7 @@ export class TimekeepRegistry extends Component {
 
 		// Concurrency limited parallel file processing
 		const processFile = limitFunction(
-			async (file: TFile): Promise<TimekeepRegistryEntry> => {
+			async (file: TFile): Promise<TimekeepRegistryEntry | null> => {
 				return TimekeepRegistry.getFileRegistryEntry(vault, file, cached);
 			},
 			{ concurrency: concurrencyLimit }
@@ -265,9 +276,7 @@ export class TimekeepRegistry extends Component {
 		const entries = await Promise.all(promises);
 
 		// Exclude any markdown files without timekeeps
-		return entries.filter(
-			(entry) => entry.type === TimekeepEntryItemType.FILE || entry.timekeeps.length > 0
-		);
+		return entries.filter((entry): entry is TimekeepRegistryEntry => entry !== null);
 	}
 
 	/**
@@ -283,7 +292,7 @@ export class TimekeepRegistry extends Component {
 		vault: Vault,
 		file: TFile,
 		cached: boolean = true
-	): Promise<TimekeepRegistryEntry> {
+	): Promise<TimekeepRegistryEntry | null> {
 		let content: string;
 		if (cached) {
 			content = await vault.cachedRead(file);
@@ -293,17 +302,25 @@ export class TimekeepRegistry extends Component {
 
 		if (file.extension === "md") {
 			const timekeeps = extractTimekeepCodeblocksWithPosition(content);
+			if (timekeeps.length < 1) {
+				return null;
+			}
+
 			return { type: TimekeepEntryItemType.MARKDOWN, file, timekeeps };
 		} else if (file.extension === "timekeep") {
 			const loadResult = load(content);
-			const timekeep = loadResult.success ? loadResult.timekeep : { entries: [] };
+			if (!loadResult.success) {
+				return null;
+			}
+
+			const timekeep = loadResult.timekeep;
 			return {
 				type: TimekeepEntryItemType.FILE,
 				file,
 				timekeep,
 			};
 		} else {
-			throw new Error("Unexpected file extension for getFileRegistryEntry");
+			return null;
 		}
 	}
 }
