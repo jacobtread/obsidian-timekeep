@@ -2,7 +2,7 @@ import moment from "moment";
 import fs from "node:fs/promises";
 import { expect, it, describe } from "vitest";
 
-import { MockVault } from "./__mocks__/obsidian";
+import { MockVault } from "../__mocks__/obsidian";
 import { stopAllTimekeeps } from "./stopAllTimekeeps";
 
 describe("stopAllTimekeeps", () => {

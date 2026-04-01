@@ -316,7 +316,7 @@ export class TimekeepRegistry extends Component {
 			return {
 				type: TimekeepEntryItemType.MARKDOWN,
 				file,
-				timekeeps
+				timekeeps,
 			};
 		}
 
