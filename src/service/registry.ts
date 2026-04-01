@@ -1,17 +1,21 @@
+import type { TAbstractFile, Vault } from "obsidian";
+
 import moment from "moment";
-import { Component, TAbstractFile, TFile, Vault } from "obsidian";
+import { Component, TFile } from "obsidian";
 import { limitFunction } from "p-limit";
 
-import { TimekeepSettings } from "@/settings";
-import { createStore, Store } from "@/store";
+import type { TimekeepSettings } from "@/settings";
+import type { Store } from "@/store";
+
+import { createStore } from "@/store";
 import {
 	extractTimekeepCodeblocksWithPosition,
 	load,
 	replaceTimekeepCodeblock,
-	TimekeepPosition,
+	type TimekeepPosition,
 	type TimekeepWithPosition,
 } from "@/timekeep/parser";
-import { stripTimekeepRuntimeData, Timekeep } from "@/timekeep/schema";
+import { stripTimekeepRuntimeData, type Timekeep } from "@/timekeep/schema";
 import { stopRunningEntries } from "@/timekeep/update";
 
 /** Entry within the timekeep registry */
@@ -70,11 +74,18 @@ export class TimekeepRegistry extends Component {
 	/** Whether the store is initialized */
 	initialized: boolean;
 
+	/** Promise for the current initialization */
+	loadPromise: Promise<void> | undefined;
+
+	/** Background tasks the registry is currently performing */
+	tasks: Promise<void>[];
+
 	constructor(vault: Vault, settings: Store<TimekeepSettings>) {
 		super();
 		this.#vault = vault;
 		this.entries = createStore([]);
 		this.settings = settings;
+		this.tasks = [];
 	}
 
 	onload() {
@@ -94,11 +105,27 @@ export class TimekeepRegistry extends Component {
 		this.registerEvent(deleteEvent);
 
 		// Load the registry from the vault
-		void this.loadFromVault()
-			//
-			.catch((error) => {
-				console.error("failed to load vault timekeep data", error);
-			});
+		this.registerTask("loadFromVault", this.loadFromVault());
+	}
+
+	registerTask(name: string, task: Promise<void>) {
+		this.tasks.push(task);
+
+		task.then(() => (this.tasks = this.tasks.filter((other) => other !== task))).catch(
+			(error) => {
+				console.error("error occurred in registry task", name, error);
+			}
+		);
+	}
+
+	/**
+	 * Wait for all currently active background registry
+	 * tasks
+	 */
+	async waitTasks() {
+		try {
+			await Promise.allSettled(this.tasks);
+		} catch {}
 	}
 
 	/**
@@ -112,9 +139,8 @@ export class TimekeepRegistry extends Component {
 			return;
 		}
 
-		void this.updateFromFile(file).catch(() =>
-			console.error("failed to update timekeep changes within file")
-		);
+		const task = this.updateFromFile(file);
+		this.registerTask("onFileCreated", task);
 	}
 
 	/**
@@ -128,9 +154,8 @@ export class TimekeepRegistry extends Component {
 			return;
 		}
 
-		void this.updateFromFile(file).catch(() =>
-			console.error("failed to update timekeep changes within file")
-		);
+		const task = this.updateFromFile(file);
+		this.registerTask("onFileModified", task);
 	}
 
 	/**
@@ -247,9 +272,11 @@ export class TimekeepRegistry extends Component {
 					return serialized;
 				}
 
+				/* v8 ignore start -- @preserve */
 				default: {
 					throw new Error("unknown entry type");
 				}
+				/* v8 ignore stop -- @preserve */
 			}
 		});
 	}
