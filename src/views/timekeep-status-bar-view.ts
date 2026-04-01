@@ -1,15 +1,13 @@
-import moment from "moment";
-import { App, Component, MarkdownView, Notice } from "obsidian";
+import { App, Component, MarkdownView } from "obsidian";
 
 import { TimesheetStatusBarItem } from "@/components/timesheetStatusBarItem";
-import { TimekeepRegistry, TimekeepRegistryEntry } from "@/service/registry";
 import {
-	extractTimekeepCodeblocksWithPosition,
-	replaceTimekeepCodeblock,
-	TimekeepWithPosition,
-} from "@/timekeep/parser";
+	TimekeepEntryItemType,
+	TimekeepRegistry,
+	TimekeepRegistryItemRef,
+} from "@/service/registry";
 import { getRunningEntry } from "@/timekeep/queries";
-import { stopRunningEntries } from "@/timekeep/update";
+import { Timekeep } from "@/timekeep/schema";
 
 export class TimekeepStatusBarView extends Component {
 	/** Parent container element */
@@ -53,9 +51,6 @@ export class TimekeepStatusBarView extends Component {
 	}
 
 	render() {
-		const wrapperEl = this.#wrapperEl;
-		if (!wrapperEl) return;
-
 		const entries = this.registry.entries.getState();
 
 		// Unload the current children
@@ -65,81 +60,70 @@ export class TimekeepStatusBarView extends Component {
 
 		// Load the new children
 		for (const entry of entries) {
-			for (const timekeep of entry.timekeeps) {
-				const runningEntry = getRunningEntry(timekeep.timekeep.entries);
-				if (runningEntry === null) continue;
+			if (entry.type === TimekeepEntryItemType.FILE) {
+				const ref: TimekeepRegistryItemRef = {
+					file: entry.file,
+					type: TimekeepEntryItemType.FILE,
+				};
 
-				const item = new TimesheetStatusBarItem(
-					wrapperEl,
-					runningEntry,
-					() => {
-						void this.onOpen(entry, timekeep);
-					},
-					() => {
-						void this.onStop(entry, timekeep);
-					}
-				);
+				this.renderEntry(entry.timekeep, ref);
+			} else if (entry.type === TimekeepEntryItemType.MARKDOWN) {
+				for (const timekeep of entry.timekeeps) {
+					const ref: TimekeepRegistryItemRef = {
+						file: entry.file,
+						type: TimekeepEntryItemType.MARKDOWN,
+						position: timekeep,
+					};
 
-				this.items.push(item);
-				item.load();
+					this.renderEntry(timekeep.timekeep, ref);
+				}
 			}
 		}
 	}
 
-	async onStop(entry: TimekeepRegistryEntry, timekeep: TimekeepWithPosition) {
+	renderEntry(timekeep: Timekeep, ref: TimekeepRegistryItemRef) {
+		const wrapperEl = this.#wrapperEl;
+		if (!wrapperEl) return;
+
+		const runningEntry = getRunningEntry(timekeep.entries);
+		if (runningEntry === null) return;
+
+		const item = new TimesheetStatusBarItem(
+			wrapperEl,
+			runningEntry,
+			() => {
+				void this.onOpen(ref);
+			},
+			() => {
+				void this.onStop(ref);
+			}
+		);
+
+		this.items.push(item);
+		item.load();
+	}
+
+	async onStop(ref: TimekeepRegistryItemRef) {
 		try {
-			await this.tryStop(entry, timekeep);
+			await this.tryStop(ref);
 		} catch (e) {
 			console.error("Failed to stop timekeep", e);
 		}
 	}
 
-	async tryStop(entry: TimekeepRegistryEntry, position: TimekeepWithPosition) {
-		const file = entry.file;
-
-		// Ensure the file still exists
-		if (file === null) throw new Error("File no longer exists");
-
-		// Replace the stored timekeep block with the new one
-		await this.app.vault.process(file, (data) => {
-			const timekeeps = extractTimekeepCodeblocksWithPosition(data);
-			const targetTimekeep = timekeeps.find(
-				(target) =>
-					target.startLine === position.startLine && target.endLine === position.endLine
-			);
-
-			// Don't modify the file if we can't find the timekeep
-			if (targetTimekeep === undefined) {
-				new Notice("Failed to stop timekeep: Unable to find timekeep within file", 1500);
-				return data;
-			}
-
-			const currentTime = moment();
-			const initialTimekeep = targetTimekeep.timekeep;
-			const updatedTimekeep = {
-				...initialTimekeep,
-				entries: stopRunningEntries(initialTimekeep.entries, currentTime),
-			};
-
-			return replaceTimekeepCodeblock(
-				updatedTimekeep,
-				data,
-				targetTimekeep.startLine,
-				targetTimekeep.endLine
-			);
-		});
+	async tryStop(ref: TimekeepRegistryItemRef) {
+		await this.registry.tryStopEntry(ref);
 	}
 
-	async onOpen(entry: TimekeepRegistryEntry, timekeep: TimekeepWithPosition) {
+	async onOpen(ref: TimekeepRegistryItemRef) {
 		const leaf = this.app.workspace.getLeaf();
-		await leaf.openFile(entry.file);
+		await leaf.openFile(ref.file);
 
 		const view = leaf.view;
 
-		if (view instanceof MarkdownView) {
+		if (view instanceof MarkdownView && ref.type === TimekeepEntryItemType.MARKDOWN) {
 			const editor = view.editor;
-
-			const line = timekeep.startLine;
+			const line = ref.position.startLine;
 
 			// Focus the line we opened to
 			editor.setCursor({ line: Math.max(line - 1, 0), ch: 0 });

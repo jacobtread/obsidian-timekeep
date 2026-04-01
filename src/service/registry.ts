@@ -1,3 +1,4 @@
+import moment from "moment";
 import { Component, TAbstractFile, TFile, Vault } from "obsidian";
 import { limitFunction } from "p-limit";
 
@@ -5,12 +6,52 @@ import { TimekeepSettings } from "@/settings";
 import { createStore, Store } from "@/store";
 import {
 	extractTimekeepCodeblocksWithPosition,
+	load,
+	replaceTimekeepCodeblock,
+	TimekeepPosition,
 	type TimekeepWithPosition,
 } from "@/timekeep/parser";
+import { stripTimekeepRuntimeData, Timekeep } from "@/timekeep/schema";
+import { stopRunningEntries } from "@/timekeep/update";
 
+/** Entry within the timekeep registry */
 export type TimekeepRegistryEntry = {
 	file: TFile;
+} & (TimekeepRegistryEntryFile | TimekeepRegistryEntryMarkdown);
+
+/** Types of entries */
+export enum TimekeepEntryItemType {
+	FILE,
+	MARKDOWN,
+}
+
+/** Registry entry for a single timekeep file */
+export type TimekeepRegistryEntryFile = {
+	type: TimekeepEntryItemType.FILE;
+	timekeep: Timekeep;
+};
+
+/** Registry entry for a markdown file with multiple timekeeps */
+export type TimekeepRegistryEntryMarkdown = {
+	type: TimekeepEntryItemType.MARKDOWN;
 	timekeeps: TimekeepWithPosition[];
+};
+
+/** Reference to a registry entry along with its file */
+export type TimekeepRegistryItemRef = { file: TFile } & (
+	| TimekeepRegistryItemFileRef
+	| TimekeepRegistryItemMarkdownRef
+);
+
+/** Reference to a timekeep file entry */
+export type TimekeepRegistryItemFileRef = {
+	type: TimekeepEntryItemType.FILE;
+};
+
+/** Reference to a timekeep markdown file entry */
+export type TimekeepRegistryItemMarkdownRef = {
+	type: TimekeepEntryItemType.MARKDOWN;
+	position: TimekeepPosition;
 };
 
 /**
@@ -131,19 +172,85 @@ export class TimekeepRegistry extends Component {
 	 * @param file
 	 */
 	async updateFromFile(file: TFile) {
-		const timekeeps = await TimekeepRegistry.getTimekeepsWithinFile(this.#vault, file, true);
+		const entry = await TimekeepRegistry.getFileRegistryEntry(this.#vault, file, true);
 
 		this.entries.setState((entries) => {
 			const filteredEntries: TimekeepRegistryEntry[] = entries.filter(
 				(entry) => entry.file !== file
 			);
-			const newEntry: TimekeepRegistryEntry = {
-				file,
-				timekeeps,
-			};
-
-			const newEntries = [...filteredEntries, newEntry];
+			const newEntries = [...filteredEntries];
+			if (entry) {
+				newEntries.push(entry);
+			}
 			return newEntries;
+		});
+	}
+
+	async tryStopEntry(ref: TimekeepRegistryItemRef) {
+		// Ensure the file still exists
+		const file = ref.file;
+		if (file === null) throw new Error("File no longer exists");
+
+		// Replace the stored timekeep block with the new one
+		await this.#vault.process(file, (data) => {
+			switch (ref.type) {
+				case TimekeepEntryItemType.MARKDOWN: {
+					const position = ref.position;
+					const timekeeps = extractTimekeepCodeblocksWithPosition(data);
+					const targetTimekeep = timekeeps.find(
+						(target) =>
+							target.startLine === position.startLine &&
+							target.endLine === position.endLine
+					);
+
+					// Don't modify the file if we can't find the timekeep
+					if (targetTimekeep === undefined) {
+						console.error(
+							"Failed to stop timekeep: Unable to find timekeep within file"
+						);
+						return data;
+					}
+
+					const currentTime = moment();
+					const initialTimekeep = targetTimekeep.timekeep;
+					const updatedTimekeep = {
+						...initialTimekeep,
+						entries: stopRunningEntries(initialTimekeep.entries, currentTime),
+					};
+
+					return replaceTimekeepCodeblock(
+						updatedTimekeep,
+						data,
+						targetTimekeep.startLine,
+						targetTimekeep.endLine
+					);
+				}
+
+				case TimekeepEntryItemType.FILE: {
+					const loadResult = load(data);
+					if (!loadResult.success) {
+						console.error(
+							"Failed to stop timekeep: Unable to parse timekeep within file"
+						);
+						return data;
+					}
+
+					const currentTime = moment();
+					const initialTimekeep = loadResult.timekeep;
+					const updatedTimekeep = {
+						...initialTimekeep,
+						entries: stopRunningEntries(initialTimekeep.entries, currentTime),
+					};
+
+					const stripped = stripTimekeepRuntimeData(updatedTimekeep);
+					const serialized = JSON.stringify(stripped);
+					return serialized;
+				}
+
+				default: {
+					throw new Error("unknown entry type");
+				}
+			}
 		});
 	}
 
@@ -160,43 +267,39 @@ export class TimekeepRegistry extends Component {
 		cached: boolean = true,
 		concurrencyLimit: number = 15
 	): Promise<TimekeepRegistryEntry[]> {
-		const markdownFiles = vault.getMarkdownFiles();
+		const timekeepFiles = vault
+			.getFiles()
+			.filter((file) => file.extension === "timekeep" || file.extension === "md");
 
 		// Concurrency limited parallel file processing
 		const processFile = limitFunction(
-			async (file: TFile): Promise<TimekeepRegistryEntry> => {
-				const timekeeps = await TimekeepRegistry.getTimekeepsWithinFile(
-					vault,
-					file,
-					cached
-				);
-
-				return { file, timekeeps };
+			async (file: TFile): Promise<TimekeepRegistryEntry | null> => {
+				return TimekeepRegistry.getFileRegistryEntry(vault, file, cached);
 			},
 			{ concurrency: concurrencyLimit }
 		);
 
-		const promises = markdownFiles.map(processFile);
+		const promises = timekeepFiles.map(processFile);
 		const entries = await Promise.all(promises);
 
-		// Exclude any files without timekeeps
-		return entries.filter((entry) => entry.timekeeps.length > 0);
+		// Exclude any markdown files without timekeeps
+		return entries.filter((entry): entry is TimekeepRegistryEntry => entry !== null);
 	}
 
 	/**
-	 * Collect all timekeep's within the provided file in the
-	 * provided vault
+	 * Create a timekeep registry entry from the provided file capturing
+	 * the timekeeps within if present
 	 *
 	 * @param vault The vault to search within
 	 * @param file The file to search within
 	 * @param cached Whether to perform a cached read
-	 * @returns The collection of timekeeps with their positions in each file
+	 * @returns The timekeep registry entry or null if unavailable
 	 */
-	static async getTimekeepsWithinFile(
+	static async getFileRegistryEntry(
 		vault: Vault,
 		file: TFile,
 		cached: boolean = true
-	): Promise<TimekeepWithPosition[]> {
+	): Promise<TimekeepRegistryEntry | null> {
 		let content: string;
 		if (cached) {
 			content = await vault.cachedRead(file);
@@ -204,6 +307,33 @@ export class TimekeepRegistry extends Component {
 			content = await vault.read(file);
 		}
 
-		return extractTimekeepCodeblocksWithPosition(content);
+		if (file.extension === "md") {
+			const timekeeps = extractTimekeepCodeblocksWithPosition(content);
+			if (timekeeps.length < 1) {
+				return null;
+			}
+
+			return {
+				type: TimekeepEntryItemType.MARKDOWN,
+				file,
+				timekeeps
+			};
+		}
+
+		if (file.extension === "timekeep") {
+			const loadResult = load(content);
+			if (!loadResult.success) {
+				return null;
+			}
+
+			const timekeep = loadResult.timekeep;
+			return {
+				type: TimekeepEntryItemType.FILE,
+				file,
+				timekeep,
+			};
+		}
+
+		return null;
 	}
 }
