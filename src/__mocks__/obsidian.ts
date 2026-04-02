@@ -246,6 +246,7 @@ export class MockComponent {
 	private children: Component[] = [];
 	private loaded = false;
 	private events: EventRef[] = [];
+	private callbacks: VoidFunction[] = [];
 
 	load = vi.fn(() => {
 		this.loaded = true;
@@ -262,6 +263,10 @@ export class MockComponent {
 			ref.callback();
 		}
 
+		for (const callback of this.callbacks) {
+			callback();
+		}
+
 		this.loaded = false;
 	});
 
@@ -270,6 +275,10 @@ export class MockComponent {
 
 	registerEvent = vi.fn((eventRef: EventRef) => {
 		this.events.push(eventRef);
+	});
+
+	register = vi.fn((callback: VoidFunction) => {
+		this.callbacks.push(callback);
 	});
 
 	addChild(child: Component) {

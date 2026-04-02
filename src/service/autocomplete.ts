@@ -37,7 +37,7 @@ export class TimekeepAutocomplete extends Component {
 		this.register(unsubscribe);
 	}
 
-	onUpdateRegistry() {
+	private onUpdateRegistry() {
 		const settings = this.settings.getState();
 		if (!settings.autocompleteEnabled) {
 			this.names.setState([]);
@@ -50,7 +50,7 @@ export class TimekeepAutocomplete extends Component {
 		this.register(unsubscribe);
 	}
 
-	onChangeEntries() {
+	private onChangeEntries() {
 		const entries = this.registry.entries.getState();
 		const namesSet = new Set<string>();
 
