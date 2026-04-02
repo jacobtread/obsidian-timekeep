@@ -1,29 +1,11 @@
 import type { App } from "obsidian";
 
-import { describe, vi, it, expect } from "vitest";
+import { describe, it, expect } from "vitest";
 
-import {
-	MockComponent,
-	MockNotice,
-	MockTAbstractFile,
-	MockTFile,
-	MockTFolder,
-	MockVault,
-} from "@/__mocks__/obsidian";
+import { MockNotice, MockVault } from "@/__mocks__/obsidian";
 import { createCodeBlock } from "@/utils/codeblock";
 
 import stopAllTimekeeps from "./stopAllTimekeeps";
-
-vi.mock("obsidian", () => {
-	return {
-		TFile: MockTFile,
-		TFolder: MockTFolder,
-		TAbstractFile: MockTAbstractFile,
-		Vault: MockVault,
-		Component: MockComponent,
-		Notice: MockNotice,
-	};
-});
 
 describe("stopFileTimekeeps", () => {
 	it("when nothing is stopped should get a notice", async () => {

@@ -2,29 +2,13 @@ import moment from "moment";
 import { v4 } from "uuid";
 import { describe, vi, it, expect } from "vitest";
 
-import {
-	MockComponent,
-	MockTAbstractFile,
-	MockTFile,
-	MockTFolder,
-	MockVault,
-} from "@/__mocks__/obsidian";
+import { MockVault } from "@/__mocks__/obsidian";
 import { defaultSettings } from "@/settings";
 import { createStore } from "@/store";
 import { stripTimekeepRuntimeData, Timekeep } from "@/timekeep/schema";
 import { createCodeBlock } from "@/utils/codeblock";
 
 import { TimekeepEntryItemType, TimekeepRegistry, TimekeepRegistryEntryMarkdown } from "./registry";
-
-vi.mock("obsidian", () => {
-	return {
-		TFile: MockTFile,
-		TFolder: MockTFolder,
-		TAbstractFile: MockTAbstractFile,
-		Vault: MockVault,
-		Component: MockComponent,
-	};
-});
 
 describe("TimekeepRegistry", () => {
 	describe("getFileRegistryEntry", () => {

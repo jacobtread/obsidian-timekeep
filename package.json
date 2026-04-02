@@ -29,6 +29,7 @@
 		"@types/node": "^20.19.37",
 		"@types/pdfmake": "^0.3.2",
 		"@vitest/coverage-v8": "^4.1.1",
+		"happy-dom": "^20.8.9",
 		"obsidian": "latest",
 		"oxfmt": "^0.42.0",
 		"oxlint": "^1.57.0",

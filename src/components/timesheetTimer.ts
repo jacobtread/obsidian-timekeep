@@ -28,20 +28,11 @@ export class TimesheetTimer extends Component {
 	onload(): void {
 		super.onload();
 
-		const timerEl = this.#containerEl.createDiv({
-			cls: "timekeep-timer",
-		});
-
+		const timerEl = this.#containerEl.createDiv({ cls: "timekeep-timer" });
 		this.#timerEl = timerEl;
 
-		const primaryValueEl = timerEl.createDiv({
-			cls: "timekeep-timer-value",
-		});
-
-		const secondaryValueEl = timerEl.createDiv({
-			cls: "timekeep-timer-value-small",
-		});
-
+		const primaryValueEl = timerEl.createDiv({ cls: "timekeep-timer-value" });
+		const secondaryValueEl = timerEl.createDiv({ cls: "timekeep-timer-value-small" });
 		timerEl.createSpan({ text: this.#label });
 
 		this.#primaryValueEl = primaryValueEl;

@@ -298,3 +298,122 @@ export const MockNotice = vi.fn().mockImplementation(function (
 ) {
 	return {};
 });
+
+/**
+ * Helper to create the {@link Node.createEl} function added by obsidian
+ *
+ * @param el Container to create elements within
+ * @returns The createDiv function for that container
+ */
+function createMockCreateEl(el: Node) {
+	return <K extends keyof HTMLElementTagNameMap>(
+		tag: K,
+		o?: DomElementInfo | string,
+		callback?: (el: HTMLElementTagNameMap[K]) => void
+	): HTMLElementTagNameMap[K] => {
+		const child = document.createElement(tag);
+
+		// Apply options
+		if (o) {
+			if (typeof o === "string") {
+				child.textContent = o;
+			} else {
+				applyDomElementInfo(child, o);
+			}
+		}
+
+		// Setup helpers
+		setObsidianMockElementHelpers(child);
+
+		// Add to the parent
+		el.appendChild(child);
+
+		// Callback from creation
+		if (callback) callback(child);
+
+		return child;
+	};
+}
+
+/**
+ * Sets the createEl/createDiv/createSpan helper functions
+ * on the provided node
+ *
+ * @param node The node to add the helper functions to
+ */
+export function setObsidianMockElementHelpers(node: Node) {
+	node.createEl = createMockCreateEl(node);
+	node.createDiv = (o?: DomElementInfo | string, callback?: (el: HTMLDivElement) => void) =>
+		node.createEl("div", o, callback);
+	node.createSpan = (o?: DomElementInfo | string, callback?: (el: HTMLDivElement) => void) =>
+		node.createEl("span", o, callback);
+}
+
+/**
+ * Applies the attributes from the DomElementInfo onto
+ * the provided HTML element
+ *
+ * @param el The element to apply to
+ * @param info The dom element info to apply
+ */
+function applyDomElementInfo(el: HTMLElement, info: DomElementInfo) {
+	if (info.cls) {
+		if (Array.isArray(info.cls)) {
+			el.classList.add(...info.cls);
+		} else {
+			el.classList.add(info.cls);
+		}
+	}
+
+	if (info.text) {
+		if (info.text instanceof DocumentFragment) {
+			el.appendChild(info.text);
+		} else {
+			el.textContent = info.text;
+		}
+	}
+
+	if (info.attr) {
+		for (const [key, value] of Object.entries(info.attr)) {
+			if (value === null || value === false) {
+				el.removeAttribute(key);
+			} else {
+				el.setAttribute(key, String(value));
+			}
+		}
+	}
+
+	if (info.title) {
+		el.title = info.title;
+	}
+
+	if (info.parent) {
+		if (info.prepend && info.parent.firstChild) {
+			info.parent.insertBefore(el, info.parent.firstChild);
+		} else {
+			info.parent.appendChild(el);
+		}
+	}
+
+	if (el instanceof HTMLInputElement) {
+		if (info.value !== undefined) {
+			el.value = info.value;
+		}
+		if (info.placeholder !== undefined) {
+			el.placeholder = info.placeholder;
+		}
+	}
+
+	if (info.href && el instanceof HTMLAnchorElement) {
+		el.href = info.href;
+	}
+}
+
+/**
+ * Helper for creating a mock container element extended with
+ */
+export function createMockContainer() {
+	const container = document.createElement("div");
+	setObsidianMockElementHelpers(container);
+	return container;
+}

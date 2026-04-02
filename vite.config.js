@@ -51,10 +51,12 @@ export default defineConfig((env) => ({
 	resolve: {
 		alias: {
 			"@": path.resolve(__dirname, "src"),
+			obsidian: path.resolve(__dirname, "src", "__mocks__", "obsidianStub"),
 		},
 	},
 
 	test: {
+		setupFiles: path.resolve(__dirname, "src", "__mocks__", "setupObsidianMocks.ts"),
 		coverage: {
 			// Exclude mocks and fixtures from coverage
 			exclude: ["**/__mocks__/**", "**/__fixtures__/**"],
