@@ -291,3 +291,10 @@ export class MockComponent {
 		child.unload();
 	}
 }
+
+export const MockNotice = vi.fn().mockImplementation(function (
+	_message: string | DocumentFragment,
+	_duration?: number
+) {
+	return {};
+});

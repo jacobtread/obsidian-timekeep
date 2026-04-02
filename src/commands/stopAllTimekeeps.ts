@@ -27,6 +27,6 @@ export default function (app: App): Command {
 	return {
 		id: `stop-all-timekeeps`,
 		name: `Stop All Running Trackers`,
-		callback: () => void asyncCallback(app),
+		callback: () => asyncCallback(app),
 	};
 }
