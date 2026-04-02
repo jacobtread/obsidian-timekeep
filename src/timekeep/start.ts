@@ -7,7 +7,7 @@ import { getEntryById } from "./queries";
 import { updateEntry, stopRunningEntries } from "./update";
 
 /**
- * Start a new entry in the provided set of entires
+ * Start a new entry in the provided set of entries
  *
  * @param name Name of the new entry
  * @param currentTime The current time to use for the start time

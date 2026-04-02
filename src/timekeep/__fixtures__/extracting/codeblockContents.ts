@@ -1,8 +1,7 @@
 import moment from "moment";
 
 import { Timekeep } from "@/timekeep/schema";
-
-import { createCodeBlock } from "./createCodeBlock";
+import { createCodeBlock } from "@/utils/codeblock";
 
 // Input data to find
 export const input1 = createCodeBlock(

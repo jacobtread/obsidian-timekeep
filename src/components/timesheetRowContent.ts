@@ -204,7 +204,7 @@ export class TimesheetRowContent extends Component {
 
 		rowEl.setAttribute("data-running", String(isSelfRunning));
 		rowEl.setAttribute("data-running-within", String(isRunningWithin));
-		rowEl.setAttribute("data-sub-entires", String(this.entry.subEntries !== null));
+		rowEl.setAttribute("data-sub-entries", String(this.entry.subEntries !== null));
 		rowEl.setAttribute("data-invalid", String(isInvalidEntry));
 	}
 

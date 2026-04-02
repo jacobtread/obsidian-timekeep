@@ -10,6 +10,7 @@
 		"unstarted",
 		"Timekeeps",
 		"pdfmake",
-		"activedescendant"
+		"activedescendant",
+		"!entires"
 	]
 }

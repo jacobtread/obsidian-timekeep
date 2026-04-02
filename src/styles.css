@@ -27,7 +27,7 @@
 	width: 100%;
 }
 
-.timekeep-row[data-sub-entires="true"] {
+.timekeep-row[data-sub-entries="true"] {
 	border-bottom: 2px solid var(--color-base-40);
 }
 

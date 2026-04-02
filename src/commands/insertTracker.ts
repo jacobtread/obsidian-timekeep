@@ -1,11 +1,14 @@
 import { Command } from "obsidian";
 
+import { createCodeBlock } from "@/utils/codeblock";
+
 export default function (): Command {
 	return {
 		id: `insert`,
 		name: `Insert Tracker`,
-		editorCallback: (e) => {
-			e.replaceSelection('\n```timekeep\n{"entries": []}\n```\n');
+		editorCallback: (editor) => {
+			const codeblock = createCodeBlock(`{"entries":[]}`, 1, 1);
+			editor.replaceSelection(codeblock);
 		},
 	};
 }
