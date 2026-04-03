@@ -7,7 +7,7 @@ import type { Timekeep } from "@/timekeep/schema";
 
 import { TimekeepAutocomplete } from "@/service/autocomplete";
 
-import { DomComponent } from "./domComponent";
+import { ContentComponent } from "./contentComponent";
 import { TimesheetApp } from "./timesheetApp";
 import { TimesheetSaveError } from "./timesheetSaveError";
 
@@ -15,7 +15,7 @@ import { TimesheetSaveError } from "./timesheetSaveError";
  * Wrapper component for the timesheet app that handles
  * display error messages when saving fails
  */
-export class Timesheet extends DomComponent {
+export class Timesheet extends ContentComponent<TimesheetApp | TimesheetSaveError> {
 	/** Access to the app instance */
 	app: App;
 	/** Access to the timekeep */
@@ -31,9 +31,6 @@ export class Timesheet extends DomComponent {
 
 	/** Callback to save the timekeep */
 	handleSaveTimekeep: (value: Timekeep) => Promise<void>;
-
-	/** Current rendered app content */
-	content: TimesheetApp | TimesheetSaveError | undefined;
 
 	constructor(
 		containerEl: HTMLElement,
@@ -59,36 +56,29 @@ export class Timesheet extends DomComponent {
 	onload(): void {
 		super.onload();
 
-		const render = this.render.bind(this);
+		const render = this.update.bind(this);
 		const unsubscribeSaveError = this.saveError.subscribe(render);
 		this.register(unsubscribeSaveError);
 		render();
 	}
 
-	render() {
-		// Destroy the existing content
-		if (this.content) {
-			this.removeChild(this.content);
-		}
-
+	update() {
 		const saveError = this.saveError.getState();
 		if (saveError) {
-			this.content = new TimesheetSaveError(
-				this.containerEl,
-				this.timekeep,
-				this.handleSaveTimekeep
+			this.setContent(
+				new TimesheetSaveError(this.containerEl, this.timekeep, this.handleSaveTimekeep)
 			);
 		} else {
-			this.content = new TimesheetApp(
-				this.containerEl,
-				this.app,
-				this.timekeep,
-				this.settings,
-				this.customOutputFormats,
-				this.autocomplete
+			this.setContent(
+				new TimesheetApp(
+					this.containerEl,
+					this.app,
+					this.timekeep,
+					this.settings,
+					this.customOutputFormats,
+					this.autocomplete
+				)
 			);
 		}
-
-		this.addChild(this.content);
 	}
 }

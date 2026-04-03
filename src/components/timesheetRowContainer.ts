@@ -4,7 +4,7 @@ import type { TimekeepSettings } from "@/settings";
 import type { Store } from "@/store";
 import type { TimeEntry, Timekeep } from "@/timekeep/schema";
 
-import { DomComponent } from "./domComponent";
+import { ContentComponent } from "./contentComponent";
 import { TimesheetRowContent } from "./timesheetRowContent";
 import { TimesheetRowContentEditing } from "./timesheetRowContentEditing";
 
@@ -13,7 +13,9 @@ import { TimesheetRowContentEditing } from "./timesheetRowContentEditing";
  * editable views without re-rendering the entire table or having a
  * large single component
  */
-export class TimesheetRowContainer extends DomComponent {
+export class TimesheetRowContainer extends ContentComponent<
+	TimesheetRowContent | TimesheetRowContentEditing
+> {
 	/** Access to the app instance */
 	app: App;
 	/** Access to the timekeep */
@@ -25,9 +27,6 @@ export class TimesheetRowContainer extends DomComponent {
 	entry: TimeEntry;
 	/** Indentation level for the entry */
 	indent: number;
-
-	/** Current rendered row content */
-	#content: TimesheetRowContent | TimesheetRowContentEditing | undefined;
 
 	constructor(
 		containerEl: HTMLElement,
@@ -60,7 +59,7 @@ export class TimesheetRowContainer extends DomComponent {
 		const rowEl = this.wrapperEl;
 		if (!rowEl) return;
 
-		this.swapContent(
+		this.setContent(
 			new TimesheetRowContentEditing(
 				rowEl,
 				this.app,
@@ -76,7 +75,7 @@ export class TimesheetRowContainer extends DomComponent {
 		const rowEl = this.wrapperEl;
 		if (!rowEl) return;
 
-		this.swapContent(
+		this.setContent(
 			new TimesheetRowContent(
 				rowEl,
 				this.app,
@@ -87,22 +86,5 @@ export class TimesheetRowContainer extends DomComponent {
 				this.onViewEditing.bind(this)
 			)
 		);
-	}
-
-	/**
-	 * Swaps the active content view with the provided content
-	 *
-	 * @param content The new content to show
-	 */
-	private swapContent(content: TimesheetRowContent | TimesheetRowContentEditing | undefined) {
-		if (this.#content) {
-			this.removeChild(this.#content);
-		}
-
-		this.#content = content;
-
-		if (this.#content !== undefined) {
-			this.addChild(this.#content);
-		}
 	}
 }

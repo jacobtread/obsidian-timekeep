@@ -10,7 +10,7 @@ import { TimekeepAutocomplete } from "@/service/autocomplete";
 import { getRunningEntry } from "@/timekeep/queries";
 import { startNewEntry } from "@/timekeep/start";
 
-import { DomComponent } from "./domComponent";
+import { ContentComponent } from "./contentComponent";
 import { createObsidianIcon } from "./obsidianIcon";
 import { TimesheetNameInput } from "./timesheetNameInput";
 import { TimekeepStartEditing } from "./timesheetStartEditing";
@@ -19,7 +19,7 @@ import { TimesheetStartRunning } from "./timesheetStartRunning";
 /**
  * The start section above the timesheet table
  */
-export class TimesheetStart extends DomComponent {
+export class TimesheetStart extends ContentComponent<TimesheetStartRunning | TimekeepStartEditing> {
 	/** Access to the app instance */
 	app: App;
 	/** Access to the timekeep */
@@ -39,9 +39,6 @@ export class TimesheetStart extends DomComponent {
 	#blockPauseWarningEl: HTMLElement | undefined;
 	/** Start button element */
 	#startButtonEl: HTMLButtonElement | undefined;
-
-	/** The currently displayed start content */
-	#content: TimesheetStartRunning | TimekeepStartEditing | undefined;
 
 	constructor(
 		containerEl: HTMLElement,
@@ -109,27 +106,10 @@ export class TimesheetStart extends DomComponent {
 		this.register(unsubscribeTimekeep);
 	}
 
-	/**
-	 * Swaps the active content view with the provided content
-	 *
-	 * @param content The new content to show
-	 */
-	private swapContent(content: TimesheetStartRunning | TimekeepStartEditing | undefined) {
-		if (this.#content) {
-			this.removeChild(this.#content);
-		}
-
-		this.#content = content;
-
-		if (this.#content !== undefined) {
-			this.addChild(this.#content);
-		}
-	}
-
 	onUpdate() {
 		this.updateRunning();
 
-		if (this.#content instanceof TimekeepStartEditing) {
+		if (this.getContent() instanceof TimekeepStartEditing) {
 			this.setEditingView();
 			return;
 		}
@@ -150,7 +130,7 @@ export class TimesheetStart extends DomComponent {
 	}
 
 	setEmptyView() {
-		this.swapContent(undefined);
+		this.setContent(undefined);
 	}
 
 	/**
@@ -165,7 +145,7 @@ export class TimesheetStart extends DomComponent {
 			return this.setEmptyView();
 		}
 
-		this.swapContent(
+		this.setContent(
 			new TimekeepStartEditing(
 				this.#contentEl,
 				this.app,
@@ -190,7 +170,7 @@ export class TimesheetStart extends DomComponent {
 			return this.setEmptyView();
 		}
 
-		this.swapContent(
+		this.setContent(
 			new TimesheetStartRunning(
 				this.#contentEl,
 				this.app,
