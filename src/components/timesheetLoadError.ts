@@ -27,6 +27,7 @@ export class TimesheetLoadError extends Component {
 		const wrapperEl = this.#containerEl.createDiv({
 			cls: "timekeep-container",
 		});
+		this.#wrapperEl = wrapperEl;
 		wrapperEl.createEl("p", {
 			text: `Failed to load timekeep: ${this.error}`,
 		});
