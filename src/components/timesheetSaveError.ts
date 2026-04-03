@@ -39,7 +39,6 @@ export class TimesheetSaveError extends Component {
 		const wrapperEl = this.#containerEl.createDiv({
 			cls: "timekeep-container",
 		});
-
 		this.#wrapperEl = wrapperEl;
 
 		const errorEl = wrapperEl.createDiv({ cls: "timekeep-error" });
@@ -74,8 +73,8 @@ export class TimesheetSaveError extends Component {
 		void this.handleSaveTimekeep(this.timekeep.getState());
 	}
 
-	onCopy() {
-		void navigator.clipboard.writeText(
+	async onCopy() {
+		await navigator.clipboard.writeText(
 			JSON.stringify(stripTimekeepRuntimeData(this.timekeep.getState()))
 		);
 	}
