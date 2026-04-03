@@ -62,11 +62,11 @@ export class TimekeepName extends Component {
 		const url = segment.url;
 		const linkEl = this.#containerEl.createEl("a", {
 			text: segment.text,
-			href: url,
 		});
 
 		// Allow default behavior for external links
 		if (url.startsWith("http://") || url.startsWith("https://")) {
+			linkEl.href = url;
 			return;
 		}
 

@@ -281,6 +281,27 @@ export class MockComponent {
 		this.callbacks.push(callback);
 	});
 
+	registerDomEvent = vi
+		.fn()
+		.mockImplementation(
+			(
+				el: any,
+				type: string,
+				callback: (this: any, ev: any) => any,
+				options?: boolean | AddEventListenerOptions
+			) => {
+				const listener = (event: any) => {
+					callback.call(el, event);
+				};
+
+				el.addEventListener(type, listener, options);
+
+				this.callbacks.push(() => {
+					el.removeEventListener(type, listener, options);
+				});
+			}
+		);
+
 	addChild(child: Component) {
 		this.children.push(child);
 		if (this.loaded) child.load();
@@ -342,11 +363,30 @@ function createMockCreateEl(el: Node) {
  * @param node The node to add the helper functions to
  */
 export function setObsidianMockElementHelpers(node: Node) {
-	node.createEl = createMockCreateEl(node);
-	node.createDiv = (o?: DomElementInfo | string, callback?: (el: HTMLDivElement) => void) =>
-		node.createEl("div", o, callback);
-	node.createSpan = (o?: DomElementInfo | string, callback?: (el: HTMLDivElement) => void) =>
-		node.createEl("span", o, callback);
+	node.createEl = vi.fn().mockImplementation(createMockCreateEl(node));
+	node.createDiv = vi
+		.fn()
+		.mockImplementation(
+			(o?: DomElementInfo | string, callback?: (el: HTMLDivElement) => void) =>
+				node.createEl("div", o, callback)
+		);
+	node.createSpan = vi
+		.fn()
+		.mockImplementation(
+			(o?: DomElementInfo | string, callback?: (el: HTMLDivElement) => void) =>
+				node.createEl("span", o, callback)
+		);
+
+	node.empty = vi.fn().mockImplementation(() => {
+		node.childNodes.forEach((child) => node.removeChild(child));
+	});
+
+	(node as ChildNode).remove = vi.fn().mockImplementation(() => {
+		const parent = node.parentNode;
+		if (parent) {
+			parent.removeChild(node);
+		}
+	});
 }
 
 /**
