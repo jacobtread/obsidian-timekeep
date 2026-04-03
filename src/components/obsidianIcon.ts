@@ -13,14 +13,7 @@ export function createObsidianIcon(
 	icon: string,
 	className?: string | string[]
 ): HTMLDivElement {
-	const wrapperEl = containerEl.createDiv();
-	wrapperEl.setCssStyles({
-		display: "inline-block",
-		lineHeight: "1",
-		padding: "0",
-		margin: "0",
-	});
-
+	const wrapperEl = containerEl.createDiv({ cls: "timekeep-icon-wrapper" });
 	setIcon(wrapperEl, icon);
 
 	// Get the created icon child element
@@ -29,9 +22,9 @@ export function createObsidianIcon(
 	// Assign the custom class if available
 	if (firstChild && className) {
 		if (Array.isArray(className)) {
-			firstChild.addClass(...className);
+			firstChild.classList.add(...className);
 		} else {
-			firstChild.addClass(className);
+			firstChild.classList.add(className);
 		}
 	}
 

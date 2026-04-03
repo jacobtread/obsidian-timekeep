@@ -365,3 +365,10 @@
 	gap: 1rem;
 	flex-flow: column;
 }
+
+.timekeep-icon-wrapper {
+	display: inline-block;
+	line-height: 1;
+	padding: 0px;
+	margin: 0px;
+}
