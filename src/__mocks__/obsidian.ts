@@ -281,6 +281,12 @@ export class MockComponent {
 		this.callbacks.push(callback);
 	}
 
+	registerInterval(intervalID: number) {
+		this.callbacks.push(() => {
+			clearInterval(intervalID);
+		});
+	}
+
 	registerDomEvent(
 		el: any,
 		type: string,

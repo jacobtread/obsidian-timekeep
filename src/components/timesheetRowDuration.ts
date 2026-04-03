@@ -53,7 +53,6 @@ export class TimesheetRowDurationComponent extends DomComponent {
 	 */
 	updateTime() {
 		const timeEl = this.wrapperEl;
-
 		if (!timeEl) return;
 
 		const currentTime = moment();
