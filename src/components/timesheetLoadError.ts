@@ -1,22 +1,14 @@
-import { Component } from "obsidian";
+import { DomComponent } from "./domComponent";
 
 /**
  * Component for rendering a load error for a timesheet
  */
-export class TimesheetLoadError extends Component {
-	/** Parent container element */
-	#containerEl: HTMLElement;
-
-	/** Wrapper container element */
-	#wrapperEl: HTMLElement | undefined;
-
+export class TimesheetLoadError extends DomComponent {
 	/** The load error message */
 	error: string;
 
 	constructor(containerEl: HTMLElement, error: string) {
-		super();
-
-		this.#containerEl = containerEl;
+		super(containerEl);
 
 		this.error = error;
 	}
@@ -24,17 +16,12 @@ export class TimesheetLoadError extends Component {
 	onload(): void {
 		super.onload();
 
-		const wrapperEl = this.#containerEl.createDiv({
+		const wrapperEl = this.containerEl.createDiv({
 			cls: "timekeep-container",
 		});
-		this.#wrapperEl = wrapperEl;
+		this.wrapperEl = wrapperEl;
 		wrapperEl.createEl("p", {
 			text: `Failed to load timekeep: ${this.error}`,
 		});
-	}
-
-	onunload(): void {
-		super.onunload();
-		this.#wrapperEl?.remove();
 	}
 }

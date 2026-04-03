@@ -1,4 +1,4 @@
-import { App, Component } from "obsidian";
+import { App } from "obsidian";
 
 import { CustomOutputFormat } from "@/output";
 import { TimekeepAutocomplete } from "@/service/autocomplete";
@@ -6,6 +6,7 @@ import { TimekeepSettings } from "@/settings";
 import { Store } from "@/store";
 import { Timekeep } from "@/timekeep/schema";
 
+import { DomComponent } from "./domComponent";
 import { TimesheetCounters } from "./timesheetCounters";
 import { TimesheetExportActions } from "./timesheetExportActions";
 import { TimesheetStart } from "./timesheetStart";
@@ -14,10 +15,7 @@ import { TimesheetTable } from "./timesheetTable";
 /**
  * View component for the timesheet app as a whole
  */
-export class TimesheetApp extends Component {
-	/** Parent container element */
-	#containerEl: HTMLElement;
-
+export class TimesheetApp extends DomComponent {
 	/** Access to the app instance */
 	app: App;
 	/** Access to the timekeep */
@@ -29,9 +27,6 @@ export class TimesheetApp extends Component {
 	/** Autocomplete */
 	autocomplete: TimekeepAutocomplete;
 
-	/** Wrapper element containing the component content */
-	#wrapperEl: HTMLElement | undefined;
-
 	constructor(
 		containerEl: HTMLElement,
 		app: App,
@@ -40,9 +35,7 @@ export class TimesheetApp extends Component {
 		customOutputFormats: Store<Record<string, CustomOutputFormat>>,
 		autocomplete: TimekeepAutocomplete
 	) {
-		super();
-
-		this.#containerEl = containerEl;
+		super(containerEl);
 
 		this.app = app;
 		this.timekeep = timekeep;
@@ -51,19 +44,14 @@ export class TimesheetApp extends Component {
 		this.autocomplete = autocomplete;
 	}
 
-	onunload(): void {
-		super.onunload();
-		this.#wrapperEl?.remove();
-	}
-
 	onload(): void {
 		super.onload();
 
-		const wrapperEl = this.#containerEl.createDiv({
+		const wrapperEl = this.containerEl.createDiv({
 			cls: "timekeep-container",
 		});
 
-		this.#wrapperEl = wrapperEl;
+		this.wrapperEl = wrapperEl;
 
 		const counters = new TimesheetCounters(wrapperEl, this.settings, this.timekeep);
 

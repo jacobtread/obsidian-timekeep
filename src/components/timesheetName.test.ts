@@ -26,22 +26,24 @@ describe("TimekeepName", () => {
 			"Hello [World](https://example.com) [Internal](#internal-note)"
 		);
 
-		timekeepName.onload();
+		timekeepName.load();
 
-		expect(container.children).toHaveLength(4);
+		const wrapperEl = timekeepName.wrapperEl!;
 
-		expect(container.children[0].tagName).toBe("SPAN");
-		expect(container.children[0].textContent).toBe("Hello ");
+		expect(wrapperEl.children).toHaveLength(4);
 
-		expect(container.children[1].tagName).toBe("A");
-		expect(container.children[1].textContent).toBe("World");
-		expect((container.children[1] as HTMLAnchorElement).href).toBe("https://example.com/");
+		expect(wrapperEl.children[0].tagName).toBe("SPAN");
+		expect(wrapperEl.children[0].textContent).toBe("Hello ");
 
-		expect(container.children[2].tagName).toBe("SPAN");
-		expect(container.children[2].textContent).toBe(" ");
+		expect(wrapperEl.children[1].tagName).toBe("A");
+		expect(wrapperEl.children[1].textContent).toBe("World");
+		expect((wrapperEl.children[1] as HTMLAnchorElement).href).toBe("https://example.com/");
 
-		expect(container.children[3].tagName).toBe("A");
-		expect(container.children[3].textContent).toBe("Internal");
+		expect(wrapperEl.children[2].tagName).toBe("SPAN");
+		expect(wrapperEl.children[2].textContent).toBe(" ");
+
+		expect(wrapperEl.children[3].tagName).toBe("A");
+		expect(wrapperEl.children[3].textContent).toBe("Internal");
 	});
 
 	it("handles internal link clicks", async () => {
@@ -52,13 +54,15 @@ describe("TimekeepName", () => {
 			"Hello [World](https://example.com) [Internal](internal-note.md)"
 		);
 
-		timekeepName.onload();
+		timekeepName.load();
+
+		const wrapperEl = timekeepName.wrapperEl!;
 
 		const event = new MouseEvent("click", { bubbles: true, cancelable: true });
 		const stopPropagation = vi.spyOn(event, "stopPropagation");
 		const preventDefault = vi.spyOn(event, "preventDefault");
 
-		container.children[3].dispatchEvent(event);
+		wrapperEl.children[3].dispatchEvent(event);
 
 		expect(stopPropagation).toHaveBeenCalled();
 		expect(preventDefault).toHaveBeenCalled();
@@ -78,19 +82,21 @@ describe("TimekeepName", () => {
 			"Hello [World](https://example.com) [Internal](internal-note.md)"
 		);
 
-		timekeepName.onload();
+		timekeepName.load();
+
+		const wrapperEl = timekeepName.wrapperEl!;
 
 		const event = new MouseEvent("click", { bubbles: true, cancelable: true });
 		const stopPropagation = vi.spyOn(event, "stopPropagation");
 		const preventDefault = vi.spyOn(event, "preventDefault");
 
-		container.children[3].dispatchEvent(event);
+		wrapperEl.children[3].dispatchEvent(event);
 		expect(stopPropagation).toHaveBeenCalled();
 		expect(preventDefault).toHaveBeenCalled();
 		expect(mockApp.workspace.openLinkText).not.toHaveBeenCalled();
 	});
 
-	it("empties container on unload", () => {
+	it("name children should be removed from container on unload", () => {
 		const container = createMockContainer();
 		const timekeepName = new TimekeepName(
 			container,
@@ -98,7 +104,9 @@ describe("TimekeepName", () => {
 			"Hello [World](https://example.com) [Internal](internal-note.md)"
 		);
 
-		timekeepName.onunload();
+		timekeepName.load();
+		timekeepName.unload();
+
 		expect(container.children).toHaveLength(0);
 	});
 });

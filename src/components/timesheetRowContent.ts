@@ -1,14 +1,17 @@
-import moment from "moment";
-import { App, Component } from "obsidian";
+import type { App } from "obsidian";
 
-import { TimekeepSettings } from "@/settings";
-import { Store } from "@/store";
+import moment from "moment";
+
+import type { TimekeepSettings } from "@/settings";
+import type { Store } from "@/store";
+import type { TimeEntry, Timekeep } from "@/timekeep/schema";
+
 import { getRunningEntry, isEntryRunning } from "@/timekeep/queries";
-import { TimeEntry, Timekeep } from "@/timekeep/schema";
 import { startNewNestedEntry } from "@/timekeep/start";
 import { setEntryCollapsed, updateEntry } from "@/timekeep/update";
 import { formatTimestamp } from "@/utils/time";
 
+import { DomComponent } from "./domComponent";
 import { createObsidianIcon } from "./obsidianIcon";
 import { TimekeepName } from "./timesheetName";
 import { TimesheetRowDurationComponent } from "./timesheetRowDuration";
@@ -16,10 +19,7 @@ import { TimesheetRowDurationComponent } from "./timesheetRowDuration";
 /**
  * Component for the contents of a timesheet row
  */
-export class TimesheetRowContent extends Component {
-	/** The row element */
-	#rowEl: HTMLTableRowElement;
-
+export class TimesheetRowContent extends DomComponent {
 	/** Access to the app instance */
 	app: App;
 	/** Access to the timekeep */
@@ -43,7 +43,7 @@ export class TimesheetRowContent extends Component {
 	onBeginEditing: VoidFunction;
 
 	constructor(
-		rowEl: HTMLTableRowElement,
+		rowEl: HTMLElement,
 		app: App,
 		timekeep: Store<Timekeep>,
 		settings: Store<TimekeepSettings>,
@@ -51,9 +51,7 @@ export class TimesheetRowContent extends Component {
 		indent: number,
 		onBeginEditing: VoidFunction
 	) {
-		super();
-
-		this.#rowEl = rowEl;
+		super(rowEl);
 
 		this.app = app;
 		this.timekeep = timekeep;
@@ -69,7 +67,7 @@ export class TimesheetRowContent extends Component {
 		super.onload();
 
 		const entry = this.entry;
-		const rowEl = this.#rowEl;
+		const rowEl = this.containerEl;
 
 		const nameColEl = rowEl.createEl("td", {
 			cls: ["timekeep-col", "timekeep-col--name"],
@@ -166,6 +164,11 @@ export class TimesheetRowContent extends Component {
 	onunload(): void {
 		super.onunload();
 
+		// Skip unmounting from the DOM if the parent is already unmounted
+		if (this.isUnloadSkipped()) {
+			return;
+		}
+
 		// Remove the loaded columns
 		for (const column of this.#columns) {
 			column.remove();
@@ -186,7 +189,7 @@ export class TimesheetRowContent extends Component {
 	}
 
 	updateState() {
-		if (!this.#rowEl) return;
+		if (!this.containerEl) return;
 
 		const entry = this.entry;
 
@@ -200,8 +203,7 @@ export class TimesheetRowContent extends Component {
 			entry.endTime !== null &&
 			entry.endTime.isBefore(entry.startTime);
 
-		const rowEl = this.#rowEl;
-
+		const rowEl = this.containerEl;
 		rowEl.setAttribute("data-running", String(isSelfRunning));
 		rowEl.setAttribute("data-running-within", String(isRunningWithin));
 		rowEl.setAttribute("data-sub-entries", String(this.entry.subEntries !== null));

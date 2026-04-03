@@ -1,19 +1,12 @@
-import { Component } from "obsidian";
-
 import { TimeEntry } from "@/timekeep/schema";
 
+import { DomComponent } from "./domComponent";
 import { createObsidianIcon } from "./obsidianIcon";
 import { TimesheetRowDurationComponent } from "./timesheetRowDuration";
 
-export class TimesheetStatusBarItem extends Component {
-	/** Parent container element */
-	#containerEl: HTMLElement;
-
+export class TimesheetStatusBarItem extends DomComponent {
 	/** The entry this duration belongs to */
 	entry: TimeEntry;
-
-	/** The time span element */
-	#wrapperEl: HTMLSpanElement | undefined;
 
 	/** Currently tracked background interval for content */
 	currentContentInterval: number | undefined;
@@ -32,9 +25,8 @@ export class TimesheetStatusBarItem extends Component {
 		onOpen: VoidFunction,
 		onStop: VoidFunction
 	) {
-		super();
+		super(containerEl);
 
-		this.#containerEl = containerEl;
 		this.entry = entry;
 
 		this.onOpen = onOpen;
@@ -45,8 +37,8 @@ export class TimesheetStatusBarItem extends Component {
 		super.onload();
 
 		const entry = this.entry;
-		const wrapperEl = this.#containerEl.createDiv({ cls: "timekeep-status-item" });
-		this.#wrapperEl = wrapperEl;
+		const wrapperEl = this.containerEl.createDiv({ cls: "timekeep-status-item" });
+		this.wrapperEl = wrapperEl;
 
 		const stopIcon = createObsidianIcon(wrapperEl, "stop-circle", [
 			"timekeep-status-item__button",
@@ -68,10 +60,5 @@ export class TimesheetStatusBarItem extends Component {
 		this.addChild(new TimesheetRowDurationComponent(contentEl, entry));
 
 		this.registerDomEvent(contentEl, "click", this.onOpen);
-	}
-
-	onunload(): void {
-		super.onunload();
-		this.#wrapperEl?.remove();
 	}
 }

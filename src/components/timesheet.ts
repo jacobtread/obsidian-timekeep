@@ -1,11 +1,13 @@
-import { App, Component } from "obsidian";
+import type { App } from "obsidian";
 
-import { CustomOutputFormat } from "@/output";
+import type { CustomOutputFormat } from "@/output";
+import type { TimekeepSettings } from "@/settings";
+import type { Store } from "@/store";
+import type { Timekeep } from "@/timekeep/schema";
+
 import { TimekeepAutocomplete } from "@/service/autocomplete";
-import { TimekeepSettings } from "@/settings";
-import { Store } from "@/store";
-import { Timekeep } from "@/timekeep/schema";
 
+import { DomComponent } from "./domComponent";
 import { TimesheetApp } from "./timesheetApp";
 import { TimesheetSaveError } from "./timesheetSaveError";
 
@@ -13,10 +15,7 @@ import { TimesheetSaveError } from "./timesheetSaveError";
  * Wrapper component for the timesheet app that handles
  * display error messages when saving fails
  */
-export class Timesheet extends Component {
-	/** Parent container element */
-	#containerEl: HTMLElement;
-
+export class Timesheet extends DomComponent {
 	/** Access to the app instance */
 	app: App;
 	/** Access to the timekeep */
@@ -46,9 +45,7 @@ export class Timesheet extends Component {
 		autocomplete: TimekeepAutocomplete,
 		handleSaveTimekeep: (value: Timekeep) => Promise<void>
 	) {
-		super();
-
-		this.#containerEl = containerEl;
+		super(containerEl);
 
 		this.app = app;
 		this.timekeep = timekeep;
@@ -77,13 +74,13 @@ export class Timesheet extends Component {
 		const saveError = this.saveError.getState();
 		if (saveError) {
 			this.content = new TimesheetSaveError(
-				this.#containerEl,
+				this.containerEl,
 				this.timekeep,
 				this.handleSaveTimekeep
 			);
 		} else {
 			this.content = new TimesheetApp(
-				this.#containerEl,
+				this.containerEl,
 				this.app,
 				this.timekeep,
 				this.settings,

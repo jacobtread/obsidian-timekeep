@@ -1,4 +1,4 @@
-import { type App, Component } from "obsidian";
+import type { App } from "obsidian";
 
 import type { TimekeepSettings } from "@/settings";
 import type { Store } from "@/store";
@@ -6,15 +6,13 @@ import type { Timekeep } from "@/timekeep/schema";
 
 import { getEntriesSorted } from "@/timekeep/sort";
 
+import { DomComponent } from "./domComponent";
 import { TimesheetRowContainer } from "./timesheetRowContainer";
 
 /**
  * Table component for rendering the contents of the timekeep
  */
-export class TimesheetTable extends Component {
-	/** Parent container element */
-	#containerEl: HTMLElement;
-
+export class TimesheetTable extends DomComponent {
 	/** Access to the app instance */
 	app: App;
 	/** Access to the timekeep */
@@ -22,8 +20,6 @@ export class TimesheetTable extends Component {
 	/** Access to the timekeep settings */
 	settings: Store<TimekeepSettings>;
 
-	/** Wrapper container */
-	#wrapperEl: HTMLDivElement | undefined;
 	/** Table body for row content */
 	#bodyEl: HTMLElement | undefined;
 
@@ -36,9 +32,7 @@ export class TimesheetTable extends Component {
 		timekeep: Store<Timekeep>,
 		settings: Store<TimekeepSettings>
 	) {
-		super();
-
-		this.#containerEl = containerEl;
+		super(containerEl);
 
 		this.app = app;
 		this.timekeep = timekeep;
@@ -48,8 +42,8 @@ export class TimesheetTable extends Component {
 	onload(): void {
 		super.onload();
 
-		const wrapperEl = this.#containerEl.createDiv();
-		this.#wrapperEl = wrapperEl;
+		const wrapperEl = this.containerEl.createDiv();
+		this.wrapperEl = wrapperEl;
 
 		const tableEl = wrapperEl.createEl("table", { cls: "timekeep-table" });
 		const tableHeadEl = tableEl.createEl("thead", {
@@ -77,11 +71,6 @@ export class TimesheetTable extends Component {
 		onUpdate();
 	}
 
-	onunload(): void {
-		super.onunload();
-		this.#wrapperEl?.remove();
-	}
-
 	/**
 	 * Update the content, called when the settings or the
 	 * timekeep data are updated
@@ -97,16 +86,16 @@ export class TimesheetTable extends Component {
 	 * based on the current settings
 	 */
 	updateWrapperSize() {
-		if (!this.#wrapperEl) return;
+		if (!this.wrapperEl) return;
 
 		const settings = this.settings.getState();
 
 		if (settings.limitTableSize) {
-			this.#wrapperEl.style.maxHeight = "600px";
-			this.#wrapperEl.style.overflowY = "auto";
+			this.wrapperEl.style.maxHeight = "600px";
+			this.wrapperEl.style.overflowY = "auto";
 		} else {
-			this.#wrapperEl.style.removeProperty("maxHeight");
-			this.#wrapperEl.style.removeProperty("overflowY");
+			this.wrapperEl.style.removeProperty("maxHeight");
+			this.wrapperEl.style.removeProperty("overflowY");
 		}
 	}
 

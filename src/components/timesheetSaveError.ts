@@ -1,34 +1,27 @@
-import { Component } from "obsidian";
-
 import type { Store } from "@/store";
 
 import { stripTimekeepRuntimeData, type Timekeep } from "@/timekeep/schema";
+
+import { DomComponent } from "./domComponent";
 
 type HandleSaveTimekeep = (value: Timekeep) => Promise<void>;
 
 /**
  * Component for showing the "Failed to save current timekeep" error
  */
-export class TimesheetSaveError extends Component {
-	/** Parent container element */
-	#containerEl: HTMLElement;
-
+export class TimesheetSaveError extends DomComponent {
 	/** Access to the timekeep */
 	timekeep: Store<Timekeep>;
 	/** Callback to save the timekeep */
 	handleSaveTimekeep: HandleSaveTimekeep;
-
-	/** Container created by this component */
-	#wrapperEl: HTMLElement | undefined;
 
 	constructor(
 		containerEl: HTMLElement,
 		timekeep: Store<Timekeep>,
 		handleSaveTimekeep: HandleSaveTimekeep
 	) {
-		super();
+		super(containerEl);
 
-		this.#containerEl = containerEl;
 		this.timekeep = timekeep;
 		this.handleSaveTimekeep = handleSaveTimekeep;
 	}
@@ -36,10 +29,10 @@ export class TimesheetSaveError extends Component {
 	onload(): void {
 		super.onload();
 
-		const wrapperEl = this.#containerEl.createDiv({
+		const wrapperEl = this.containerEl.createDiv({
 			cls: "timekeep-container",
 		});
-		this.#wrapperEl = wrapperEl;
+		this.wrapperEl = wrapperEl;
 
 		const errorEl = wrapperEl.createDiv({ cls: "timekeep-error" });
 		errorEl.createEl("h1", { text: "Warning" });
@@ -61,11 +54,6 @@ export class TimesheetSaveError extends Component {
 		this.registerDomEvent(retryButton, "click", this.onRetrySave.bind(this));
 
 		this.registerDomEvent(copyButton, "click", this.onCopy.bind(this));
-	}
-
-	onunload(): void {
-		super.onunload();
-		this.#wrapperEl?.remove();
 	}
 
 	onRetrySave() {

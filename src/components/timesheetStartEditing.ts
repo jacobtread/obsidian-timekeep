@@ -1,4 +1,4 @@
-import { type App, Component } from "obsidian";
+import type { App } from "obsidian";
 
 import type { TimekeepSettings } from "@/settings";
 import type { Store } from "@/store";
@@ -7,16 +7,14 @@ import type { Timekeep } from "@/timekeep/schema";
 import { getRunningEntry } from "@/timekeep/queries";
 import { updateEntry } from "@/timekeep/update";
 
+import { DomComponent } from "./domComponent";
 import { createObsidianIcon } from "./obsidianIcon";
 
 /**
  * The editing section for editing the currently
  * running time entry within the start section
  */
-export class TimekeepStartEditing extends Component {
-	/** Parent container element */
-	#containerEl: HTMLElement;
-
+export class TimekeepStartEditing extends DomComponent {
 	/** Access to the app instance */
 	app: App;
 	/** Access to the timekeep */
@@ -24,8 +22,6 @@ export class TimekeepStartEditing extends Component {
 	/** Access to the timekeep settings */
 	settings: Store<TimekeepSettings>;
 
-	/** Form container element */
-	#formEl: HTMLElement | undefined;
 	/** Name editing input element */
 	#nameInputEl: HTMLInputElement | undefined;
 
@@ -45,9 +41,7 @@ export class TimekeepStartEditing extends Component {
 		editingName: string,
 		onFinishEditing: VoidFunction
 	) {
-		super();
-
-		this.#containerEl = containerEl;
+		super(containerEl);
 
 		this.app = app;
 		this.timekeep = timekeep;
@@ -60,14 +54,14 @@ export class TimekeepStartEditing extends Component {
 	onload(): void {
 		super.onload();
 
-		const formEl = this.#containerEl.createEl("form", {
+		const formEl = this.containerEl.createEl("form", {
 			cls: "timekeep-start-area",
 		});
 		formEl.setAttribute("data-area", "start");
 		this.registerDomEvent(formEl, "submit", this.onSave.bind(this));
-		this.#formEl = formEl;
+		this.wrapperEl = formEl;
 
-		const nameWrapperEl = this.#formEl.createDiv({
+		const nameWrapperEl = formEl.createDiv({
 			cls: "timekeep-name-wrapper",
 		});
 
@@ -99,11 +93,6 @@ export class TimekeepStartEditing extends Component {
 		cancelButton.type = "button";
 		createObsidianIcon(cancelButton, "x", "button-icon");
 		this.registerDomEvent(cancelButton, "click", this.onFinishEditing);
-	}
-
-	onunload(): void {
-		super.onunload();
-		this.#formEl?.remove();
 	}
 
 	onSave(event: Event) {

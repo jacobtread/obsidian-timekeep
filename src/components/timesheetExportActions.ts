@@ -1,20 +1,20 @@
 import moment from "moment";
-import { type App, Component, Notice } from "obsidian";
+import { type App, Notice } from "obsidian";
+
+import type { CustomOutputFormat } from "@/output";
+import type { TimekeepSettings } from "@/settings";
+import type { Store } from "@/store";
 
 import { createCSV, createMarkdownTable } from "@/export";
 import { exportPdf } from "@/export/pdf";
-import { CustomOutputFormat } from "@/output";
-import { TimekeepSettings } from "@/settings";
-import { Store } from "@/store";
 import { stripTimekeepRuntimeData, Timekeep } from "@/timekeep/schema";
+
+import { DomComponent } from "./domComponent";
 
 /**
  * Export actions section component
  */
-export class TimesheetExportActions extends Component {
-	/** Parent container element */
-	#containerEl: HTMLElement;
-
+export class TimesheetExportActions extends DomComponent {
 	/** Access to the app instance */
 	app: App;
 	/** Access to the timekeep */
@@ -24,8 +24,6 @@ export class TimesheetExportActions extends Component {
 	/** Additional custom output formats */
 	customOutputFormats: Store<Record<string, CustomOutputFormat>>;
 
-	/** Actions container element */
-	#actionsEl: HTMLElement | undefined;
 	/** Current loaded collection of custom output format buttons */
 	#customOutputFormatButtons: HTMLButtonElement[] = [];
 
@@ -36,9 +34,7 @@ export class TimesheetExportActions extends Component {
 		settings: Store<TimekeepSettings>,
 		customOutputFormats: Store<Record<string, CustomOutputFormat>>
 	) {
-		super();
-
-		this.#containerEl = containerEl;
+		super(containerEl);
 
 		this.app = app;
 		this.timekeep = timekeep;
@@ -49,11 +45,11 @@ export class TimesheetExportActions extends Component {
 	onload(): void {
 		super.onload();
 
-		const actionsEl = this.#containerEl.createEl("div", {
+		const actionsEl = this.containerEl.createEl("div", {
 			cls: "timekeep-actions",
 		});
 
-		this.#actionsEl = actionsEl;
+		this.wrapperEl = actionsEl;
 
 		const copyMarkdownButton = actionsEl.createEl("button", {
 			text: "Copy Markdown",
@@ -82,11 +78,6 @@ export class TimesheetExportActions extends Component {
 		createCustomButtons();
 	}
 
-	onunload(): void {
-		super.onunload();
-		this.#actionsEl?.remove();
-	}
-
 	removeCustomFormatButtons() {
 		for (const button of this.#customOutputFormatButtons) {
 			button.remove();
@@ -94,7 +85,7 @@ export class TimesheetExportActions extends Component {
 	}
 
 	createCustomOutputFormatButtons() {
-		if (!this.#actionsEl) {
+		if (!this.wrapperEl) {
 			return;
 		}
 
@@ -104,7 +95,7 @@ export class TimesheetExportActions extends Component {
 		const outputFormats = this.customOutputFormats.getState();
 
 		for (const outputFormat of Object.values(outputFormats)) {
-			const customFormatButton = this.#actionsEl.createEl("button", {
+			const customFormatButton = this.wrapperEl.createEl("button", {
 				text: outputFormat.getButtonLabel(),
 			});
 

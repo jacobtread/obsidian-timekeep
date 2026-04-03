@@ -1,5 +1,4 @@
 import moment from "moment";
-import { Component } from "obsidian";
 
 import type { TimekeepSettings } from "@/settings";
 import type { Store } from "@/store";
@@ -13,16 +12,14 @@ import {
 } from "@/timekeep/queries";
 import { formatDuration } from "@/utils/time";
 
+import { DomComponent } from "./domComponent";
 import { TimesheetTimer } from "./timesheetTimer";
 
 /**
  * Component for rendering the two live updating timers at the top of the
  * time keep block
  */
-export class TimesheetCounters extends Component {
-	/** Parent container element */
-	#containerEl: HTMLElement;
-
+export class TimesheetCounters extends DomComponent {
 	/** Access to the timekeep */
 	timekeep: Store<Timekeep>;
 	/** Access to the timekeep settings */
@@ -36,17 +33,13 @@ export class TimesheetCounters extends Component {
 	/** Currently tracked background interval for content */
 	currentContentInterval: number | undefined;
 
-	/** Wrapper container element */
-	#wrapperEl: HTMLElement | undefined;
-
 	constructor(
 		containerEl: HTMLElement,
 		settings: Store<TimekeepSettings>,
 		timekeep: Store<Timekeep>
 	) {
-		super();
+		super(containerEl);
 
-		this.#containerEl = containerEl;
 		this.settings = settings;
 		this.timekeep = timekeep;
 	}
@@ -54,10 +47,10 @@ export class TimesheetCounters extends Component {
 	onload(): void {
 		super.onload();
 
-		const wrapperEl = this.#containerEl.createDiv({
+		const wrapperEl = this.containerEl.createDiv({
 			cls: "timekeep-timers",
 		});
-		this.#wrapperEl = wrapperEl;
+		this.wrapperEl = wrapperEl;
 
 		this.currentTimer = new TimesheetTimer(wrapperEl, "Current");
 		this.totalTimer = new TimesheetTimer(wrapperEl, "Total");
@@ -76,11 +69,6 @@ export class TimesheetCounters extends Component {
 		});
 
 		onUpdate();
-	}
-
-	onunload(): void {
-		super.onunload();
-		this.#wrapperEl?.remove();
 	}
 
 	/**

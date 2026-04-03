@@ -1,16 +1,14 @@
 import Fuse, { FuseResult } from "fuse.js";
-import { Component, debounce } from "obsidian";
+import { debounce } from "obsidian";
 
 import { TimekeepAutocomplete } from "@/service/autocomplete";
 
-export class TimesheetNameInput extends Component {
-	#containerEl: HTMLElement;
+import { DomComponent } from "./domComponent";
 
+export class TimesheetNameInput extends DomComponent {
 	/** Access to autocomplete */
 	autocomplete: TimekeepAutocomplete;
 
-	/** Name input wrapper container */
-	#wrapperEl: HTMLDivElement | undefined;
 	/** Name input */
 	#inputEl: HTMLInputElement | undefined;
 	/** Suggestions container element */
@@ -24,17 +22,16 @@ export class TimesheetNameInput extends Component {
 	#suggestionFocusIndex: number = -1;
 
 	constructor(containerEl: HTMLElement, autocomplete: TimekeepAutocomplete) {
-		super();
+		super(containerEl);
 
-		this.#containerEl = containerEl;
 		this.autocomplete = autocomplete;
 	}
 
 	onload(): void {
 		super.onload();
 
-		const wrapperEl = this.#containerEl.createDiv({ cls: "timekeep-name-containers" });
-		this.#wrapperEl = wrapperEl;
+		const wrapperEl = this.containerEl.createDiv({ cls: "timekeep-name-containers" });
+		this.wrapperEl = wrapperEl;
 
 		const inputEl = wrapperEl.createEl("input", {
 			cls: "timekeep-name",
@@ -69,11 +66,6 @@ export class TimesheetNameInput extends Component {
 		});
 
 		this.registerDomEvent(suggestionsEl, "mousedown", this.onClickSuggestions.bind(this));
-	}
-
-	onunload(): void {
-		super.onunload();
-		this.#wrapperEl?.remove();
 	}
 
 	/**
@@ -180,8 +172,8 @@ export class TimesheetNameInput extends Component {
 		if (
 			event.target &&
 			event.target instanceof HTMLElement &&
-			this.#wrapperEl &&
-			!this.#wrapperEl.contains(event.target)
+			this.wrapperEl &&
+			!this.wrapperEl.contains(event.target)
 		) {
 			this.setSuggestionsOpen(false);
 		}

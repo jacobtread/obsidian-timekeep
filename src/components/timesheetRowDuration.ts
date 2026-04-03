@@ -1,39 +1,32 @@
 import moment from "moment";
-import { Component } from "obsidian";
 
 import { getEntryDuration, isEntryRunning } from "@/timekeep/queries";
 import { TimeEntry } from "@/timekeep/schema";
 import { formatDurationLong } from "@/utils/time";
 
+import { DomComponent } from "./domComponent";
+
 /**
  * Component for rendering the live-updating duration on
  * an entry row
  */
-export class TimesheetRowDurationComponent extends Component {
-	/** Parent container element */
-	#containerEl: HTMLElement;
-
+export class TimesheetRowDurationComponent extends DomComponent {
 	/** The entry this duration belongs to */
 	entry: TimeEntry;
-
-	/** The time span element */
-	#timeEl: HTMLSpanElement | undefined;
 
 	/** Currently tracked background interval for content */
 	currentContentInterval: number | undefined;
 
 	constructor(containerEl: HTMLElement, entry: TimeEntry) {
-		super();
-
-		this.#containerEl = containerEl;
+		super(containerEl);
 		this.entry = entry;
 	}
 
 	onload(): void {
 		super.onload();
 
-		const timeEl = this.#containerEl.createSpan({ cls: "timekeep-time" });
-		this.#timeEl = timeEl;
+		const timeEl = this.containerEl.createSpan({ cls: "timekeep-time" });
+		this.wrapperEl = timeEl;
 
 		// Initial update
 		this.updateTime();
@@ -54,22 +47,19 @@ export class TimesheetRowDurationComponent extends Component {
 		}
 	}
 
-	onunload(): void {
-		super.onunload();
-		this.#timeEl?.remove();
-	}
-
 	/**
 	 * Updates the current time duration value based
 	 * on the current time
 	 */
 	updateTime() {
-		if (!this.#timeEl) return;
+		const timeEl = this.wrapperEl;
+
+		if (!timeEl) return;
 
 		const currentTime = moment();
 		const duration = getEntryDuration(this.entry, currentTime);
 		const value = formatDurationLong(duration);
 
-		this.#timeEl.textContent = value;
+		timeEl.textContent = value;
 	}
 }

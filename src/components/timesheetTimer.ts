@@ -1,49 +1,37 @@
-import { Component } from "obsidian";
+import { DomComponent } from "./domComponent";
 
 /**
  * Timer component for the split side by side timers at the top
  * of the timekeep display
  */
-export class TimesheetTimer extends Component {
-	/** Parent container element */
-	#containerEl: HTMLElement;
-
+export class TimesheetTimer extends DomComponent {
 	/** Label to display on the timer  */
 	#label: string;
 
-	/** Timer container element */
-	#timerEl: HTMLDivElement | undefined;
 	/** Primary value display element */
 	#primaryValueEl: HTMLSpanElement | undefined;
 	/** Secondary value display element */
 	#secondaryValueEl: HTMLSpanElement | undefined;
 
 	constructor(containerEl: HTMLElement, label: string) {
-		super();
-
-		this.#containerEl = containerEl;
+		super(containerEl);
 		this.#label = label;
 	}
 
 	onload(): void {
 		super.onload();
 
-		const timerEl = this.#containerEl.createDiv({ cls: "timekeep-timer" });
-		this.#timerEl = timerEl;
+		const wrapperEl = this.containerEl.createDiv({ cls: "timekeep-timer" });
+		this.wrapperEl = wrapperEl;
 
-		const primaryValueEl = timerEl.createDiv({ cls: "timekeep-timer-value" });
-		const secondaryValueEl = timerEl.createDiv({ cls: "timekeep-timer-value-small" });
-		timerEl.createSpan({ text: this.#label });
+		const primaryValueEl = wrapperEl.createDiv({ cls: "timekeep-timer-value" });
+		const secondaryValueEl = wrapperEl.createDiv({ cls: "timekeep-timer-value-small" });
+		wrapperEl.createSpan({ text: this.#label });
 
 		this.#primaryValueEl = primaryValueEl;
 		this.#secondaryValueEl = secondaryValueEl;
 
 		this.setValues("", " ");
-	}
-
-	onunload(): void {
-		super.onunload();
-		this.#timerEl?.remove();
 	}
 
 	/**
@@ -52,8 +40,8 @@ export class TimesheetTimer extends Component {
 	 * @param hidden Whether the timer is hidden
 	 */
 	setHidden(hidden: boolean) {
-		if (!this.#timerEl) return;
-		this.#timerEl.hidden = hidden;
+		if (!this.wrapperEl) return;
+		this.wrapperEl.hidden = hidden;
 	}
 
 	/**

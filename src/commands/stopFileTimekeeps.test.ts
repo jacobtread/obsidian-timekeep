@@ -1,6 +1,6 @@
 import type { App } from "obsidian";
 
-import { describe, vi, it, expect } from "vitest";
+import { describe, it, expect } from "vitest";
 
 import { MockNotice, MockVault } from "@/__mocks__/obsidian";
 import { createCodeBlock } from "@/utils/codeblock";

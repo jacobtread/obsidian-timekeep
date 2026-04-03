@@ -1,22 +1,21 @@
-import { App, Component } from "obsidian";
+import type { App } from "obsidian";
 
-import { CustomOutputFormat } from "@/output";
+import type { CustomOutputFormat } from "@/output";
+import type { TimekeepSettings } from "@/settings";
+import type { Store } from "@/store";
+import type { Timekeep } from "@/timekeep/schema";
+
 import { TimekeepAutocomplete } from "@/service/autocomplete";
-import { TimekeepSettings } from "@/settings";
-import { Store } from "@/store";
-import { Timekeep } from "@/timekeep/schema";
 import { ConfirmModal } from "@/views/confirm-modal";
 
+import { DomComponent } from "./domComponent";
 import { createObsidianIcon } from "./obsidianIcon";
 import { TimesheetApp } from "./timesheetApp";
 
 /**
  * View component for the timesheet app as a whole
  */
-export class TimesheetFileEntry extends Component {
-	/** Parent container element */
-	#containerEl: HTMLElement;
-
+export class TimesheetFileEntry extends DomComponent {
 	/** Access to the app instance */
 	app: App;
 	/** Access to the timekeep */
@@ -27,9 +26,6 @@ export class TimesheetFileEntry extends Component {
 	customOutputFormats: Store<Record<string, CustomOutputFormat>>;
 	/** Autocomplete */
 	autocomplete: TimekeepAutocomplete;
-
-	/** Wrapper element containing the component content */
-	#wrapperEl: HTMLElement | undefined;
 
 	timesheetApp: TimesheetApp | undefined;
 
@@ -46,9 +42,7 @@ export class TimesheetFileEntry extends Component {
 
 		onDelete: VoidFunction
 	) {
-		super();
-
-		this.#containerEl = containerEl;
+		super(containerEl);
 
 		this.app = app;
 		this.timekeep = timekeep;
@@ -59,18 +53,13 @@ export class TimesheetFileEntry extends Component {
 		this.onDelete = onDelete;
 	}
 
-	onunload(): void {
-		super.onunload();
-		this.#wrapperEl?.remove();
-	}
-
 	onload(): void {
 		super.onload();
 
-		const wrapperEl = this.#containerEl.createDiv({
+		const wrapperEl = this.containerEl.createDiv({
 			cls: "timekeep-file-entry",
 		});
-		this.#wrapperEl = wrapperEl;
+		this.wrapperEl = wrapperEl;
 
 		const deleteButton = wrapperEl.createEl("button", { cls: "" });
 		createObsidianIcon(deleteButton, "trash", "text-button-icon");

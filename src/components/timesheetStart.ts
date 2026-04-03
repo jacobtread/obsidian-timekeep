@@ -1,5 +1,6 @@
+import type { App } from "obsidian";
+
 import moment from "moment";
-import { type App, Component } from "obsidian";
 
 import type { TimekeepSettings } from "@/settings";
 import type { Store } from "@/store";
@@ -9,6 +10,7 @@ import { TimekeepAutocomplete } from "@/service/autocomplete";
 import { getRunningEntry } from "@/timekeep/queries";
 import { startNewEntry } from "@/timekeep/start";
 
+import { DomComponent } from "./domComponent";
 import { createObsidianIcon } from "./obsidianIcon";
 import { TimesheetNameInput } from "./timesheetNameInput";
 import { TimekeepStartEditing } from "./timesheetStartEditing";
@@ -17,10 +19,7 @@ import { TimesheetStartRunning } from "./timesheetStartRunning";
 /**
  * The start section above the timesheet table
  */
-export class TimesheetStart extends Component {
-	/** Parent container element */
-	#containerEl: HTMLElement;
-
+export class TimesheetStart extends DomComponent {
 	/** Access to the app instance */
 	app: App;
 	/** Access to the timekeep */
@@ -30,8 +29,6 @@ export class TimesheetStart extends Component {
 	/** Access to autocomplete */
 	autocomplete: TimekeepAutocomplete;
 
-	/** Wrapper for the component content */
-	#wrapperEl: HTMLElement | undefined;
 	/** Content container element */
 	#contentEl: HTMLElement | undefined;
 
@@ -53,21 +50,19 @@ export class TimesheetStart extends Component {
 		settings: Store<TimekeepSettings>,
 		autocomplete: TimekeepAutocomplete
 	) {
-		super();
+		super(containerEl);
 
 		this.app = app;
 		this.timekeep = timekeep;
 		this.settings = settings;
 		this.autocomplete = autocomplete;
-
-		this.#containerEl = containerEl;
 	}
 
 	onload(): void {
 		super.onload();
 
-		const wrapperEl = this.#containerEl.createDiv();
-		this.#wrapperEl = wrapperEl;
+		const wrapperEl = this.containerEl.createDiv();
+		this.wrapperEl = wrapperEl;
 
 		const contentEl = wrapperEl.createDiv();
 		this.#contentEl = contentEl;
@@ -112,11 +107,6 @@ export class TimesheetStart extends Component {
 		onUpdate();
 
 		this.register(unsubscribeTimekeep);
-	}
-
-	onunload(): void {
-		super.onunload();
-		this.#wrapperEl?.remove();
 	}
 
 	/**

@@ -1,19 +1,21 @@
-import { App, Component } from "obsidian";
+import type { App } from "obsidian";
 
-import { TimekeepSettings } from "@/settings";
-import { Store } from "@/store";
-import { TimeEntry, Timekeep } from "@/timekeep/schema";
+import type { TimekeepSettings } from "@/settings";
+import type { Store } from "@/store";
+import type { TimeEntry, Timekeep } from "@/timekeep/schema";
+
 import { removeEntry, updateEntry } from "@/timekeep/update";
 import { formatEditableTimestamp, parseEditableTimestamp } from "@/utils/time";
 import { ConfirmModal } from "@/views/confirm-modal";
 
+import { DomComponent } from "./domComponent";
 import { createObsidianIcon } from "./obsidianIcon";
 
 /**
  * Component for a timesheet row entry that is currently
  * being edited
  */
-export class TimesheetRowContentEditing extends Component {
+export class TimesheetRowContentEditing extends DomComponent {
 	/** Access to the app instance */
 	app: App;
 
@@ -25,12 +27,6 @@ export class TimesheetRowContentEditing extends Component {
 
 	/** The entry for this row */
 	entry: TimeEntry;
-
-	/** The row element */
-	#rowEl: HTMLTableRowElement;
-
-	/** Column element containing the content */
-	#colEl: HTMLTableCellElement | undefined;
 
 	/** Label container for the start time  */
 	#startTimeLabelEl: HTMLLabelElement | undefined;
@@ -48,16 +44,14 @@ export class TimesheetRowContentEditing extends Component {
 	onFinishEditing: VoidFunction;
 
 	constructor(
-		rowEl: HTMLTableRowElement,
+		rowEl: HTMLElement,
 		app: App,
 		timekeep: Store<Timekeep>,
 		settings: Store<TimekeepSettings>,
 		entry: TimeEntry,
 		onFinishEditing: VoidFunction
 	) {
-		super();
-
-		this.#rowEl = rowEl;
+		super(rowEl);
 
 		this.app = app;
 		this.timekeep = timekeep;
@@ -70,9 +64,9 @@ export class TimesheetRowContentEditing extends Component {
 	onload(): void {
 		super.onload();
 
-		const colEl = this.#rowEl.createEl("td");
+		const colEl = this.containerEl.createEl("td");
 		colEl.colSpan = 5;
-		this.#colEl = colEl;
+		this.wrapperEl = colEl;
 
 		const formEl = colEl.createEl("form", { cls: "timesheet-editing" });
 		this.registerDomEvent(formEl, "submit", this.onSubmit.bind(this));
@@ -137,11 +131,6 @@ export class TimesheetRowContentEditing extends Component {
 		const unsubscribeSettings = this.settings.subscribe(onUpdateState);
 		this.register(unsubscribeSettings);
 		onUpdateState();
-	}
-
-	onunload(): void {
-		super.onunload();
-		this.#colEl?.remove();
 	}
 
 	onUpdateState() {

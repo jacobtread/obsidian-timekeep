@@ -248,13 +248,13 @@ export class MockComponent {
 	private events: EventRef[] = [];
 	private callbacks: VoidFunction[] = [];
 
-	load = vi.fn(() => {
+	load() {
 		this.loaded = true;
 		this.onload();
 		this.children.map((c) => c.load());
-	});
+	}
 
-	unload = vi.fn(() => {
+	unload() {
 		this.children.forEach((c) => c.unload());
 		this.onunload();
 
@@ -268,39 +268,35 @@ export class MockComponent {
 		}
 
 		this.loaded = false;
-	});
+	}
 
 	onload() {}
 	onunload() {}
 
-	registerEvent = vi.fn((eventRef: EventRef) => {
+	registerEvent(eventRef: EventRef) {
 		this.events.push(eventRef);
-	});
+	}
 
-	register = vi.fn((callback: VoidFunction) => {
+	register(callback: VoidFunction) {
 		this.callbacks.push(callback);
-	});
+	}
 
-	registerDomEvent = vi
-		.fn()
-		.mockImplementation(
-			(
-				el: any,
-				type: string,
-				callback: (this: any, ev: any) => any,
-				options?: boolean | AddEventListenerOptions
-			) => {
-				const listener = (event: any) => {
-					callback.call(el, event);
-				};
+	registerDomEvent(
+		el: any,
+		type: string,
+		callback: (this: any, ev: any) => any,
+		options?: boolean | AddEventListenerOptions
+	) {
+		const listener = (event: any) => {
+			callback.call(el, event);
+		};
 
-				el.addEventListener(type, listener, options);
+		el.addEventListener(type, listener, options);
 
-				this.callbacks.push(() => {
-					el.removeEventListener(type, listener, options);
-				});
-			}
-		);
+		this.callbacks.push(() => {
+			el.removeEventListener(type, listener, options);
+		});
+	}
 
 	addChild(child: Component) {
 		this.children.push(child);

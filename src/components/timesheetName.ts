@@ -1,4 +1,4 @@
-import { App, Component } from "obsidian";
+import type { App } from "obsidian";
 
 import {
 	NameSegment,
@@ -8,15 +8,14 @@ import {
 	parseNameSegments,
 } from "@/utils/name";
 
+import { DomComponent } from "./domComponent";
+
 /**
  * Component for rendering the name of a timekeep entry, this
  * handles segmenting the name into parts to allow links within
  * the name
  */
-export class TimekeepName extends Component {
-	/** Parent container element */
-	#containerEl: HTMLElement;
-
+export class TimekeepName extends DomComponent {
 	/** Access to the obsidian app */
 	app: App;
 
@@ -24,11 +23,10 @@ export class TimekeepName extends Component {
 	segments: NameSegment[];
 
 	constructor(containerEl: HTMLElement, app: App, name: string) {
-		super();
+		super(containerEl);
 
 		const segments = parseNameSegments(name);
 
-		this.#containerEl = containerEl;
 		this.app = app;
 		this.segments = segments;
 	}
@@ -36,31 +34,29 @@ export class TimekeepName extends Component {
 	onload(): void {
 		super.onload();
 
+		const wrapperEl = this.containerEl.createSpan();
+		this.wrapperEl = wrapperEl;
+
 		for (const segment of this.segments) {
 			switch (segment.type) {
 				case NameSegmentType.Text:
-					this.createTimekeepText(segment);
+					this.createTimekeepText(wrapperEl, segment);
 					break;
 
 				case NameSegmentType.Link:
-					this.createTimekeepLink(segment);
+					this.createTimekeepLink(wrapperEl, segment);
 					break;
 			}
 		}
 	}
 
-	onunload(): void {
-		super.onunload();
-		this.#containerEl.empty();
+	createTimekeepText(wrapperEl: HTMLElement, segment: NameSegmentText) {
+		wrapperEl.createSpan({ text: segment.text });
 	}
 
-	createTimekeepText(segment: NameSegmentText) {
-		this.#containerEl.createSpan({ text: segment.text });
-	}
-
-	createTimekeepLink(segment: NameSegmentLink) {
+	createTimekeepLink(wrapperEl: HTMLElement, segment: NameSegmentLink) {
 		const url = segment.url;
-		const linkEl = this.#containerEl.createEl("a", {
+		const linkEl = wrapperEl.createEl("a", {
 			text: segment.text,
 		});
 

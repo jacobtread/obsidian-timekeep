@@ -1,5 +1,6 @@
+import type { App } from "obsidian";
+
 import moment from "moment";
-import { type App, Component } from "obsidian";
 
 import type { TimekeepSettings } from "@/settings";
 import type { Store } from "@/store";
@@ -9,24 +10,19 @@ import { getPathToEntry } from "@/timekeep/queries";
 import { stopRunningEntries } from "@/timekeep/update";
 import { formatTimestamp } from "@/utils/time";
 
+import { DomComponent } from "./domComponent";
 import { createObsidianIcon } from "./obsidianIcon";
 
 /**
  * The "Running" timer section of the timesheet start are
  */
-export class TimesheetStartRunning extends Component {
-	/** Parent container element */
-	#containerEl: HTMLElement;
-
+export class TimesheetStartRunning extends DomComponent {
 	/** Access to the app instance */
 	app: App;
 	/** Access to the timekeep */
 	timekeep: Store<Timekeep>;
 	/** Access to the timekeep settings */
 	settings: Store<TimekeepSettings>;
-
-	/** Form container element */
-	#formEl: HTMLElement | undefined;
 
 	/** Element to display the formatted start time */
 	#timeValueEl: HTMLSpanElement | undefined;
@@ -50,12 +46,11 @@ export class TimesheetStartRunning extends Component {
 
 		onStartEditing: VoidFunction
 	) {
-		super();
+		super(containerEl);
 
 		this.app = app;
 		this.timekeep = timekeep;
 		this.settings = settings;
-		this.#containerEl = containerEl;
 
 		this.entry = entry;
 		this.onStartEditing = onStartEditing;
@@ -64,21 +59,21 @@ export class TimesheetStartRunning extends Component {
 	onload(): void {
 		super.onload();
 
-		const formEl = this.#containerEl.createEl("form", {
+		const formEl = this.containerEl.createEl("form", {
 			cls: "timekeep-start-area",
 		});
 		formEl.setAttribute("data-area", "running");
-		this.#formEl = formEl;
+		this.wrapperEl = formEl;
 		this.registerDomEvent(formEl, "submit", this.onStop.bind(this));
 
-		const wrapperEl = formEl.createDiv({
+		const nameWrapperEl = formEl.createDiv({
 			cls: ["active-entry", "timekeep-name-wrapper"],
 		});
 
-		const runningSpanEl = wrapperEl.createSpan();
+		const runningSpanEl = nameWrapperEl.createSpan();
 		runningSpanEl.createEl("b", { text: "Currently Running: " });
 
-		const detailsEl = wrapperEl.createDiv({ cls: "active-entry__details" });
+		const detailsEl = nameWrapperEl.createDiv({ cls: "active-entry__details" });
 		const detailsNameEl = detailsEl.createSpan({
 			cls: "active-entry__name",
 		});
@@ -122,11 +117,6 @@ export class TimesheetStartRunning extends Component {
 			unsubscribeSettings();
 			unsubscribeTimekeep();
 		});
-	}
-
-	onunload(): void {
-		super.onunload();
-		this.#formEl?.remove();
 	}
 
 	/**

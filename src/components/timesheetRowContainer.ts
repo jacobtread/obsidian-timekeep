@@ -1,9 +1,10 @@
-import { type App, Component } from "obsidian";
+import type { App } from "obsidian";
 
 import type { TimekeepSettings } from "@/settings";
 import type { Store } from "@/store";
 import type { TimeEntry, Timekeep } from "@/timekeep/schema";
 
+import { DomComponent } from "./domComponent";
 import { TimesheetRowContent } from "./timesheetRowContent";
 import { TimesheetRowContentEditing } from "./timesheetRowContentEditing";
 
@@ -12,10 +13,7 @@ import { TimesheetRowContentEditing } from "./timesheetRowContentEditing";
  * editable views without re-rendering the entire table or having a
  * large single component
  */
-export class TimesheetRowContainer extends Component {
-	/** Parent container element */
-	#containerEl: HTMLElement;
-
+export class TimesheetRowContainer extends DomComponent {
 	/** Access to the app instance */
 	app: App;
 	/** Access to the timekeep */
@@ -28,8 +26,6 @@ export class TimesheetRowContainer extends Component {
 	/** Indentation level for the entry */
 	indent: number;
 
-	/** The row element */
-	#rowEl: HTMLTableRowElement | undefined;
 	/** Current rendered row content */
 	#content: TimesheetRowContent | TimesheetRowContentEditing | undefined;
 
@@ -41,9 +37,7 @@ export class TimesheetRowContainer extends Component {
 		entry: TimeEntry,
 		indent: number
 	) {
-		super();
-
-		this.#containerEl = containerEl;
+		super(containerEl);
 
 		this.app = app;
 		this.timekeep = timekeep;
@@ -56,20 +50,14 @@ export class TimesheetRowContainer extends Component {
 	onload(): void {
 		super.onload();
 
-		const rowEl = this.#containerEl.createEl("tr", { cls: "timekeep-row" });
-		this.#rowEl = rowEl;
+		const rowEl = this.containerEl.createEl("tr", { cls: "timekeep-row" });
+		this.wrapperEl = rowEl;
 
 		this.onViewContent();
 	}
 
-	onunload(): void {
-		super.onunload();
-
-		this.#rowEl?.remove();
-	}
-
 	onViewEditing() {
-		const rowEl = this.#rowEl;
+		const rowEl = this.wrapperEl;
 		if (!rowEl) return;
 
 		this.swapContent(
@@ -85,7 +73,7 @@ export class TimesheetRowContainer extends Component {
 	}
 
 	onViewContent() {
-		const rowEl = this.#rowEl;
+		const rowEl = this.wrapperEl;
 		if (!rowEl) return;
 
 		this.swapContent(
