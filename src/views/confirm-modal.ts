@@ -1,48 +1,42 @@
-import { App, Modal, Setting } from "obsidian";
+import type { App } from "obsidian";
+
+import { Modal, Setting } from "obsidian";
 
 export class ConfirmModal extends Modal {
 	// Message to show in the modal
 	message: string;
 
-	// Callback to run on user choice
-	callback: (choice: boolean) => void;
-
-	// Whether an option was picked
-	picked: boolean;
+	// The choice that the user made
+	value: boolean | null;
 
 	constructor(app: App, message: string, callback: (choice: boolean) => void) {
 		super(app);
 		this.message = message;
-		this.callback = callback;
+		this.value = null;
+
+		// Set the close callback to invoke with the users selection if they made one
+		this.setCloseCallback(() => {
+			if (this.value !== null) {
+				callback(this.value);
+			}
+		});
 	}
 
 	onOpen(): void {
-		const { contentEl } = this;
-		contentEl.createEl("p", { text: this.message });
+		this.contentEl.createEl("p", { text: this.message });
 
-		new Setting(contentEl)
-			.addButton((btn) =>
-				btn
-					.setButtonText("Ok")
-					.setCta()
-					.onClick(() => {
-						this.picked = true;
-						this.close();
-						this.callback(true);
-					})
-			)
-			.addButton((btn) =>
-				btn.setButtonText("Cancel").onClick(() => {
-					this.picked = true;
-					this.close();
-					this.callback(false);
-				})
-			);
+		new Setting(this.contentEl)
+			.addButton((btn) => btn.setButtonText("Ok").setCta().onClick(this.onOk.bind(this)))
+			.addButton((btn) => btn.setButtonText("Cancel").onClick(this.onCancel.bind(this)));
 	}
 
-	onClose(): void {
-		if (!this.picked) {
-			this.callback(false);
-		}
+	onOk() {
+		this.value = true;
+		this.close();
+	}
+
+	onCancel() {
+		this.value = false;
+		this.close();
 	}
 }
