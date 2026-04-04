@@ -48,20 +48,13 @@ export class TimesheetRowContainer extends ContentComponent<
 
 	onload(): void {
 		super.onload();
-
-		const rowEl = this.containerEl.createEl("tr", { cls: "timekeep-row" });
-		this.wrapperEl = rowEl;
-
 		this.onViewContent();
 	}
 
 	onViewEditing() {
-		const rowEl = this.wrapperEl;
-		if (!rowEl) return;
-
 		this.setContent(
 			new TimesheetRowContentEditing(
-				rowEl,
+				this.containerEl,
 				this.app,
 				this.timekeep,
 				this.settings,
@@ -72,12 +65,9 @@ export class TimesheetRowContainer extends ContentComponent<
 	}
 
 	onViewContent() {
-		const rowEl = this.wrapperEl;
-		if (!rowEl) return;
-
 		this.setContent(
 			new TimesheetRowContent(
-				rowEl,
+				this.containerEl,
 				this.app,
 				this.timekeep,
 				this.settings,

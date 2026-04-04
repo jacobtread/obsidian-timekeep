@@ -397,7 +397,7 @@ export const MockNotice = vi.fn(
  * @param el Container to create elements within
  * @returns The createDiv function for that container
  */
-function createMockCreateEl(el: Node) {
+function createMockCreateEl(el?: Node) {
 	return <K extends keyof HTMLElementTagNameMap>(
 		tag: K,
 		o?: DomElementInfo | string,
@@ -418,7 +418,7 @@ function createMockCreateEl(el: Node) {
 		setObsidianMockElementHelpers(child);
 
 		// Add to the parent
-		el.appendChild(child);
+		if (el) el.appendChild(child);
 
 		// Callback from creation
 		if (callback) callback(child);
@@ -462,6 +462,28 @@ export function setObsidianMockElementHelpers(node: Node) {
 			parent.removeChild(node);
 		}
 	});
+}
+
+/**
+ * Sets the createEl/createDiv/createSpan helper functions on
+ * global
+ *
+ * @param node The node to add the helper functions to
+ */
+export function setObsidianMockElementHelpersGlobal() {
+	globalThis.createEl = vi.fn().mockImplementation(createMockCreateEl());
+	globalThis.createDiv = vi
+		.fn()
+		.mockImplementation(
+			(o?: DomElementInfo | string, callback?: (el: HTMLDivElement) => void) =>
+				globalThis.createEl("div", o, callback)
+		);
+	globalThis.createSpan = vi
+		.fn()
+		.mockImplementation(
+			(o?: DomElementInfo | string, callback?: (el: HTMLDivElement) => void) =>
+				globalThis.createEl("span", o, callback)
+		);
 }
 
 /**

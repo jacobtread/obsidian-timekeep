@@ -8,14 +8,14 @@ import { removeEntry, updateEntry } from "@/timekeep/update";
 import { formatEditableTimestamp, parseEditableTimestamp } from "@/utils/time";
 import { ConfirmModal } from "@/views/confirm-modal";
 
-import { DomComponent } from "./domComponent";
 import { createObsidianIcon } from "./obsidianIcon";
+import { ReplaceableComponent } from "./replaceableComponent";
 
 /**
  * Component for a timesheet row entry that is currently
  * being edited
  */
-export class TimesheetRowContentEditing extends DomComponent {
+export class TimesheetRowContentEditing extends ReplaceableComponent {
 	/** Access to the app instance */
 	app: App;
 
@@ -44,14 +44,14 @@ export class TimesheetRowContentEditing extends DomComponent {
 	onFinishEditing: VoidFunction;
 
 	constructor(
-		rowEl: HTMLElement,
+		containerEl: HTMLElement,
 		app: App,
 		timekeep: Store<Timekeep>,
 		settings: Store<TimekeepSettings>,
 		entry: TimeEntry,
 		onFinishEditing: VoidFunction
 	) {
-		super(rowEl);
+		super(containerEl);
 
 		this.app = app;
 		this.timekeep = timekeep;
@@ -61,12 +61,13 @@ export class TimesheetRowContentEditing extends DomComponent {
 		this.onFinishEditing = onFinishEditing;
 	}
 
-	onload(): void {
-		super.onload();
+	createContainer(): HTMLElement {
+		return createEl("tr", { cls: "timekeep-row" });
+	}
 
-		const colEl = this.containerEl.createEl("td");
+	render(wrapperEl: HTMLElement): void {
+		const colEl = wrapperEl.createEl("td");
 		colEl.colSpan = 5;
-		this.wrapperEl = colEl;
 
 		const formEl = colEl.createEl("form", { cls: "timesheet-editing" });
 		this.registerDomEvent(formEl, "submit", this.onSubmit.bind(this));

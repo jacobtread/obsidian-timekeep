@@ -8,9 +8,12 @@ import {
 	MockTFile,
 	MockTFolder,
 	MockVault,
+	setObsidianMockElementHelpersGlobal,
 } from "@/__mocks__/obsidian";
 
 vi.mock("obsidian", () => {
+	setObsidianMockElementHelpersGlobal();
+
 	return {
 		TFile: MockTFile,
 		TFolder: MockTFolder,
