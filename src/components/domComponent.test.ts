@@ -72,7 +72,7 @@ describe("DomComponent", () => {
 		comp.wrapperEl = wrapper;
 		container.appendChild(wrapper);
 
-		comp.onunload();
+		comp.unload();
 
 		expect(comp.unmounted).toBe(true); // only unload sets unmounted
 		expect(wrapper.parentElement).toBeNull();
@@ -89,7 +89,7 @@ describe("DomComponent", () => {
 		child.wrapperEl = wrapper;
 		container.appendChild(wrapper);
 
-		child.onunload();
+		child.unload();
 
 		expect(child.unmounted).toBe(true);
 		expect(wrapper.parentElement).toBe(container);

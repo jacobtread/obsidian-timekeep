@@ -7,12 +7,6 @@ import { createMockContainer } from "@/__mocks__/obsidian";
 
 import { createObsidianIcon } from "./obsidianIcon";
 
-vi.mock("obsidian", () => ({
-	setIcon: vi.fn((containerEl: HTMLElement, icon: string) => {
-		containerEl.innerHTML += `<svg data-icon="${icon}"></svg>`;
-	}),
-}));
-
 describe("createObsidianIcon", () => {
 	let container: HTMLElement;
 

@@ -35,7 +35,7 @@ describe("TimesheetCounters", () => {
 	});
 
 	it("should initialize wrapper and timers on load", () => {
-		component.onload();
+		component.load();
 
 		expect(component.wrapperEl).toBeInstanceOf(HTMLDivElement);
 		expect(component.wrapperEl?.className).toBe("timekeep-timers");
@@ -47,13 +47,13 @@ describe("TimesheetCounters", () => {
 	it("should call updateTimers on load", () => {
 		const spy = vi.spyOn(component, "updateTimers");
 
-		component.onload();
+		component.load();
 
 		expect(spy).toHaveBeenCalled();
 	});
 
 	it("should set timer values using getEntryDuration and getTotalDuration", () => {
-		component.onload();
+		component.load();
 
 		const currentSetValues = vi.spyOn(component.currentTimer, "setValues");
 		const totalSetValues = vi.spyOn(component.totalTimer, "setValues");
@@ -73,7 +73,7 @@ describe("TimesheetCounters", () => {
 
 		const registerSpy = vi.spyOn(component, "registerInterval");
 
-		component.onload();
+		component.load();
 
 		expect(component.currentContentInterval).toBeDefined();
 		expect(registerSpy).toHaveBeenCalledWith(component.currentContentInterval);
@@ -87,14 +87,14 @@ describe("TimesheetCounters", () => {
 		const clearSpy = vi.spyOn(global, "clearInterval");
 
 		isKeepRunning.mockReturnValue(true);
-		component.onload();
+		component.load();
 
 		expect(clearSpy).toHaveBeenCalledWith(fakeIntervalID);
 	});
 
 	it("should show the current and total duration if theres a running entry", () => {
 		const start = moment();
-		const oneHourLater = moment().add(1, "hour");
+		const oneHourLater = moment(start).add(1, "hour");
 
 		vi.useFakeTimers();
 		vi.setSystemTime(oneHourLater.toDate());
@@ -124,7 +124,7 @@ describe("TimesheetCounters", () => {
 
 	it("should show total duration as the sum of all entry durations", () => {
 		const start = moment();
-		const oneHourLater = moment().add(1, "hour");
+		const oneHourLater = moment(start).add(1, "hour");
 
 		vi.useFakeTimers();
 		vi.setSystemTime(oneHourLater.toDate());

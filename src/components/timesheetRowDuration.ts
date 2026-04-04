@@ -10,7 +10,7 @@ import { DomComponent } from "./domComponent";
  * Component for rendering the live-updating duration on
  * an entry row
  */
-export class TimesheetRowDurationComponent extends DomComponent {
+export class TimesheetRowDuration extends DomComponent {
 	/** The entry this duration belongs to */
 	entry: TimeEntry;
 

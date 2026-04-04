@@ -7,12 +7,12 @@ import { createMockContainer } from "@/__mocks__/obsidian";
 import * as queries from "@/timekeep/queries";
 import * as timeUtils from "@/utils/time";
 
-import { TimesheetRowDurationComponent } from "./timesheetRowDuration";
+import { TimesheetRowDuration } from "./timesheetRowDuration";
 
-describe("TimesheetRowDurationComponent", () => {
+describe("TimesheetRowDuration", () => {
 	let container: HTMLElement;
 	let entry: any;
-	let component: TimesheetRowDurationComponent;
+	let component: TimesheetRowDuration;
 
 	beforeEach(() => {
 		container = createMockContainer();
@@ -30,7 +30,7 @@ describe("TimesheetRowDurationComponent", () => {
 		// Mock setInterval / clearInterval
 		vi.useFakeTimers();
 
-		component = new TimesheetRowDurationComponent(container, entry);
+		component = new TimesheetRowDuration(container, entry);
 	});
 
 	afterEach(() => {
@@ -38,7 +38,7 @@ describe("TimesheetRowDurationComponent", () => {
 	});
 
 	it("should create a wrapper span with the correct class", () => {
-		component.onload();
+		component.load();
 
 		expect(component.wrapperEl).toBeInstanceOf(HTMLSpanElement);
 		expect(component.wrapperEl?.className).toBe("timekeep-time");
@@ -47,13 +47,13 @@ describe("TimesheetRowDurationComponent", () => {
 	it("should call updateTime on load", () => {
 		const spy = vi.spyOn(component, "updateTime");
 
-		component.onload();
+		component.load();
 
 		expect(spy).toHaveBeenCalled();
 	});
 
 	it("should set textContent based on getEntryDuration and formatDurationLong", () => {
-		component.onload();
+		component.load();
 
 		expect(queries.getEntryDuration).toHaveBeenCalledWith(entry, expect.any(moment));
 		expect(timeUtils.formatDurationLong).toHaveBeenCalledWith(42);
@@ -64,7 +64,7 @@ describe("TimesheetRowDurationComponent", () => {
 		(queries.isEntryRunning as any).mockReturnValue(true);
 		const registerSpy = vi.spyOn(component, "registerInterval");
 
-		component.onload();
+		component.load();
 
 		expect(component.currentContentInterval).toBeDefined();
 		expect(registerSpy).toHaveBeenCalledWith(component.currentContentInterval);
@@ -76,7 +76,7 @@ describe("TimesheetRowDurationComponent", () => {
 		const clearSpy = vi.spyOn(global, "clearInterval");
 
 		(queries.isEntryRunning as any).mockReturnValue(true);
-		component.onload();
+		component.load();
 
 		expect(clearSpy).toHaveBeenCalledWith(fakeInterval);
 	});
@@ -84,7 +84,7 @@ describe("TimesheetRowDurationComponent", () => {
 	it("should not schedule interval if entry is not running", () => {
 		(queries.isEntryRunning as any).mockReturnValue(false);
 		const registerSpy = vi.spyOn(component, "registerInterval");
-		component.onload();
+		component.load();
 
 		expect(component.currentContentInterval).not.toBeDefined();
 		expect(registerSpy).not.toHaveBeenCalled();

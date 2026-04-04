@@ -14,7 +14,7 @@ import { formatTimestamp } from "@/utils/time";
 import { DomComponent } from "./domComponent";
 import { createObsidianIcon } from "./obsidianIcon";
 import { TimekeepName } from "./timesheetName";
-import { TimesheetRowDurationComponent } from "./timesheetRowDuration";
+import { TimesheetRowDuration } from "./timesheetRowDuration";
 
 /**
  * Component for the contents of a timesheet row
@@ -123,7 +123,7 @@ export class TimesheetRowContent extends DomComponent {
 			cls: ["timekeep-col", "timekeep-col--duration"],
 		});
 
-		const duration = new TimesheetRowDurationComponent(durationColEl, entry);
+		const duration = new TimesheetRowDuration(durationColEl, entry);
 
 		this.addChild(duration);
 

@@ -34,7 +34,7 @@ describe("TimesheetSaveError", () => {
 	});
 
 	it("renders wrapper, error message, and buttons on load", () => {
-		component.onload();
+		component.load();
 
 		const wrapper = container.querySelector(".timekeep-container");
 		expect(wrapper).not.toBeNull();
@@ -54,13 +54,13 @@ describe("TimesheetSaveError", () => {
 	});
 
 	it("calls handleSaveTimekeep on retry button click", () => {
-		component.onload();
+		component.load();
 		component.onRetrySave();
 		expect(handleSaveTimekeep).toHaveBeenCalledWith(timekeepStore.getState());
 	});
 
 	it("writes JSON to clipboard on copy button click", async () => {
-		component.onload();
+		component.load();
 
 		await component.onCopy();
 
@@ -70,8 +70,8 @@ describe("TimesheetSaveError", () => {
 	});
 
 	it("removes wrapper on unload", () => {
-		component.onload();
-		component.onunload();
+		component.load();
+		component.unload();
 		const wrapper = container.querySelector(".timekeep-container");
 		expect(wrapper).toBeNull();
 	});

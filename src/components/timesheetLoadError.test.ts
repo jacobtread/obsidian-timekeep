@@ -34,7 +34,7 @@ describe("TimesheetLoadError", () => {
 
 		expect(container.children.length).toBe(1);
 
-		component.onunload();
+		component.unload();
 		expect(container.children.length).toBe(0);
 	});
 });

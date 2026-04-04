@@ -17,5 +17,8 @@ vi.mock("obsidian", () => {
 		Vault: MockVault,
 		Component: MockComponent,
 		Notice: MockNotice,
+		setIcon: vi.fn((containerEl: HTMLElement, icon: string) => {
+			containerEl.innerHTML += `<svg data-icon="${icon}"></svg>`;
+		}),
 	};
 });

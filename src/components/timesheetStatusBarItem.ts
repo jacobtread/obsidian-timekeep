@@ -2,7 +2,7 @@ import { TimeEntry } from "@/timekeep/schema";
 
 import { DomComponent } from "./domComponent";
 import { createObsidianIcon } from "./obsidianIcon";
-import { TimesheetRowDurationComponent } from "./timesheetRowDuration";
+import { TimesheetRowDuration } from "./timesheetRowDuration";
 
 export class TimesheetStatusBarItem extends DomComponent {
 	/** The entry this duration belongs to */
@@ -12,7 +12,7 @@ export class TimesheetStatusBarItem extends DomComponent {
 	currentContentInterval: number | undefined;
 
 	/** Component for rendering the real time updating duration */
-	duration: TimesheetRowDurationComponent;
+	duration: TimesheetRowDuration;
 
 	/** Callback to open the file when the content is clicked */
 	onOpen: VoidFunction;
@@ -44,7 +44,6 @@ export class TimesheetStatusBarItem extends DomComponent {
 			"timekeep-status-item__button",
 			"button-icon",
 		]);
-		this.registerDomEvent(stopIcon, "click", this.onStop);
 		stopIcon.title = "Stop Entry";
 
 		const contentEl = wrapperEl.createDiv({
@@ -57,8 +56,9 @@ export class TimesheetStatusBarItem extends DomComponent {
 			text: entry.name + ":",
 		});
 
-		this.addChild(new TimesheetRowDurationComponent(contentEl, entry));
+		this.addChild(new TimesheetRowDuration(contentEl, entry));
 
+		this.registerDomEvent(stopIcon, "click", this.onStop);
 		this.registerDomEvent(contentEl, "click", this.onOpen);
 	}
 }

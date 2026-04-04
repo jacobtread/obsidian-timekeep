@@ -16,7 +16,7 @@ describe("TimesheetTimer", () => {
 	});
 
 	it("should create timer elements on load", () => {
-		timer.onload();
+		timer.load();
 
 		const timerEl = container.children[0] as HTMLElement;
 		expect(timerEl).toBeDefined();
@@ -36,16 +36,16 @@ describe("TimesheetTimer", () => {
 	});
 
 	it("should remove timer element on unload", () => {
-		timer.onload();
+		timer.load();
 		const timerEl = container.children[0] as HTMLElement;
 		expect(timerEl).toBeDefined();
 
-		timer.onunload();
+		timer.unload();
 		expect(timerEl.parentElement).toBeNull();
 	});
 
 	it("should hide or show the timer element", () => {
-		timer.onload();
+		timer.load();
 		const timerEl = container.children[0] as HTMLElement;
 
 		timer.setHidden(true);
@@ -56,7 +56,7 @@ describe("TimesheetTimer", () => {
 	});
 
 	it("should set primary and secondary values correctly", () => {
-		timer.onload();
+		timer.load();
 		const timerEl = container.children[0] as HTMLElement;
 		const primary = timerEl.children[0] as HTMLDivElement;
 		const secondary = timerEl.children[1] as HTMLDivElement;
@@ -73,7 +73,7 @@ describe("TimesheetTimer", () => {
 	});
 
 	it("secondary value should be hidden if it is empty", () => {
-		timer.onload();
+		timer.load();
 
 		const timerEl = container.children[0] as HTMLElement;
 		const secondary = timerEl.children[1] as HTMLDivElement;
