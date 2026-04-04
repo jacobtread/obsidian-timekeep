@@ -1,5 +1,7 @@
 // @vitest-environment happy-dom
 
-import { describe } from "vitest";
+import { describe, it } from "vitest";
 
-describe("TimesheetTable", () => {});
+describe("TimesheetTable", () => {
+	it("todo", () => {});
+});

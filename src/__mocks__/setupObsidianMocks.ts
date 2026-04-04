@@ -2,6 +2,7 @@ import { vi } from "vitest";
 
 import {
 	MockComponent,
+	MockModal,
 	MockNotice,
 	MockTAbstractFile,
 	MockTFile,
@@ -17,6 +18,7 @@ vi.mock("obsidian", () => {
 		Vault: MockVault,
 		Component: MockComponent,
 		Notice: MockNotice,
+		Modal: MockModal,
 		setIcon: vi.fn((containerEl: HTMLElement, icon: string) => {
 			containerEl.innerHTML += `<svg data-icon="${icon}"></svg>`;
 		}),

@@ -1,5 +1,3 @@
-import type { App } from "obsidian";
-
 import type { TimekeepSettings } from "@/settings";
 import type { Store } from "@/store";
 import type { Timekeep } from "@/timekeep/schema";
@@ -14,9 +12,7 @@ import { createObsidianIcon } from "./obsidianIcon";
  * The editing section for editing the currently
  * running time entry within the start section
  */
-export class TimekeepStartEditing extends DomComponent {
-	/** Access to the app instance */
-	app: App;
+export class TimesheetStartEditing extends DomComponent {
 	/** Access to the timekeep */
 	timekeep: Store<Timekeep>;
 	/** Access to the timekeep settings */
@@ -34,7 +30,6 @@ export class TimekeepStartEditing extends DomComponent {
 	constructor(
 		containerEl: HTMLElement,
 
-		app: App,
 		timekeep: Store<Timekeep>,
 		settings: Store<TimekeepSettings>,
 
@@ -43,7 +38,6 @@ export class TimekeepStartEditing extends DomComponent {
 	) {
 		super(containerEl);
 
-		this.app = app;
 		this.timekeep = timekeep;
 		this.settings = settings;
 

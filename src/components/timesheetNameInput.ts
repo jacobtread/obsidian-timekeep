@@ -1,7 +1,7 @@
 import Fuse, { FuseResult } from "fuse.js";
-import { debounce } from "obsidian";
 
 import { TimekeepAutocomplete } from "@/service/autocomplete";
+import { debounced } from "@/utils/debounce";
 
 import { DomComponent } from "./domComponent";
 
@@ -51,11 +51,7 @@ export class TimesheetNameInput extends DomComponent {
 		suggestionsEl.hidden = true;
 		this.#suggestionsEl = suggestionsEl;
 
-		this.registerDomEvent(
-			inputEl,
-			"input",
-			debounce(this.onDebouncedChange.bind(this), 300, true)
-		);
+		this.registerDomEvent(inputEl, "input", debounced(this.onDebouncedChange.bind(this), 300));
 
 		this.registerDomEvent(inputEl, "focus", this.onFocus.bind(this));
 		this.registerDomEvent(inputEl, "keydown", this.onKeyDown.bind(this));

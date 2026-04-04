@@ -1,5 +1,3 @@
-import type { App } from "obsidian";
-
 import moment from "moment";
 
 import type { TimekeepSettings } from "@/settings";
@@ -17,8 +15,6 @@ import { createObsidianIcon } from "./obsidianIcon";
  * The "Running" timer section of the timesheet start are
  */
 export class TimesheetStartRunning extends DomComponent {
-	/** Access to the app instance */
-	app: App;
 	/** Access to the timekeep */
 	timekeep: Store<Timekeep>;
 	/** Access to the timekeep settings */
@@ -38,7 +34,6 @@ export class TimesheetStartRunning extends DomComponent {
 	constructor(
 		containerEl: HTMLElement,
 
-		app: App,
 		timekeep: Store<Timekeep>,
 		settings: Store<TimekeepSettings>,
 
@@ -48,7 +43,6 @@ export class TimesheetStartRunning extends DomComponent {
 	) {
 		super(containerEl);
 
-		this.app = app;
 		this.timekeep = timekeep;
 		this.settings = settings;
 
@@ -137,7 +131,7 @@ export class TimesheetStartRunning extends DomComponent {
 			for (let i = 0; i < pathToEntry.length; i++) {
 				const path = pathToEntry[i];
 				const text = `${path.name} ${i < pathToEntry.length - 1 ? " >" : ""}`;
-				this.#pathEl.createSpan({ text });
+				this.#pathEl.createSpan({ cls: "timekeep-path-to-entry__segment", text });
 			}
 		}
 	}

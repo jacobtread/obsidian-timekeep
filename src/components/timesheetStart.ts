@@ -1,5 +1,3 @@
-import type { App } from "obsidian";
-
 import moment from "moment";
 
 import type { TimekeepSettings } from "@/settings";
@@ -13,15 +11,15 @@ import { startNewEntry } from "@/timekeep/start";
 import { ContentComponent } from "./contentComponent";
 import { createObsidianIcon } from "./obsidianIcon";
 import { TimesheetNameInput } from "./timesheetNameInput";
-import { TimekeepStartEditing } from "./timesheetStartEditing";
+import { TimesheetStartEditing } from "./timesheetStartEditing";
 import { TimesheetStartRunning } from "./timesheetStartRunning";
 
 /**
  * The start section above the timesheet table
  */
-export class TimesheetStart extends ContentComponent<TimesheetStartRunning | TimekeepStartEditing> {
-	/** Access to the app instance */
-	app: App;
+export class TimesheetStart extends ContentComponent<
+	TimesheetStartRunning | TimesheetStartEditing
+> {
 	/** Access to the timekeep */
 	timekeep: Store<Timekeep>;
 	/** Access to the timekeep settings */
@@ -42,14 +40,11 @@ export class TimesheetStart extends ContentComponent<TimesheetStartRunning | Tim
 
 	constructor(
 		containerEl: HTMLElement,
-		app: App,
 		timekeep: Store<Timekeep>,
 		settings: Store<TimekeepSettings>,
 		autocomplete: TimekeepAutocomplete
 	) {
 		super(containerEl);
-
-		this.app = app;
 		this.timekeep = timekeep;
 		this.settings = settings;
 		this.autocomplete = autocomplete;
@@ -66,19 +61,13 @@ export class TimesheetStart extends ContentComponent<TimesheetStartRunning | Tim
 
 		this.setCurrentView();
 
-		const formEl = wrapperEl.createEl("form", {
-			cls: "timekeep-start-area",
-		});
+		const formEl = wrapperEl.createEl("form", { cls: "timekeep-start-area" });
 		formEl.setAttribute("data-area", "start");
 		this.registerDomEvent(formEl, "submit", this.onStart.bind(this));
 
-		const nameWrapperEl = formEl.createDiv({
-			cls: "timekeep-name-wrapper",
-		});
+		const nameWrapperEl = formEl.createDiv({ cls: "timekeep-name-wrapper" });
 
-		const blockNameEl = nameWrapperEl.createEl("label", {
-			text: "Block Name: ",
-		});
+		const blockNameEl = nameWrapperEl.createEl("label", { text: "Block Name: " });
 		blockNameEl.htmlFor = "timekeepBlockName";
 
 		const blockPauseWarningEl = blockNameEl.createSpan({
@@ -109,7 +98,7 @@ export class TimesheetStart extends ContentComponent<TimesheetStartRunning | Tim
 	onUpdate() {
 		this.updateRunning();
 
-		if (this.getContent() instanceof TimekeepStartEditing) {
+		if (this.getContent() instanceof TimesheetStartEditing) {
 			this.setEditingView();
 			return;
 		}
@@ -125,12 +114,7 @@ export class TimesheetStart extends ContentComponent<TimesheetStartRunning | Tim
 		const isTimekeepRunning = currentEntry !== null;
 
 		this.#blockPauseWarningEl.hidden = currentEntry === null || currentEntry.startTime === null;
-
 		this.#startButtonEl.title = isTimekeepRunning ? "Stop and start" : "Start";
-	}
-
-	setEmptyView() {
-		this.setContent(undefined);
 	}
 
 	/**
@@ -142,13 +126,12 @@ export class TimesheetStart extends ContentComponent<TimesheetStartRunning | Tim
 		const timekeep = this.timekeep.getState();
 		const currentEntry = getRunningEntry(timekeep.entries);
 		if (!currentEntry) {
-			return this.setEmptyView();
+			return this.setContent(undefined);
 		}
 
 		this.setContent(
-			new TimekeepStartEditing(
+			new TimesheetStartEditing(
 				this.#contentEl,
-				this.app,
 				this.timekeep,
 				this.settings,
 				currentEntry.name,
@@ -167,13 +150,12 @@ export class TimesheetStart extends ContentComponent<TimesheetStartRunning | Tim
 		const currentEntry = getRunningEntry(timekeep.entries);
 
 		if (currentEntry === null || currentEntry.startTime === null) {
-			return this.setEmptyView();
+			return this.setContent(undefined);
 		}
 
 		this.setContent(
 			new TimesheetStartRunning(
 				this.#contentEl,
-				this.app,
 				this.timekeep,
 				this.settings,
 				currentEntry,

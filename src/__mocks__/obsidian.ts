@@ -1,14 +1,16 @@
 import type {
+	App,
 	Component,
 	EventRef,
 	FileStats,
+	Scope,
 	TAbstractFile,
 	TFile,
 	TFolder,
 	Vault,
 } from "obsidian";
 
-import { vi } from "vitest";
+import { Mock, vi } from "vitest";
 
 export abstract class MockTAbstractFile {
 	vault: Vault;
@@ -315,12 +317,79 @@ export class MockComponent {
 	}
 }
 
-export const MockNotice = vi.fn().mockImplementation(function (
-	_message: string | DocumentFragment,
-	_duration?: number
-) {
-	return {};
-});
+export const MockModal = vi.fn(
+	class {
+		app: App;
+
+		scope = {} as Scope;
+
+		containerEl: HTMLElement;
+		modalEl: HTMLElement;
+		titleEl: HTMLElement;
+		contentEl: HTMLElement;
+		shouldRestoreSelection: boolean = false;
+
+		open: Mock<() => void>;
+		close: Mock<() => void>;
+
+		closeCallback: undefined | (() => any);
+
+		constructor(app: App) {
+			this.app = app;
+
+			this.containerEl = createMockContainer();
+			this.modalEl = this.containerEl.createDiv();
+			this.titleEl = this.modalEl.createSpan();
+			this.contentEl = this.modalEl.createSpan();
+
+			this.open = vi.fn(() => {
+				void this.onOpen();
+			});
+
+			this.close = vi.fn(() => {
+				this.onClose();
+				if (this.closeCallback) this.closeCallback();
+			});
+		}
+
+		onOpen(): Promise<void> | void {}
+
+		onClose() {}
+
+		setTitle(title: string) {
+			this.titleEl.innerText = title;
+			return this;
+		}
+
+		setContent(content: string | DocumentFragment) {
+			this.contentEl.empty();
+			if (content instanceof DocumentFragment) {
+				this.contentEl.appendChild(content);
+			} else {
+				this.contentEl.appendText(content);
+			}
+
+			return this;
+		}
+
+		setCloseCallback(callback: () => any) {
+			this.closeCallback = callback;
+			return this;
+		}
+	}
+);
+
+export const MockNotice = vi.fn(
+	class {
+		message: string | DocumentFragment;
+		duration?: number;
+
+		constructor(message: string | DocumentFragment, duration?: number) {
+			this.message = message;
+			this.duration = duration;
+		}
+	}
+);
 
 /**
  * Helper to create the {@link Node.createEl} function added by obsidian
@@ -381,6 +450,10 @@ export function setObsidianMockElementHelpers(node: Node) {
 
 	node.empty = vi.fn().mockImplementation(() => {
 		node.childNodes.forEach((child) => node.removeChild(child));
+	});
+
+	node.appendText = vi.fn((value: string) => {
+		node.appendChild(new Text(value));
 	});
 
 	(node as ChildNode).remove = vi.fn().mockImplementation(() => {

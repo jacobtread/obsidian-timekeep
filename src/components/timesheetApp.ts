@@ -57,7 +57,6 @@ export class TimesheetApp extends DomComponent {
 
 		const start = new TimesheetStart(
 			wrapperEl,
-			this.app,
 			this.timekeep,
 			this.settings,
 			this.autocomplete
