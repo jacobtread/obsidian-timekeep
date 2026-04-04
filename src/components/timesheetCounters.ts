@@ -60,13 +60,8 @@ export class TimesheetCounters extends DomComponent {
 
 		const onUpdate = this.onUpdate.bind(this);
 
-		const unsubscribeTimekeep = this.timekeep.subscribe(onUpdate);
-		const unsubscribeSettings = this.settings.subscribe(onUpdate);
-
-		this.register(() => {
-			unsubscribeTimekeep();
-			unsubscribeSettings();
-		});
+		this.register(this.timekeep.subscribe(onUpdate));
+		this.register(this.settings.subscribe(onUpdate));
 
 		onUpdate();
 	}
