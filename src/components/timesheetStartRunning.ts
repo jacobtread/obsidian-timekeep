@@ -7,7 +7,7 @@ import type { Store } from "@/store";
 import type { TimeEntry, Timekeep } from "@/timekeep/schema";
 
 import { getPathToEntry } from "@/timekeep/queries";
-import { stopRunningEntries } from "@/timekeep/update";
+import { stopTimekeep } from "@/timekeep/update";
 import { formatTimestamp } from "@/utils/time";
 
 import { DomComponent } from "./domComponent";
@@ -108,15 +108,10 @@ export class TimesheetStartRunning extends DomComponent {
 
 		const onUpdate = this.onUpdate.bind(this);
 
-		const unsubscribeTimekeep = this.timekeep.subscribe(onUpdate);
-		const unsubscribeSettings = this.settings.subscribe(onUpdate);
+		this.register(this.timekeep.subscribe(onUpdate));
+		this.register(this.settings.subscribe(onUpdate));
 
 		onUpdate();
-
-		this.register(() => {
-			unsubscribeSettings();
-			unsubscribeTimekeep();
-		});
 	}
 
 	/**
@@ -154,11 +149,7 @@ export class TimesheetStartRunning extends DomComponent {
 
 		this.timekeep.setState((timekeep) => {
 			const currentTime = moment();
-
-			return {
-				...timekeep,
-				entries: stopRunningEntries(timekeep.entries, currentTime),
-			};
+			return stopTimekeep(timekeep, currentTime);
 		});
 	}
 }

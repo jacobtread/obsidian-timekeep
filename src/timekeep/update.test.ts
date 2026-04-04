@@ -1,12 +1,13 @@
 import { expect, it, describe } from "vitest";
 
-import { TimeEntryGroup } from "./schema";
+import { stripTimekeepRuntimeData, TimeEntryGroup } from "./schema";
 import {
 	updateEntry,
 	removeEntry,
 	removeSubEntry,
 	setEntryCollapsed,
 	stopRunningEntries,
+	stopTimekeep,
 } from "./update";
 
 describe("updateEntry", () => {
@@ -58,6 +59,16 @@ describe("stopRunningEntries", () => {
 
 		const output = stopRunningEntries(input, endTime);
 		expect(output).toEqual(expected);
+	});
+});
+
+describe("stopTimekeep", () => {
+	it("should stop timekeep running entries", async () => {
+		const { input, endTime, expected } =
+			await import("./__fixtures__/manipulating/stopping_entries/stopRunningEntriesTimekeep");
+
+		const output = stopTimekeep(input, endTime);
+		expect(stripTimekeepRuntimeData(output)).toEqual(stripTimekeepRuntimeData(expected));
 	});
 });
 

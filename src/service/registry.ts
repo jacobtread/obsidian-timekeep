@@ -16,7 +16,7 @@ import {
 	type TimekeepWithPosition,
 } from "@/timekeep/parser";
 import { stripTimekeepRuntimeData, type Timekeep } from "@/timekeep/schema";
-import { stopRunningEntries } from "@/timekeep/update";
+import { stopTimekeep } from "@/timekeep/update";
 
 /** Entry within the timekeep registry */
 export type TimekeepRegistryEntry = {
@@ -238,10 +238,7 @@ export class TimekeepRegistry extends Component {
 
 					const currentTime = moment();
 					const initialTimekeep = targetTimekeep.timekeep;
-					const updatedTimekeep = {
-						...initialTimekeep,
-						entries: stopRunningEntries(initialTimekeep.entries, currentTime),
-					};
+					const updatedTimekeep = stopTimekeep(initialTimekeep, currentTime);
 
 					return replaceTimekeepCodeblock(
 						updatedTimekeep,
@@ -262,10 +259,7 @@ export class TimekeepRegistry extends Component {
 
 					const currentTime = moment();
 					const initialTimekeep = loadResult.timekeep;
-					const updatedTimekeep = {
-						...initialTimekeep,
-						entries: stopRunningEntries(initialTimekeep.entries, currentTime),
-					};
+					const updatedTimekeep = stopTimekeep(initialTimekeep, currentTime);
 
 					const stripped = stripTimekeepRuntimeData(updatedTimekeep);
 					const serialized = JSON.stringify(stripped);

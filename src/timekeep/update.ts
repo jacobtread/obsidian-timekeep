@@ -1,6 +1,6 @@
 import type { Moment } from "moment";
 
-import { TimeEntry } from "@/timekeep/schema";
+import { TimeEntry, Timekeep } from "@/timekeep/schema";
 
 /**
  * Recursively updates a collection of entries, finding a possibly deeply nested
@@ -54,6 +54,20 @@ export function setEntryCollapsed(entry: TimeEntry, collapsed: boolean): TimeEnt
 	}
 
 	return newEntry;
+}
+
+/**
+ * Stops all running entries within the provided timekeep
+ *
+ * @param timekeep The input timekeep to stop
+ * @param currentTime Current time to use as the stop time
+ * @return The stopped timekeep
+ */
+export function stopTimekeep(timekeep: Timekeep, currentTime: Moment): Timekeep {
+	return {
+		...timekeep,
+		entries: stopRunningEntries(timekeep.entries, currentTime),
+	};
 }
 
 /**

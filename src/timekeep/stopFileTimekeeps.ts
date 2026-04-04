@@ -5,7 +5,7 @@ import type { Timekeep } from "@/timekeep/schema";
 
 import { replaceTimekeepCodeblock, extractTimekeepCodeblocksWithPosition } from "@/timekeep/parser";
 import { getRunningEntry } from "@/timekeep/queries";
-import { stopRunningEntries } from "@/timekeep/update";
+import { stopTimekeep } from "@/timekeep/update";
 
 /**
  * Stops all timekeeps in the provided file if there are any running.
@@ -52,10 +52,7 @@ export async function stopFileTimekeeps(vault: Vault, file: TFile, currentTime: 
 
 			const { timekeep, startLine, endLine } = timekeeps[index];
 
-			const stoppedTimekeep: Timekeep = {
-				...timekeep,
-				entries: stopRunningEntries(timekeep.entries, currentTime),
-			};
+			const stoppedTimekeep: Timekeep = stopTimekeep(timekeep, currentTime);
 
 			content = replaceTimekeepCodeblock(stoppedTimekeep, content, startLine, endLine);
 		}
