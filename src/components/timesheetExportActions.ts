@@ -52,19 +52,35 @@ export class TimesheetExportActions extends DomComponent {
 		this.wrapperEl = actionsEl;
 
 		const copyMarkdownButton = actionsEl.createEl("button", {
+			cls: "timekeep-export-button",
 			text: "Copy Markdown",
+			attr: {
+				"data-format": "markdown",
+			},
 		});
 
 		const copyCSVButton = actionsEl.createEl("button", {
+			cls: "timekeep-export-button",
 			text: "Copy CSV",
+			attr: {
+				"data-format": "csv",
+			},
 		});
 
 		const copyJSONButton = actionsEl.createEl("button", {
+			cls: "timekeep-export-button",
 			text: "Copy JSON",
+			attr: {
+				"data-format": "json",
+			},
 		});
 
 		const savePdfButton = actionsEl.createEl("button", {
+			cls: "timekeep-export-button",
 			text: "Save PDF",
+			attr: {
+				"data-format": "pdf",
+			},
 		});
 
 		this.registerDomEvent(copyMarkdownButton, "click", this.onCopyMarkdown.bind(this));
@@ -73,8 +89,7 @@ export class TimesheetExportActions extends DomComponent {
 		this.registerDomEvent(savePdfButton, "click", this.onSavePDF.bind(this));
 
 		const createCustomButtons = this.createCustomOutputFormatButtons.bind(this);
-		const unsubscribeCustomFormats = this.customOutputFormats.subscribe(createCustomButtons);
-		this.register(unsubscribeCustomFormats);
+		this.register(this.customOutputFormats.subscribe(createCustomButtons));
 		createCustomButtons();
 	}
 
@@ -94,9 +109,13 @@ export class TimesheetExportActions extends DomComponent {
 
 		const outputFormats = this.customOutputFormats.getState();
 
-		for (const outputFormat of Object.values(outputFormats)) {
+		for (const [key, outputFormat] of Object.entries(outputFormats)) {
 			const customFormatButton = this.wrapperEl.createEl("button", {
+				cls: ["timekeep-export-button", "timekeep-export-button__custom"],
 				text: outputFormat.getButtonLabel(),
+				attr: {
+					"data-custom-format": key,
+				},
 			});
 
 			this.registerDomEvent(customFormatButton, "click", () => {
@@ -111,33 +130,39 @@ export class TimesheetExportActions extends DomComponent {
 		}
 	}
 
-	onCopyMarkdown() {
+	async onCopyMarkdown() {
 		const timekeep = this.timekeep.getState();
 		const settings = this.settings.getState();
 
 		const currentTime = moment();
 		const output = createMarkdownTable(timekeep, settings, currentTime);
 
-		navigator.clipboard
-			.writeText(output)
-			.then(() => new Notice("Copied markdown to clipboard", 1500))
-			.catch((error) => console.error("Failed to copy export", error));
+		try {
+			await navigator.clipboard.writeText(output);
+			new Notice("Copied markdown to clipboard", 1500);
+		} catch (error) {
+			console.error("Failed to copy export", error);
+			new Notice("Failed to copy to clipboard", 1500);
+		}
 	}
 
-	onCopyCSV() {
+	async onCopyCSV() {
 		const timekeep = this.timekeep.getState();
 		const settings = this.settings.getState();
 
 		const currentTime = moment();
 		const output = createCSV(timekeep, settings, currentTime);
 
-		navigator.clipboard
-			.writeText(output)
-			.then(() => new Notice("Copied CSV to clipboard", 1500))
-			.catch((error) => console.error("Failed to copy export", error));
+		try {
+			await navigator.clipboard.writeText(output);
+			new Notice("Copied CSV to clipboard", 1500);
+		} catch (error) {
+			console.error("Failed to copy export", error);
+			new Notice("Failed to copy to clipboard", 1500);
+		}
 	}
 
-	onCopyJSON() {
+	async onCopyJSON() {
 		const timekeep = this.timekeep.getState();
 		const settings = this.settings.getState();
 
@@ -147,16 +172,24 @@ export class TimesheetExportActions extends DomComponent {
 			settings.formatCopiedJSON ? 4 : undefined
 		);
 
-		navigator.clipboard
-			.writeText(output)
-			.then(() => new Notice("Copied JSON to clipboard", 1500))
-			.catch((error) => console.error("Failed to copy export", error));
+		try {
+			await navigator.clipboard.writeText(output);
+			new Notice("Copied JSON to clipboard", 1500);
+		} catch (error) {
+			console.error("Failed to copy export", error);
+			new Notice("Failed to copy to clipboard", 1500);
+		}
 	}
 
-	onSavePDF() {
+	async onSavePDF() {
 		const timekeep = this.timekeep.getState();
 		const settings = this.settings.getState();
 
-		void exportPdf(this.app, timekeep, settings);
+		try {
+			await exportPdf(this.app, timekeep, settings);
+		} catch (error) {
+			console.error("Failed to export to PDF", error);
+			new Notice("Failed to export to PDF", 1500);
+		}
 	}
 }

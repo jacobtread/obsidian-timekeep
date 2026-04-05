@@ -52,6 +52,8 @@ export default defineConfig((env) => ({
 		alias: {
 			"@": path.resolve(__dirname, "src"),
 			obsidian: path.resolve(__dirname, "src", "__mocks__", "obsidianStub"),
+			electron: path.resolve(__dirname, "src", "__mocks__", "electronStub"),
+			pdfmake: "pdfmake/build/pdfmake",
 		},
 	},
 
@@ -59,7 +61,7 @@ export default defineConfig((env) => ({
 		setupFiles: path.resolve(__dirname, "src", "__mocks__", "setupObsidianMocks.ts"),
 		coverage: {
 			// Exclude mocks and fixtures from coverage
-			exclude: ["**/__mocks__/**", "**/__fixtures__/**"],
+			exclude: ["**/__mocks__/**", "**/__fixtures__/**", "*.ttf"],
 		},
 	},
 }));
