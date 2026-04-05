@@ -86,7 +86,7 @@ export class TimesheetNameInput extends DomComponent {
 	 * Renders the suggestion children within the suggestion container
 	 * for the current available suggestions
 	 */
-	renderSuggestions() {
+	private renderSuggestions() {
 		const suggestionsEl = this.#suggestionsEl;
 		if (!suggestionsEl) return;
 

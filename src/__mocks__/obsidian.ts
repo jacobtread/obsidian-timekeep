@@ -456,6 +456,10 @@ export function setObsidianMockElementHelpers(node: Node) {
 		node.appendChild(new Text(value));
 	});
 
+	(node as Element).setText = vi.fn((value: string) => {
+		node.textContent = value;
+	});
+
 	(node as ChildNode).remove = vi.fn().mockImplementation(() => {
 		const parent = node.parentNode;
 		if (parent) {
