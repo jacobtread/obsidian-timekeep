@@ -5,7 +5,7 @@ export class FileNamePromptModal extends Modal {
 	callback: (name: string | null) => void;
 
 	// Whether the user picked a option
-	picked: boolean;
+	picked: boolean = false;
 
 	constructor(app: App, callback: (name: string | null) => void) {
 		super(app);
@@ -37,15 +37,15 @@ export class FileNamePromptModal extends Modal {
 					.onClick(() => {
 						const name = nameInputEl.value;
 						this.picked = true;
-						this.close();
 						this.callback(name);
+						this.close();
 					})
 			)
 			.addButton((btn) =>
 				btn.setButtonText("Cancel").onClick(() => {
 					this.picked = true;
-					this.close();
 					this.callback(null);
+					this.close();
 				})
 			);
 	}

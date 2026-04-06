@@ -420,13 +420,18 @@ export class MockModal implements CloseableComponent {
 		this.containerEl = createMockContainer();
 		this.modalEl = this.containerEl.createDiv();
 		this.titleEl = this.modalEl.createSpan();
-		this.contentEl = this.modalEl.createSpan();
+		this.contentEl = this.modalEl.createDiv({ cls: "mock-modal-content" });
 
 		this.open = vi.fn(() => {
+			document.body.appendChild(this.containerEl);
 			void this.onOpen();
 		});
 
 		this.close = vi.fn(() => {
+			if (document.body.contains(this.containerEl)) {
+				document.body.removeChild(this.containerEl);
+			}
+
 			this.onClose();
 			if (this.closeCallback) this.closeCallback();
 		});
