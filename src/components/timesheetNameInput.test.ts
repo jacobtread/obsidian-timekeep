@@ -21,6 +21,7 @@ describe("TimesheetNameInput", () => {
 	let registry: TimekeepRegistry;
 	let autocomplete: TimekeepAutocomplete;
 	let debounced: Mock<typeof debounceUtil.debounced>;
+	let component: TimesheetNameInput;
 
 	beforeEach(() => {
 		vi.clearAllMocks();
@@ -40,16 +41,15 @@ describe("TimesheetNameInput", () => {
 					callback(...args);
 				};
 			});
+
+		component = new TimesheetNameInput(containerEl, autocomplete);
 	});
 
 	it("should load without error", () => {
-		const component = new TimesheetNameInput(containerEl, autocomplete);
 		expect(() => component.load()).not.toThrow();
 	});
 
 	it("typing should not render suggestions when there is no data", () => {
-		const component = new TimesheetNameInput(containerEl, autocomplete);
-
 		const onDebouncedChange = vi.spyOn(component, "onDebouncedChange");
 		const setSuggestionFocus = vi.spyOn(component, "setSuggestionFocus");
 
@@ -74,14 +74,9 @@ describe("TimesheetNameInput", () => {
 	});
 
 	it("typing should render suggestions after a debounce", () => {
-		const component = new TimesheetNameInput(containerEl, autocomplete);
+		autocomplete.names.setState(["Test", "Test 2"]);
 
-		const getFilteredSuggestions = vi
-			.spyOn(component, "getFilteredSuggestions")
-			.mockReturnValueOnce([
-				{ item: "Test", refIndex: 0 },
-				{ item: "Test 2", refIndex: 1 },
-			]);
+		const getFilteredSuggestions = vi.spyOn(component, "getFilteredSuggestions");
 		const onDebouncedChange = vi.spyOn(component, "onDebouncedChange");
 		const setSuggestionFocus = vi.spyOn(component, "setSuggestionFocus");
 
@@ -101,12 +96,42 @@ describe("TimesheetNameInput", () => {
 		// Selection focus should reset to the first suggestion
 		expect(setSuggestionFocus).toHaveBeenLastCalledWith(0);
 
-		// Suggestions should stay empty
+		// Suggestions should contain both items
 		const suggestions = containerEl.querySelectorAll(".timekeep-suggestion");
 		expect(suggestions.length).toBe(2);
 	});
 
-	it("suggestions should be filtered based on the input value", () => {});
+	it("suggestions should be filtered based on the input value", () => {
+		autocomplete.names.setState(["Test", "Other"]);
+
+		const getFilteredSuggestions = vi.spyOn(component, "getFilteredSuggestions");
+		const onDebouncedChange = vi.spyOn(component, "onDebouncedChange");
+		const setSuggestionFocus = vi.spyOn(component, "setSuggestionFocus");
+
+		component.load();
+
+		const inputEl = containerEl.querySelector(".timekeep-name")! as HTMLInputElement;
+		expect(inputEl).not.toBeNull();
+
+		inputEl.value = "Test";
+		inputEl.dispatchEvent(new Event("input", { bubbles: true }));
+
+		// Debounced change should occur
+		expect(debounced).toHaveBeenCalledOnce();
+		expect(onDebouncedChange).toHaveBeenCalledOnce();
+		expect(getFilteredSuggestions).toHaveBeenCalledOnce();
+
+		// Selection focus should reset to the first suggestion
+		expect(setSuggestionFocus).toHaveBeenLastCalledWith(0);
+
+		// Suggestions should contain just the matching item
+		const suggestions = containerEl.querySelectorAll(".timekeep-suggestion");
+		expect(suggestions.length).toBe(1);
+
+		// Item should match
+		const suggestion = suggestions.item(0);
+		expect(suggestion.textContent).toBe("Test");
+	});
 
 	it("suggestion text should be highlighted based on the matched text", () => {});
 
@@ -118,13 +143,167 @@ describe("TimesheetNameInput", () => {
 
 	it("should be able to reset the input value", () => {});
 
-	it("arrow keys should be able to change the focused suggestion", () => {});
+	it("down arrow should be able to move the focused suggestion down", () => {
+		autocomplete.names.setState(["Test", "Test 1"]);
 
-	it("enter should select the focused suggestion", () => {});
+		const onKeyDown = vi.spyOn(component, "onKeyDown");
+		const onSelectSuggestion = vi.spyOn(component, "onSelectSuggestion");
 
-	it("escape should close the suggestions", () => {});
+		component.load();
 
-	it("clicking or touching outside the input container should close suggestions", () => {});
+		const inputEl = containerEl.querySelector(".timekeep-name")! as HTMLInputElement;
+		expect(inputEl).not.toBeNull();
+
+		inputEl.value = "Test";
+		inputEl.focus();
+		inputEl.dispatchEvent(new Event("focus", { bubbles: true }));
+		inputEl.dispatchEvent(new Event("input", { bubbles: true }));
+		inputEl.dispatchEvent(
+			new KeyboardEvent("keydown", { bubbles: true, cancelable: true, key: "ArrowDown" })
+		);
+		inputEl.dispatchEvent(
+			new KeyboardEvent("keydown", { bubbles: true, cancelable: true, key: "Enter" })
+		);
+
+		expect(onKeyDown).toHaveBeenCalledTimes(2);
+		expect(onSelectSuggestion).toHaveBeenLastCalledWith("Test 1");
+	});
+
+	it("up arrow should be able to move the focused suggestion up", () => {
+		autocomplete.names.setState(["Test", "Test 1"]);
+
+		const onKeyDown = vi.spyOn(component, "onKeyDown");
+		const onSelectSuggestion = vi.spyOn(component, "onSelectSuggestion");
+
+		component.load();
+
+		const inputEl = containerEl.querySelector(".timekeep-name")! as HTMLInputElement;
+		expect(inputEl).not.toBeNull();
+
+		inputEl.value = "Test";
+		inputEl.focus();
+		inputEl.dispatchEvent(new Event("input", { bubbles: true }));
+		inputEl.dispatchEvent(
+			new KeyboardEvent("keydown", { bubbles: true, cancelable: true, key: "ArrowDown" })
+		);
+		inputEl.dispatchEvent(
+			new KeyboardEvent("keydown", { bubbles: true, cancelable: true, key: "ArrowUp" })
+		);
+		inputEl.dispatchEvent(
+			new KeyboardEvent("keydown", { bubbles: true, cancelable: true, key: "Enter" })
+		);
+
+		expect(onKeyDown).toHaveBeenCalledTimes(3);
+		expect(onSelectSuggestion).toHaveBeenLastCalledWith("Test");
+	});
+
+	it("enter should select the focused suggestion", () => {
+		autocomplete.names.setState(["Test", "Other"]);
+
+		const onKeyDown = vi.spyOn(component, "onKeyDown");
+		const onSelectSuggestion = vi.spyOn(component, "onSelectSuggestion");
+
+		component.load();
+
+		const inputEl = containerEl.querySelector(".timekeep-name")! as HTMLInputElement;
+		expect(inputEl).not.toBeNull();
+
+		inputEl.value = "Test";
+		inputEl.focus();
+		inputEl.dispatchEvent(new Event("input", { bubbles: true }));
+		inputEl.dispatchEvent(
+			new KeyboardEvent("keydown", { bubbles: true, cancelable: true, key: "Enter" })
+		);
+
+		expect(onKeyDown).toHaveBeenCalledOnce();
+		expect(onSelectSuggestion).toHaveBeenLastCalledWith("Test");
+	});
+
+	it("escape should close the suggestions", () => {
+		autocomplete.names.setState(["Test", "Other"]);
+
+		const onKeyDown = vi.spyOn(component, "onKeyDown");
+		const setSuggestionsOpen = vi.spyOn(component, "setSuggestionsOpen");
+
+		component.load();
+
+		const inputEl = containerEl.querySelector(".timekeep-name")! as HTMLInputElement;
+		expect(inputEl).not.toBeNull();
+
+		inputEl.value = "Test";
+		inputEl.focus();
+
+		inputEl.dispatchEvent(
+			new KeyboardEvent("keydown", { bubbles: true, cancelable: true, key: "Escape" })
+		);
+
+		expect(onKeyDown).toHaveBeenCalledOnce();
+		expect(setSuggestionsOpen).toHaveBeenLastCalledWith(false);
+	});
+
+	it("other keys should be ignored", () => {
+		autocomplete.names.setState(["Test", "Other"]);
+
+		const onKeyDown = vi.spyOn(component, "onKeyDown");
+
+		component.load();
+
+		const inputEl = containerEl.querySelector(".timekeep-name")! as HTMLInputElement;
+		expect(inputEl).not.toBeNull();
+
+		inputEl.value = "Test";
+		inputEl.focus();
+		inputEl.dispatchEvent(new Event("input", { bubbles: true }));
+		inputEl.dispatchEvent(
+			new KeyboardEvent("keydown", { bubbles: true, cancelable: true, key: "W" })
+		);
+
+		expect(onKeyDown).toHaveBeenCalledOnce();
+	});
+
+	it("clicking outside the input container should close suggestions", () => {
+		const component = new TimesheetNameInput(containerEl, autocomplete);
+
+		autocomplete.names.setState(["Test", "Other"]);
+
+		const onClickOutside = vi.spyOn(component, "onClickOutside");
+		const setSuggestionsOpen = vi.spyOn(component, "setSuggestionsOpen");
+
+		component.load();
+
+		const inputEl = containerEl.querySelector(".timekeep-name")! as HTMLInputElement;
+		expect(inputEl).not.toBeNull();
+
+		inputEl.value = "Test";
+		inputEl.focus();
+
+		document.dispatchEvent(new MouseEvent("mousedown", { bubbles: true }));
+
+		expect(onClickOutside).toHaveBeenCalledOnce();
+		expect(setSuggestionsOpen).toHaveBeenLastCalledWith(false);
+	});
+
+	it("touching outside the input container should close suggestions", () => {
+		const component = new TimesheetNameInput(containerEl, autocomplete);
+
+		autocomplete.names.setState(["Test", "Other"]);
+
+		const onClickOutside = vi.spyOn(component, "onClickOutside");
+		const setSuggestionsOpen = vi.spyOn(component, "setSuggestionsOpen");
+
+		component.load();
+
+		const inputEl = containerEl.querySelector(".timekeep-name")! as HTMLInputElement;
+		expect(inputEl).not.toBeNull();
+
+		inputEl.value = "Test";
+		inputEl.focus();
+
+		document.dispatchEvent(new MouseEvent("touchstart", { bubbles: true }));
+
+		expect(onClickOutside).toHaveBeenCalledOnce();
+		expect(setSuggestionsOpen).toHaveBeenLastCalledWith(false);
+	});
 
 	it("nil selection should be reflected by the element attributes", () => {});
 
