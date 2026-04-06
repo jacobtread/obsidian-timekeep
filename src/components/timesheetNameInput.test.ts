@@ -133,15 +133,89 @@ describe("TimesheetNameInput", () => {
 		expect(suggestion.textContent).toBe("Test");
 	});
 
-	it("suggestion text should be highlighted based on the matched text", () => {});
+	it("suggestion text should be highlighted based on the matched text", () => {
+		autocomplete.names.setState([
+			"Test",
+			"Before Test After",
+			"Before Test",
+			"Test After",
+			"Test After Test",
+		]);
+		component.load();
+
+		const inputEl = containerEl.querySelector(".timekeep-name")! as HTMLInputElement;
+		expect(inputEl).not.toBeNull();
+
+		inputEl.focus();
+
+		inputEl.value = "Test";
+		inputEl.dispatchEvent(new Event("input", { bubbles: true }));
+
+		// Suggestions should contain just the matching item
+		const suggestions = containerEl.querySelectorAll(".timekeep-suggestion");
+		expect(suggestions.length).toBe(5);
+
+		for (let i = 0; i < suggestions.length; i++) {
+			const suggestion = suggestions.item(i);
+
+			switch (suggestion.textContent) {
+				case "Test":
+					expect(suggestion.innerHTML).toBe("<mark>Test</mark>");
+					break;
+				case "Before Test After":
+					expect(suggestion.innerHTML).toBe(
+						"Before <mark>Test</mark> Af<mark>te</mark>r"
+					);
+					break;
+				case "Before Test":
+					expect(suggestion.innerHTML).toBe("Before <mark>Test</mark>");
+					break;
+				case "Test After":
+					expect(suggestion.innerHTML).toBe("<mark>Test</mark> Af<mark>te</mark>r");
+					break;
+				case "Test After Test":
+					expect(suggestion.innerHTML).toBe(
+						"<mark>Test</mark> Af<mark>te</mark>r <mark>Test</mark>"
+					);
+					break;
+				default:
+					throw new Error("unexpected text content");
+			}
+		}
+	});
 
 	it("focusing the input should do nothing if theres no suggestions", () => {});
 
 	it("focusing the input should show the suggestions box if there are suggestions", () => {});
 
-	it("should be able to retrieve the input value", () => {});
+	it("should be able to retrieve the input value", () => {
+		autocomplete.names.setState(["Test", "Test 1"]);
+		component.load();
 
-	it("should be able to reset the input value", () => {});
+		const inputEl = containerEl.querySelector(".timekeep-name")! as HTMLInputElement;
+		expect(inputEl).not.toBeNull();
+
+		inputEl.value = "Test";
+
+		expect(component.getValue()).toBe("Test");
+	});
+
+	it("should be able to reset the input value", () => {
+		autocomplete.names.setState(["Test", "Test 1"]);
+		component.load();
+
+		const inputEl = containerEl.querySelector(".timekeep-name")! as HTMLInputElement;
+		expect(inputEl).not.toBeNull();
+
+		inputEl.value = "Test";
+
+		expect(component.getValue()).toBe("Test");
+
+		component.resetValue();
+
+		expect(component.getValue()).toBe("");
+		expect(inputEl.value).toBe("");
+	});
 
 	it("down arrow should be able to move the focused suggestion down", () => {
 		autocomplete.names.setState(["Test", "Test 1"]);
@@ -311,9 +385,78 @@ describe("TimesheetNameInput", () => {
 
 	it("selecting a suggestion should close the suggestions", () => {});
 
-	it("clicking a suggestion should select it and close the suggestions", () => {});
+	it("clicking a suggestion should select it and close the suggestions", () => {
+		autocomplete.names.setState([
+			"Test",
+			"Before Test After",
+			"Before Test",
+			"Test After",
+			"Test After Test",
+		]);
 
-	it("should render nothing if the suggestions container is missing", () => {});
+		const onSelectSuggestion = vi.spyOn(component, "onSelectSuggestion");
+		component.load();
+
+		const inputEl = containerEl.querySelector(".timekeep-name")! as HTMLInputElement;
+		expect(inputEl).not.toBeNull();
+
+		inputEl.focus();
+
+		inputEl.value = "Test";
+		inputEl.dispatchEvent(new Event("input", { bubbles: true }));
+
+		const suggestions = containerEl.querySelectorAll(".timekeep-suggestion");
+		expect(suggestions.length).toBe(5);
+
+		const suggestion = suggestions.item(0);
+		suggestion.dispatchEvent(new MouseEvent("mousedown", { bubbles: true, cancelable: true }));
+
+		expect(onSelectSuggestion).toHaveBeenCalledWith("Test");
+	});
+
+	it("clicking events should be ignored when outside a suggestion", () => {
+		autocomplete.names.setState([
+			"Test",
+			"Before Test After",
+			"Before Test",
+			"Test After",
+			"Test After Test",
+		]);
+
+		const onSelectSuggestion = vi.spyOn(component, "onSelectSuggestion");
+		component.load();
+
+		const inputEl = containerEl.querySelector(".timekeep-name")! as HTMLInputElement;
+		expect(inputEl).not.toBeNull();
+
+		inputEl.focus();
+
+		inputEl.value = "Test";
+		inputEl.dispatchEvent(new Event("input", { bubbles: true }));
+
+		const suggestions = containerEl.querySelector(".timekeep-suggestions");
+		expect(suggestions).not.toBeNull();
+		suggestions!.dispatchEvent(
+			new MouseEvent("mousedown", { bubbles: true, cancelable: true })
+		);
+
+		expect(onSelectSuggestion).not.toHaveBeenCalled();
+	});
+
+	it("should render nothing if the suggestions container is missing", () => {
+		autocomplete.names.setState([
+			"Test",
+			"Before Test After",
+			"Before Test",
+			"Test After",
+			"Test After Test",
+		]);
+
+		component.renderSuggestions();
+
+		const suggestions = containerEl.querySelectorAll(".timekeep-suggestion");
+		expect(suggestions.length).toBe(0);
+	});
 
 	it("should not render suggestions when theres none", () => {});
 });

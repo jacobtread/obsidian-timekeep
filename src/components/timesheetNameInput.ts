@@ -76,6 +76,8 @@ export class TimesheetNameInput extends DomComponent {
 		const fuse = new Fuse(suggestions, {
 			includeMatches: true,
 			shouldSort: true,
+			ignoreLocation: true,
+			minMatchCharLength: 2,
 		});
 		const results = fuse.search(value);
 
@@ -86,7 +88,7 @@ export class TimesheetNameInput extends DomComponent {
 	 * Renders the suggestion children within the suggestion container
 	 * for the current available suggestions
 	 */
-	private renderSuggestions() {
+	renderSuggestions() {
 		const suggestionsEl = this.#suggestionsEl;
 		if (!suggestionsEl) return;
 
@@ -104,9 +106,10 @@ export class TimesheetNameInput extends DomComponent {
 			suggestionEl.setAttribute("aria-selected", "false");
 			suggestionEl.setAttribute("value", suggestion);
 
+			let lastIndex = 0;
+
 			if (result.matches && result.matches.length > 0) {
 				const match = result.matches[0];
-				let lastIndex = 0;
 
 				for (const [start, end] of match.indices) {
 					if (start > lastIndex) {
@@ -117,12 +120,10 @@ export class TimesheetNameInput extends DomComponent {
 					suggestionEl.createEl("mark", { text });
 					lastIndex = end + 1;
 				}
+			}
 
-				if (lastIndex < suggestion.length) {
-					suggestionEl.appendText(suggestion.slice(lastIndex));
-				}
-			} else {
-				suggestionEl.setText(suggestion);
+			if (lastIndex < suggestion.length) {
+				suggestionEl.appendText(suggestion.slice(lastIndex));
 			}
 		}
 	}
@@ -166,8 +167,7 @@ export class TimesheetNameInput extends DomComponent {
 	 */
 	onClickOutside(event: MouseEvent | TouchEvent) {
 		if (
-			!event.target ||
-			!(event.target instanceof HTMLElement) ||
+			!(event.target instanceof Node) ||
 			(this.wrapperEl && !this.wrapperEl.contains(event.target))
 		) {
 			this.setSuggestionsOpen(false);
