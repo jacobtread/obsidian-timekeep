@@ -56,8 +56,8 @@ export class TimesheetNameInput extends DomComponent {
 		this.registerDomEvent(inputEl, "focus", this.onFocus.bind(this));
 		this.registerDomEvent(inputEl, "keydown", this.onKeyDown.bind(this));
 
-		this.registerDomEvent(wrapperEl, "mousedown", this.onClickOutside.bind(this));
-		this.registerDomEvent(wrapperEl, "touchstart", this.onClickOutside.bind(this), {
+		this.registerDomEvent(document, "mousedown", this.onClickOutside.bind(this));
+		this.registerDomEvent(document, "touchstart", this.onClickOutside.bind(this), {
 			passive: true,
 		});
 
@@ -166,10 +166,9 @@ export class TimesheetNameInput extends DomComponent {
 	 */
 	onClickOutside(event: MouseEvent | TouchEvent) {
 		if (
-			event.target &&
-			event.target instanceof HTMLElement &&
-			this.wrapperEl &&
-			!this.wrapperEl.contains(event.target)
+			!event.target ||
+			!(event.target instanceof HTMLElement) ||
+			(this.wrapperEl && !this.wrapperEl.contains(event.target))
 		) {
 			this.setSuggestionsOpen(false);
 		}
