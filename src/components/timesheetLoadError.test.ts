@@ -18,7 +18,7 @@ describe("TimesheetLoadError", () => {
 	});
 
 	it("should render the error message inside a wrapper on load", () => {
-		component.onload();
+		component.load();
 		expect(container.children.length).toBe(1);
 
 		const wrapper = container.children[0] as HTMLElement;
@@ -30,7 +30,7 @@ describe("TimesheetLoadError", () => {
 	});
 
 	it("should remove wrapper on unload", () => {
-		component.onload();
+		component.load();
 
 		expect(container.children.length).toBe(1);
 
