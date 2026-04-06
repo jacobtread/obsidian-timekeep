@@ -1,13 +1,17 @@
 import type {
+	ButtonComponent,
 	App,
 	Component,
 	EventRef,
 	FileStats,
+	IconName,
 	Scope,
 	TAbstractFile,
 	TFile,
 	TFolder,
+	TooltipOptions,
 	Vault,
+	CloseableComponent,
 } from "obsidian";
 
 import { Mock, vi } from "vitest";
@@ -317,67 +321,142 @@ export class MockComponent {
 	}
 }
 
-export const MockModal = vi.fn(
-	class {
-		app: App;
+abstract class MockBaseComponent {
+	disabled: boolean;
 
-		scope = {} as Scope;
-
-		containerEl: HTMLElement;
-		modalEl: HTMLElement;
-		titleEl: HTMLElement;
-		contentEl: HTMLElement;
-		shouldRestoreSelection: boolean = false;
-
-		open: Mock<() => void>;
-		close: Mock<() => void>;
-
-		closeCallback: undefined | (() => any);
-
-		constructor(app: App) {
-			this.app = app;
-
-			this.containerEl = createMockContainer();
-			this.modalEl = this.containerEl.createDiv();
-			this.titleEl = this.modalEl.createSpan();
-			this.contentEl = this.modalEl.createSpan();
-
-			this.open = vi.fn(() => {
-				void this.onOpen();
-			});
-
-			this.close = vi.fn(() => {
-				this.onClose();
-				if (this.closeCallback) this.closeCallback();
-			});
-		}
-
-		onOpen(): Promise<void> | void {}
-
-		onClose() {}
-
-		setTitle(title: string) {
-			this.titleEl.innerText = title;
-			return this;
-		}
-
-		setContent(content: string | DocumentFragment) {
-			this.contentEl.empty();
-			if (content instanceof DocumentFragment) {
-				this.contentEl.appendChild(content);
-			} else {
-				this.contentEl.appendText(content);
-			}
-
-			return this;
-		}
-
-		setCloseCallback(callback: () => any) {
-			this.closeCallback = callback;
-			return this;
-		}
+	// oxlint-disable-next-line unicorn/no-thenable
+	then(_cb: (component: this) => any): this {
+		return this;
 	}
-);
+
+	setDisabled(_disabled: boolean): this {
+		return this;
+	}
+}
+
+export class MockButtonComponent extends MockBaseComponent {
+	buttonEl: HTMLButtonElement;
+
+	constructor(containerEl: HTMLElement) {
+		super();
+		this.buttonEl = containerEl.createEl("button");
+	}
+
+	setDisabled(disabled: boolean) {
+		super.setDisabled(true);
+		this.buttonEl.disabled = disabled;
+		return this;
+	}
+
+	setCta(): this {
+		return this;
+	}
+
+	removeCta(): this {
+		return this;
+	}
+
+	setWarning(): this {
+		return this;
+	}
+
+	setTooltip(_tooltip: string, _options?: TooltipOptions): this {
+		return this;
+	}
+
+	setButtonText(name: string): this {
+		this.buttonEl.textContent = name;
+		return this;
+	}
+
+	setIcon(_icon: IconName): this {
+		return this;
+	}
+
+	setClass(cls: string): this {
+		this.buttonEl.className = cls;
+		return this;
+	}
+
+	onClick(callback: (evt: MouseEvent) => unknown): this {
+		this.buttonEl.onclick = callback;
+		return this;
+	}
+}
+
+export class MockSetting {
+	containerEl: HTMLElement;
+
+	constructor(containerEl: HTMLElement) {
+		this.containerEl = containerEl;
+	}
+
+	addButton(cb: (component: ButtonComponent) => any): this {
+		const component = new MockButtonComponent(this.containerEl);
+		cb(component);
+		return this;
+	}
+}
+
+export class MockModal implements CloseableComponent {
+	app: App;
+
+	scope = {} as Scope;
+
+	containerEl: HTMLElement;
+	modalEl: HTMLElement;
+	titleEl: HTMLElement;
+	contentEl: HTMLElement;
+	shouldRestoreSelection: boolean = false;
+
+	open: Mock<() => void>;
+	close: Mock<() => void>;
+
+	closeCallback: undefined | (() => any);
+
+	constructor(app: App) {
+		this.app = app;
+
+		this.containerEl = createMockContainer();
+		this.modalEl = this.containerEl.createDiv();
+		this.titleEl = this.modalEl.createSpan();
+		this.contentEl = this.modalEl.createSpan();
+
+		this.open = vi.fn(() => {
+			void this.onOpen();
+		});
+
+		this.close = vi.fn(() => {
+			this.onClose();
+			if (this.closeCallback) this.closeCallback();
+		});
+	}
+
+	onOpen(): Promise<void> | void {}
+
+	onClose() {}
+
+	setTitle(title: string) {
+		this.titleEl.innerText = title;
+		return this;
+	}
+
+	setContent(content: string | DocumentFragment) {
+		this.contentEl.empty();
+		if (content instanceof DocumentFragment) {
+			this.contentEl.appendChild(content);
+		} else {
+			this.contentEl.appendText(content);
+		}
+
+		return this;
+	}
+
+	setCloseCallback(callback: () => any) {
+		this.closeCallback = callback;
+		return this;
+	}
+}
 
 export const MockNotice = vi.fn(
 	class {
