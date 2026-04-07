@@ -183,6 +183,44 @@ describe("TimesheetNameInput", () => {
 			}
 		}
 	});
+	it("suggestion text should be not be highlighted if matches are missing", () => {
+		const getFilteredSuggestions = vi
+			.spyOn(component, "getFilteredSuggestions")
+			.mockReturnValue([
+				{ item: "Test", refIndex: 0 },
+				{ item: "Before Test After", refIndex: 1 },
+			]);
+		component.load();
+
+		const inputEl = containerEl.querySelector(".timekeep-name")! as HTMLInputElement;
+		expect(inputEl).not.toBeNull();
+
+		inputEl.focus();
+
+		inputEl.value = "Test";
+		inputEl.dispatchEvent(new Event("input", { bubbles: true }));
+
+		// Suggestions should contain just the matching item
+		const suggestions = containerEl.querySelectorAll(".timekeep-suggestion");
+		expect(suggestions.length).toBe(2);
+		expect(getFilteredSuggestions).toHaveBeenCalled();
+
+		for (let i = 0; i < suggestions.length; i++) {
+			const suggestion = suggestions.item(i);
+
+			switch (suggestion.textContent) {
+				case "Test":
+					expect(suggestion.innerHTML).toBe("Test");
+					break;
+				case "Before Test After":
+					expect(suggestion.innerHTML).toBe("Before Test After");
+					break;
+
+				default:
+					throw new Error("unexpected text content");
+			}
+		}
+	});
 
 	it("focusing the input should do nothing if theres no suggestions", () => {});
 
