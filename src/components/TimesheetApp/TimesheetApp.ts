@@ -75,8 +75,8 @@ export class TimesheetApp extends DomComponent {
 		);
 
 		this.addChild(counters);
-		this.addChild(startForm);
 		this.addChild(runningEntry);
+		this.addChild(startForm);
 		this.addChild(table);
 		this.addChild(exportActions);
 	}
