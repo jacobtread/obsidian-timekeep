@@ -1,18 +1,22 @@
-import type { App, TFile } from "obsidian";
+import type { App } from "obsidian";
 
 import { SuggestModal } from "obsidian";
 
 import type { TimekeepSettings } from "@/settings";
 import type { Store } from "@/store";
-import type { Timekeep, TimeEntry } from "@/timekeep/schema";
+import type { TimeEntry } from "@/timekeep/schema";
 
-import { TimekeepEntryItemType, TimekeepRegistry, TimekeepRegistryEntry } from "@/service/registry";
+import {
+	TimekeepEntryItemType,
+	TimekeepRegistry,
+	TimekeepRegistryEntry,
+	TimekeepRegistryItemRef,
+} from "@/service/registry";
 import { getRunningEntry } from "@/timekeep/queries";
 
 interface TimekeepResult {
-	timekeep: Timekeep;
+	ref: TimekeepRegistryItemRef;
 	running: TimeEntry;
-	file: TFile;
 }
 
 export class TimekeepLocatorModal extends SuggestModal<TimekeepResult> {
@@ -49,18 +53,18 @@ export class TimekeepLocatorModal extends SuggestModal<TimekeepResult> {
 		return this.results.filter((result) => {
 			return (
 				result.running.name.toLowerCase().contains(queryLower) ||
-				result.file.path.toLowerCase().contains(queryLower)
+				result.ref.file.path.toLowerCase().contains(queryLower)
 			);
 		});
 	}
 
 	renderSuggestion(value: TimekeepResult, el: HTMLElement) {
 		el.createEl("div", { text: value.running.name });
-		el.createEl("small", { text: value.file.path });
+		el.createEl("small", { text: value.ref.file.path });
 	}
 
-	onChooseSuggestion(item: TimekeepResult, _evt: MouseEvent | KeyboardEvent) {
-		void this.app.workspace.getLeaf().openFile(item.file);
+	async onChooseSuggestion(item: TimekeepResult, _evt: MouseEvent | KeyboardEvent) {
+		await TimekeepRegistry.openItemRef(this.app.workspace, item.ref);
 	}
 
 	static getResultsFromEntries(entries: TimekeepRegistryEntry[]): TimekeepResult[] {
@@ -71,7 +75,13 @@ export class TimekeepLocatorModal extends SuggestModal<TimekeepResult> {
 					const timekeep = entry.timekeep;
 					const running = getRunningEntry(timekeep.entries);
 					if (running !== null) {
-						results.push({ file: entry.file, running: running, timekeep });
+						results.push({
+							running: running,
+							ref: {
+								type: entry.type,
+								file: entry.file,
+							},
+						});
 					}
 					break;
 				}
@@ -80,7 +90,14 @@ export class TimekeepLocatorModal extends SuggestModal<TimekeepResult> {
 						const timekeep = timekeepWithPosition.timekeep;
 						const running = getRunningEntry(timekeep.entries);
 						if (running !== null) {
-							results.push({ file: entry.file, running: running, timekeep });
+							results.push({
+								running: running,
+								ref: {
+									type: entry.type,
+									file: entry.file,
+									position: timekeepWithPosition,
+								},
+							});
 						}
 					}
 

@@ -3,6 +3,7 @@ import { afterEach, vi } from "vitest";
 import {
 	MockButtonComponent,
 	MockComponent,
+	MockMarkdownView,
 	MockModal,
 	MockNotice,
 	MockSetting,
@@ -34,5 +35,6 @@ vi.mock("obsidian", () => {
 		}),
 		Setting: MockSetting,
 		ButtonComponent: MockButtonComponent,
+		MarkdownView: MockMarkdownView,
 	};
 });

@@ -1,14 +1,21 @@
+import type { Workspace } from "obsidian";
+
 import moment from "moment";
 import { v4 } from "uuid";
 import { describe, vi, it, expect } from "vitest";
 
-import { MockVault } from "@/__mocks__/obsidian";
+import { MockMarkdownView, MockVault } from "@/__mocks__/obsidian";
 import { defaultSettings } from "@/settings";
 import { createStore } from "@/store";
 import { stripTimekeepRuntimeData, Timekeep } from "@/timekeep/schema";
 import { createCodeBlock } from "@/utils/codeblock";
 
-import { TimekeepEntryItemType, TimekeepRegistry, TimekeepRegistryEntryMarkdown } from "./registry";
+import {
+	TimekeepEntryItemType,
+	TimekeepRegistry,
+	TimekeepRegistryEntryMarkdown,
+	TimekeepRegistryItemRef,
+} from "./registry";
 
 describe("TimekeepRegistry", () => {
 	describe("getFileRegistryEntry", () => {
@@ -639,6 +646,65 @@ describe("TimekeepRegistry", () => {
 			await registry.waitTasks();
 
 			expect(spy).toHaveBeenCalled();
+		});
+	});
+
+	describe("openItemRef", () => {
+		it("should attempt to open the file", async () => {
+			const vault = new MockVault();
+			const testFile = vault.addFile("test.md", "");
+			const ref: TimekeepRegistryItemRef = {
+				file: testFile,
+				type: TimekeepEntryItemType.FILE,
+			};
+
+			const openFile = vi.fn().mockResolvedValue(undefined);
+
+			const workspace = {
+				getLeaf() {
+					const view = new MockMarkdownView();
+					(view as any).openFile = openFile;
+					return view;
+				},
+			} as any as Workspace;
+
+			await TimekeepRegistry.openItemRef(workspace, ref);
+
+			expect(openFile).toHaveBeenCalled();
+		});
+
+		it("opening a markdown entry should scroll to the specific timekeep position", async () => {
+			const vault = new MockVault();
+			const testFile = vault.addFile("test.md", "");
+			const ref: TimekeepRegistryItemRef = {
+				file: testFile,
+				type: TimekeepEntryItemType.MARKDOWN,
+				position: { startLine: 1, endLine: 2 },
+			};
+
+			const openFile = vi.fn().mockResolvedValue(undefined);
+
+			const view = new MockMarkdownView();
+
+			const workspace = {
+				getLeaf() {
+					return { view, openFile };
+				},
+			} as any as Workspace;
+
+			await TimekeepRegistry.openItemRef(workspace, ref);
+			expect(openFile).toHaveBeenCalled();
+
+			const line = ref.position.startLine;
+
+			expect(view.editor.setCursor).toHaveBeenCalledExactlyOnceWith({
+				line: line - 1,
+				ch: 0,
+			});
+			expect(view.editor.scrollIntoView).toHaveBeenCalledExactlyOnceWith(
+				{ from: { line, ch: 0 }, to: { line, ch: 0 } },
+				true
+			);
 		});
 	});
 });

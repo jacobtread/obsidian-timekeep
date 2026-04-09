@@ -1,4 +1,5 @@
-import { App, Component, MarkdownView } from "obsidian";
+import { type App } from "obsidian";
+import { Component } from "obsidian";
 
 import {
 	TimekeepEntryItemType,
@@ -117,18 +118,6 @@ export class TimesheetStatusBar extends Component {
 	}
 
 	async onOpen(ref: TimekeepRegistryItemRef) {
-		const leaf = this.app.workspace.getLeaf();
-		await leaf.openFile(ref.file);
-
-		const view = leaf.view;
-
-		if (view instanceof MarkdownView && ref.type === TimekeepEntryItemType.MARKDOWN) {
-			const editor = view.editor;
-			const line = ref.position.startLine;
-
-			// Focus the line we opened to
-			editor.setCursor({ line: Math.max(line - 1, 0), ch: 0 });
-			editor.scrollIntoView({ from: { line, ch: 0 }, to: { line, ch: 0 } }, true);
-		}
+		await TimekeepRegistry.openItemRef(this.app.workspace, ref);
 	}
 }

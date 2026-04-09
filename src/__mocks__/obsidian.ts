@@ -495,6 +495,13 @@ export const MockNotice = vi.fn(
 	}
 );
 
+export class MockMarkdownView {
+	editor = {
+		setCursor: vi.fn(),
+		scrollIntoView: vi.fn(),
+	};
+}
+
 /**
  * Helper to create the {@link Node.createEl} function added by obsidian
  *

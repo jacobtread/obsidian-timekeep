@@ -1,7 +1,7 @@
-import type { TAbstractFile, Vault } from "obsidian";
+import type { TAbstractFile, Vault, Workspace } from "obsidian";
 
 import moment from "moment";
-import { Component, TFile } from "obsidian";
+import { Component, MarkdownView, TFile } from "obsidian";
 import { limitFunction } from "p-limit";
 
 import type { TimekeepSettings } from "@/settings";
@@ -356,5 +356,21 @@ export class TimekeepRegistry extends Component {
 		}
 
 		return null;
+	}
+
+	static async openItemRef(workspace: Workspace, ref: TimekeepRegistryItemRef) {
+		const leaf = workspace.getLeaf();
+		await leaf.openFile(ref.file);
+
+		const view = leaf.view;
+
+		if (view instanceof MarkdownView && ref.type === TimekeepEntryItemType.MARKDOWN) {
+			const editor = view.editor;
+			const line = ref.position.startLine;
+
+			// Focus the line we opened to
+			editor.setCursor({ line: Math.max(line - 1, 0), ch: 0 });
+			editor.scrollIntoView({ from: { line, ch: 0 }, to: { line, ch: 0 } }, true);
+		}
 	}
 }
