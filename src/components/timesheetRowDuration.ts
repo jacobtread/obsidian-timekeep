@@ -2,6 +2,7 @@ import moment from "moment";
 
 import { getEntryDuration, isEntryRunning } from "@/timekeep/queries";
 import { TimeEntry } from "@/timekeep/schema";
+import { assert } from "@/utils/assert";
 import { formatDurationLong } from "@/utils/time";
 
 import { DomComponent } from "./domComponent";
@@ -53,7 +54,7 @@ export class TimesheetRowDuration extends DomComponent {
 	 */
 	updateTime() {
 		const timeEl = this.wrapperEl;
-		if (!timeEl) return;
+		assert(timeEl, "Time element should be defined");
 
 		const currentTime = moment();
 		const duration = getEntryDuration(this.entry, currentTime);

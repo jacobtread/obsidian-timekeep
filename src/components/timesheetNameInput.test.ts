@@ -481,20 +481,5 @@ describe("TimesheetNameInput", () => {
 		expect(onSelectSuggestion).not.toHaveBeenCalled();
 	});
 
-	it("should render nothing if the suggestions container is missing", () => {
-		autocomplete.names.setState([
-			"Test",
-			"Before Test After",
-			"Before Test",
-			"Test After",
-			"Test After Test",
-		]);
-
-		component.renderSuggestions();
-
-		const suggestions = containerEl.querySelectorAll(".timekeep-suggestion");
-		expect(suggestions.length).toBe(0);
-	});
-
 	it("should not render suggestions when theres none", () => {});
 });

@@ -131,38 +131,6 @@ describe("TimesheetExportActions", () => {
 		expect(newButton).toBeInstanceOf(HTMLButtonElement);
 	});
 
-	it("changing the custom output formats when the wrapper element is missing should do nothing", () => {
-		const component = new TimesheetExportActions(
-			container,
-			app,
-			timekeep,
-			settings,
-			customOutputFormats
-		);
-
-		component.load();
-
-		const appendChild = vi.spyOn(component.wrapperEl!, "appendChild");
-
-		component.wrapperEl = undefined;
-		expect(appendChild).not.toHaveBeenCalled();
-
-		customOutputFormats.setState({
-			custom: {
-				getButtonLabel() {
-					return "Custom Format";
-				},
-
-				onExport() {},
-			},
-		});
-
-		const oldButton = container.querySelector(
-			'.timekeep-export-button__custom[data-custom-format="custom"]'
-		);
-		expect(oldButton).toBeNull();
-	});
-
 	it("clicking a output format button should run the onExport callback", () => {
 		const systemTime = moment();
 

@@ -9,6 +9,7 @@ import type { TimeEntry, Timekeep } from "@/timekeep/schema";
 import { getRunningEntry, isEntryRunning } from "@/timekeep/queries";
 import { startNewNestedEntry } from "@/timekeep/start";
 import { setEntryCollapsed, updateEntry } from "@/timekeep/update";
+import { assert } from "@/utils/assert";
 import { formatTimestamp } from "@/utils/time";
 
 import { createObsidianIcon } from "./obsidianIcon";
@@ -144,7 +145,7 @@ export class TimesheetRowContent extends ReplaceableComponent {
 	}
 
 	updateTimes() {
-		if (!this.#startTimeEl || !this.#endTimeEl) return;
+		assert(this.#startTimeEl && this.#endTimeEl, "Time elements should be defined");
 
 		const entry = this.entry;
 		const settings = this.settings.getState();
@@ -157,7 +158,7 @@ export class TimesheetRowContent extends ReplaceableComponent {
 	}
 
 	updateState() {
-		if (!this.containerEl) return;
+		assert(this.containerEl, "Container should be defined");
 
 		const entry = this.entry;
 

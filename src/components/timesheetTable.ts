@@ -5,6 +5,7 @@ import type { Store } from "@/store";
 import type { Timekeep } from "@/timekeep/schema";
 
 import { getEntriesSorted } from "@/timekeep/sort";
+import { assert } from "@/utils/assert";
 
 import { DomComponent } from "./domComponent";
 import { TimesheetRowContainer } from "./timesheetRowContainer";
@@ -86,16 +87,17 @@ export class TimesheetTable extends DomComponent {
 	 * based on the current settings
 	 */
 	updateWrapperSize() {
-		if (!this.wrapperEl) return;
+		const wrapperEl = this.wrapperEl;
+		assert(wrapperEl, "Wrapper element should be defined");
 
 		const settings = this.settings.getState();
 
 		if (settings.limitTableSize) {
-			this.wrapperEl.style.maxHeight = "600px";
-			this.wrapperEl.style.overflowY = "auto";
+			wrapperEl.style.maxHeight = "600px";
+			wrapperEl.style.overflowY = "auto";
 		} else {
-			this.wrapperEl.style.removeProperty("maxHeight");
-			this.wrapperEl.style.removeProperty("overflowY");
+			wrapperEl.style.removeProperty("maxHeight");
+			wrapperEl.style.removeProperty("overflowY");
 		}
 	}
 
@@ -117,7 +119,7 @@ export class TimesheetTable extends DomComponent {
 	 */
 	renderRows() {
 		const bodyEl = this.#bodyEl;
-		if (!bodyEl) return;
+		assert(bodyEl, "Body element should be defined");
 
 		const timekeep = this.timekeep.getState();
 		const settings = this.settings.getState();

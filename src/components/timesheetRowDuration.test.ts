@@ -91,9 +91,6 @@ describe("TimesheetRowDuration", () => {
 	});
 
 	it("update time should not work before load", () => {
-		component.updateTime();
-
-		expect(component.wrapperEl).toBeUndefined();
-		expect(queries.getEntryDuration).not.toHaveBeenCalled();
+		expect(() => component.updateTime()).toThrow();
 	});
 });

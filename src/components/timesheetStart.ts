@@ -7,6 +7,7 @@ import type { Timekeep } from "@/timekeep/schema";
 import { TimekeepAutocomplete } from "@/service/autocomplete";
 import { getRunningEntry } from "@/timekeep/queries";
 import { startNewEntry } from "@/timekeep/start";
+import { assert } from "@/utils/assert";
 
 import { ContentComponent } from "./contentComponent";
 import { createObsidianIcon } from "./obsidianIcon";
@@ -76,6 +77,7 @@ export class TimesheetStart extends ContentComponent<
 		});
 
 		blockPauseWarningEl.hidden = true;
+		this.#blockPauseWarningEl = blockPauseWarningEl;
 
 		const nameInput = new TimesheetNameInput(nameWrapperEl, this.autocomplete);
 		this.#nameInput = nameInput;
@@ -87,6 +89,7 @@ export class TimesheetStart extends ContentComponent<
 		});
 		startButton.type = "submit";
 		createObsidianIcon(startButton, "play", "button-icon");
+		this.#startButtonEl = startButton;
 
 		const onUpdate = this.onUpdate.bind(this);
 		const unsubscribeTimekeep = this.timekeep.subscribe(onUpdate);
@@ -107,21 +110,24 @@ export class TimesheetStart extends ContentComponent<
 	}
 
 	updateRunning() {
-		if (!this.#blockPauseWarningEl || !this.#startButtonEl) return;
+		const blockPauseWarningEl = this.#blockPauseWarningEl;
+		const startButtonEl = this.#startButtonEl;
+		assert(blockPauseWarningEl && startButtonEl, "Elements should be defined");
 
 		const timekeep = this.timekeep.getState();
 		const currentEntry = getRunningEntry(timekeep.entries);
 		const isTimekeepRunning = currentEntry !== null;
 
-		this.#blockPauseWarningEl.hidden = currentEntry === null || currentEntry.startTime === null;
-		this.#startButtonEl.title = isTimekeepRunning ? "Stop and start" : "Start";
+		blockPauseWarningEl.hidden = currentEntry === null || currentEntry.startTime === null;
+		startButtonEl.title = isTimekeepRunning ? "Stop and start" : "Start";
 	}
 
 	/**
 	 * Switch to the editing view
 	 */
 	setEditingView() {
-		if (!this.#contentEl) return;
+		const contentEl = this.#contentEl;
+		assert(contentEl, "Content element should be defined");
 
 		const timekeep = this.timekeep.getState();
 		const currentEntry = getRunningEntry(timekeep.entries);
@@ -131,7 +137,7 @@ export class TimesheetStart extends ContentComponent<
 
 		this.setContent(
 			new TimesheetStartEditing(
-				this.#contentEl,
+				contentEl,
 				this.timekeep,
 				this.settings,
 				currentEntry.name,
@@ -144,7 +150,8 @@ export class TimesheetStart extends ContentComponent<
 	 * Switch to the default creation view
 	 */
 	setCurrentView() {
-		if (!this.#contentEl) return;
+		const contentEl = this.#contentEl;
+		assert(contentEl, "Content element should be defined");
 
 		const timekeep = this.timekeep.getState();
 		const currentEntry = getRunningEntry(timekeep.entries);
@@ -155,7 +162,7 @@ export class TimesheetStart extends ContentComponent<
 
 		this.setContent(
 			new TimesheetStartRunning(
-				this.#contentEl,
+				contentEl,
 				this.timekeep,
 				this.settings,
 				currentEntry,
@@ -169,15 +176,17 @@ export class TimesheetStart extends ContentComponent<
 		event.preventDefault();
 		event.stopPropagation();
 
-		if (!this.#nameInput) return;
-		const name = this.#nameInput.getValue();
+		const nameInput = this.#nameInput;
+		assert(nameInput, "Name input element should be defined");
+
+		const name = nameInput.getValue();
 
 		this.timekeep.setState((timekeep) => {
 			const currentTime = moment();
 			const entries = startNewEntry(name, currentTime, timekeep.entries);
 
 			// Reset name input
-			this.#nameInput?.resetValue();
+			nameInput.resetValue();
 
 			return {
 				...timekeep,

@@ -8,6 +8,7 @@ import type { Store } from "@/store";
 import { createCSV, createMarkdownTable } from "@/export";
 import { exportPdf } from "@/export/pdf";
 import { stripTimekeepRuntimeData, Timekeep } from "@/timekeep/schema";
+import { assert } from "@/utils/assert";
 
 import { DomComponent } from "./domComponent";
 
@@ -100,9 +101,7 @@ export class TimesheetExportActions extends DomComponent {
 	}
 
 	createCustomOutputFormatButtons() {
-		if (!this.wrapperEl) {
-			return;
-		}
+		assert(this.wrapperEl, "Wrapper element should be defined");
 
 		// Remove existing buttons
 		this.removeCustomFormatButtons();

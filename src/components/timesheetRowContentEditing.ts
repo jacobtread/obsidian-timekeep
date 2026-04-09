@@ -152,15 +152,14 @@ export class TimesheetRowContentEditing extends ReplaceableComponent {
 	}
 
 	onUpdateState() {
-		if (
-			!this.#nameInputEl ||
-			!this.#startTimeInputEl ||
-			!this.#startTimeLabelEl ||
-			!this.#endTimeInputEl ||
-			!this.#endTimeLabelEl
-		) {
-			return;
-		}
+		assert(
+			this.#nameInputEl &&
+				this.#startTimeInputEl &&
+				this.#startTimeLabelEl &&
+				this.#endTimeInputEl &&
+				this.#endTimeLabelEl,
+			"Elements expected to be defined"
+		);
 
 		const settings = this.settings.getState();
 		const entry = this.entry;

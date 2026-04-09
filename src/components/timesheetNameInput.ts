@@ -1,6 +1,7 @@
 import Fuse, { FuseResult } from "fuse.js";
 
 import { TimekeepAutocomplete } from "@/service/autocomplete";
+import { assert } from "@/utils/assert";
 import { debounced } from "@/utils/debounce";
 
 import { DomComponent } from "./domComponent";
@@ -90,7 +91,7 @@ export class TimesheetNameInput extends DomComponent {
 	 */
 	renderSuggestions() {
 		const suggestionsEl = this.#suggestionsEl;
-		if (!suggestionsEl) return;
+		assert(suggestionsEl, "Suggestions element should be defined");
 
 		suggestionsEl.empty();
 		const suggestions = this.#suggestions;
@@ -139,7 +140,7 @@ export class TimesheetNameInput extends DomComponent {
 		if (!target.id.startsWith("timekeepSuggestion-")) return;
 		const suggestion = target;
 		const value = suggestion.getAttribute("value");
-		if (!value) return;
+		assert(value !== null, "Suggestion value should not be null");
 		this.onSelectSuggestion(value);
 	}
 
@@ -190,7 +191,7 @@ export class TimesheetNameInput extends DomComponent {
 	 */
 	onKeyDown(event: KeyboardEvent) {
 		const suggestionsEl = this.#suggestionsEl;
-		if (!suggestionsEl) return;
+		assert(suggestionsEl, "Suggestions element should be defined");
 
 		const suggestionsOpen = !(suggestionsEl.hidden ?? false);
 
@@ -269,7 +270,8 @@ export class TimesheetNameInput extends DomComponent {
 
 		const inputEl = this.#inputEl;
 		const suggestionsEl = this.#suggestionsEl;
-		if (!suggestionsEl || !inputEl) return;
+
+		assert(inputEl && suggestionsEl, "Expected elements should be defined");
 
 		const children = suggestionsEl.querySelectorAll(".timekeep-suggestion");
 		for (let i = 0; i < children.length; i++) {
@@ -315,7 +317,7 @@ export class TimesheetNameInput extends DomComponent {
 	updateSuggestionsOpen() {
 		const inputEl = this.#inputEl;
 		const suggestionsEl = this.#suggestionsEl;
-		if (!inputEl || !suggestionsEl) return;
+		assert(inputEl && suggestionsEl, "Expected elements should be defined");
 
 		// Force closed state if theres no suggestions
 		const open = this.#suggestions.length < 1 ? false : this.#suggestionsOpen;

@@ -6,6 +6,7 @@ import type { TimeEntry, Timekeep } from "@/timekeep/schema";
 
 import { getPathToEntry } from "@/timekeep/queries";
 import { stopTimekeep } from "@/timekeep/update";
+import { assert } from "@/utils/assert";
 import { formatTimestamp } from "@/utils/time";
 
 import { DomComponent } from "./domComponent";
@@ -113,7 +114,10 @@ export class TimesheetStartRunning extends DomComponent {
 	 * or the settings change
 	 */
 	onUpdate() {
-		if (!this.#timeValueEl || !this.#pathEl) return;
+		const timeValueEl = this.#timeValueEl;
+		const pathEl = this.#pathEl;
+
+		assert(timeValueEl && pathEl, "Elements should be defined");
 
 		const currentEntry = this.entry;
 		if (!currentEntry.startTime) return;
@@ -121,17 +125,17 @@ export class TimesheetStartRunning extends DomComponent {
 		const timekeep = this.timekeep.getState();
 		const settings = this.settings.getState();
 
-		this.#timeValueEl.textContent = formatTimestamp(currentEntry.startTime, settings);
+		timeValueEl.textContent = formatTimestamp(currentEntry.startTime, settings);
 
 		// Clear existing path
-		this.#pathEl.empty();
+		pathEl.empty();
 
 		const pathToEntry = getPathToEntry(timekeep.entries, currentEntry);
 		if (pathToEntry && pathToEntry.length > 0) {
 			for (let i = 0; i < pathToEntry.length; i++) {
 				const path = pathToEntry[i];
 				const text = `${path.name} ${i < pathToEntry.length - 1 ? " >" : ""}`;
-				this.#pathEl.createSpan({ cls: "timekeep-path-to-entry__segment", text });
+				pathEl.createSpan({ cls: "timekeep-path-to-entry__segment", text });
 			}
 		}
 	}

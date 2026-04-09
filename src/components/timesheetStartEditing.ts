@@ -4,6 +4,7 @@ import type { Timekeep } from "@/timekeep/schema";
 
 import { getRunningEntry } from "@/timekeep/queries";
 import { updateEntry } from "@/timekeep/update";
+import { assert } from "@/utils/assert";
 
 import { DomComponent } from "./domComponent";
 import { createObsidianIcon } from "./obsidianIcon";
@@ -94,14 +95,15 @@ export class TimesheetStartEditing extends DomComponent {
 		event.preventDefault();
 		event.stopPropagation();
 
-		if (!this.#nameInputEl) return;
+		const nameInputEl = this.#nameInputEl;
+		assert(nameInputEl, "Name input element should be defined");
 
 		const timekeep = this.timekeep.getState();
 		const currentEntry = getRunningEntry(timekeep.entries);
 
 		if (!currentEntry) return;
 
-		const editingName = this.#nameInputEl.value;
+		const editingName = nameInputEl.value;
 
 		this.timekeep.setState((timekeep) => {
 			const entries = updateEntry(timekeep.entries, currentEntry.id, {
