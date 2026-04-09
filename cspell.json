@@ -11,6 +11,9 @@
 		"Timekeeps",
 		"pdfmake",
 		"activedescendant",
-		"!entires"
+		"!entires",
+		"oxlint",
+		"tsgolint",
+		"oxfmt"
 	]
 }
