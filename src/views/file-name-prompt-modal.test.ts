@@ -2,7 +2,7 @@
 
 import type { App } from "obsidian";
 
-import { describe, it, expect, beforeEach, Mock, vi, afterEach } from "vitest";
+import { describe, it, expect, beforeEach, Mock, vi } from "vitest";
 
 import { FileNamePromptModal } from "./file-name-prompt-modal";
 
@@ -15,10 +15,6 @@ describe("ConfirmModal", () => {
 		app = {} as App;
 		onChoice = vi.fn();
 		component = new FileNamePromptModal(app, onChoice);
-	});
-
-	afterEach(() => {
-		component.close();
 	});
 
 	it("should open without error", () => {

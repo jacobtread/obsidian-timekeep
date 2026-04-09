@@ -399,6 +399,8 @@ export class MockSetting {
 }
 
 export class MockModal implements CloseableComponent {
+	static instances: Set<MockModal> = new Set();
+
 	app: App;
 
 	scope = {} as Scope;
@@ -417,6 +419,8 @@ export class MockModal implements CloseableComponent {
 	constructor(app: App) {
 		this.app = app;
 
+		MockModal.instances.add(this);
+
 		this.containerEl = createMockContainer();
 		this.modalEl = this.containerEl.createDiv();
 		this.titleEl = this.modalEl.createSpan();
@@ -434,6 +438,7 @@ export class MockModal implements CloseableComponent {
 
 			this.onClose();
 			if (this.closeCallback) this.closeCallback();
+			MockModal.instances.delete(this);
 		});
 	}
 
@@ -460,6 +465,13 @@ export class MockModal implements CloseableComponent {
 	setCloseCallback(callback: () => any) {
 		this.closeCallback = callback;
 		return this;
+	}
+
+	static cleanupAll() {
+		for (const instance of MockModal.instances) {
+			instance.close();
+		}
+		MockModal.instances.clear();
 	}
 }
 

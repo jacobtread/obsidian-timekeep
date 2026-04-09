@@ -26,8 +26,19 @@ export class ConfirmModal extends Modal {
 		this.contentEl.createEl("p", { text: this.message });
 
 		new Setting(this.contentEl)
-			.addButton((btn) => btn.setButtonText("Ok").setCta().onClick(this.onOk.bind(this)))
-			.addButton((btn) => btn.setButtonText("Cancel").onClick(this.onCancel.bind(this)));
+			.addButton((btn) => {
+				btn.buttonEl.setAttribute("data-action", "ok");
+				btn.setClass("timekeep-confirm-modal-button")
+					.setButtonText("Ok")
+					.setCta()
+					.onClick(this.onOk.bind(this));
+			})
+			.addButton((btn) => {
+				btn.buttonEl.setAttribute("data-action", "cancel");
+				btn.setClass("timekeep-confirm-modal-button")
+					.setButtonText("Cancel")
+					.onClick(this.onCancel.bind(this));
+			});
 	}
 
 	onOk() {

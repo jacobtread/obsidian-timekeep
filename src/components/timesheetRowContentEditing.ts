@@ -1,5 +1,7 @@
 import type { App } from "obsidian";
 
+import { assert } from "vitest";
+
 import type { TimekeepSettings } from "@/settings";
 import type { Store } from "@/store";
 import type { TimeEntry, Timekeep } from "@/timekeep/schema";
@@ -72,32 +74,38 @@ export class TimesheetRowContentEditing extends ReplaceableComponent {
 		const formEl = colEl.createEl("form", { cls: "timesheet-editing" });
 		this.registerDomEvent(formEl, "submit", this.onSubmit.bind(this));
 
-		const nameLabelEl = formEl.createEl("label", { text: " Name" });
+		const nameLabelEl = formEl.createEl("label", {
+			cls: "timekeep-input-label",
+			text: "Name",
+		});
 		const nameInputEl = nameLabelEl.createEl("input", {
 			cls: "timekeep-input",
 			type: "text",
 		});
-
+		nameInputEl.name = "name";
 		this.#nameInputEl = nameInputEl;
 
 		const startTimeLabelEl = formEl.createEl("label", {
 			text: "Start Time",
 		});
 		this.#startTimeLabelEl = startTimeLabelEl;
-
 		const startTimeInputEl = startTimeLabelEl.createEl("input", {
 			cls: "timekeep-input",
 			type: "text",
 		});
+		startTimeInputEl.name = "start-time";
 		this.#startTimeInputEl = startTimeInputEl;
 
-		const endTimeLabelEl = formEl.createEl("label", { text: "End Time" });
+		const endTimeLabelEl = formEl.createEl("label", {
+			cls: "timekeep-input-label",
+			text: "End Time",
+		});
 		this.#endTimeLabelEl = endTimeLabelEl;
-
 		const endTimeInputEl = endTimeLabelEl.createEl("input", {
 			cls: "timekeep-input",
 			type: "text",
 		});
+		endTimeInputEl.name = "end-time";
 		this.#endTimeInputEl = endTimeInputEl;
 
 		const actionsEl = formEl.createDiv({
@@ -106,6 +114,9 @@ export class TimesheetRowContentEditing extends ReplaceableComponent {
 
 		const saveButton = actionsEl.createEl("button", {
 			cls: "timekeep-action",
+			attr: {
+				"data-action": "save",
+			},
 		});
 		saveButton.type = "submit";
 		createObsidianIcon(saveButton, "edit", "text-button-icon");
@@ -113,6 +124,9 @@ export class TimesheetRowContentEditing extends ReplaceableComponent {
 
 		const cancelButton = actionsEl.createEl("button", {
 			cls: "timekeep-action",
+			attr: {
+				"data-action": "cancel",
+			},
 		});
 		cancelButton.type = "button";
 		createObsidianIcon(cancelButton, "x", "text-button-icon");
@@ -121,6 +135,9 @@ export class TimesheetRowContentEditing extends ReplaceableComponent {
 
 		const deleteButton = actionsEl.createEl("button", {
 			cls: "timekeep-action",
+			attr: {
+				"data-action": "delete",
+			},
 		});
 		deleteButton.type = "button";
 		createObsidianIcon(deleteButton, "trash", "text-button-icon");
@@ -184,9 +201,10 @@ export class TimesheetRowContentEditing extends ReplaceableComponent {
 	}
 
 	onSubmit(event: Event) {
-		if (!this.#nameInputEl || !this.#startTimeInputEl || !this.#endTimeInputEl) {
-			return;
-		}
+		assert(
+			this.#nameInputEl && this.#startTimeInputEl && this.#endTimeInputEl,
+			"Expected inputs to be defined"
+		);
 
 		event.preventDefault();
 		event.stopPropagation();
