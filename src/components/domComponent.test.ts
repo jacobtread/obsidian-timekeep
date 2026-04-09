@@ -68,6 +68,8 @@ describe("DomComponent", () => {
 
 	it("onunload should remove wrapperEl if parent is not unmounted", () => {
 		const comp = new DomComponent(container);
+		comp.load();
+
 		const wrapper = document.createElement("div");
 		comp.wrapperEl = wrapper;
 		container.appendChild(wrapper);

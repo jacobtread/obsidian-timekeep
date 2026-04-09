@@ -54,8 +54,6 @@ export class TimesheetApp extends DomComponent {
 
 		this.wrapperEl = wrapperEl;
 
-		console.log(this);
-
 		const counters = new TimesheetCounters(wrapperEl, this.settings, this.timekeep);
 
 		const startForm = new TimesheetStartForm(

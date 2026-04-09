@@ -9,7 +9,7 @@ import {
 import { getRunningEntry } from "@/timekeep/queries";
 import { Timekeep } from "@/timekeep/schema";
 
-export class TimekeepStatusBarView extends Component {
+export class TimekeepStatusBar extends Component {
 	/** Parent container element */
 	#containerEl: HTMLElement;
 

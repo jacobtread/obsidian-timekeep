@@ -13,6 +13,7 @@ import findRunningTrackers from "@/commands/findRunningTrackers";
 import insertTracker from "@/commands/insertTracker";
 import stopAllTimekeepsCommand from "@/commands/stopAllTimekeeps";
 import stopFileTimekeepsCommand from "@/commands/stopFileTimekeeps";
+import { TimekeepStatusBar } from "@/components/timekeepStatusBar";
 import { TimekeepAutocomplete } from "@/service/autocomplete";
 import { TimekeepRegistry } from "@/service/registry";
 import { defaultSettings, TimekeepSettings, legacySettingsCompatibility } from "@/settings";
@@ -29,7 +30,6 @@ import {
 import { stopAllTimekeeps } from "@/timekeep/stopAllTimekeeps";
 import { stopFileTimekeeps } from "@/timekeep/stopFileTimekeeps";
 import { TimekeepMarkdownView } from "@/views/timekeep-markdown-view";
-import { TimekeepStatusBarView } from "@/views/timekeep-status-bar-view";
 
 import { TimekeepFileView } from "./views/timekeep-file-view";
 
@@ -58,7 +58,7 @@ export default class TimekeepPlugin extends Plugin {
 	registry: TimekeepRegistry;
 
 	/** Currently loaded status bar view if present */
-	#statusBarView: TimekeepStatusBarView | null = null;
+	#statusBarView: TimekeepStatusBar | null = null;
 
 	constructor(app: App, manifest: PluginManifest) {
 		super(app, manifest);
@@ -201,7 +201,7 @@ export default class TimekeepPlugin extends Plugin {
 		if (!settings.statusBarEnabled) return;
 
 		const containerEl = this.addStatusBarItem();
-		const statusBarView = new TimekeepStatusBarView(containerEl, this.app, this.registry);
+		const statusBarView = new TimekeepStatusBar(containerEl, this.app, this.registry);
 		this.addChild(statusBarView);
 		this.#statusBarView = statusBarView;
 	}
