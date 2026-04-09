@@ -134,6 +134,10 @@
 	border-bottom: 1px solid var(--color-base-30);
 }
 
+.timekeep-timer[hidden] {
+	display: none;
+}
+
 .timekeep-timer-value {
 	font-size: 2.5rem;
 	font-weight: bolder;
