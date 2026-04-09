@@ -8,9 +8,9 @@ import type { TimeEntry, Timekeep } from "@/timekeep/schema";
 
 import { createObsidianIcon } from "@/components/obsidianIcon";
 import { ReplaceableComponent } from "@/components/ReplaceableComponent";
+import { ConfirmModal } from "@/modals/ConfirmModal";
 import { removeEntry, updateEntry } from "@/timekeep/update";
 import { formatEditableTimestamp, parseEditableTimestamp } from "@/utils/time";
-import { ConfirmModal } from "@/views/confirm-modal";
 
 /**
  * Component for a timesheet row entry that is currently

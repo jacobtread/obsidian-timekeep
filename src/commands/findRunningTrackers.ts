@@ -1,6 +1,6 @@
 import { App, Command } from "obsidian";
 
-import { TimekeepLocatorModal } from "@/views/timekeep-locator-modal";
+import { TimekeepLocatorModal } from "@/modals/TimekeepLocatorModal";
 
 export default function (app: App): Command {
 	return {

@@ -29,9 +29,8 @@ import {
 } from "@/timekeep/queries";
 import { stopAllTimekeeps } from "@/timekeep/stopAllTimekeeps";
 import { stopFileTimekeeps } from "@/timekeep/stopFileTimekeeps";
-import { TimekeepMarkdownView } from "@/views/timekeep-markdown-view";
-
-import { TimekeepFileView } from "./views/timekeep-file-view";
+import TimekeepFileView from "@/views/TimekeepFileView";
+import TimekeepMarkdownView from "@/views/TimekeepMarkdownView";
 
 export default class TimekeepPlugin extends Plugin {
 	/** Store containing the plugin settings */

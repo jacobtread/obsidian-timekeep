@@ -4,7 +4,7 @@ import type { App } from "obsidian";
 
 import { describe, it, expect, beforeEach, Mock, vi } from "vitest";
 
-import { ConfirmModal } from "./confirm-modal";
+import { ConfirmModal } from "./ConfirmModal";
 
 describe("ConfirmModal", () => {
 	let app: App;

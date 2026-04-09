@@ -10,7 +10,7 @@ import { createStore, Store } from "@/store";
 import { load, LoadResult } from "@/timekeep/parser";
 import { stripTimekeepRuntimeData, Timekeep } from "@/timekeep/schema";
 
-export class TimekeepFileView extends EditableFileView {
+export default class TimekeepFileView extends EditableFileView {
 	/** Access to the timekeep settings */
 	settings: Store<TimekeepSettings>;
 	/** Access to custom output formats */

@@ -14,7 +14,7 @@ import { type Store, createStore } from "@/store";
 import { type LoadResult, load, replaceTimekeepCodeblock } from "@/timekeep/parser";
 import { type Timekeep, stripTimekeepRuntimeData } from "@/timekeep/schema";
 
-export class TimekeepMarkdownView extends MarkdownRenderChild {
+export default class TimekeepMarkdownView extends MarkdownRenderChild {
 	// Obsidian app instance
 	app: App;
 	// Timekeep settings store

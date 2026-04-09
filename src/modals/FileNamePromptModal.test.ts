@@ -4,7 +4,7 @@ import type { App } from "obsidian";
 
 import { describe, it, expect, beforeEach, Mock, vi } from "vitest";
 
-import { FileNamePromptModal } from "./file-name-prompt-modal";
+import { FileNamePromptModal } from "./FileNamePromptModal";
 
 describe("ConfirmModal", () => {
 	let app: App;
