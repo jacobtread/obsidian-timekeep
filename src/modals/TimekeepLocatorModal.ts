@@ -4,6 +4,8 @@ import { SuggestModal } from "obsidian";
 
 import type { TimekeepSettings } from "@/settings";
 import type { Store } from "@/store";
+
+import { getRunningEntry } from "@/timekeep/queries";
 import type { TimeEntry } from "@/timekeep/schema";
 
 import {
@@ -12,7 +14,6 @@ import {
 	TimekeepRegistryEntry,
 	TimekeepRegistryItemRef,
 } from "@/service/registry";
-import { getRunningEntry } from "@/timekeep/queries";
 
 interface TimekeepResult {
 	ref: TimekeepRegistryItemRef;

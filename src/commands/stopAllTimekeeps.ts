@@ -3,8 +3,9 @@ import type { App, Command } from "obsidian";
 import moment from "moment";
 import { Notice } from "obsidian";
 
-import { stopAllTimekeeps } from "@/timekeep/stopAllTimekeeps";
 import { getErrorMessage } from "@/utils/error";
+
+import { stopAllTimekeeps } from "@/timekeep/stopAllTimekeeps";
 
 async function asyncCallback(app: App) {
 	const currentTime = moment();

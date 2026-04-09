@@ -1,7 +1,8 @@
 import { SortOrder, UnstartedOrder, TimekeepSettings } from "@/settings";
-import { TimeEntry } from "@/timekeep/schema";
 
 import { getStartTime } from "./queries";
+
+import { TimeEntry } from "@/timekeep/schema";
 
 type TimeEntryWithIndex = TimeEntry & { index: number };
 

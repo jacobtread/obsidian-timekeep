@@ -12,6 +12,30 @@
 			{
 				"groupName": "fonts",
 				"elementNamePattern": ["@/fonts/**"]
+			},
+			{
+				"groupName": "modals",
+				"elementNamePattern": ["@/modals/**"]
+			},
+			{
+				"groupName": "service",
+				"elementNamePattern": ["@/service/**"]
+			},
+			{
+				"groupName": "timekeep",
+				"elementNamePattern": ["@/timekeep/**"]
+			},
+			{
+				"groupName": "views",
+				"elementNamePattern": ["@/views/**"]
+			},
+			{
+				"groupName": "components",
+				"elementNamePattern": ["@/components/**"]
+			},
+			{
+				"groupName": "commands",
+				"elementNamePattern": ["@/commands/**"]
 			}
 		],
 		"groups": [
@@ -21,6 +45,12 @@
 			"value-internal",
 			["type-parent", "type-sibling", "type-index"],
 			["value-parent", "value-sibling", "value-index"],
+			"components",
+			"modals",
+			"views",
+			"timekeep",
+			"service",
+			"commands",
 			"fonts",
 			"unknown"
 		]

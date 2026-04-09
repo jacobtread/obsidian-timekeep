@@ -1,9 +1,11 @@
 import { App, Command } from "obsidian";
 
-import { TimekeepMergerModal } from "@/modals/TimekeepMergerModal";
-import { TimekeepRegistry } from "@/service/registry";
 import { TimekeepSettings } from "@/settings";
 import { Store } from "@/store";
+
+import { TimekeepMergerModal } from "@/modals/TimekeepMergerModal";
+
+import { TimekeepRegistry } from "@/service/registry";
 
 export default function (
 	app: App,

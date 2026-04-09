@@ -1,9 +1,11 @@
 import Fuse, { FuseResult } from "fuse.js";
 
-import { DomComponent } from "@/components/DomComponent";
-import { TimekeepAutocomplete } from "@/service/autocomplete";
 import { assert } from "@/utils/assert";
 import { debounced } from "@/utils/debounce";
+
+import { DomComponent } from "@/components/DomComponent";
+
+import { TimekeepAutocomplete } from "@/service/autocomplete";
 
 export class TimesheetNameInput extends DomComponent {
 	/** Access to autocomplete */

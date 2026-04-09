@@ -5,13 +5,14 @@ import { beforeEach, describe, expect, it, Mock, vi } from "vitest";
 import type { Store } from "@/store";
 
 import { createMockContainer, MockVault } from "@/__mocks__/obsidian";
-import { TimekeepAutocomplete } from "@/service/autocomplete";
-import { TimekeepRegistry } from "@/service/registry";
 import { defaultSettings, type TimekeepSettings } from "@/settings";
 import { createStore } from "@/store";
 import * as debounceUtil from "@/utils/debounce";
 
 import { TimesheetNameInput } from "./TimesheetNameInput";
+
+import { TimekeepAutocomplete } from "@/service/autocomplete";
+import { TimekeepRegistry } from "@/service/registry";
 
 describe("TimesheetNameInput", () => {
 	let containerEl: HTMLElement;

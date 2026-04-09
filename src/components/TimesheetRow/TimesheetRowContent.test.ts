@@ -8,9 +8,10 @@ import { beforeEach, describe, expect, it, Mock, vi } from "vitest";
 import { createMockContainer } from "@/__mocks__/obsidian";
 import { defaultSettings, TimekeepSettings } from "@/settings";
 import { createStore, Store } from "@/store";
-import { TimeEntry, Timekeep } from "@/timekeep/schema";
 
 import { TimesheetRowContent } from "./TimesheetRowContent";
+
+import { TimeEntry, Timekeep } from "@/timekeep/schema";
 
 describe("TimesheetRowContent", () => {
 	const start = moment();

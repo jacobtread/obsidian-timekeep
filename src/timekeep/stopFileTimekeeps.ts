@@ -1,10 +1,9 @@
 import type { Moment } from "moment";
 import type { TFile, Vault } from "obsidian";
 
-import type { Timekeep } from "@/timekeep/schema";
-
 import { replaceTimekeepCodeblock, extractTimekeepCodeblocksWithPosition } from "@/timekeep/parser";
 import { getRunningEntry } from "@/timekeep/queries";
+import type { Timekeep } from "@/timekeep/schema";
 import { stopTimekeep } from "@/timekeep/update";
 
 /**

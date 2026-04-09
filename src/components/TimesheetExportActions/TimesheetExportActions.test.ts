@@ -11,9 +11,10 @@ import * as exportPdf from "@/export/pdf";
 import { CustomOutputFormat } from "@/output";
 import { defaultSettings, TimekeepSettings } from "@/settings";
 import { createStore, Store } from "@/store";
-import { stripTimekeepRuntimeData, Timekeep } from "@/timekeep/schema";
 
 import { TimesheetExportActions } from "./TimesheetExportActions";
+
+import { stripTimekeepRuntimeData, Timekeep } from "@/timekeep/schema";
 
 describe("TimesheetExportActions", () => {
 	let container: HTMLElement;

@@ -8,6 +8,7 @@ import type { TimekeepSettings } from "@/settings";
 import type { Store } from "@/store";
 
 import { createStore } from "@/store";
+
 import {
 	extractTimekeepCodeblocksWithPosition,
 	load,

@@ -1,6 +1,5 @@
 import type { App } from "obsidian";
 
-import { DomComponent } from "@/components/DomComponent";
 import {
 	NameSegment,
 	NameSegmentLink,
@@ -8,6 +7,8 @@ import {
 	NameSegmentType,
 	parseNameSegments,
 } from "@/utils/name";
+
+import { DomComponent } from "@/components/DomComponent";
 
 /**
  * Component for rendering the name of a timekeep entry, this

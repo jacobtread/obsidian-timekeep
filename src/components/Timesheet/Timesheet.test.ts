@@ -5,17 +5,20 @@ import type { App } from "obsidian";
 import { beforeEach, describe, expect, it, Mock, vi } from "vitest";
 
 import type { CustomOutputFormat } from "@/output";
-import type { Timekeep } from "@/timekeep/schema";
 
 import { createMockContainer, MockVault } from "@/__mocks__/obsidian";
-import { TimesheetApp } from "@/components/TimesheetApp";
-import { TimesheetSaveError } from "@/components/TimesheetSaveError";
-import { TimekeepAutocomplete } from "@/service/autocomplete";
-import { TimekeepRegistry } from "@/service/registry";
 import { defaultSettings, type TimekeepSettings } from "@/settings";
 import { createStore, type Store } from "@/store";
 
 import { Timesheet } from "./Timesheet";
+
+import { TimesheetApp } from "@/components/TimesheetApp";
+import { TimesheetSaveError } from "@/components/TimesheetSaveError";
+
+import type { Timekeep } from "@/timekeep/schema";
+
+import { TimekeepAutocomplete } from "@/service/autocomplete";
+import { TimekeepRegistry } from "@/service/registry";
 
 describe("Timesheet", () => {
 	let containerEl: HTMLElement;

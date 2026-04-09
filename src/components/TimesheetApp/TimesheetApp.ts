@@ -1,16 +1,19 @@
 import { App } from "obsidian";
 
+import { CustomOutputFormat } from "@/output";
+import { TimekeepSettings } from "@/settings";
+import { Store } from "@/store";
+
 import { DomComponent } from "@/components/DomComponent";
 import { TimesheetCounters } from "@/components/TimesheetCounters";
 import { TimesheetExportActions } from "@/components/TimesheetExportActions";
 import { TimesheetRunningEntry } from "@/components/TimesheetRunningEntry";
 import { TimesheetStartForm } from "@/components/TimesheetStartForm";
 import { TimesheetTable } from "@/components/TimesheetTable";
-import { CustomOutputFormat } from "@/output";
-import { TimekeepAutocomplete } from "@/service/autocomplete";
-import { TimekeepSettings } from "@/settings";
-import { Store } from "@/store";
+
 import { Timekeep } from "@/timekeep/schema";
+
+import { TimekeepAutocomplete } from "@/service/autocomplete";
 
 /**
  * View component for the timesheet app as a whole

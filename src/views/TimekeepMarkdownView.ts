@@ -7,12 +7,15 @@ import { TFile, MarkdownRenderChild } from "obsidian";
 import type { CustomOutputFormat } from "@/output";
 import type { TimekeepSettings } from "@/settings";
 
+import { type Store, createStore } from "@/store";
+
 import { Timesheet } from "@/components/Timesheet";
 import { TimesheetLoadError } from "@/components/TimesheetLoadError";
-import { TimekeepAutocomplete } from "@/service/autocomplete";
-import { type Store, createStore } from "@/store";
+
 import { type LoadResult, load, replaceTimekeepCodeblock } from "@/timekeep/parser";
 import { type Timekeep, stripTimekeepRuntimeData } from "@/timekeep/schema";
+
+import { TimekeepAutocomplete } from "@/service/autocomplete";
 
 export default class TimekeepMarkdownView extends MarkdownRenderChild {
 	// Obsidian app instance

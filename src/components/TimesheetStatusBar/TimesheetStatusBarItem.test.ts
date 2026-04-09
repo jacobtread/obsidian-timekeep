@@ -5,9 +5,10 @@ import { v4 } from "uuid";
 import { describe, beforeEach, it, expect, vi, afterEach } from "vitest";
 
 import { createMockContainer } from "@/__mocks__/obsidian";
-import { TimeEntry } from "@/timekeep/schema";
 
 import { TimesheetStatusBarItem } from "./TimesheetStatusBarItem";
+
+import { TimeEntry } from "@/timekeep/schema";
 
 describe("TimesheetStatusBarItem", () => {
 	const start = moment();

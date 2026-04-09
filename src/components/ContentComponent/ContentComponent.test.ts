@@ -3,10 +3,11 @@
 import { describe, it, expect, beforeEach } from "vitest";
 
 import { createMockContainer } from "@/__mocks__/obsidian";
-import { DomComponent } from "@/components/DomComponent";
-import { ReplaceableComponent } from "@/components/ReplaceableComponent";
 
 import { ContentComponent } from "./ContentComponent";
+
+import { DomComponent } from "@/components/DomComponent";
+import { ReplaceableComponent } from "@/components/ReplaceableComponent";
 
 describe("ContentComponent", () => {
 	let container: HTMLElement;

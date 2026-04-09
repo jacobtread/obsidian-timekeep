@@ -5,21 +5,18 @@ import { Plugin, TFolder } from "obsidian";
 
 import type { CustomOutputFormat } from "@/output";
 import type { Store } from "@/store";
-import type { Timekeep, TimeEntry } from "@/timekeep/schema";
 
-import createMerged from "@/commands/createMerged";
-import exportMergedPdf from "@/commands/exportMergedPdf";
-import findRunningTrackers from "@/commands/findRunningTrackers";
-import insertTracker from "@/commands/insertTracker";
-import newTimekeepFile from "@/commands/newTimekeepFile";
-import stopAllTimekeepsCommand from "@/commands/stopAllTimekeeps";
-import stopFileTimekeepsCommand from "@/commands/stopFileTimekeeps";
-import { TimesheetStatusBar } from "@/components/TimesheetStatusBar";
-import { TimekeepAutocomplete } from "@/service/autocomplete";
-import { TimekeepRegistry } from "@/service/registry";
 import { defaultSettings, TimekeepSettings, legacySettingsCompatibility } from "@/settings";
 import { TimekeepSettingsTab } from "@/settings-tab";
 import { createStore } from "@/store";
+
+import { createNewTimekeepFile } from "./timekeep/createNewTimekeepFile";
+
+import { TimesheetStatusBar } from "@/components/TimesheetStatusBar";
+
+import TimekeepFileView from "@/views/TimekeepFileView";
+import TimekeepMarkdownView from "@/views/TimekeepMarkdownView";
+
 import { replaceTimekeepCodeblock, extractTimekeepCodeblocks } from "@/timekeep/parser";
 import {
 	isKeepRunning,
@@ -28,12 +25,20 @@ import {
 	getEntryDuration,
 	getTotalDuration,
 } from "@/timekeep/queries";
+import type { Timekeep, TimeEntry } from "@/timekeep/schema";
 import { stopAllTimekeeps } from "@/timekeep/stopAllTimekeeps";
 import { stopFileTimekeeps } from "@/timekeep/stopFileTimekeeps";
-import TimekeepFileView from "@/views/TimekeepFileView";
-import TimekeepMarkdownView from "@/views/TimekeepMarkdownView";
 
-import { createNewTimekeepFile } from "./timekeep/createNewTimekeepFile";
+import { TimekeepAutocomplete } from "@/service/autocomplete";
+import { TimekeepRegistry } from "@/service/registry";
+
+import createMerged from "@/commands/createMerged";
+import exportMergedPdf from "@/commands/exportMergedPdf";
+import findRunningTrackers from "@/commands/findRunningTrackers";
+import insertTracker from "@/commands/insertTracker";
+import newTimekeepFile from "@/commands/newTimekeepFile";
+import stopAllTimekeepsCommand from "@/commands/stopAllTimekeeps";
+import stopFileTimekeepsCommand from "@/commands/stopFileTimekeeps";
 
 export default class TimekeepPlugin extends Plugin {
 	/** Store containing the plugin settings */

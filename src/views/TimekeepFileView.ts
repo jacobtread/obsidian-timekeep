@@ -1,14 +1,17 @@
 import moment from "moment";
 import { EditableFileView, TFile, WorkspaceLeaf } from "obsidian";
 
-import { Timesheet } from "@/components/Timesheet";
-import { TimesheetLoadError } from "@/components/TimesheetLoadError";
 import { CustomOutputFormat } from "@/output";
-import { TimekeepAutocomplete } from "@/service/autocomplete";
 import { TimekeepSettings } from "@/settings";
 import { createStore, Store } from "@/store";
+
+import { Timesheet } from "@/components/Timesheet";
+import { TimesheetLoadError } from "@/components/TimesheetLoadError";
+
 import { load, LoadResult } from "@/timekeep/parser";
 import { stripTimekeepRuntimeData, Timekeep } from "@/timekeep/schema";
+
+import { TimekeepAutocomplete } from "@/service/autocomplete";
 
 export default class TimekeepFileView extends EditableFileView {
 	/** Access to the timekeep settings */

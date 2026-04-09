@@ -5,11 +5,12 @@ import type { App } from "obsidian";
 import { beforeEach, describe, expect, it } from "vitest";
 
 import { createMockContainer, MockVault } from "@/__mocks__/obsidian";
-import { TimekeepRegistry } from "@/service/registry";
 import { defaultSettings, type TimekeepSettings } from "@/settings";
 import { createStore, type Store } from "@/store";
 
 import { TimesheetStatusBar } from "./TimesheetStatusBar";
+
+import { TimekeepRegistry } from "@/service/registry";
 
 describe("TimesheetStatusBar", () => {
 	let containerEl: HTMLElement;

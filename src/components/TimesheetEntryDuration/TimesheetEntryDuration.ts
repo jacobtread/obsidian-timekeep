@@ -1,10 +1,12 @@
 import moment from "moment";
 
-import { DomComponent } from "@/components/DomComponent";
-import { getEntryDuration, isEntryRunning } from "@/timekeep/queries";
-import { TimeEntry } from "@/timekeep/schema";
 import { assert } from "@/utils/assert";
 import { formatDurationLong } from "@/utils/time";
+
+import { DomComponent } from "@/components/DomComponent";
+
+import { getEntryDuration, isEntryRunning } from "@/timekeep/queries";
+import { TimeEntry } from "@/timekeep/schema";
 
 /**
  * Component for rendering the live-updating duration on

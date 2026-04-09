@@ -1,9 +1,11 @@
 import { App, Command } from "obsidian";
 
-import { TimekeepLocatorModal } from "@/modals/TimekeepLocatorModal";
-import { TimekeepRegistry } from "@/service/registry";
 import { TimekeepSettings } from "@/settings";
 import { Store } from "@/store";
+
+import { TimekeepLocatorModal } from "@/modals/TimekeepLocatorModal";
+
+import { TimekeepRegistry } from "@/service/registry";
 
 export default function (
 	app: App,

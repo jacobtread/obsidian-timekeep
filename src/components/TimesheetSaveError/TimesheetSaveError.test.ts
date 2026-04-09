@@ -4,9 +4,10 @@ import { describe, it, expect, vi, beforeEach, Mock } from "vitest";
 
 import { createMockContainer } from "@/__mocks__/obsidian";
 import { createStore, Store } from "@/store";
-import { stripTimekeepRuntimeData, Timekeep } from "@/timekeep/schema";
 
 import { TimesheetSaveError } from "./TimesheetSaveError";
+
+import { stripTimekeepRuntimeData, Timekeep } from "@/timekeep/schema";
 
 describe("TimesheetSaveError", () => {
 	let container: HTMLElement;

@@ -3,10 +3,11 @@
 import { describe, expect, it, vi } from "vitest";
 
 import { createMockContainer } from "@/__mocks__/obsidian";
-import { ContentComponent } from "@/components/ContentComponent";
-import { DomComponent } from "@/components/DomComponent";
 
 import { ReplaceableComponent } from "./ReplaceableComponent";
+
+import { ContentComponent } from "@/components/ContentComponent";
+import { DomComponent } from "@/components/DomComponent";
 
 describe("ReplaceableComponent", () => {
 	it("load in without a previous element should cause a normal append", () => {

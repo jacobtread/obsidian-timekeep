@@ -4,13 +4,13 @@ import moment from "moment";
 import { v4 } from "uuid";
 import { describe, it, vi, beforeEach, afterEach, expect } from "vitest";
 
-import type { TimeEntry, Timekeep } from "@/timekeep/schema";
-
 import { createMockContainer } from "@/__mocks__/obsidian";
 import { defaultSettings, type TimekeepSettings } from "@/settings";
 import { createStore, type Store } from "@/store";
 
 import { TimesheetRunningEntryViewing } from "./TimesheetRunningEntryViewing";
+
+import type { TimeEntry, Timekeep } from "@/timekeep/schema";
 
 describe("TimesheetRunningEntry", () => {
 	let containerEl: HTMLElement;

@@ -6,8 +6,6 @@ import moment from "moment";
 import { v4 } from "uuid";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import type { TimeEntry, Timekeep } from "@/timekeep/schema";
-
 import { createMockContainer } from "@/__mocks__/obsidian";
 import { defaultSettings, TimekeepSettings } from "@/settings";
 import { createStore, type Store } from "@/store";
@@ -15,6 +13,8 @@ import { createStore, type Store } from "@/store";
 import { TimesheetRow } from "./TimesheetRow";
 import { TimesheetRowContent } from "./TimesheetRowContent";
 import { TimesheetRowContentEditing } from "./TimesheetRowContentEditing";
+
+import type { TimeEntry, Timekeep } from "@/timekeep/schema";
 
 describe("TimesheetRowContainer", () => {
 	let containerEl: HTMLElement;

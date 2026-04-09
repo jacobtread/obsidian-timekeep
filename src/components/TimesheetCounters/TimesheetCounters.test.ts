@@ -7,11 +7,12 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { createMockContainer } from "@/__mocks__/obsidian";
 import { defaultSettings, TimekeepSettings } from "@/settings";
 import { createStore, Store } from "@/store";
-import * as queries from "@/timekeep/queries";
-import { Timekeep } from "@/timekeep/schema";
 
 import { TimesheetCounters } from "./TimesheetCounters";
 import { TimesheetTimer } from "./TimesheetTimer";
+
+import * as queries from "@/timekeep/queries";
+import { Timekeep } from "@/timekeep/schema";
 
 describe("TimesheetCounters", () => {
 	let container: HTMLElement;

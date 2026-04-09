@@ -2,18 +2,20 @@ import moment from "moment";
 
 import type { TimekeepSettings } from "@/settings";
 import type { Store } from "@/store";
-import type { Timekeep } from "@/timekeep/schema";
+
+import { formatDuration } from "@/utils/time";
+
+import { TimesheetTimer } from "./TimesheetTimer";
 
 import { DomComponent } from "@/components/DomComponent";
+
 import {
 	getEntryDuration,
 	getRunningEntry,
 	getTotalDuration,
 	isKeepRunning,
 } from "@/timekeep/queries";
-import { formatDuration } from "@/utils/time";
-
-import { TimesheetTimer } from "./TimesheetTimer";
+import type { Timekeep } from "@/timekeep/schema";
 
 /**
  * Component for rendering the two live updating timers at the top of the

@@ -4,17 +4,19 @@ import moment from "moment";
 
 import type { TimekeepSettings } from "@/settings";
 import type { Store } from "@/store";
-import type { TimeEntry, Timekeep } from "@/timekeep/schema";
+
+import { assert } from "@/utils/assert";
+import { formatTimestamp } from "@/utils/time";
 
 import { createObsidianIcon } from "@/components/obsidianIcon";
 import { ReplaceableComponent } from "@/components/ReplaceableComponent";
 import { TimesheetEntryDuration } from "@/components/TimesheetEntryDuration";
 import { TimesheetEntryName } from "@/components/TimesheetEntryName";
+
 import { getRunningEntry, isEntryRunning } from "@/timekeep/queries";
+import type { TimeEntry, Timekeep } from "@/timekeep/schema";
 import { startNewNestedEntry } from "@/timekeep/start";
 import { setEntryCollapsed, updateEntry } from "@/timekeep/update";
-import { assert } from "@/utils/assert";
-import { formatTimestamp } from "@/utils/time";
 
 /**
  * Component for the contents of a timesheet row

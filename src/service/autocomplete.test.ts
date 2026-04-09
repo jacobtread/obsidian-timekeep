@@ -5,11 +5,12 @@ import { describe, expect, it, vi } from "vitest";
 import { MockVault } from "@/__mocks__/obsidian";
 import { defaultSettings } from "@/settings";
 import { createStore } from "@/store";
-import { Timekeep } from "@/timekeep/schema";
 import { createCodeBlock } from "@/utils/codeblock";
 
 import { TimekeepAutocomplete } from "./autocomplete";
 import { TimekeepRegistry } from "./registry";
+
+import { Timekeep } from "@/timekeep/schema";
 
 describe("TimekeepAutocomplete", () => {
 	describe("autocomplete enabled", () => {

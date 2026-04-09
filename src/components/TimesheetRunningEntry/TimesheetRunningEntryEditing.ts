@@ -1,12 +1,14 @@
 import type { TimekeepSettings } from "@/settings";
 import type { Store } from "@/store";
-import type { Timekeep } from "@/timekeep/schema";
+
+import { assert } from "@/utils/assert";
 
 import { DomComponent } from "@/components/DomComponent";
 import { createObsidianIcon } from "@/components/obsidianIcon";
+
 import { getRunningEntry } from "@/timekeep/queries";
+import type { Timekeep } from "@/timekeep/schema";
 import { updateEntry } from "@/timekeep/update";
-import { assert } from "@/utils/assert";
 
 /**
  * The editing section for editing the currently

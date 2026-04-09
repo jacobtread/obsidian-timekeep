@@ -8,13 +8,14 @@ import { beforeEach, it, describe, Mock, vi, expect, afterEach } from "vitest";
 
 import type { TimekeepSettings } from "@/settings";
 import type { Store } from "@/store";
-import type { TimeEntry, Timekeep } from "@/timekeep/schema";
 
 import { createMockContainer } from "@/__mocks__/obsidian";
 import { defaultSettings } from "@/settings";
 import { createStore } from "@/store";
 
 import { TimesheetRowContentEditing } from "./TimesheetRowContentEditing";
+
+import type { TimeEntry, Timekeep } from "@/timekeep/schema";
 
 describe("TimesheetRowContentEditing", () => {
 	let containerEl: HTMLElement;

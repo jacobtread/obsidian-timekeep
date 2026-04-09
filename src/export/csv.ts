@@ -2,6 +2,7 @@ import type { Moment } from "moment";
 
 import { RawTableRow, createRawTable } from "@/export";
 import { TimekeepSettings } from "@/settings";
+
 import { Timekeep } from "@/timekeep/schema";
 
 /**

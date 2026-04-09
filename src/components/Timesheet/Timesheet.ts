@@ -3,11 +3,13 @@ import type { App } from "obsidian";
 import type { CustomOutputFormat } from "@/output";
 import type { TimekeepSettings } from "@/settings";
 import type { Store } from "@/store";
-import type { Timekeep } from "@/timekeep/schema";
 
 import { ContentComponent } from "@/components/ContentComponent";
 import { TimesheetApp } from "@/components/TimesheetApp";
 import { TimesheetSaveError } from "@/components/TimesheetSaveError";
+
+import type { Timekeep } from "@/timekeep/schema";
+
 import { TimekeepAutocomplete } from "@/service/autocomplete";
 
 /**

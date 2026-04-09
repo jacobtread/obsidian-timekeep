@@ -2,8 +2,9 @@ import type { Moment } from "moment";
 
 import { v4 as uuid } from "uuid";
 
-import { TimeEntry, TimeEntryGroup } from "@/timekeep/schema";
 import { isEmptyString } from "@/utils/text";
+
+import { TimeEntry, TimeEntryGroup } from "@/timekeep/schema";
 
 /**
  * Creates a new entry that has just started

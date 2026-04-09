@@ -2,14 +2,16 @@ import moment from "moment";
 
 import type { TimekeepSettings } from "@/settings";
 import type { Store } from "@/store";
-import type { TimeEntry, Timekeep } from "@/timekeep/schema";
+
+import { assert } from "@/utils/assert";
+import { formatTimestamp } from "@/utils/time";
 
 import { DomComponent } from "@/components/DomComponent";
 import { createObsidianIcon } from "@/components/obsidianIcon";
+
 import { getPathToEntry } from "@/timekeep/queries";
+import type { TimeEntry, Timekeep } from "@/timekeep/schema";
 import { stopTimekeep } from "@/timekeep/update";
-import { assert } from "@/utils/assert";
-import { formatTimestamp } from "@/utils/time";
 
 /**
  * The "Running" timer section of the timesheet start are

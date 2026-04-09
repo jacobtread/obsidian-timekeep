@@ -6,13 +6,14 @@ import { beforeEach, it, describe, vi, expect } from "vitest";
 
 import type { TimekeepSettings } from "@/settings";
 import type { Store } from "@/store";
-import type { Timekeep } from "@/timekeep/schema";
 
 import { createMockContainer } from "@/__mocks__/obsidian";
 import { defaultSettings } from "@/settings";
 import { createStore } from "@/store";
 
 import { TimesheetRunningEntryEditing } from "./TimesheetRunningEntryEditing";
+
+import type { Timekeep } from "@/timekeep/schema";
 
 describe("TimesheetRunningEntryEditing", () => {
 	let containerEl: HTMLElement;

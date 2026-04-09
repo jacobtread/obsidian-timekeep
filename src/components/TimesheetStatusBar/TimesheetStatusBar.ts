@@ -1,15 +1,16 @@
 import { type App } from "obsidian";
 import { Component } from "obsidian";
 
+import { TimesheetStatusBarItem } from "./TimesheetStatusBarItem";
+
+import { getRunningEntry } from "@/timekeep/queries";
+import { Timekeep } from "@/timekeep/schema";
+
 import {
 	TimekeepEntryItemType,
 	TimekeepRegistry,
 	TimekeepRegistryItemRef,
 } from "@/service/registry";
-import { getRunningEntry } from "@/timekeep/queries";
-import { Timekeep } from "@/timekeep/schema";
-
-import { TimesheetStatusBarItem } from "./TimesheetStatusBarItem";
 
 export class TimesheetStatusBar extends Component {
 	/** Parent container element */

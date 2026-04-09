@@ -4,10 +4,11 @@ import moment from "moment";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
 import { createMockContainer } from "@/__mocks__/obsidian";
-import * as queries from "@/timekeep/queries";
 import * as timeUtils from "@/utils/time";
 
 import { TimesheetEntryDuration } from "./TimesheetEntryDuration";
+
+import * as queries from "@/timekeep/queries";
 
 describe("TimesheetEntryDuration", () => {
 	let container: HTMLElement;

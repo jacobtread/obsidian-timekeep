@@ -11,17 +11,19 @@ import { App, Notice, Platform } from "obsidian";
 import pdfMake from "pdfmake";
 
 import type { TimekeepSettings } from "@/settings";
-import type { TimeEntry, Timekeep } from "@/timekeep/schema";
 
-import { FileNamePromptModal } from "@/modals/FileNamePromptModal";
 import { PdfExportBehavior } from "@/settings";
-import { getEntryDuration, getTotalDuration } from "@/timekeep/queries";
 import {
 	formatDurationLong,
 	formatDurationShort,
 	formatPdfDate,
 	formatPdfRowDate,
 } from "@/utils/time";
+
+import { FileNamePromptModal } from "@/modals/FileNamePromptModal";
+
+import { getEntryDuration, getTotalDuration } from "@/timekeep/queries";
+import type { TimeEntry, Timekeep } from "@/timekeep/schema";
 
 // Embedded fonts
 import RobotoBold from "@/fonts/Roboto-Bold.ttf";

@@ -2,12 +2,13 @@ import type { App } from "obsidian";
 
 import type { TimekeepSettings } from "@/settings";
 import type { Store } from "@/store";
-import type { TimeEntry, Timekeep } from "@/timekeep/schema";
-
-import { ContentComponent } from "@/components/ContentComponent";
 
 import { TimesheetRowContent } from "./TimesheetRowContent";
 import { TimesheetRowContentEditing } from "./TimesheetRowContentEditing";
+
+import { ContentComponent } from "@/components/ContentComponent";
+
+import type { TimeEntry, Timekeep } from "@/timekeep/schema";
 
 /**
  * This container allows a entry to switch between the default and

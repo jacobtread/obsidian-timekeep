@@ -2,10 +2,11 @@ import { Component } from "obsidian";
 
 import { TimekeepSettings } from "@/settings";
 import { createStore, Store } from "@/store";
-import { getEntriesNames } from "@/timekeep/queries";
 import { isNumberText } from "@/utils/number";
 
 import { TimekeepEntryItemType, TimekeepRegistry } from "./registry";
+
+import { getEntriesNames } from "@/timekeep/queries";
 
 /**
  * Autocomplete registry to provide entry name autocomplete based

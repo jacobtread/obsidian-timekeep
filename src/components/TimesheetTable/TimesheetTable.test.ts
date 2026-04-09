@@ -5,14 +5,14 @@ import { type App } from "obsidian";
 import { v4 } from "uuid";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import type { Timekeep } from "@/timekeep/schema";
-
 import { createMockContainer } from "@/__mocks__/obsidian";
 import { defaultSettings, type TimekeepSettings } from "@/settings";
 import { createStore, type Store } from "@/store";
 import { assert } from "@/utils/assert";
 
 import { TimesheetTable } from "./TimesheetTable";
+
+import type { Timekeep } from "@/timekeep/schema";
 
 describe("TimesheetTable", () => {
 	let containerEl: HTMLElement;

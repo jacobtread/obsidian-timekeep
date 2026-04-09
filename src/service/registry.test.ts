@@ -7,7 +7,6 @@ import { describe, vi, it, expect } from "vitest";
 import { MockMarkdownView, MockVault } from "@/__mocks__/obsidian";
 import { defaultSettings } from "@/settings";
 import { createStore } from "@/store";
-import { stripTimekeepRuntimeData, Timekeep } from "@/timekeep/schema";
 import { createCodeBlock } from "@/utils/codeblock";
 
 import {
@@ -16,6 +15,8 @@ import {
 	TimekeepRegistryEntryMarkdown,
 	TimekeepRegistryItemRef,
 } from "./registry";
+
+import { stripTimekeepRuntimeData, Timekeep } from "@/timekeep/schema";
 
 describe("TimekeepRegistry", () => {
 	describe("getFileRegistryEntry", () => {

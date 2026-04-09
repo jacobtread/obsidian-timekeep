@@ -5,15 +5,17 @@ import { beforeEach, it, describe, afterEach, vi, expect } from "vitest";
 
 import type { TimekeepSettings } from "@/settings";
 import type { Store } from "@/store";
-import type { Timekeep } from "@/timekeep/schema";
 
 import { createMockContainer, MockVault } from "@/__mocks__/obsidian";
-import { TimekeepAutocomplete } from "@/service/autocomplete";
-import { TimekeepRegistry } from "@/service/registry";
 import { defaultSettings } from "@/settings";
 import { createStore } from "@/store";
 
 import { TimesheetStartForm } from "./TimesheetStartForm";
+
+import type { Timekeep } from "@/timekeep/schema";
+
+import { TimekeepAutocomplete } from "@/service/autocomplete";
+import { TimekeepRegistry } from "@/service/registry";
 
 vi.mock(import("uuid"), async (importOriginal) => {
 	return {

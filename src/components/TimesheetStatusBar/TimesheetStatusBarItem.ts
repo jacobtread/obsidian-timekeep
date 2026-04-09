@@ -1,6 +1,7 @@
 import { DomComponent } from "@/components/DomComponent";
 import { createObsidianIcon } from "@/components/obsidianIcon";
 import { TimesheetEntryDuration } from "@/components/TimesheetEntryDuration";
+
 import { TimeEntry } from "@/timekeep/schema";
 
 export class TimesheetStatusBarItem extends DomComponent {

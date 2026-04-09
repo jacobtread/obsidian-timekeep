@@ -2,15 +2,18 @@ import moment from "moment";
 
 import type { TimekeepSettings } from "@/settings";
 import type { Store } from "@/store";
-import type { Timekeep } from "@/timekeep/schema";
+
+import { assert } from "@/utils/assert";
 
 import { DomComponent } from "@/components/DomComponent";
 import { createObsidianIcon } from "@/components/obsidianIcon";
 import { TimesheetNameInput } from "@/components/TimesheetNameInput";
-import { TimekeepAutocomplete } from "@/service/autocomplete";
+
 import { getRunningEntry } from "@/timekeep/queries";
+import type { Timekeep } from "@/timekeep/schema";
 import { startNewEntry } from "@/timekeep/start";
-import { assert } from "@/utils/assert";
+
+import { TimekeepAutocomplete } from "@/service/autocomplete";
 
 /**
  * The start section above the timesheet table

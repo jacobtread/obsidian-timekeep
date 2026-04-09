@@ -1,13 +1,15 @@
 import type { TimekeepSettings } from "@/settings";
 import type { Store } from "@/store";
-import type { Timekeep } from "@/timekeep/schema";
 
-import { ContentComponent } from "@/components/ContentComponent";
-import { getRunningEntry } from "@/timekeep/queries";
 import { assert } from "@/utils/assert";
 
 import { TimesheetRunningEntryEditing } from "./TimesheetRunningEntryEditing";
 import { TimesheetRunningEntryViewing } from "./TimesheetRunningEntryViewing";
+
+import { ContentComponent } from "@/components/ContentComponent";
+
+import { getRunningEntry } from "@/timekeep/queries";
+import type { Timekeep } from "@/timekeep/schema";
 
 export class TimesheetRunningEntry extends ContentComponent<
 	TimesheetRunningEntryViewing | TimesheetRunningEntryEditing

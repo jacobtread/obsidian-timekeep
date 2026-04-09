@@ -5,11 +5,13 @@ import type { CustomOutputFormat } from "@/output";
 import type { TimekeepSettings } from "@/settings";
 import type { Store } from "@/store";
 
-import { DomComponent } from "@/components/DomComponent";
 import { createCSV, createMarkdownTable } from "@/export";
 import { exportPdf } from "@/export/pdf";
-import { stripTimekeepRuntimeData, Timekeep } from "@/timekeep/schema";
 import { assert } from "@/utils/assert";
+
+import { DomComponent } from "@/components/DomComponent";
+
+import { stripTimekeepRuntimeData, Timekeep } from "@/timekeep/schema";
 
 /**
  * Export actions section component
