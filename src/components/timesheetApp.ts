@@ -9,7 +9,8 @@ import { Timekeep } from "@/timekeep/schema";
 import { DomComponent } from "./domComponent";
 import { TimesheetCounters } from "./timesheetCounters";
 import { TimesheetExportActions } from "./timesheetExportActions";
-import { TimesheetStart } from "./timesheetStart";
+import { TimesheetStartContainer } from "./timesheetStartContainer";
+import { TimesheetStartForm } from "./timesheetStartForm";
 import { TimesheetTable } from "./timesheetTable";
 
 /**
@@ -53,14 +54,18 @@ export class TimesheetApp extends DomComponent {
 
 		this.wrapperEl = wrapperEl;
 
+		console.log(this);
+
 		const counters = new TimesheetCounters(wrapperEl, this.settings, this.timekeep);
 
-		const start = new TimesheetStart(
+		const startForm = new TimesheetStartForm(
 			wrapperEl,
 			this.timekeep,
 			this.settings,
 			this.autocomplete
 		);
+
+		const startContainer = new TimesheetStartContainer(wrapperEl, this.timekeep, this.settings);
 
 		const table = new TimesheetTable(wrapperEl, this.app, this.timekeep, this.settings);
 
@@ -73,7 +78,8 @@ export class TimesheetApp extends DomComponent {
 		);
 
 		this.addChild(counters);
-		this.addChild(start);
+		this.addChild(startForm);
+		this.addChild(startContainer);
 		this.addChild(table);
 		this.addChild(exportActions);
 	}

@@ -9,27 +9,20 @@ import { getRunningEntry } from "@/timekeep/queries";
 import { startNewEntry } from "@/timekeep/start";
 import { assert } from "@/utils/assert";
 
-import { ContentComponent } from "./contentComponent";
+import { DomComponent } from "./domComponent";
 import { createObsidianIcon } from "./obsidianIcon";
 import { TimesheetNameInput } from "./timesheetNameInput";
-import { TimesheetStartEditing } from "./timesheetStartEditing";
-import { TimesheetStartRunning } from "./timesheetStartRunning";
 
 /**
  * The start section above the timesheet table
  */
-export class TimesheetStart extends ContentComponent<
-	TimesheetStartRunning | TimesheetStartEditing
-> {
+export class TimesheetStartForm extends DomComponent {
 	/** Access to the timekeep */
 	timekeep: Store<Timekeep>;
 	/** Access to the timekeep settings */
 	settings: Store<TimekeepSettings>;
 	/** Access to autocomplete */
 	autocomplete: TimekeepAutocomplete;
-
-	/** Content container element */
-	#contentEl: HTMLElement | undefined;
 
 	/** Name input for starting entries */
 	#nameInput: TimesheetNameInput | undefined;
@@ -54,16 +47,10 @@ export class TimesheetStart extends ContentComponent<
 	onload(): void {
 		super.onload();
 
-		const wrapperEl = this.containerEl.createDiv();
-		this.wrapperEl = wrapperEl;
-
-		const contentEl = wrapperEl.createDiv();
-		this.#contentEl = contentEl;
-
-		this.setCurrentView();
-
-		const formEl = wrapperEl.createEl("form", { cls: "timekeep-start-area" });
+		const formEl = this.containerEl.createEl("form", { cls: "timekeep-start-area" });
 		formEl.setAttribute("data-area", "start");
+		this.wrapperEl = formEl;
+
 		this.registerDomEvent(formEl, "submit", this.onStart.bind(this));
 
 		const nameWrapperEl = formEl.createDiv({ cls: "timekeep-name-wrapper" });
@@ -92,83 +79,21 @@ export class TimesheetStart extends ContentComponent<
 		this.#startButtonEl = startButton;
 
 		const onUpdate = this.onUpdate.bind(this);
-		const unsubscribeTimekeep = this.timekeep.subscribe(onUpdate);
+		this.register(this.timekeep.subscribe(onUpdate));
 		onUpdate();
-
-		this.register(unsubscribeTimekeep);
 	}
 
 	onUpdate() {
-		this.updateRunning();
+		const timekeep = this.timekeep.getState();
+		const currentEntry = getRunningEntry(timekeep.entries);
 
-		if (this.getContent() instanceof TimesheetStartEditing) {
-			this.setEditingView();
-			return;
-		}
-
-		this.setCurrentView();
-	}
-
-	updateRunning() {
 		const blockPauseWarningEl = this.#blockPauseWarningEl;
 		const startButtonEl = this.#startButtonEl;
 		assert(blockPauseWarningEl && startButtonEl, "Elements should be defined");
 
-		const timekeep = this.timekeep.getState();
-		const currentEntry = getRunningEntry(timekeep.entries);
 		const isTimekeepRunning = currentEntry !== null;
-
 		blockPauseWarningEl.hidden = currentEntry === null || currentEntry.startTime === null;
 		startButtonEl.title = isTimekeepRunning ? "Stop and start" : "Start";
-	}
-
-	/**
-	 * Switch to the editing view
-	 */
-	setEditingView() {
-		const contentEl = this.#contentEl;
-		assert(contentEl, "Content element should be defined");
-
-		const timekeep = this.timekeep.getState();
-		const currentEntry = getRunningEntry(timekeep.entries);
-		if (!currentEntry) {
-			return this.setContent(undefined);
-		}
-
-		this.setContent(
-			new TimesheetStartEditing(
-				contentEl,
-				this.timekeep,
-				this.settings,
-				currentEntry.name,
-				this.setCurrentView.bind(this)
-			)
-		);
-	}
-
-	/**
-	 * Switch to the default creation view
-	 */
-	setCurrentView() {
-		const contentEl = this.#contentEl;
-		assert(contentEl, "Content element should be defined");
-
-		const timekeep = this.timekeep.getState();
-		const currentEntry = getRunningEntry(timekeep.entries);
-
-		if (currentEntry === null || currentEntry.startTime === null) {
-			return this.setContent(undefined);
-		}
-
-		this.setContent(
-			new TimesheetStartRunning(
-				contentEl,
-				this.timekeep,
-				this.settings,
-				currentEntry,
-				this.setEditingView.bind(this)
-			)
-		);
 	}
 
 	onStart(event: Event) {

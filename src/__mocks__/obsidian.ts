@@ -251,36 +251,44 @@ export class MockVault {
 export class MockComponent {
 	private children: Component[] = [];
 	private loaded = false;
-	private events: EventRef[] = [];
 	private callbacks: VoidFunction[] = [];
 
+	constructor() {}
+
 	load() {
+		if (this.loaded) {
+			return;
+		}
+
 		this.loaded = true;
 		this.onload();
-		this.children.map((c) => c.load());
+		this.children.forEach((c) => c.load());
 	}
 
 	unload() {
-		this.children.forEach((c) => c.unload());
-		this.onunload();
-
-		for (const eventRef of this.events) {
-			const ref = eventRef as MockEventRef;
-			ref.callback();
+		if (!this.loaded) {
+			return;
 		}
+
+		this.loaded = false;
+
+		this.children.forEach((c) => c.unload());
 
 		for (const callback of this.callbacks) {
 			callback();
 		}
 
-		this.loaded = false;
+		this.onunload();
 	}
 
 	onload() {}
 	onunload() {}
 
 	registerEvent(eventRef: EventRef) {
-		this.events.push(eventRef);
+		this.callbacks.push(() => {
+			const ref = eventRef as MockEventRef;
+			ref.callback();
+		});
 	}
 
 	register(callback: VoidFunction) {

@@ -131,12 +131,12 @@ export class TimesheetStartRunning extends DomComponent {
 		pathEl.empty();
 
 		const pathToEntry = getPathToEntry(timekeep.entries, currentEntry);
-		if (pathToEntry && pathToEntry.length > 0) {
-			for (let i = 0; i < pathToEntry.length; i++) {
-				const path = pathToEntry[i];
-				const text = `${path.name} ${i < pathToEntry.length - 1 ? " >" : ""}`;
-				pathEl.createSpan({ cls: "timekeep-path-to-entry__segment", text });
-			}
+		assert(pathToEntry, "Entry path should exist");
+
+		for (let i = 0; i < pathToEntry.length; i++) {
+			const path = pathToEntry[i];
+			const text = `${path.name}${i < pathToEntry.length - 1 ? " >" : ""}`;
+			pathEl.createSpan({ cls: "timekeep-path-to-entry__segment", text });
 		}
 	}
 
