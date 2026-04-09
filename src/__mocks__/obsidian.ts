@@ -24,7 +24,7 @@ export abstract class MockTAbstractFile {
 
 	constructor(vault: Vault, path: string, parent: MockTFolder | null) {
 		const nameIndex = path.lastIndexOf("/");
-		const name = path.substring(nameIndex);
+		const name = path.substring(nameIndex + 1);
 
 		this.vault = vault;
 		this.path = path;
@@ -44,6 +44,7 @@ export class MockTFolder extends MockTAbstractFile {
 	) {
 		super(vault, path, parent);
 		this.children = children;
+		this.path = path + "/";
 	}
 
 	isRoot(): boolean {
@@ -144,6 +145,13 @@ export class MockVault {
 		}
 	});
 
+	create = vi.fn(async (path, data: string) => {
+		const file = new MockTFile(this.asVault(), path, data);
+		this._files[path] = file;
+		this._cache[file.path] = data;
+		this.emitEvent("create", file);
+	});
+
 	cachedRead = vi.fn(async (file: TFile) => {
 		if (!(file instanceof MockTFile)) {
 			throw new Error("can only read files");
@@ -158,6 +166,16 @@ export class MockVault {
 
 	addFile(path: string, value: string): TFile {
 		const file = new MockTFile(this.asVault(), path, value);
+
+		const nameIndex = path.lastIndexOf("/");
+		const folderPath = path.substring(0, nameIndex);
+
+		const folder = this._files[folderPath];
+
+		if (folder && folder instanceof MockTFolder) {
+			folder.children.push(file);
+		}
+
 		this._files[path] = file;
 
 		this.emitEvent("create", file);

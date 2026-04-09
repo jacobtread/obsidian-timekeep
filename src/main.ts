@@ -1,5 +1,5 @@
 import type { Moment } from "moment";
-import type { Vault, TFile, PluginManifest, App } from "obsidian";
+import type { Vault, TFile, PluginManifest, App, TAbstractFile, Menu } from "obsidian";
 
 import { Plugin, TFolder } from "obsidian";
 
@@ -11,6 +11,7 @@ import createMerged from "@/commands/createMerged";
 import exportMergedPdf from "@/commands/exportMergedPdf";
 import findRunningTrackers from "@/commands/findRunningTrackers";
 import insertTracker from "@/commands/insertTracker";
+import newTimekeepFile from "@/commands/newTimekeepFile";
 import stopAllTimekeepsCommand from "@/commands/stopAllTimekeeps";
 import stopFileTimekeepsCommand from "@/commands/stopFileTimekeeps";
 import { TimesheetStatusBar } from "@/components/TimesheetStatusBar";
@@ -31,6 +32,8 @@ import { stopAllTimekeeps } from "@/timekeep/stopAllTimekeeps";
 import { stopFileTimekeeps } from "@/timekeep/stopFileTimekeeps";
 import TimekeepFileView from "@/views/TimekeepFileView";
 import TimekeepMarkdownView from "@/views/TimekeepMarkdownView";
+
+import { createNewTimekeepFile } from "./timekeep/createNewTimekeepFile";
 
 export default class TimekeepPlugin extends Plugin {
 	/** Store containing the plugin settings */
@@ -126,6 +129,7 @@ export default class TimekeepPlugin extends Plugin {
 		this.addCommand(exportMergedPdf(this.app, this.registry, this.settingsStore));
 		this.addCommand(stopAllTimekeepsCommand(this.app));
 		this.addCommand(stopFileTimekeepsCommand(this.app));
+		this.addCommand(newTimekeepFile(this.app));
 
 		// Custom timekeep file format
 		this.registerView("timekeep", (leaf) => {
@@ -139,36 +143,20 @@ export default class TimekeepPlugin extends Plugin {
 
 		this.registerExtensions(["timekeep"], "timekeep");
 
-		this.app.workspace.on("file-menu", (menu, parent) => {
-			if (!(parent instanceof TFolder)) return;
+		this.app.workspace.on("file-menu", this.onFileMenu.bind(this));
+	}
 
-			const folder = parent;
+	private onFileMenu(menu: Menu, parent: TAbstractFile) {
+		if (!(parent instanceof TFolder)) return;
 
-			menu.addItem((item) => {
-				item.setTitle("New Timekeep")
-					.setIcon("clock")
-					.onClick(async () => {
-						const folderPath = folder.path;
+		const folder = parent;
 
-						const isNameTaken = (name: string) =>
-							folder.children.find((child) => child.name === name) !== undefined;
-
-						let name = "Untitled.timekeep";
-						let index = 1;
-
-						while (isNameTaken(name)) {
-							name = `Untitled ${index}.timekeep`;
-							index += 1;
-						}
-
-						const filePath = `${folderPath}${name}`;
-						const file = await this.app.vault.create(filePath, "");
-
-						// Open the created file
-						const leaf = this.app.workspace.getLeaf();
-						await leaf.openFile(file);
-					});
-			});
+		menu.addItem((item) => {
+			item.setTitle("New Timekeep")
+				.setIcon("clock")
+				.onClick(async () => {
+					await createNewTimekeepFile(this.app, folder);
+				});
 		});
 	}
 
