@@ -2,15 +2,15 @@ import { App, TFile, Modal, TextComponent, ButtonComponent } from "obsidian";
 import { v4 as uuid } from "uuid";
 
 import { exportPdf } from "@/export/pdf";
+import { TimekeepEntryItemType, TimekeepRegistry, TimekeepRegistryEntry } from "@/service/registry";
 import { TimekeepSettings } from "@/settings";
 import { Store } from "@/store";
-import { extractTimekeepCodeblocks } from "@/timekeep/parser";
 import { Timekeep, stripTimekeepRuntimeData } from "@/timekeep/schema";
 
 interface TimekeepResult {
 	timekeep: Timekeep;
 	file: TFile;
-	index: number;
+	index?: number;
 	id: string;
 }
 
@@ -25,12 +25,19 @@ export class TimekeepMergerModal extends Modal {
 	private selectContainer: HTMLDivElement | undefined;
 	private loadingEl: HTMLElement | undefined;
 	private exportPdf: boolean;
+	private registry: TimekeepRegistry;
 	private settings: Store<TimekeepSettings>;
 
-	constructor(app: App, settings: Store<TimekeepSettings>, exportPdf = false) {
+	constructor(
+		app: App,
+		registry: TimekeepRegistry,
+		settings: Store<TimekeepSettings>,
+		exportPdf = false
+	) {
 		super(app);
 
 		this.exportPdf = exportPdf;
+		this.registry = registry;
 		this.settings = settings;
 
 		this.setTitle("Create merged timekeep" + (exportPdf ? " pdf" : ""));
@@ -124,7 +131,23 @@ export class TimekeepMergerModal extends Modal {
 		});
 
 		try {
-			this.results = await this.getResults();
+			const settings = this.settings.getState();
+
+			// When the registry is enabled source the entries from the registry
+			// as this is much faster than triggering a search
+			if (settings.registryEnabled) {
+				const entries = this.registry.entries.getState();
+				const results: TimekeepResult[] =
+					TimekeepMergerModal.getResultsFromEntries(entries);
+				this.results = results;
+			}
+
+			// Fallback to searching using the registry logic without caching it if the
+			// registry is disabled
+			if (this.results === undefined) {
+				const entries = await TimekeepRegistry.getTimekeepsWithinVault(this.app.vault);
+				this.results = TimekeepMergerModal.getResultsFromEntries(entries);
+			}
 
 			this.updateFilteredResults();
 			this.renderList();
@@ -218,37 +241,6 @@ export class TimekeepMergerModal extends Modal {
 	}
 
 	/**
-	 * Locate all timekeep codeblocks in files
-	 */
-	async getResults(): Promise<TimekeepResult[]> {
-		const markdownFiles = this.app.vault.getMarkdownFiles();
-		const batchSize = 25;
-
-		const results: TimekeepResult[] = [];
-
-		for (let i = 0; i < markdownFiles.length; i += batchSize) {
-			const batch = markdownFiles.slice(i, i + batchSize);
-
-			await Promise.allSettled(
-				batch.map(async (file) => {
-					const content = await this.app.vault.cachedRead(file);
-					const codeblocks = extractTimekeepCodeblocks(content);
-
-					for (let i = 0; i < codeblocks.length; i += 1) {
-						results.push({
-							timekeep: codeblocks[i],
-							file,
-							index: i,
-							id: uuid(),
-						});
-					}
-				})
-			);
-		}
-		return results;
-	}
-
-	/**
 	 * Render the list of filtered results
 	 */
 	private renderList() {
@@ -288,7 +280,9 @@ export class TimekeepMergerModal extends Modal {
 			const title = label.createEl("span", {
 				cls: "timekeep-merge-item-title",
 			});
-			title.textContent = `${result.file.basename}: Timekeep ${result.index + 1}`;
+			title.textContent = result.index
+				? `${result.file.basename}: Timekeep ${result.index + 1}`
+				: `${result.file.basename}`;
 
 			const path = label.createEl("span", {
 				cls: "timekeep-merge-item-path",
@@ -307,5 +301,36 @@ export class TimekeepMergerModal extends Modal {
 		this.listContainer = undefined;
 		this.loadingEl = undefined;
 		this.selectAll = undefined;
+	}
+
+	static getResultsFromEntries(entries: TimekeepRegistryEntry[]): TimekeepResult[] {
+		const results: TimekeepResult[] = [];
+		for (const entry of entries) {
+			switch (entry.type) {
+				case TimekeepEntryItemType.FILE: {
+					const timekeep = entry.timekeep;
+					results.push({ id: uuid(), file: entry.file, timekeep });
+
+					break;
+				}
+				case TimekeepEntryItemType.MARKDOWN: {
+					for (let i = 0; i < entry.timekeeps.length; i += 1) {
+						const timekeepWithPosition = entry.timekeeps[i];
+						const timekeep = timekeepWithPosition.timekeep;
+
+						results.push({
+							id: uuid(),
+							file: entry.file,
+							timekeep,
+							index: i,
+						});
+					}
+
+					break;
+				}
+			}
+		}
+
+		return results;
 	}
 }

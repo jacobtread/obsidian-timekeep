@@ -122,8 +122,8 @@ export default class TimekeepPlugin extends Plugin {
 		// Register commands
 		this.addCommand(insertTracker());
 		this.addCommand(findRunningTrackers(this.app, this.registry, this.settingsStore));
-		this.addCommand(createMerged(this.app, this.settingsStore));
-		this.addCommand(exportMergedPdf(this.app, this.settingsStore));
+		this.addCommand(createMerged(this.app, this.registry, this.settingsStore));
+		this.addCommand(exportMergedPdf(this.app, this.registry, this.settingsStore));
 		this.addCommand(stopAllTimekeepsCommand(this.app));
 		this.addCommand(stopFileTimekeepsCommand(this.app));
 
