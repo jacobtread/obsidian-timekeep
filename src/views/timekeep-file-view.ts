@@ -1,8 +1,8 @@
 import moment from "moment";
 import { EditableFileView, TFile, WorkspaceLeaf } from "obsidian";
 
-import { Timesheet } from "@/components/timesheet";
-import { TimesheetLoadError } from "@/components/timesheetLoadError";
+import { Timesheet } from "@/components/Timesheet";
+import { TimesheetLoadError } from "@/components/TimesheetLoadError";
 import { CustomOutputFormat } from "@/output";
 import { TimekeepAutocomplete } from "@/service/autocomplete";
 import { TimekeepSettings } from "@/settings";

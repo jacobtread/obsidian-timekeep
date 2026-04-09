@@ -1,0 +1,1 @@
+export { ContentComponent } from "./ContentComponent";

@@ -13,7 +13,7 @@ import findRunningTrackers from "@/commands/findRunningTrackers";
 import insertTracker from "@/commands/insertTracker";
 import stopAllTimekeepsCommand from "@/commands/stopAllTimekeeps";
 import stopFileTimekeepsCommand from "@/commands/stopFileTimekeeps";
-import { TimekeepStatusBar } from "@/components/timekeepStatusBar";
+import { TimesheetStatusBar } from "@/components/TimesheetStatusBar";
 import { TimekeepAutocomplete } from "@/service/autocomplete";
 import { TimekeepRegistry } from "@/service/registry";
 import { defaultSettings, TimekeepSettings, legacySettingsCompatibility } from "@/settings";
@@ -58,7 +58,7 @@ export default class TimekeepPlugin extends Plugin {
 	registry: TimekeepRegistry;
 
 	/** Currently loaded status bar view if present */
-	#statusBarView: TimekeepStatusBar | null = null;
+	#statusBarView: TimesheetStatusBar | null = null;
 
 	constructor(app: App, manifest: PluginManifest) {
 		super(app, manifest);
@@ -201,7 +201,7 @@ export default class TimekeepPlugin extends Plugin {
 		if (!settings.statusBarEnabled) return;
 
 		const containerEl = this.addStatusBarItem();
-		const statusBarView = new TimekeepStatusBar(containerEl, this.app, this.registry);
+		const statusBarView = new TimesheetStatusBar(containerEl, this.app, this.registry);
 		this.addChild(statusBarView);
 		this.#statusBarView = statusBarView;
 	}

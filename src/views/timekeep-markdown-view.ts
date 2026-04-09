@@ -7,8 +7,8 @@ import { TFile, MarkdownRenderChild } from "obsidian";
 import type { CustomOutputFormat } from "@/output";
 import type { TimekeepSettings } from "@/settings";
 
-import { Timesheet } from "@/components/timesheet";
-import { TimesheetLoadError } from "@/components/timesheetLoadError";
+import { Timesheet } from "@/components/Timesheet";
+import { TimesheetLoadError } from "@/components/TimesheetLoadError";
 import { TimekeepAutocomplete } from "@/service/autocomplete";
 import { type Store, createStore } from "@/store";
 import { type LoadResult, load, replaceTimekeepCodeblock } from "@/timekeep/parser";

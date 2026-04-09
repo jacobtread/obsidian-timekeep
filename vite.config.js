@@ -61,7 +61,12 @@ export default defineConfig((env) => ({
 		setupFiles: path.resolve(__dirname, "src", "__mocks__", "setupObsidianMocks.ts"),
 		coverage: {
 			// Exclude mocks and fixtures from coverage
-			exclude: ["**/__mocks__/**", "**/__fixtures__/**", "*.ttf"],
+			exclude: [
+				"**/__mocks__/**",
+				"**/__fixtures__/**",
+				"*.ttf",
+				"**/components/**/index.ts",
+			],
 		},
 	},
 }));
