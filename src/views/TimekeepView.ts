@@ -1,6 +1,7 @@
 import moment from "moment";
 import { App } from "obsidian";
 
+import { MockNotice } from "@/__mocks__/obsidian";
 import { CustomOutputFormat } from "@/output";
 import { TimesheetSaveAdapter } from "@/save/TimesheetSaveAdapter";
 import { TimekeepSettings } from "@/settings";
@@ -127,15 +128,15 @@ export default class TimekeepView extends ContentComponent<
 			if (this.saveError.getState()) {
 				this.saveError.setState(false);
 			}
-
-			return true;
 		} catch (e) {
 			console.error("Failed to save timekeep", e);
 
 			try {
-				await this.saveFallback(timekeep);
+				const fileName = await this.saveFallback(timekeep);
+				new MockNotice(`Failed to save timekeep, backup saved to: ${fileName}`);
 			} catch (e) {
 				console.error("Couldn't save timekeep fallback", e);
+				new MockNotice("Failed to save timekeep and unable to save fallback file");
 			}
 
 			this.saveError.setState(true);
@@ -162,5 +163,7 @@ export default class TimekeepView extends ContentComponent<
 			backupFileName,
 			JSON.stringify(stripTimekeepRuntimeData(timekeep))
 		);
+
+		return backupFileName;
 	}
 }
