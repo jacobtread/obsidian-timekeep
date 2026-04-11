@@ -1,36 +1,40 @@
+import { App } from "obsidian";
+
 import { DomComponent } from "@/components/DomComponent";
 import { createObsidianIcon } from "@/components/obsidianIcon";
 import { TimesheetEntryDuration } from "@/components/TimesheetEntryDuration";
 
 import { TimeEntry } from "@/timekeep/schema";
 
+import { TimekeepRegistry, TimekeepRegistryItemRef } from "@/service/registry";
+
 export class TimesheetStatusBarItem extends DomComponent {
+	/** Access to the obsidian app */
+	app: App;
 	/** The entry this duration belongs to */
 	entry: TimeEntry;
-
+	/** The registry for timekeeps */
+	registry: TimekeepRegistry;
+	/** The reference to the item */
+	ref: TimekeepRegistryItemRef;
 	/** Currently tracked background interval for content */
 	currentContentInterval: number | undefined;
-
 	/** Component for rendering the real time updating duration */
 	duration: TimesheetEntryDuration;
 
-	/** Callback to open the file when the content is clicked */
-	onOpen: VoidFunction;
-	/** Callback to stop the timekeep item */
-	onStop: VoidFunction;
-
 	constructor(
 		containerEl: HTMLElement,
+		app: App,
+		registry: TimekeepRegistry,
 		entry: TimeEntry,
-		onOpen: VoidFunction,
-		onStop: VoidFunction
+		ref: TimekeepRegistryItemRef
 	) {
 		super(containerEl);
 
+		this.app = app;
+		this.registry = registry;
 		this.entry = entry;
-
-		this.onOpen = onOpen;
-		this.onStop = onStop;
+		this.ref = ref;
 	}
 
 	onload(): void {
@@ -58,7 +62,19 @@ export class TimesheetStatusBarItem extends DomComponent {
 
 		this.addChild(new TimesheetEntryDuration(contentEl, entry));
 
-		this.registerDomEvent(stopIcon, "click", this.onStop);
-		this.registerDomEvent(contentEl, "click", this.onOpen);
+		this.registerDomEvent(stopIcon, "click", this.onStop.bind(this));
+		this.registerDomEvent(contentEl, "click", this.onOpen.bind(this));
+	}
+
+	async onStop() {
+		try {
+			await this.registry.tryStopEntry(this.ref);
+		} catch (e) {
+			console.error("Failed to stop timekeep", e);
+		}
+	}
+
+	async onOpen() {
+		await TimekeepRegistry.openItemRef(this.app.workspace, this.ref);
 	}
 }

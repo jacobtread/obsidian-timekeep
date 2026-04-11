@@ -1,5 +1,6 @@
 import { type App } from "obsidian";
 import { Component } from "obsidian";
+import { assert } from "vitest";
 
 import { TimesheetStatusBarItem } from "./TimesheetStatusBarItem";
 
@@ -17,7 +18,7 @@ export class TimesheetStatusBar extends Component {
 	#containerEl: HTMLElement;
 
 	/** Wrapper container element for entries */
-	#wrapperEl: HTMLElement;
+	wrapperEl: HTMLElement;
 
 	/** Access to the app instance */
 	app: App;
@@ -40,7 +41,7 @@ export class TimesheetStatusBar extends Component {
 		super.onload();
 
 		const wrapperEl = this.#containerEl.createDiv({ cls: "timekeep-status-bar" });
-		this.#wrapperEl = wrapperEl;
+		this.wrapperEl = wrapperEl;
 
 		const render = this.render.bind(this);
 		const unsubscribe = this.registry.entries.subscribe(render);
@@ -85,40 +86,20 @@ export class TimesheetStatusBar extends Component {
 	}
 
 	renderEntry(timekeep: Timekeep, ref: TimekeepRegistryItemRef) {
-		const wrapperEl = this.#wrapperEl;
-		if (!wrapperEl) return;
+		const wrapperEl = this.wrapperEl;
+		assert(wrapperEl, "Wrapper element should be defined on render");
 
 		const runningEntry = getRunningEntry(timekeep.entries);
 		if (runningEntry === null) return;
 
 		const item = new TimesheetStatusBarItem(
 			wrapperEl,
+			this.app,
+			this.registry,
 			runningEntry,
-			() => {
-				void this.onOpen(ref);
-			},
-			() => {
-				void this.onStop(ref);
-			}
+			ref
 		);
-
 		this.items.push(item);
 		item.load();
-	}
-
-	async onStop(ref: TimekeepRegistryItemRef) {
-		try {
-			await this.tryStop(ref);
-		} catch (e) {
-			console.error("Failed to stop timekeep", e);
-		}
-	}
-
-	async tryStop(ref: TimekeepRegistryItemRef) {
-		await this.registry.tryStopEntry(ref);
-	}
-
-	async onOpen(ref: TimekeepRegistryItemRef) {
-		await TimekeepRegistry.openItemRef(this.app.workspace, ref);
 	}
 }
