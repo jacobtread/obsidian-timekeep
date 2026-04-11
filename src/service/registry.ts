@@ -1,4 +1,4 @@
-import type { TAbstractFile, Vault, Workspace } from "obsidian";
+import type { EventRef, TAbstractFile, Vault, Workspace } from "obsidian";
 
 import moment from "moment";
 import { Component, MarkdownView, TFile } from "obsidian";
@@ -17,7 +17,8 @@ import {
 	type TimekeepWithPosition,
 } from "@/timekeep/parser";
 import { getRunningEntry } from "@/timekeep/queries";
-import { stripTimekeepRuntimeData, TimeEntry, type Timekeep } from "@/timekeep/schema";
+import type { TimeEntry, Timekeep } from "@/timekeep/schema";
+import { stripTimekeepRuntimeData } from "@/timekeep/schema";
 import { stopTimekeep } from "@/timekeep/update";
 
 /** Entry within the timekeep registry */
@@ -79,14 +80,17 @@ export class TimekeepRegistry extends Component {
 	/** Settings access */
 	settings: Store<TimekeepSettings>;
 
-	/** Whether the store is initialized */
-	initialized: boolean;
-
 	/** Promise for the current initialization */
 	loadPromise: Promise<void> | undefined;
 
 	/** Background tasks the registry is currently performing */
 	tasks: Promise<void>[];
+
+	/** Whether the registry is enabled */
+	enabled: boolean;
+
+	/** Events tracked by the enabled timekeep */
+	events: EventRef[];
 
 	constructor(vault: Vault, settings: Store<TimekeepSettings>) {
 		super();
@@ -94,13 +98,26 @@ export class TimekeepRegistry extends Component {
 		this.entries = createStore([]);
 		this.settings = settings;
 		this.tasks = [];
+		this.events = [];
 	}
 
 	onload() {
+		// Subscribe to settings
+		const onUpdateSettings = this.onUpdateSettings.bind(this);
+		this.register(this.settings.subscribe(onUpdateSettings));
+		onUpdateSettings();
+	}
+
+	onUpdateSettings() {
 		const settings = this.settings.getState();
-		if (!settings.registryEnabled) {
-			return;
+		this.enabled = settings.registryEnabled;
+
+		// Unsubscribe from existing events
+		for (const eventRef of this.events) {
+			this.#vault.offref(eventRef);
 		}
+
+		if (!this.enabled) return;
 
 		// Attach vault events
 		const createEvent = this.#vault.on("create", this.onFileCreated.bind(this));
@@ -108,9 +125,9 @@ export class TimekeepRegistry extends Component {
 		const deleteEvent = this.#vault.on("delete", this.onFileRemoved.bind(this));
 
 		// Register events for unloading
-		this.registerEvent(createEvent);
-		this.registerEvent(modifyEvent);
-		this.registerEvent(deleteEvent);
+		this.events.push(createEvent);
+		this.events.push(modifyEvent);
+		this.events.push(deleteEvent);
 
 		// Load the registry from the vault
 		this.registerTask("loadFromVault", this.loadFromVault());
@@ -143,9 +160,8 @@ export class TimekeepRegistry extends Component {
 	 * @param file The file that was created
 	 */
 	private onFileCreated(file: TAbstractFile) {
-		if (!(file instanceof TFile)) {
-			return;
-		}
+		if (!this.enabled) return;
+		if (!(file instanceof TFile)) return;
 
 		const task = this.updateFromFile(file);
 		this.registerTask("onFileCreated", task);
@@ -158,9 +174,8 @@ export class TimekeepRegistry extends Component {
 	 * @param file The modified file
 	 */
 	private onFileModified(file: TAbstractFile) {
-		if (!(file instanceof TFile)) {
-			return;
-		}
+		if (!this.enabled) return;
+		if (!(file instanceof TFile)) return;
 
 		const task = this.updateFromFile(file);
 		this.registerTask("onFileModified", task);
@@ -173,9 +188,8 @@ export class TimekeepRegistry extends Component {
 	 * @param file The removed file
 	 */
 	private onFileRemoved(file: TAbstractFile) {
-		if (!(file instanceof TFile)) {
-			return;
-		}
+		if (!this.enabled) return;
+		if (!(file instanceof TFile)) return;
 
 		this.entries.setState((entries) => {
 			const newEntries = entries.filter((entry) => {

@@ -166,12 +166,6 @@ export default class TimekeepPlugin extends Plugin {
 	}
 
 	private onReady() {
-		const settings = this.settingsStore.getState();
-
-		if (!settings.registryEnabled || !this.registry) {
-			return;
-		}
-
 		// Initialize the registry (Only after the layout is ready and the vault is loaded)
 		this.addChild(this.registry);
 	}

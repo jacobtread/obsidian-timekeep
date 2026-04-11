@@ -185,7 +185,10 @@ export class TimesheetRowContent extends ReplaceableComponent {
 
 	onToggleCollapsed() {
 		const entry = this.entry;
-		assert(entry.subEntries !== null, "Expected collapse toggling to only be possible on entries with subEntries");
+		assert(
+			entry.subEntries !== null,
+			"Expected collapse toggling to only be possible on entries with subEntries"
+		);
 
 		this.timekeep.setState((timekeep) => {
 			const newEntry = setEntryCollapsed(entry, !entry.collapsed);
