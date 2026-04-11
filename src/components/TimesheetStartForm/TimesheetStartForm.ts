@@ -61,7 +61,7 @@ export class TimesheetStartForm extends DomComponent {
 		blockNameEl.htmlFor = "timekeepBlockName";
 
 		const blockPauseWarningEl = blockNameEl.createSpan({
-			cls: "timekeep-start-node",
+			cls: "timekeep-start-note",
 			text: "Starting a new task will pause the previous one",
 		});
 
