@@ -40,7 +40,7 @@ export function createRawTable(
  * @param currentTime The current time to use for unfinished entries
  * @returns The flattened rows
  */
-export function createRawTableEntries(
+function createRawTableEntries(
 	entry: TimeEntry,
 	settings: TimekeepSettings,
 	currentTime: Moment
@@ -48,16 +48,14 @@ export function createRawTableEntries(
 	const rows: RawTableRow[] = [
 		[
 			entry.name,
-			// Entry start and end times if available
+			// Entry start times if available
 			entry.startTime ? formatTimestamp(entry.startTime, settings) : "",
-			entry.endTime ? formatTimestamp(entry.endTime, settings) : "",
-			// Include duration for entries that are finished
-			(entry.startTime !== null && entry.endTime !== null) || entry.subEntries !== null
-				? formatDuration(
-						settings.exportDurationFormat,
-						getEntryDuration(entry, currentTime)
-					)
+			// Entry end time or current time if no end time and started
+			entry.endTime || entry.startTime
+				? formatTimestamp(entry.endTime ?? currentTime, settings)
 				: "",
+			// Duration of the entry
+			formatDuration(settings.exportDurationFormat, getEntryDuration(entry, currentTime)),
 		],
 	];
 

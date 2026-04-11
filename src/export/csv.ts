@@ -34,11 +34,11 @@ export function createCSV(
 		...createRawTable(timekeep.entries, settings, currentTime),
 	];
 
-	let output = "";
-
-	for (const row of rawTable) {
-		output += row.join(settings.csvDelimiter) + "\n";
-	}
+	const output = rawTable
+		//
+		.map((row) => row.join(settings.csvDelimiter))
+		//
+		.join("\n");
 
 	return output;
 }
