@@ -1,4 +1,6 @@
-import { App, Setting, PluginSettingTab } from "obsidian";
+import { type App, Setting, PluginSettingTab } from "obsidian";
+
+import type { Store } from "@/store";
 
 import TimekeepPlugin from "@/main";
 import {
@@ -10,7 +12,6 @@ import {
 	TimekeepSettings,
 	PdfExportBehavior,
 } from "@/settings";
-import { Store } from "@/store";
 
 export class TimekeepSettingsTab extends PluginSettingTab {
 	settingsStore: Store<TimekeepSettings>;

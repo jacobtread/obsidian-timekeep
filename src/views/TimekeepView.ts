@@ -1,11 +1,11 @@
 import moment from "moment";
-import { App } from "obsidian";
+import { Notice, type App } from "obsidian";
 
-import { MockNotice } from "@/__mocks__/obsidian";
-import { CustomOutputFormat } from "@/output";
-import { TimesheetSaveAdapter } from "@/save/TimesheetSaveAdapter";
-import { TimekeepSettings } from "@/settings";
-import { createStore, Store } from "@/store";
+import type { CustomOutputFormat } from "@/output";
+import type { TimesheetSaveAdapter } from "@/save/TimesheetSaveAdapter";
+import type { TimekeepSettings } from "@/settings";
+
+import { createStore, type Store } from "@/store";
 
 import { ContentComponent } from "@/components/ContentComponent";
 import { EmptyComponent } from "@/components/EmptyComponent";
@@ -13,8 +13,8 @@ import { Timesheet } from "@/components/Timesheet";
 import { TimesheetLoadError } from "@/components/TimesheetLoadError";
 import { TimesheetSaveError } from "@/components/TimesheetSaveError";
 
-import { LoadResult } from "@/timekeep/parser";
-import { stripTimekeepRuntimeData, Timekeep } from "@/timekeep/schema";
+import type { LoadResult } from "@/timekeep/parser";
+import { stripTimekeepRuntimeData, type Timekeep } from "@/timekeep/schema";
 
 import { TimekeepAutocomplete } from "@/service/autocomplete";
 
@@ -133,10 +133,10 @@ export default class TimekeepView extends ContentComponent<
 
 			try {
 				const fileName = await this.saveFallback(timekeep);
-				new MockNotice(`Failed to save timekeep, backup saved to: ${fileName}`);
+				new Notice(`Failed to save timekeep, backup saved to: ${fileName}`);
 			} catch (e) {
 				console.error("Couldn't save timekeep fallback", e);
-				new MockNotice("Failed to save timekeep and unable to save fallback file");
+				new Notice("Failed to save timekeep and unable to save fallback file");
 			}
 
 			this.saveError.setState(true);

@@ -6,17 +6,16 @@ import { Plugin, TFolder } from "obsidian";
 import type { CustomOutputFormat } from "@/output";
 import type { Store } from "@/store";
 
-import { defaultSettings, TimekeepSettings, legacySettingsCompatibility } from "@/settings";
+import { defaultSettings, type TimekeepSettings, legacySettingsCompatibility } from "@/settings";
 import { TimekeepSettingsTab } from "@/settings-tab";
 import { createStore } from "@/store";
-
-import { createNewTimekeepFile } from "./timekeep/createNewTimekeepFile";
 
 import { TimesheetStatusBar } from "@/components/TimesheetStatusBar";
 
 import TimekeepFileView from "@/views/TimekeepFileView";
 import TimekeepMarkdownView from "@/views/TimekeepMarkdownView";
 
+import { createNewTimekeepFile } from "@/timekeep/createNewTimekeepFile";
 import { replaceTimekeepCodeblock, extractTimekeepCodeblocks } from "@/timekeep/parser";
 import {
 	isKeepRunning,

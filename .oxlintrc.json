@@ -9,6 +9,11 @@
 			{
 				"name": "vitest",
 				"message": "vitest should not be imported outside of .test.ts files"
+			},
+			"error",
+			{
+				"name": "@/__mocks__/obsidian",
+				"message": "mocks should not be imported outside of .test.ts files"
 			}
 		]
 	},
