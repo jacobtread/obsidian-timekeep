@@ -1,10 +1,9 @@
 import type { App } from "obsidian";
 
-import { assert } from "vitest";
-
 import type { TimekeepSettings } from "@/settings";
 import type { Store } from "@/store";
 
+import { assert } from "@/utils/assert";
 import { formatEditableTimestamp, parseEditableTimestamp } from "@/utils/time";
 
 import { createObsidianIcon } from "@/components/obsidianIcon";

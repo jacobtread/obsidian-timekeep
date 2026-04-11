@@ -1,6 +1,7 @@
 import { type App } from "obsidian";
 import { Component } from "obsidian";
-import { assert } from "vitest";
+
+import { assert } from "@/utils/assert";
 
 import { TimesheetStatusBarItem } from "./TimesheetStatusBarItem";
 
