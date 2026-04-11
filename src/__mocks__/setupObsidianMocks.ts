@@ -6,6 +6,7 @@ import {
 	MockMarkdownView,
 	MockModal,
 	MockNotice,
+	MockPlatform,
 	MockSetting,
 	MockTAbstractFile,
 	MockTFile,
@@ -36,5 +37,6 @@ vi.mock("obsidian", () => {
 		Setting: MockSetting,
 		ButtonComponent: MockButtonComponent,
 		MarkdownView: MockMarkdownView,
+		Platform: MockPlatform,
 	};
 });

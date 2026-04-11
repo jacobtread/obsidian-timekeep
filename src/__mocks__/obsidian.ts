@@ -16,6 +16,13 @@ import type {
 
 import { Mock, vi } from "vitest";
 
+export const MockPlatform = vi.mockObject({
+	isDesktop: true,
+	isMobile: false,
+	isDesktopApp: true,
+	isMobileApp: false,
+});
+
 export abstract class MockTAbstractFile {
 	vault: Vault;
 	path: string;

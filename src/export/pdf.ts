@@ -60,12 +60,19 @@ async function exportPdfMobile(app: App, timekeep: Timekeep, settings: TimekeepS
 	new Notice("Saved exported PDF");
 }
 
+/** Required to handle mocking the imports during tests */
+export const desktopModuleLoader = {
+	importModule: (name: string): any => {
+		return require(name);
+	},
+};
+
 async function exportPdfDesktop(timekeep: Timekeep, settings: TimekeepSettings) {
 	// Dynamic imports to prevent them from causing errors when loaded (Because they are unsupported on mobile)
-	const electron = require("electron");
-	const { mkdir, writeFile } = require("fs/promises");
-	const { existsSync } = require("fs");
-	const path = require("path");
+	const electron = desktopModuleLoader.importModule("electron");
+	const { mkdir, writeFile } = desktopModuleLoader.importModule("fs/promises");
+	const { existsSync } = desktopModuleLoader.importModule("fs");
+	const path = desktopModuleLoader.importModule("path");
 
 	const currentTime = moment();
 
@@ -86,7 +93,8 @@ async function exportPdfDesktop(timekeep: Timekeep, settings: TimekeepSettings) 
 		return;
 	}
 
-	const buffer = await createPdfExport(timekeep, settings, currentTime);
+	const blob = await createPdfExportBlob(timekeep, settings, currentTime);
+	const buffer = await blob.arrayBuffer();
 
 	const fullOutputPath = path.normalize(outputPath);
 	const fullOutputDir = path.dirname(fullOutputPath);
@@ -97,7 +105,7 @@ async function exportPdfDesktop(timekeep: Timekeep, settings: TimekeepSettings) 
 	}
 
 	try {
-		await writeFile(outputPath, buffer);
+		await writeFile(outputPath, new DataView(buffer));
 
 		new Notice("Export successful", 1500);
 
@@ -139,18 +147,6 @@ pdfMake.addVirtualFileSystem({
 
 pdfMake.addFonts(fonts);
 
-export async function createPdfExport(
-	timekeep: Timekeep,
-	settings: TimekeepSettings,
-	currentTime: Moment
-): Promise<NodeJS.ReadableStream> {
-	const { Readable } = await import("stream");
-	const definition = createPdfDefinition(timekeep, settings, currentTime);
-	const pdf = pdfMake.createPdf(definition, {});
-	const stream = await pdf.getBuffer();
-	return Readable.from([stream]);
-}
-
 export async function createPdfExportBlob(
 	timekeep: Timekeep,
 	settings: TimekeepSettings,
@@ -161,7 +157,7 @@ export async function createPdfExportBlob(
 	return await pdf.getBlob();
 }
 
-export function createPdfDefinition(
+function createPdfDefinition(
 	timekeep: Timekeep,
 	settings: TimekeepSettings,
 	currentTime: Moment
