@@ -7,7 +7,7 @@
 		"allowJs": true,
 		"noEmit": true,
 		"noImplicitAny": true,
-		"moduleResolution": "node",
+		"moduleResolution": "bundler",
 		"isolatedModules": true,
 		"strictNullChecks": true,
 		"lib": ["DOM", "ES5", "ES6"],
