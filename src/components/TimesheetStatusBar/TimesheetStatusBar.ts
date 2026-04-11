@@ -64,23 +64,33 @@ export class TimesheetStatusBar extends Component {
 
 		// Load the new children
 		for (const entry of entries) {
-			if (entry.type === TimekeepEntryItemType.FILE) {
-				const ref: TimekeepRegistryItemRef = {
-					file: entry.file,
-					type: TimekeepEntryItemType.FILE,
-				};
-
-				this.renderEntry(entry.timekeep, ref);
-			} else if (entry.type === TimekeepEntryItemType.MARKDOWN) {
-				for (const timekeep of entry.timekeeps) {
+			switch (entry.type) {
+				case TimekeepEntryItemType.FILE: {
 					const ref: TimekeepRegistryItemRef = {
 						file: entry.file,
-						type: TimekeepEntryItemType.MARKDOWN,
-						position: timekeep,
+						type: TimekeepEntryItemType.FILE,
 					};
 
-					this.renderEntry(timekeep.timekeep, ref);
+					this.renderEntry(entry.timekeep, ref);
+					break;
 				}
+				case TimekeepEntryItemType.MARKDOWN: {
+					for (const timekeep of entry.timekeeps) {
+						const ref: TimekeepRegistryItemRef = {
+							file: entry.file,
+							type: TimekeepEntryItemType.MARKDOWN,
+							position: timekeep,
+						};
+
+						this.renderEntry(timekeep.timekeep, ref);
+					}
+					break;
+				}
+				/* v8 ignore start -- @preserve */
+				default: {
+					throw new Error("unknown entry type");
+				}
+				/* v8 ignore stop -- @preserve */
 			}
 		}
 	}

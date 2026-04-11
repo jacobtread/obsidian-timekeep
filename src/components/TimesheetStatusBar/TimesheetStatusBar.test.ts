@@ -95,4 +95,22 @@ describe("TimesheetStatusBar", () => {
 		component.load();
 		expect(component.items.length).toBe(1);
 	});
+
+	it("shouldn't render an item if it has no running entries", () => {
+		const start = moment();
+		const entry: TimeEntry = {
+			id: v4(),
+			name: "Test",
+			startTime: moment(start),
+			endTime: moment(start),
+			subEntries: null,
+		};
+
+		const file = vault.addFile("test.md", "");
+
+		component.load();
+		component.renderEntry({ entries: [entry] }, { file, type: TimekeepEntryItemType.FILE });
+
+		expect(component.items.length).toBe(0);
+	});
 });

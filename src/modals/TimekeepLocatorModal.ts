@@ -104,6 +104,11 @@ export class TimekeepLocatorModal extends SuggestModal<TimekeepResult> {
 
 					break;
 				}
+				/* v8 ignore start -- @preserve */
+				default: {
+					throw new Error("unknown entry type");
+				}
+				/* v8 ignore stop -- @preserve */
 			}
 		}
 
