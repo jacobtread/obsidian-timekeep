@@ -16,13 +16,20 @@ import {
 	type TimekeepPosition,
 	type TimekeepWithPosition,
 } from "@/timekeep/parser";
-import { stripTimekeepRuntimeData, type Timekeep } from "@/timekeep/schema";
+import { getRunningEntry } from "@/timekeep/queries";
+import { stripTimekeepRuntimeData, TimeEntry, type Timekeep } from "@/timekeep/schema";
 import { stopTimekeep } from "@/timekeep/update";
 
 /** Entry within the timekeep registry */
 export type TimekeepRegistryEntry = {
 	file: TFile;
 } & (TimekeepRegistryEntryFile | TimekeepRegistryEntryMarkdown);
+
+/** Running entry with a reference and file reference */
+export type TimekeepRunningEntry = {
+	running: TimeEntry;
+	ref: TimekeepRegistryItemRef;
+};
 
 /** Types of entries */
 export enum TimekeepEntryItemType {
@@ -373,5 +380,57 @@ export class TimekeepRegistry extends Component {
 			editor.setCursor({ line: Math.max(line - 1, 0), ch: 0 });
 			editor.scrollIntoView({ from: { line, ch: 0 }, to: { line, ch: 0 } }, true);
 		}
+	}
+
+	static getRunningEntries(entries: TimekeepRegistryEntry[]): TimekeepRunningEntry[] {
+		const results: TimekeepRunningEntry[] = [];
+		for (const entry of entries) {
+			switch (entry.type) {
+				case TimekeepEntryItemType.FILE: {
+					const timekeep = entry.timekeep;
+					const running = getRunningEntry(timekeep.entries);
+					if (running !== null) {
+						results.push({
+							running: running,
+							ref: {
+								type: entry.type,
+								file: entry.file,
+							},
+						});
+					}
+					break;
+				}
+
+				case TimekeepEntryItemType.MARKDOWN: {
+					for (const timekeepWithPosition of entry.timekeeps) {
+						const timekeep = timekeepWithPosition.timekeep;
+						const running = getRunningEntry(timekeep.entries);
+						if (running !== null) {
+							results.push({
+								running: running,
+								ref: {
+									type: entry.type,
+									file: entry.file,
+									position: {
+										startLine: timekeepWithPosition.startLine,
+										endLine: timekeepWithPosition.endLine,
+									},
+								},
+							});
+						}
+					}
+
+					break;
+				}
+
+				/* v8 ignore start -- @preserve */
+				default: {
+					throw new Error("unknown entry type");
+				}
+				/* v8 ignore stop -- @preserve */
+			}
+		}
+
+		return results;
 	}
 }

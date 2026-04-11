@@ -312,7 +312,6 @@ export class TimekeepMergerModal extends Modal {
 				case TimekeepEntryItemType.FILE: {
 					const timekeep = entry.timekeep;
 					results.push({ id: uuid(), file: entry.file, timekeep });
-
 					break;
 				}
 				case TimekeepEntryItemType.MARKDOWN: {

@@ -5,23 +5,10 @@ import { SuggestModal } from "obsidian";
 import type { TimekeepSettings } from "@/settings";
 import type { Store } from "@/store";
 
-import { getRunningEntry } from "@/timekeep/queries";
-import type { TimeEntry } from "@/timekeep/schema";
+import { TimekeepRegistry, TimekeepRunningEntry } from "@/service/registry";
 
-import {
-	TimekeepEntryItemType,
-	TimekeepRegistry,
-	TimekeepRegistryEntry,
-	TimekeepRegistryItemRef,
-} from "@/service/registry";
-
-interface TimekeepResult {
-	ref: TimekeepRegistryItemRef;
-	running: TimeEntry;
-}
-
-export class TimekeepLocatorModal extends SuggestModal<TimekeepResult> {
-	results: TimekeepResult[] | undefined = undefined;
+export class TimekeepLocatorModal extends SuggestModal<TimekeepRunningEntry> {
+	results: TimekeepRunningEntry[] | undefined = undefined;
 	registry: TimekeepRegistry;
 	settings: Store<TimekeepSettings>;
 
@@ -31,22 +18,21 @@ export class TimekeepLocatorModal extends SuggestModal<TimekeepResult> {
 		this.settings = settings;
 	}
 
-	async getSuggestions(query: string): Promise<TimekeepResult[]> {
+	async getSuggestions(query: string): Promise<TimekeepRunningEntry[]> {
 		const settings = this.settings.getState();
 
 		// When the registry is enabled source the entries from the registry
 		// as this is much faster than triggering a search
 		if (settings.registryEnabled) {
 			const entries = this.registry.entries.getState();
-			const results: TimekeepResult[] = TimekeepLocatorModal.getResultsFromEntries(entries);
-			this.results = results;
+			this.results = TimekeepRegistry.getRunningEntries(entries);
 		}
 
 		// Fallback to searching using the registry logic without caching it if the
 		// registry is disabled
 		if (this.results === undefined) {
 			const entries = await TimekeepRegistry.getTimekeepsWithinVault(this.app.vault);
-			this.results = TimekeepLocatorModal.getResultsFromEntries(entries);
+			this.results = TimekeepRegistry.getRunningEntries(entries);
 		}
 
 		const queryLower = query.toLowerCase();
@@ -59,59 +45,12 @@ export class TimekeepLocatorModal extends SuggestModal<TimekeepResult> {
 		});
 	}
 
-	renderSuggestion(value: TimekeepResult, el: HTMLElement) {
+	renderSuggestion(value: TimekeepRunningEntry, el: HTMLElement) {
 		el.createEl("div", { text: value.running.name });
 		el.createEl("small", { text: value.ref.file.path });
 	}
 
-	async onChooseSuggestion(item: TimekeepResult, _evt: MouseEvent | KeyboardEvent) {
+	async onChooseSuggestion(item: TimekeepRunningEntry, _evt: MouseEvent | KeyboardEvent) {
 		await TimekeepRegistry.openItemRef(this.app.workspace, item.ref);
-	}
-
-	static getResultsFromEntries(entries: TimekeepRegistryEntry[]): TimekeepResult[] {
-		const results: TimekeepResult[] = [];
-		for (const entry of entries) {
-			switch (entry.type) {
-				case TimekeepEntryItemType.FILE: {
-					const timekeep = entry.timekeep;
-					const running = getRunningEntry(timekeep.entries);
-					if (running !== null) {
-						results.push({
-							running: running,
-							ref: {
-								type: entry.type,
-								file: entry.file,
-							},
-						});
-					}
-					break;
-				}
-				case TimekeepEntryItemType.MARKDOWN: {
-					for (const timekeepWithPosition of entry.timekeeps) {
-						const timekeep = timekeepWithPosition.timekeep;
-						const running = getRunningEntry(timekeep.entries);
-						if (running !== null) {
-							results.push({
-								running: running,
-								ref: {
-									type: entry.type,
-									file: entry.file,
-									position: timekeepWithPosition,
-								},
-							});
-						}
-					}
-
-					break;
-				}
-				/* v8 ignore start -- @preserve */
-				default: {
-					throw new Error("unknown entry type");
-				}
-				/* v8 ignore stop -- @preserve */
-			}
-		}
-
-		return results;
 	}
 }

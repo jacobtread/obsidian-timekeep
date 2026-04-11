@@ -4,14 +4,9 @@ import { assert } from "vitest";
 
 import { TimesheetStatusBarItem } from "./TimesheetStatusBarItem";
 
-import { getRunningEntry } from "@/timekeep/queries";
-import { Timekeep } from "@/timekeep/schema";
+import { TimeEntry } from "@/timekeep/schema";
 
-import {
-	TimekeepEntryItemType,
-	TimekeepRegistry,
-	TimekeepRegistryItemRef,
-} from "@/service/registry";
+import { TimekeepRegistry, TimekeepRegistryItemRef } from "@/service/registry";
 
 export class TimesheetStatusBar extends Component {
 	/** Parent container element */
@@ -56,6 +51,7 @@ export class TimesheetStatusBar extends Component {
 
 	render() {
 		const entries = this.registry.entries.getState();
+		const runningEntries = TimekeepRegistry.getRunningEntries(entries);
 
 		// Unload the current children
 		for (const item of this.items) {
@@ -63,52 +59,15 @@ export class TimesheetStatusBar extends Component {
 		}
 
 		// Load the new children
-		for (const entry of entries) {
-			switch (entry.type) {
-				case TimekeepEntryItemType.FILE: {
-					const ref: TimekeepRegistryItemRef = {
-						file: entry.file,
-						type: TimekeepEntryItemType.FILE,
-					};
-
-					this.renderEntry(entry.timekeep, ref);
-					break;
-				}
-				case TimekeepEntryItemType.MARKDOWN: {
-					for (const timekeep of entry.timekeeps) {
-						const ref: TimekeepRegistryItemRef = {
-							file: entry.file,
-							type: TimekeepEntryItemType.MARKDOWN,
-							position: timekeep,
-						};
-
-						this.renderEntry(timekeep.timekeep, ref);
-					}
-					break;
-				}
-				/* v8 ignore start -- @preserve */
-				default: {
-					throw new Error("unknown entry type");
-				}
-				/* v8 ignore stop -- @preserve */
-			}
+		for (const runningEntry of runningEntries) {
+			this.renderEntry(runningEntry.running, runningEntry.ref);
 		}
 	}
 
-	renderEntry(timekeep: Timekeep, ref: TimekeepRegistryItemRef) {
+	renderEntry(entry: TimeEntry, ref: TimekeepRegistryItemRef) {
 		const wrapperEl = this.wrapperEl;
 		assert(wrapperEl, "Wrapper element should be defined on render");
-
-		const runningEntry = getRunningEntry(timekeep.entries);
-		if (runningEntry === null) return;
-
-		const item = new TimesheetStatusBarItem(
-			wrapperEl,
-			this.app,
-			this.registry,
-			runningEntry,
-			ref
-		);
+		const item = new TimesheetStatusBarItem(wrapperEl, this.app, this.registry, entry, ref);
 		this.items.push(item);
 		item.load();
 	}

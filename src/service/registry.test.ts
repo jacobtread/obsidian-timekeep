@@ -12,11 +12,13 @@ import { createCodeBlock } from "@/utils/codeblock";
 import {
 	TimekeepEntryItemType,
 	TimekeepRegistry,
+	TimekeepRegistryEntry,
 	TimekeepRegistryEntryMarkdown,
 	TimekeepRegistryItemRef,
+	TimekeepRunningEntry,
 } from "./registry";
 
-import { stripTimekeepRuntimeData, Timekeep } from "@/timekeep/schema";
+import { stripTimekeepRuntimeData, TimeEntry, Timekeep } from "@/timekeep/schema";
 
 describe("TimekeepRegistry", () => {
 	describe("getFileRegistryEntry", () => {
@@ -706,6 +708,68 @@ describe("TimekeepRegistry", () => {
 				{ from: { line, ch: 0 }, to: { line, ch: 0 } },
 				true
 			);
+		});
+	});
+
+	describe("getRunningEntries", () => {
+		it("should be able to collect all running entries", () => {
+			const vault = new MockVault();
+			const testFile = vault.addFile("test.md", "");
+			const testFile2 = vault.addFile("test2.md", "");
+			const testFile3 = vault.addFile("test3.md", "");
+
+			const start = moment();
+			const entry1: TimeEntry = {
+				id: v4(),
+				name: "Test 1",
+				startTime: moment(start),
+				endTime: null,
+				subEntries: null,
+			};
+			const entry2: TimeEntry = {
+				id: v4(),
+				name: "Test 2",
+				startTime: moment(start),
+				endTime: null,
+				subEntries: null,
+			};
+
+			const entries: TimekeepRegistryEntry[] = [
+				{
+					file: testFile,
+					timekeeps: [{ timekeep: { entries: [] }, startLine: 0, endLine: 1 }],
+					type: TimekeepEntryItemType.MARKDOWN,
+				},
+				{
+					file: testFile2,
+					timekeeps: [{ timekeep: { entries: [entry1] }, startLine: 0, endLine: 1 }],
+					type: TimekeepEntryItemType.MARKDOWN,
+				},
+				{
+					file: testFile3,
+					timekeep: { entries: [entry2] },
+					type: TimekeepEntryItemType.FILE,
+				},
+			];
+
+			const running = TimekeepRegistry.getRunningEntries(entries);
+			expect(running).toEqual([
+				{
+					running: entry1,
+					ref: {
+						file: testFile2,
+						type: TimekeepEntryItemType.MARKDOWN,
+						position: { startLine: 0, endLine: 1 },
+					},
+				},
+				{
+					running: entry2,
+					ref: {
+						file: testFile3,
+						type: TimekeepEntryItemType.FILE,
+					},
+				},
+			] satisfies TimekeepRunningEntry[]);
 		});
 	});
 });
