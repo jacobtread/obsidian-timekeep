@@ -1,5 +1,6 @@
 import type { Moment } from "moment";
 import type {
+	Content,
 	DynamicContent,
 	TableCell,
 	TDocumentDefinitions,
@@ -13,6 +14,7 @@ import pdfMake from "pdfmake";
 import type { TimekeepSettings } from "@/settings";
 
 import { PdfExportBehavior } from "@/settings";
+import { NameSegmentType, parseNameSegments } from "@/utils/name";
 import {
 	formatDurationLong,
 	formatDurationShort,
@@ -60,10 +62,10 @@ async function exportPdfMobile(app: App, timekeep: Timekeep, settings: TimekeepS
 
 async function exportPdfDesktop(timekeep: Timekeep, settings: TimekeepSettings) {
 	// Dynamic imports to prevent them from causing errors when loaded (Because they are unsupported on mobile)
-	const electron = await import("electron");
-	const { mkdir, writeFile } = await import("fs/promises");
-	const { existsSync } = await import("fs");
-	const path = await import("path");
+	const electron = require("electron");
+	const { mkdir, writeFile } = require("fs/promises");
+	const { existsSync } = require("fs");
+	const path = require("path");
 
 	const currentTime = moment();
 
@@ -413,6 +415,28 @@ function createPdfTableRows(
 	return rows;
 }
 
+function createTableEntryName(name: string): Content {
+	const segments = parseNameSegments(name);
+	const content: Content = [];
+
+	for (const segment of segments) {
+		switch (segment.type) {
+			case NameSegmentType.Text:
+				content.push(segment.text);
+				break;
+
+			case NameSegmentType.Link:
+				content.push({
+					link: segment.url,
+					text: segment.text,
+				});
+				break;
+		}
+	}
+
+	return content;
+}
+
 function createTableEntryCells(
 	entry: TimeEntry,
 	depth: number,
@@ -441,7 +465,7 @@ function createTableEntryCells(
 
 	return [
 		{
-			text: entry.name,
+			text: createTableEntryName(entry.name),
 			style: ["tableCell", "tableCellBlock"],
 			marginLeft,
 			border: [true, false, false, true],
