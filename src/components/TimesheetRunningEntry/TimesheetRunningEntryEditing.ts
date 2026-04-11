@@ -3,7 +3,8 @@ import type { Store } from "@/store";
 
 import { assert } from "@/utils/assert";
 
-import { DomComponent } from "@/components/DomComponent";
+import { ReplaceableComponent } from "../ReplaceableComponent";
+
 import { createObsidianIcon } from "@/components/obsidianIcon";
 
 import { getRunningEntry } from "@/timekeep/queries";
@@ -14,7 +15,7 @@ import { updateEntry } from "@/timekeep/update";
  * The editing section for editing the currently
  * running time entry within the start section
  */
-export class TimesheetRunningEntryEditing extends DomComponent {
+export class TimesheetRunningEntryEditing extends ReplaceableComponent {
 	/** Access to the timekeep */
 	timekeep: Store<Timekeep>;
 	/** Access to the timekeep settings */
@@ -47,15 +48,17 @@ export class TimesheetRunningEntryEditing extends DomComponent {
 		this.onFinishEditing = onFinishEditing;
 	}
 
-	onload(): void {
-		super.onload();
-
-		const formEl = this.containerEl.createEl("form", {
+	createContainer(): HTMLElement {
+		return createEl("form", {
 			cls: "timekeep-start-area",
+			attr: {
+				"data-area": "start",
+			},
 		});
-		formEl.setAttribute("data-area", "start");
+	}
+
+	render(formEl: HTMLElement): void {
 		this.registerDomEvent(formEl, "submit", this.onSave.bind(this));
-		this.wrapperEl = formEl;
 
 		const nameWrapperEl = formEl.createDiv({
 			cls: "timekeep-name-wrapper",

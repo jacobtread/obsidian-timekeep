@@ -43,7 +43,10 @@ export class DomComponent extends Component {
 	}
 
 	isUnloadSkipped() {
-		return this.parent !== null && this.parent.unmounted;
+		if (this.parent === null) return false;
+		if (this.parent.isForcedUnload()) return false;
+
+		return this.parent.unmounted;
 	}
 
 	unload(): void {
@@ -55,9 +58,6 @@ export class DomComponent extends Component {
 	onunload(): void {
 		super.onunload();
 
-		// Mark ourselves as unmounted
-		this.unmounted = true;
-
 		// Skip unmounting from the DOM if the parent is already unmounted
 		if (this.isUnloadSkipped()) {
 			return;
@@ -65,5 +65,16 @@ export class DomComponent extends Component {
 
 		// Remove our wrapper if the parent is not unmounted already
 		this.wrapperEl?.remove();
+	}
+
+	/**
+	 * Whether to force the unloading of children, used by ContentComponent
+	 * which itself does not detach anything from the DOM instead relying
+	 * on the underlying ReplaceableComponent for DOM content
+	 *
+	 * @returns Whether the unload of children should be forced
+	 */
+	isForcedUnload() {
+		return false;
 	}
 }

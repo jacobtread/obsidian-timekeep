@@ -6,7 +6,6 @@ import { createMockContainer } from "@/__mocks__/obsidian";
 
 import { ContentComponent } from "./ContentComponent";
 
-import { DomComponent } from "@/components/DomComponent";
 import { ReplaceableComponent } from "@/components/ReplaceableComponent";
 
 describe("ContentComponent", () => {
@@ -24,29 +23,31 @@ describe("ContentComponent", () => {
 	});
 
 	it("should be able to set content to different components", () => {
-		class FirstComponent extends DomComponent {
+		class FirstComponent extends ReplaceableComponent {
 			constructor(containerEl: HTMLElement) {
 				super(containerEl);
 			}
 
-			onload(): void {
-				super.onload();
+			createContainer(): HTMLElement {
+				return createDiv();
+			}
 
-				const wrapperEl = this.containerEl.createSpan({ text: "First" });
-				this.wrapperEl = wrapperEl;
+			render(containerEl: HTMLElement): void {
+				containerEl.createSpan({ text: "First" });
 			}
 		}
 
-		class SecondComponent extends DomComponent {
+		class SecondComponent extends ReplaceableComponent {
 			constructor(containerEl: HTMLElement) {
 				super(containerEl);
 			}
 
-			onload(): void {
-				super.onload();
+			createContainer(): HTMLElement {
+				return createDiv();
+			}
 
-				const wrapperEl = this.containerEl.createSpan({ text: "Second" });
-				this.wrapperEl = wrapperEl;
+			render(containerEl: HTMLElement): void {
+				containerEl.createSpan({ text: "Second" });
 			}
 		}
 
@@ -58,10 +59,6 @@ describe("ContentComponent", () => {
 
 		comp.setContent(new SecondComponent(container));
 		expect(comp.containerEl!.children[0].textContent).toBe("Second");
-
-		comp.setContent(undefined);
-		expect(comp.getContent()).toBeUndefined();
-		expect(comp.containerEl!.children.length).toBe(0);
 	});
 
 	it("using two replaceable component should trigger the previous", () => {

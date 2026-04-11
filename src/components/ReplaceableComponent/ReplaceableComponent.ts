@@ -24,7 +24,6 @@ export abstract class ReplaceableComponent extends DomComponent {
 		}
 
 		this.wrapperEl = wrapperEl;
-
 		super.onload();
 
 		this.render(wrapperEl);

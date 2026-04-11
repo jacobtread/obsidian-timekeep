@@ -11,6 +11,7 @@ import { createMockContainer } from "@/__mocks__/obsidian";
 import { defaultSettings } from "@/settings";
 import { createStore } from "@/store";
 
+import { EmptyComponent } from "../EmptyComponent";
 import { TimesheetRunningEntry } from "./TimesheetRunningEntry";
 import { TimesheetRunningEntryEditing } from "./TimesheetRunningEntryEditing";
 import { TimesheetRunningEntryViewing } from "./TimesheetRunningEntryViewing";
@@ -41,7 +42,7 @@ describe("TimesheetRunningEntry", () => {
 	it("should be undefined content without a running entry", () => {
 		component = new TimesheetRunningEntry(containerEl, timekeep, settings);
 		component.load();
-		expect(component.getContent()).toBeUndefined();
+		expect(component.getContent()).toBeInstanceOf(EmptyComponent);
 	});
 
 	it("should be TimesheetStartRunning when theres a running entry", () => {
@@ -114,7 +115,7 @@ describe("TimesheetRunningEntry", () => {
 		expect(component.getContent()).toBeInstanceOf(TimesheetRunningEntryEditing);
 	});
 
-	it("after a timekeep update when editing if theres no more current entry should return to undefined state", () => {
+	it("after a timekeep update when editing if theres no more current entry should return to empty component state", () => {
 		const start = moment();
 		timekeep.setState({
 			entries: [
@@ -138,6 +139,6 @@ describe("TimesheetRunningEntry", () => {
 
 		timekeep.setState({ entries: [] });
 
-		expect(component.getContent()).toBeUndefined();
+		expect(component.getContent()).toBeInstanceOf(EmptyComponent);
 	});
 });

@@ -1,0 +1,1 @@
+export { EmptyComponent } from "./EmptyComponent";

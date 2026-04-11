@@ -1,28 +1,29 @@
-import type { App } from "obsidian";
+import { App } from "obsidian";
 
-import type { CustomOutputFormat } from "@/output";
-import type { TimekeepSettings } from "@/settings";
-import type { Store } from "@/store";
+import { CustomOutputFormat } from "@/output";
+import { TimekeepSettings } from "@/settings";
+import { Store } from "@/store";
 
-import { ContentComponent } from "@/components/ContentComponent";
-import { TimesheetApp } from "@/components/TimesheetApp";
-import { TimesheetSaveError } from "@/components/TimesheetSaveError";
+import { ReplaceableComponent } from "../ReplaceableComponent";
 
-import type { Timekeep } from "@/timekeep/schema";
+import { TimesheetCounters } from "@/components/TimesheetCounters";
+import { TimesheetExportActions } from "@/components/TimesheetExportActions";
+import { TimesheetRunningEntry } from "@/components/TimesheetRunningEntry";
+import { TimesheetStartForm } from "@/components/TimesheetStartForm";
+import { TimesheetTable } from "@/components/TimesheetTable";
+
+import { Timekeep } from "@/timekeep/schema";
 
 import { TimekeepAutocomplete } from "@/service/autocomplete";
 
 /**
- * Wrapper component for the timesheet app that handles
- * display error messages when saving fails
+ * View component for the timesheet app as a whole
  */
-export class Timesheet extends ContentComponent<TimesheetApp | TimesheetSaveError> {
+export class Timesheet extends ReplaceableComponent {
 	/** Access to the app instance */
 	app: App;
 	/** Access to the timekeep */
 	timekeep: Store<Timekeep>;
-	/** Store for save error state */
-	saveError: Store<boolean>;
 	/** Access to the timekeep settings */
 	settings: Store<TimekeepSettings>;
 	/** Access to custom output formats */
@@ -30,56 +31,55 @@ export class Timesheet extends ContentComponent<TimesheetApp | TimesheetSaveErro
 	/** Autocomplete */
 	autocomplete: TimekeepAutocomplete;
 
-	/** Callback to save the timekeep */
-	handleSaveTimekeep: (value: Timekeep) => Promise<void>;
-
 	constructor(
 		containerEl: HTMLElement,
 		app: App,
 		timekeep: Store<Timekeep>,
-		saveError: Store<boolean>,
 		settings: Store<TimekeepSettings>,
 		customOutputFormats: Store<Record<string, CustomOutputFormat>>,
-		autocomplete: TimekeepAutocomplete,
-		handleSaveTimekeep: (value: Timekeep) => Promise<void>
+		autocomplete: TimekeepAutocomplete
 	) {
 		super(containerEl);
 
 		this.app = app;
 		this.timekeep = timekeep;
-		this.saveError = saveError;
 		this.settings = settings;
 		this.customOutputFormats = customOutputFormats;
 		this.autocomplete = autocomplete;
-		this.handleSaveTimekeep = handleSaveTimekeep;
 	}
 
-	onload(): void {
-		super.onload();
-
-		const render = this.update.bind(this);
-		const unsubscribeSaveError = this.saveError.subscribe(render);
-		this.register(unsubscribeSaveError);
-		render();
+	createContainer(): HTMLElement {
+		return createDiv({
+			cls: "timekeep-container",
+		});
 	}
 
-	update() {
-		const saveError = this.saveError.getState();
-		if (saveError) {
-			this.setContent(
-				new TimesheetSaveError(this.containerEl, this.timekeep, this.handleSaveTimekeep)
-			);
-		} else {
-			this.setContent(
-				new TimesheetApp(
-					this.containerEl,
-					this.app,
-					this.timekeep,
-					this.settings,
-					this.customOutputFormats,
-					this.autocomplete
-				)
-			);
-		}
+	render(wrapperEl: HTMLElement): void {
+		const counters = new TimesheetCounters(wrapperEl, this.settings, this.timekeep);
+
+		const startForm = new TimesheetStartForm(
+			wrapperEl,
+			this.timekeep,
+			this.settings,
+			this.autocomplete
+		);
+
+		const runningEntry = new TimesheetRunningEntry(wrapperEl, this.timekeep, this.settings);
+
+		const table = new TimesheetTable(wrapperEl, this.app, this.timekeep, this.settings);
+
+		const exportActions = new TimesheetExportActions(
+			wrapperEl,
+			this.app,
+			this.timekeep,
+			this.settings,
+			this.customOutputFormats
+		);
+
+		this.addChild(counters);
+		this.addChild(runningEntry);
+		this.addChild(startForm);
+		this.addChild(table);
+		this.addChild(exportActions);
 	}
 }

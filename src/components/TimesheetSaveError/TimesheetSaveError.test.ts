@@ -12,7 +12,6 @@ import { stripTimekeepRuntimeData, Timekeep } from "@/timekeep/schema";
 describe("TimesheetSaveError", () => {
 	let container: HTMLElement;
 	let timekeepStore: Store<Timekeep>;
-	let handleSaveTimekeep: (value: Timekeep) => Promise<void>;
 	let component: TimesheetSaveError;
 
 	let writeText: Mock<() => any>;
@@ -20,8 +19,7 @@ describe("TimesheetSaveError", () => {
 	beforeEach(() => {
 		container = createMockContainer();
 		timekeepStore = createStore({ entries: [] });
-		handleSaveTimekeep = vi.fn().mockResolvedValue(undefined as void);
-		component = new TimesheetSaveError(container, timekeepStore, handleSaveTimekeep);
+		component = new TimesheetSaveError(container, timekeepStore);
 
 		writeText = vi.fn().mockResolvedValue(undefined);
 
@@ -55,9 +53,10 @@ describe("TimesheetSaveError", () => {
 	});
 
 	it("calls handleSaveTimekeep on retry button click", () => {
+		const setState = vi.spyOn(timekeepStore, "setState");
 		component.load();
 		component.onRetrySave();
-		expect(handleSaveTimekeep).toHaveBeenCalledWith(timekeepStore.getState());
+		expect(setState).toHaveBeenCalledWith(timekeepStore.getState());
 	});
 
 	it("writes JSON to clipboard on copy button click", async () => {

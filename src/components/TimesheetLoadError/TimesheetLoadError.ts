@@ -1,9 +1,9 @@
-import { DomComponent } from "@/components/DomComponent";
+import { ReplaceableComponent } from "../ReplaceableComponent";
 
 /**
  * Component for rendering a load error for a timesheet
  */
-export class TimesheetLoadError extends DomComponent {
+export class TimesheetLoadError extends ReplaceableComponent {
 	/** The load error message */
 	error: string;
 
@@ -13,13 +13,13 @@ export class TimesheetLoadError extends DomComponent {
 		this.error = error;
 	}
 
-	onload(): void {
-		super.onload();
-
-		const wrapperEl = this.containerEl.createDiv({
+	createContainer(): HTMLElement {
+		return createDiv({
 			cls: "timekeep-container",
 		});
-		this.wrapperEl = wrapperEl;
+	}
+
+	render(wrapperEl: HTMLElement): void {
 		wrapperEl.createEl("p", {
 			text: `Failed to load timekeep: ${this.error}`,
 		});

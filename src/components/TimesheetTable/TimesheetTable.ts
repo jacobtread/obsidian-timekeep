@@ -108,6 +108,7 @@ export class TimesheetTable extends DomComponent {
 	clearRows() {
 		// Unload existing children and reset the rows list
 		for (const row of this.#rows) {
+			console.log(row);
 			this.removeChild(row);
 		}
 

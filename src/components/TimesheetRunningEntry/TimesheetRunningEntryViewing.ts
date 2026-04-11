@@ -6,7 +6,8 @@ import type { Store } from "@/store";
 import { assert } from "@/utils/assert";
 import { formatTimestamp } from "@/utils/time";
 
-import { DomComponent } from "@/components/DomComponent";
+import { ReplaceableComponent } from "../ReplaceableComponent";
+
 import { createObsidianIcon } from "@/components/obsidianIcon";
 
 import { getPathToEntry } from "@/timekeep/queries";
@@ -16,7 +17,7 @@ import { stopTimekeep } from "@/timekeep/update";
 /**
  * The "Running" timer section of the timesheet start are
  */
-export class TimesheetRunningEntryViewing extends DomComponent {
+export class TimesheetRunningEntryViewing extends ReplaceableComponent {
 	/** Access to the timekeep */
 	timekeep: Store<Timekeep>;
 	/** Access to the timekeep settings */
@@ -52,14 +53,16 @@ export class TimesheetRunningEntryViewing extends DomComponent {
 		this.onStartEditing = onStartEditing;
 	}
 
-	onload(): void {
-		super.onload();
-
-		const formEl = this.containerEl.createEl("form", {
+	createContainer(): HTMLElement {
+		return createEl("form", {
 			cls: "timekeep-start-area",
+			attr: {
+				"data-area": "running",
+			},
 		});
-		formEl.setAttribute("data-area", "running");
-		this.wrapperEl = formEl;
+	}
+
+	render(formEl: HTMLElement): void {
 		this.registerDomEvent(formEl, "submit", this.onStop.bind(this));
 
 		const nameWrapperEl = formEl.createDiv({

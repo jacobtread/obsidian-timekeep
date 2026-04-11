@@ -1,15 +1,13 @@
-import moment from "moment";
 import { EditableFileView, TFile, WorkspaceLeaf } from "obsidian";
 
 import { CustomOutputFormat } from "@/output";
+import { TimesheetFileSaveAdapter } from "@/save/TimesheetFileSaveAdapter";
 import { TimekeepSettings } from "@/settings";
 import { createStore, Store } from "@/store";
 
-import { Timesheet } from "@/components/Timesheet";
-import { TimesheetLoadError } from "@/components/TimesheetLoadError";
+import TimekeepView from "./TimekeepView";
 
 import { load, LoadResult } from "@/timekeep/parser";
-import { stripTimekeepRuntimeData, Timekeep } from "@/timekeep/schema";
 
 import { TimekeepAutocomplete } from "@/service/autocomplete";
 
@@ -21,13 +19,16 @@ export default class TimekeepFileView extends EditableFileView {
 	/** Autocomplete */
 	autocomplete: TimekeepAutocomplete;
 
-	/** Loading result for the timekeep data */
-	loadResult: Store<LoadResult | null>;
 	/** Container wrapper element */
 	wrapperEl: HTMLElement | undefined;
 
-	/** The rendered timesheet component */
-	timesheet: Timesheet | TimesheetLoadError | undefined;
+	/** Loading result for the timekeep data */
+	loadResult: Store<LoadResult | null>;
+	/** The timekeep view */
+	timesheet: TimekeepView | undefined;
+
+	/** Adapter for saving to the file */
+	saveAdapter: TimesheetFileSaveAdapter;
 
 	constructor(
 		leaf: WorkspaceLeaf,
@@ -38,10 +39,11 @@ export default class TimekeepFileView extends EditableFileView {
 		super(leaf);
 
 		this.loadResult = createStore(null);
-
 		this.settings = settings;
 		this.customOutputFormats = customOutputFormats;
 		this.autocomplete = autocomplete;
+
+		this.saveAdapter = new TimesheetFileSaveAdapter(this.app.vault, this.file);
 	}
 
 	onload(): void {
@@ -50,68 +52,16 @@ export default class TimekeepFileView extends EditableFileView {
 		const wrapperEl = this.contentEl.createDiv({ cls: "timekeep-file" });
 		this.wrapperEl = wrapperEl;
 
-		const render = this.render.bind(this);
-		const unsubscribeLoadResult = this.loadResult.subscribe(render);
-		render();
-		this.register(unsubscribeLoadResult);
-	}
-
-	render() {
-		if (!this.wrapperEl) {
-			return;
-		}
-
-		const loadResult = this.loadResult.getState();
-		if (!loadResult) return;
-
-		if (this.timesheet) {
-			this.removeChild(this.timesheet);
-		}
-
-		// Render the content
-		if (loadResult.success) {
-			const timekeep = loadResult.timekeep;
-
-			const timekeepStore = createStore(timekeep);
-			const saveErrorStore = createStore(false);
-
-			const trySave = this.trySave.bind(this);
-
-			const handleSaveTimekeep = async (timekeep: Timekeep) => {
-				// Attempt to save the timekeep changes
-				const result = await trySave(timekeep);
-
-				const saveError = !result;
-
-				// Update the save error state
-				if (saveErrorStore.getState() !== saveError) {
-					saveErrorStore.setState(saveError);
-				}
-			};
-
-			// Subscribe to save when timekeep changes
-			timekeepStore.subscribe(() => {
-				void handleSaveTimekeep(timekeepStore.getState());
-			});
-
-			const timesheet = new Timesheet(
-				this.wrapperEl,
-				this.app,
-				timekeepStore,
-				saveErrorStore,
-				this.settings,
-				this.customOutputFormats,
-				this.autocomplete,
-				handleSaveTimekeep
-			);
-
-			this.addChild(timesheet);
-			this.timesheet = timesheet;
-		} else {
-			const timesheet = new TimesheetLoadError(this.wrapperEl, loadResult.error);
-			this.addChild(timesheet);
-			this.timesheet = timesheet;
-		}
+		this.timesheet = new TimekeepView(
+			wrapperEl,
+			this.app,
+			this.settings,
+			this.customOutputFormats,
+			this.autocomplete,
+			this.loadResult,
+			this.saveAdapter
+		);
+		this.addChild(this.timesheet);
 	}
 
 	getViewType(): string {
@@ -129,74 +79,8 @@ export default class TimekeepFileView extends EditableFileView {
 	async onLoadFile(file: TFile): Promise<void> {
 		await super.onLoadFile(file);
 
+		this.saveAdapter.file = file;
 		const fileData = await this.app.vault.read(file);
 		this.loadResult.setState(load(fileData));
-	}
-
-	async onUnloadFile(file: TFile): Promise<void> {
-		await super.onUnloadFile(file);
-	}
-
-	/**
-	 * Attempts to save the file normally, if this fails it also attempts
-	 * to save a fallback file
-	 *
-	 * @param timekeep
-	 * @returns Promise of a boolean indicating weather the save was a success
-	 */
-	async trySave(timekeep: Timekeep): Promise<boolean> {
-		try {
-			await this.save(timekeep);
-
-			return true;
-		} catch (e) {
-			console.error("Failed to save timekeep", e);
-
-			try {
-				await this.saveFallback(timekeep);
-			} catch (e) {
-				console.error("Couldn't save timekeep fallback", e);
-			}
-
-			return false;
-		}
-	}
-
-	/**
-	 * Attempts to save the timekeep within the current file
-	 *
-	 * @param timekeep The new timekeep data to save
-	 */
-	async save(timekeep: Timekeep) {
-		if (this.file === null) {
-			return;
-		}
-
-		try {
-			const stripped = stripTimekeepRuntimeData(timekeep);
-			const serialized = JSON.stringify(stripped);
-
-			await this.app.vault.modify(this.file, serialized);
-		} catch (error) {
-			console.error("failed to save file", error);
-		}
-	}
-
-	/**
-	 * Fallback saving in case writing back to the timekeep block fails,
-	 * if writing back fails attempt to write to a backup temporary file
-	 * using the current date time
-	 *
-	 * @param timekeep The timekeep to save
-	 */
-	async saveFallback(timekeep: Timekeep) {
-		// Fallback in case of write failure, attempt to write to another file
-		const backupFileName = `timekeep-write-backup-${moment().format("YYYY-MM-DD HH-mm-ss")}.json`;
-
-		// Write to the backup file
-		await this.app.vault.create(
-			backupFileName,
-			JSON.stringify(stripTimekeepRuntimeData(timekeep))
-		);
 	}
 }

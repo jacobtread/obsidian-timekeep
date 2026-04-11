@@ -1,39 +1,28 @@
 import type { Store } from "@/store";
 
-import { DomComponent } from "@/components/DomComponent";
+import { ReplaceableComponent } from "../ReplaceableComponent";
 
 import { stripTimekeepRuntimeData, type Timekeep } from "@/timekeep/schema";
-
-type HandleSaveTimekeep = (value: Timekeep) => Promise<void>;
 
 /**
  * Component for showing the "Failed to save current timekeep" error
  */
-export class TimesheetSaveError extends DomComponent {
+export class TimesheetSaveError extends ReplaceableComponent {
 	/** Access to the timekeep */
 	timekeep: Store<Timekeep>;
-	/** Callback to save the timekeep */
-	handleSaveTimekeep: HandleSaveTimekeep;
 
-	constructor(
-		containerEl: HTMLElement,
-		timekeep: Store<Timekeep>,
-		handleSaveTimekeep: HandleSaveTimekeep
-	) {
+	constructor(containerEl: HTMLElement, timekeep: Store<Timekeep>) {
 		super(containerEl);
-
 		this.timekeep = timekeep;
-		this.handleSaveTimekeep = handleSaveTimekeep;
 	}
 
-	onload(): void {
-		super.onload();
-
-		const wrapperEl = this.containerEl.createDiv({
+	createContainer(): HTMLElement {
+		return createDiv({
 			cls: "timekeep-container",
 		});
-		this.wrapperEl = wrapperEl;
+	}
 
+	render(wrapperEl: HTMLElement): void {
 		const errorEl = wrapperEl.createDiv({ cls: "timekeep-error" });
 		errorEl.createEl("h1", { text: "Warning" });
 		errorEl.createEl("p", { text: "Failed to save current timekeep" });
@@ -57,8 +46,8 @@ export class TimesheetSaveError extends DomComponent {
 	}
 
 	onRetrySave() {
-		// Attempt to save the current timekeep
-		void this.handleSaveTimekeep(this.timekeep.getState());
+		// Set the state to itself to trigger another save attempt
+		this.timekeep.setState(this.timekeep.getState());
 	}
 
 	async onCopy() {

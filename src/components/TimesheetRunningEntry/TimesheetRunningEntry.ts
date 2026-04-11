@@ -3,6 +3,7 @@ import type { Store } from "@/store";
 
 import { assert } from "@/utils/assert";
 
+import { EmptyComponent } from "../EmptyComponent";
 import { TimesheetRunningEntryEditing } from "./TimesheetRunningEntryEditing";
 import { TimesheetRunningEntryViewing } from "./TimesheetRunningEntryViewing";
 
@@ -12,7 +13,7 @@ import { getRunningEntry } from "@/timekeep/queries";
 import type { Timekeep } from "@/timekeep/schema";
 
 export class TimesheetRunningEntry extends ContentComponent<
-	TimesheetRunningEntryViewing | TimesheetRunningEntryEditing
+	TimesheetRunningEntryViewing | TimesheetRunningEntryEditing | EmptyComponent
 > {
 	/** Access to the timekeep */
 	timekeep: Store<Timekeep>;
@@ -57,7 +58,7 @@ export class TimesheetRunningEntry extends ContentComponent<
 		const timekeep = this.timekeep.getState();
 		const currentEntry = getRunningEntry(timekeep.entries);
 		if (!currentEntry) {
-			this.setContent(undefined);
+			this.setContent(new EmptyComponent(contentEl));
 			return;
 		}
 
@@ -82,7 +83,7 @@ export class TimesheetRunningEntry extends ContentComponent<
 		const timekeep = this.timekeep.getState();
 		const currentEntry = getRunningEntry(timekeep.entries);
 		if (!currentEntry) {
-			this.setContent(undefined);
+			this.setContent(new EmptyComponent(contentEl));
 			return;
 		}
 
