@@ -74,6 +74,10 @@ export default defineConfig((env) => {
 					"**/components/**/index.ts",
 				],
 			},
+			env: {
+				// Consistent test timezone
+				TZ: "Pacific/Auckland",
+			},
 		},
 	};
 });
