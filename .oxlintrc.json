@@ -1,5 +1,23 @@
 {
+	"$schema": "./node_modules/oxlint/configuration_schema.json",
 	"options": {
 		"typeAware": true
-	}
+	},
+	"rules": {
+		"no-restricted-imports": [
+			"error",
+			{
+				"name": "vitest",
+				"message": "vitest should not be imported outside of .test.ts files"
+			}
+		]
+	},
+	"overrides": [
+		{
+			"files": ["**/*.test.ts", "**/*.spec.ts", "**/__mocks__/**.ts"],
+			"rules": {
+				"no-restricted-imports": "off"
+			}
+		}
+	]
 }
