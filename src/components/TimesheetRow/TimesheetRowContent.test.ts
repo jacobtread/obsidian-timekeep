@@ -129,6 +129,58 @@ describe("TimesheetRowContent", () => {
 		expect(timekeepState.entries[0]).toEqual(collapsed);
 	});
 
+	it("folder row or groups should be expandable", () => {
+		const entry: TimeEntry = {
+			id: v4(),
+			name: "Test",
+			startTime: null,
+			endTime: null,
+			folder: true,
+			subEntries: [],
+			collapsed: true,
+		};
+
+		const expanded: TimeEntry = {
+			id: entry.id,
+			name: "Test",
+			startTime: null,
+			endTime: null,
+			folder: true,
+			subEntries: [],
+		};
+
+		timekeep.setState({ entries: [entry] });
+
+		const component = new TimesheetRowContent(
+			containerEl,
+			app,
+			timekeep,
+			settings,
+			entry,
+			0,
+			onBeginEditing
+		);
+		const onToggleCollapse = vi.spyOn(component, "onToggleCollapsed");
+
+		component.load();
+
+		const icon = component.wrapperEl?.querySelector(".timekeep-collapse-icon");
+		expect(icon).not.toBeNull();
+		expect(icon).toBeInstanceOf(SVGElement);
+
+		(icon as SVGElement).dispatchEvent(
+			new MouseEvent("click", {
+				bubbles: true,
+				cancelable: false,
+			})
+		);
+
+		expect(onToggleCollapse).toHaveBeenCalled();
+
+		const timekeepState: Timekeep = timekeep.getState();
+		expect(timekeepState.entries[0]).toEqual(expanded);
+	});
+
 	it("item should be able to be started from clicking the start icon", () => {
 		const entry: TimeEntry = {
 			id: v4(),

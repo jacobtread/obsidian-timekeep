@@ -76,7 +76,10 @@ export class TimesheetRowContent extends ReplaceableComponent {
 			cls: "timekeep-entry-name",
 			title: entry.name,
 		});
-		this.registerDomEvent(nameEl, "click", this.onToggleCollapsed.bind(this));
+
+		if (entry.subEntries !== null) {
+			this.registerDomEvent(nameEl, "click", this.onToggleCollapsed.bind(this));
+		}
 
 		if (entry.subEntries !== null && entry.folder) {
 			createObsidianIcon(nameEl, "folder", "timekeep-folder-icon");
@@ -182,7 +185,7 @@ export class TimesheetRowContent extends ReplaceableComponent {
 
 	onToggleCollapsed() {
 		const entry = this.entry;
-		if (entry.subEntries === null) return;
+		assert(entry.subEntries !== null, "Expected collapse toggling to only be possible on entries with subEntries");
 
 		this.timekeep.setState((timekeep) => {
 			const newEntry = setEntryCollapsed(entry, !entry.collapsed);

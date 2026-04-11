@@ -85,7 +85,7 @@ describe("TimesheetRowContentEditing", () => {
 		expect(onFinishEditing).toHaveBeenCalledOnce();
 	});
 
-	it("clicking the save button should update the timekeep state call onFinishEditing", () => {
+	it("clicking the save button should update the timekeep state and call onFinishEditing", () => {
 		const start = moment();
 
 		const entry: TimeEntry = {
@@ -93,6 +93,72 @@ describe("TimesheetRowContentEditing", () => {
 			name: "Test",
 			startTime: moment(start),
 			endTime: moment(start),
+			subEntries: null,
+		};
+
+		const setState = vi.spyOn(timekeep, "setState");
+
+		component = new TimesheetRowContentEditing(
+			containerEl,
+			app,
+			timekeep,
+			settings,
+			entry,
+			onFinishEditing
+		);
+		const onSubmit = vi.spyOn(component, "onSubmit");
+		component.load();
+
+		const form = containerEl.querySelector("form.timesheet-editing");
+		expect(form).not.toBeNull();
+		(form as HTMLFormElement).dispatchEvent(
+			new SubmitEvent("submit", { bubbles: true, cancelable: true })
+		);
+
+		expect(onSubmit).toHaveBeenCalledOnce();
+		expect(onFinishEditing).toHaveBeenCalledOnce();
+		expect(setState).toHaveBeenCalledOnce();
+	});
+
+	it("clicking the save button on a group should update the timekeep state and call onFinishEditing", () => {
+		const entry: TimeEntry = {
+			id: v4(),
+			name: "Test",
+			startTime: null,
+			endTime: null,
+			subEntries: [],
+		};
+
+		const setState = vi.spyOn(timekeep, "setState");
+
+		component = new TimesheetRowContentEditing(
+			containerEl,
+			app,
+			timekeep,
+			settings,
+			entry,
+			onFinishEditing
+		);
+		const onSubmit = vi.spyOn(component, "onSubmit");
+		component.load();
+
+		const form = containerEl.querySelector("form.timesheet-editing");
+		expect(form).not.toBeNull();
+		(form as HTMLFormElement).dispatchEvent(
+			new SubmitEvent("submit", { bubbles: true, cancelable: true })
+		);
+
+		expect(onSubmit).toHaveBeenCalledOnce();
+		expect(onFinishEditing).toHaveBeenCalledOnce();
+		expect(setState).toHaveBeenCalledOnce();
+	});
+
+	it("clicking the save button on a unstarted entry should update the timekeep state and call onFinishEditing", () => {
+		const entry: TimeEntry = {
+			id: v4(),
+			name: "Test",
+			startTime: null,
+			endTime: null,
 			subEntries: null,
 		};
 
@@ -266,5 +332,53 @@ describe("TimesheetRowContentEditing", () => {
 
 		// Timekeep should be empty
 		expect(timekeep.getState()).toEqual({ entries: [] });
+	});
+
+	it("editing a group entry should hide the start and end time inputs", () => {
+		const start = moment();
+		const entry: TimeEntry = {
+			id: v4(),
+			name: "Test",
+			startTime: moment(start),
+			endTime: moment(start),
+			subEntries: null,
+		};
+
+		timekeep.setState({ entries: [entry] });
+
+		const setState = vi.spyOn(timekeep, "setState");
+
+		component = new TimesheetRowContentEditing(
+			containerEl,
+			app,
+			timekeep,
+			settings,
+			entry,
+			onFinishEditing
+		);
+		const onSubmit = vi.spyOn(component, "onSubmit");
+		component.load();
+
+		const startTime = containerEl.querySelector('.timekeep-input[name="start-time"]');
+		const endTime = containerEl.querySelector('.timekeep-input[name="end-time"]');
+
+		expect(startTime).not.toBeNull();
+		expect(endTime).not.toBeNull();
+
+		(startTime as HTMLInputElement).value = "Test";
+		(endTime as HTMLInputElement).value = "Test";
+
+		const form = containerEl.querySelector("form.timesheet-editing");
+		expect(form).not.toBeNull();
+		(form as HTMLFormElement).dispatchEvent(
+			new SubmitEvent("submit", { bubbles: true, cancelable: true })
+		);
+
+		expect(onSubmit).toHaveBeenCalledOnce();
+		expect(onFinishEditing).toHaveBeenCalledOnce();
+		expect(setState).toHaveBeenCalledOnce();
+
+		// Entry should not have changed if the input values were not valid timestamps
+		expect(timekeep.getState()).toEqual({ entries: [entry] });
 	});
 });
