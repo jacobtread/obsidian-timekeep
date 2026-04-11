@@ -94,8 +94,8 @@ describe("TimesheetNameInput", () => {
 		expect(onDebouncedChange).toHaveBeenCalledOnce();
 		expect(getFilteredSuggestions).toHaveBeenCalledOnce();
 
-		// Selection focus should reset to the first suggestion
-		expect(setSuggestionFocus).toHaveBeenLastCalledWith(0);
+		// Selection focus should reset to nothing
+		expect(setSuggestionFocus).toHaveBeenLastCalledWith(-1);
 
 		// Suggestions should contain both items
 		const suggestions = containerEl.querySelectorAll(".timekeep-suggestion");
@@ -122,8 +122,8 @@ describe("TimesheetNameInput", () => {
 		expect(onDebouncedChange).toHaveBeenCalledOnce();
 		expect(getFilteredSuggestions).toHaveBeenCalledOnce();
 
-		// Selection focus should reset to the first suggestion
-		expect(setSuggestionFocus).toHaveBeenLastCalledWith(0);
+		// Selection focus should reset to nothing
+		expect(setSuggestionFocus).toHaveBeenLastCalledWith(-1);
 
 		// Suggestions should contain just the matching item
 		const suggestions = containerEl.querySelectorAll(".timekeep-suggestion");
@@ -283,11 +283,49 @@ describe("TimesheetNameInput", () => {
 			new KeyboardEvent("keydown", { bubbles: true, cancelable: true, key: "ArrowDown" })
 		);
 		inputEl.dispatchEvent(
+			new KeyboardEvent("keydown", { bubbles: true, cancelable: true, key: "ArrowDown" })
+		);
+		inputEl.dispatchEvent(
 			new KeyboardEvent("keydown", { bubbles: true, cancelable: true, key: "Enter" })
 		);
 
-		expect(onKeyDown).toHaveBeenCalledTimes(2);
+		expect(onKeyDown).toHaveBeenCalledTimes(3);
 		expect(onSelectSuggestion).toHaveBeenLastCalledWith("Test 1");
+	});
+
+	it("down arrow should open the suggestions when they are closed", () => {
+		autocomplete.names.setState(["Test", "Test 1"]);
+
+		const onKeyDown = vi.spyOn(component, "onKeyDown");
+		const onSelectSuggestion = vi.spyOn(component, "onSelectSuggestion");
+		const setSuggestionsOpen = vi.spyOn(component, "setSuggestionsOpen");
+
+		component.load();
+
+		const inputEl = containerEl.querySelector(".timekeep-name")! as HTMLInputElement;
+		expect(inputEl).not.toBeNull();
+
+		inputEl.value = "Test";
+		inputEl.focus();
+		inputEl.dispatchEvent(new Event("focus", { bubbles: true }));
+		inputEl.dispatchEvent(new Event("input", { bubbles: true }));
+		inputEl.dispatchEvent(
+			new KeyboardEvent("keydown", { bubbles: true, cancelable: true, key: "Escape" })
+		);
+
+		//
+		inputEl.dispatchEvent(
+			new KeyboardEvent("keydown", { bubbles: true, cancelable: true, key: "ArrowDown" })
+		);
+
+		expect(setSuggestionsOpen).toHaveBeenLastCalledWith(true);
+
+		inputEl.dispatchEvent(
+			new KeyboardEvent("keydown", { bubbles: true, cancelable: true, key: "Enter" })
+		);
+
+		expect(onKeyDown).toHaveBeenCalledTimes(3);
+		expect(onSelectSuggestion).toHaveBeenLastCalledWith("Test");
 	});
 
 	it("up arrow should be able to move the focused suggestion up", () => {
@@ -308,13 +346,16 @@ describe("TimesheetNameInput", () => {
 			new KeyboardEvent("keydown", { bubbles: true, cancelable: true, key: "ArrowDown" })
 		);
 		inputEl.dispatchEvent(
+			new KeyboardEvent("keydown", { bubbles: true, cancelable: true, key: "ArrowDown" })
+		);
+		inputEl.dispatchEvent(
 			new KeyboardEvent("keydown", { bubbles: true, cancelable: true, key: "ArrowUp" })
 		);
 		inputEl.dispatchEvent(
 			new KeyboardEvent("keydown", { bubbles: true, cancelable: true, key: "Enter" })
 		);
 
-		expect(onKeyDown).toHaveBeenCalledTimes(3);
+		expect(onKeyDown).toHaveBeenCalledTimes(4);
 		expect(onSelectSuggestion).toHaveBeenLastCalledWith("Test");
 	});
 
@@ -333,11 +374,71 @@ describe("TimesheetNameInput", () => {
 		inputEl.focus();
 		inputEl.dispatchEvent(new Event("input", { bubbles: true }));
 		inputEl.dispatchEvent(
+			new KeyboardEvent("keydown", { bubbles: true, cancelable: true, key: "ArrowDown" })
+		);
+		inputEl.dispatchEvent(
 			new KeyboardEvent("keydown", { bubbles: true, cancelable: true, key: "Enter" })
 		);
 
-		expect(onKeyDown).toHaveBeenCalledOnce();
+		expect(onKeyDown).toHaveBeenCalledTimes(2);
 		expect(onSelectSuggestion).toHaveBeenLastCalledWith("Test");
+	});
+
+	it("enter should do nothing without a focused suggestion", () => {
+		autocomplete.names.setState(["Test", "Other"]);
+
+		const onKeyDown = vi.spyOn(component, "onKeyDown");
+		const onSelectSuggestion = vi.spyOn(component, "onSelectSuggestion");
+
+		component.load();
+
+		const inputEl = containerEl.querySelector(".timekeep-name")! as HTMLInputElement;
+		expect(inputEl).not.toBeNull();
+
+		inputEl.value = "Test";
+		inputEl.focus();
+		inputEl.dispatchEvent(new Event("input", { bubbles: true }));
+
+		inputEl.dispatchEvent(
+			new KeyboardEvent("keydown", { bubbles: true, cancelable: true, key: "Enter" })
+		);
+
+		expect(onKeyDown).toHaveBeenCalledTimes(1);
+		expect(onSelectSuggestion).not.toHaveBeenCalled();
+	});
+
+	it("enter should do nothing when the suggestions box is closed", () => {
+		autocomplete.names.setState(["Test", "Test 1", "Other"]);
+
+		const onKeyDown = vi.spyOn(component, "onKeyDown");
+		const onSelectSuggestion = vi.spyOn(component, "onSelectSuggestion");
+		const setSuggestionsOpen = vi.spyOn(component, "setSuggestionsOpen");
+		const onClickOutside = vi.spyOn(component, "onClickOutside");
+
+		component.load();
+
+		const inputEl = containerEl.querySelector(".timekeep-name")! as HTMLInputElement;
+		expect(inputEl).not.toBeNull();
+
+		inputEl.value = "Test";
+		inputEl.focus();
+		inputEl.dispatchEvent(new Event("input", { bubbles: true }));
+
+		inputEl.dispatchEvent(
+			new KeyboardEvent("keydown", { bubbles: true, cancelable: true, key: "ArrowDown" })
+		);
+
+		document.dispatchEvent(new MouseEvent("mousedown", { bubbles: true }));
+		expect(onClickOutside).toHaveBeenCalledOnce();
+
+		expect(setSuggestionsOpen).toHaveBeenLastCalledWith(false);
+
+		inputEl.dispatchEvent(
+			new KeyboardEvent("keydown", { bubbles: true, cancelable: true, key: "Enter" })
+		);
+
+		expect(onKeyDown).toHaveBeenCalledTimes(2);
+		expect(onSelectSuggestion).not.toHaveBeenCalled();
 	});
 
 	it("enter should do nothing without any suggestions", () => {

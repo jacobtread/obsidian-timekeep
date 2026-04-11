@@ -158,12 +158,8 @@ export class TimesheetNameInput extends DomComponent {
 		const suggestions = this.getFilteredSuggestions();
 		this.#suggestions = suggestions;
 
-		this.updateSuggestionsOpen();
+		this.setSuggestionsOpen(true);
 		this.renderSuggestions();
-
-		if (suggestions.length > 0) {
-			this.setSuggestionFocus(0);
-		}
 	}
 
 	/**
@@ -233,14 +229,17 @@ export class TimesheetNameInput extends DomComponent {
 			}
 
 			case "Enter": {
-				event.preventDefault();
-
 				// Clamp focus within suggestion bounds before making decisions
 				this.clampSuggestionFocus();
 
+				// Don't act if the user hasn't selected an item
 				const focusIndex = this.#suggestionFocusIndex;
 				if (focusIndex < 0) return;
 
+				// Don't act if the suggestions aren't open
+				if (!this.#suggestionsOpen) return;
+
+				event.preventDefault();
 				const suggestion = this.#suggestions[focusIndex];
 				assert(suggestion, "Suggestion should always be within defined bounds");
 
@@ -250,6 +249,7 @@ export class TimesheetNameInput extends DomComponent {
 
 			case "Escape": {
 				this.setSuggestionsOpen(false);
+				this.setSuggestionFocus(-1);
 				break;
 			}
 
@@ -266,7 +266,7 @@ export class TimesheetNameInput extends DomComponent {
 		if (this.#suggestions.length > 0) {
 			const focusIndex = this.#suggestionFocusIndex;
 			const newFocusIndex =
-				focusIndex === -1 ? 0 : Math.min(focusIndex, this.#suggestions.length - 1);
+				focusIndex === -1 ? -1 : Math.min(focusIndex, this.#suggestions.length - 1);
 
 			this.setSuggestionFocus(newFocusIndex);
 		} else {
@@ -305,6 +305,7 @@ export class TimesheetNameInput extends DomComponent {
 		// Update the input aria-activedescendant for screen readers
 		if (index === -1) {
 			inputEl.removeAttribute("aria-activedescendant");
+			suggestionsEl.scrollTo({ top: 0 });
 		} else {
 			inputEl.setAttribute(
 				"aria-activedescendant",
