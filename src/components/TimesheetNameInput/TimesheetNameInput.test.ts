@@ -239,6 +239,10 @@ describe("TimesheetNameInput", () => {
 		expect(component.getValue()).toBe("Test");
 	});
 
+	it("should get an empty string attempting to retrieve the input value before load", () => {
+		expect(component.getValue()).toBe("");
+	});
+
 	it("should be able to reset the input value", () => {
 		autocomplete.names.setState(["Test", "Test 1"]);
 		component.load();
@@ -254,6 +258,10 @@ describe("TimesheetNameInput", () => {
 
 		expect(component.getValue()).toBe("");
 		expect(inputEl.value).toBe("");
+	});
+
+	it("resetting the input value before loading should do nothing", () => {
+		component.resetValue();
 	});
 
 	it("down arrow should be able to move the focused suggestion down", () => {
@@ -332,6 +340,24 @@ describe("TimesheetNameInput", () => {
 		expect(onSelectSuggestion).toHaveBeenLastCalledWith("Test");
 	});
 
+	it("enter should do nothing without any suggestions", () => {
+		autocomplete.names.setState(["Test", "Other"]);
+
+		const onKeyDown = vi.spyOn(component, "onKeyDown");
+		const onSelectSuggestion = vi.spyOn(component, "onSelectSuggestion");
+
+		component.load();
+
+		const inputEl = containerEl.querySelector(".timekeep-name")! as HTMLInputElement;
+		expect(inputEl).not.toBeNull();
+		inputEl.dispatchEvent(
+			new KeyboardEvent("keydown", { bubbles: true, cancelable: true, key: "Enter" })
+		);
+
+		expect(onKeyDown).toHaveBeenCalledOnce();
+		expect(onSelectSuggestion).not.toHaveBeenCalled();
+	});
+
 	it("escape should close the suggestions", () => {
 		autocomplete.names.setState(["Test", "Other"]);
 
@@ -396,6 +422,34 @@ describe("TimesheetNameInput", () => {
 		expect(setSuggestionsOpen).toHaveBeenLastCalledWith(false);
 	});
 
+	it("clicking inside the input container should not close suggestions", () => {
+		document.body.appendChild(containerEl);
+
+		const component = new TimesheetNameInput(containerEl, autocomplete);
+
+		autocomplete.names.setState(["Test", "Other"]);
+
+		const onClickOutside = vi.spyOn(component, "onClickOutside");
+		const setSuggestionsOpen = vi.spyOn(component, "setSuggestionsOpen");
+
+		component.load();
+
+		const inputEl = containerEl.querySelector(".timekeep-name")! as HTMLInputElement;
+		expect(inputEl).not.toBeNull();
+
+		inputEl.value = "Test";
+		inputEl.focus();
+
+		component.wrapperEl!.dispatchEvent(
+			new MouseEvent("mousedown", { bubbles: true, cancelable: true })
+		);
+
+		expect(onClickOutside).toHaveBeenCalledOnce();
+		expect(setSuggestionsOpen).not.toHaveBeenLastCalledWith(false);
+
+		document.body.removeChild(containerEl);
+	});
+
 	it("touching outside the input container should close suggestions", () => {
 		const component = new TimesheetNameInput(containerEl, autocomplete);
 
@@ -434,6 +488,7 @@ describe("TimesheetNameInput", () => {
 		]);
 
 		const onSelectSuggestion = vi.spyOn(component, "onSelectSuggestion");
+		const onClickSuggestions = vi.spyOn(component, "onClickSuggestions");
 		component.load();
 
 		const inputEl = containerEl.querySelector(".timekeep-name")! as HTMLInputElement;
@@ -451,6 +506,7 @@ describe("TimesheetNameInput", () => {
 		suggestion.dispatchEvent(new MouseEvent("mousedown", { bubbles: true, cancelable: true }));
 
 		expect(onSelectSuggestion).toHaveBeenCalledWith("Test");
+		expect(onClickSuggestions).toHaveBeenCalled();
 	});
 
 	it("clicking events should be ignored when outside a suggestion", () => {

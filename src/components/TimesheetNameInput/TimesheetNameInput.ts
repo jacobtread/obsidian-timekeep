@@ -137,8 +137,13 @@ export class TimesheetNameInput extends DomComponent {
 	 */
 	onClickSuggestions(event: MouseEvent) {
 		const target = event.target;
+
+		/* v8 ignore start -- @preserve */
 		if (!(target instanceof HTMLElement)) return;
+		/* v8 ignore stop -- @preserve */
+
 		if (!target.id.startsWith("timekeepSuggestion-")) return;
+
 		const suggestion = target;
 		const value = suggestion.getAttribute("value");
 		assert(value !== null, "Suggestion value should not be null");
@@ -167,13 +172,16 @@ export class TimesheetNameInput extends DomComponent {
 	 *
 	 * @param event The click / touch event
 	 */
+
 	onClickOutside(event: MouseEvent | TouchEvent) {
-		if (
-			!(event.target instanceof Node) ||
-			(this.wrapperEl && !this.wrapperEl.contains(event.target))
-		) {
-			this.setSuggestionsOpen(false);
-		}
+		assert(
+			this.wrapperEl,
+			"Wrapper element must be defined for the onClickOutside event to fire"
+		);
+
+		if (this.wrapperEl.contains(event.target as Node | null)) return;
+
+		this.setSuggestionsOpen(false);
 	}
 
 	/**
@@ -194,7 +202,8 @@ export class TimesheetNameInput extends DomComponent {
 		const suggestionsEl = this.#suggestionsEl;
 		assert(suggestionsEl, "Suggestions element should be defined");
 
-		const suggestionsOpen = !(suggestionsEl.hidden ?? false);
+		const suggestionsHidden = suggestionsEl.hidden;
+		const suggestionsOpen = !suggestionsHidden;
 
 		if (!suggestionsOpen && event.key === "ArrowDown") {
 			this.setSuggestionsOpen(true);
@@ -224,14 +233,18 @@ export class TimesheetNameInput extends DomComponent {
 			}
 
 			case "Enter": {
+				event.preventDefault();
+
+				// Clamp focus within suggestion bounds before making decisions
+				this.clampSuggestionFocus();
+
 				const focusIndex = this.#suggestionFocusIndex;
-				if (focusIndex >= 0) {
-					event.preventDefault();
-					const suggestion = this.#suggestions[focusIndex];
-					if (suggestion) {
-						this.onSelectSuggestion(suggestion.item);
-					}
-				}
+				if (focusIndex < 0) return;
+
+				const suggestion = this.#suggestions[focusIndex];
+				assert(suggestion, "Suggestion should always be within defined bounds");
+
+				this.onSelectSuggestion(suggestion.item);
 				break;
 			}
 
@@ -337,10 +350,11 @@ export class TimesheetNameInput extends DomComponent {
 	 * @param value The suggestion value
 	 */
 	onSelectSuggestion(value: string) {
-		if (this.#inputEl) {
-			this.#inputEl.value = value;
-		}
-
+		assert(
+			this.#inputEl,
+			"Input element should be defined for onSelectSuggestion to be called"
+		);
+		this.#inputEl.value = value;
 		this.setSuggestionsOpen(false);
 		this.setSuggestionFocus(-1);
 	}
