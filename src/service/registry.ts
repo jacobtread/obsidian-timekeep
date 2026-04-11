@@ -22,9 +22,7 @@ import { stripTimekeepRuntimeData } from "@/timekeep/schema";
 import { stopTimekeep } from "@/timekeep/update";
 
 /** Entry within the timekeep registry */
-export type TimekeepRegistryEntry = {
-	file: TFile;
-} & (TimekeepRegistryEntryFile | TimekeepRegistryEntryMarkdown);
+export type TimekeepRegistryEntry = TimekeepRegistryEntryFile | TimekeepRegistryEntryMarkdown;
 
 /** Running entry with a reference and file reference */
 export type TimekeepRunningEntry = {
@@ -42,12 +40,14 @@ export enum TimekeepEntryItemType {
 export type TimekeepRegistryEntryFile = {
 	type: TimekeepEntryItemType.FILE;
 	timekeep: Timekeep;
+	file: TFile;
 };
 
 /** Registry entry for a markdown file with multiple timekeeps */
 export type TimekeepRegistryEntryMarkdown = {
 	type: TimekeepEntryItemType.MARKDOWN;
 	timekeeps: TimekeepWithPosition[];
+	file: TFile;
 };
 
 /** Reference to a registry entry along with its file */
@@ -380,13 +380,20 @@ export class TimekeepRegistry extends Component {
 		return null;
 	}
 
+	/**
+	 * Opens a timekeep by reference to the file and the
+	 * line within the file for markdown timekeep items
+	 *
+	 * @param workspace The workspace to open the file with
+	 * @param ref The reference to the timekeep
+	 */
 	static async openItemRef(workspace: Workspace, ref: TimekeepRegistryItemRef) {
 		const leaf = workspace.getLeaf();
 		await leaf.openFile(ref.file);
 
 		const view = leaf.view;
 
-		if (view instanceof MarkdownView && ref.type === TimekeepEntryItemType.MARKDOWN) {
+		if (ref.type === TimekeepEntryItemType.MARKDOWN && view instanceof MarkdownView) {
 			const editor = view.editor;
 			const line = ref.position.startLine;
 
@@ -396,6 +403,13 @@ export class TimekeepRegistry extends Component {
 		}
 	}
 
+	/**
+	 * Helper to collect all running timekeep entries from the provided
+	 * collection of registry entries
+	 *
+	 * @param entries The entries to collect from
+	 * @returns All the running entries
+	 */
 	static getRunningEntries(entries: TimekeepRegistryEntry[]): TimekeepRunningEntry[] {
 		const results: TimekeepRunningEntry[] = [];
 		for (const entry of entries) {
@@ -403,15 +417,15 @@ export class TimekeepRegistry extends Component {
 				case TimekeepEntryItemType.FILE: {
 					const timekeep = entry.timekeep;
 					const running = getRunningEntry(timekeep.entries);
-					if (running !== null) {
-						results.push({
-							running: running,
-							ref: {
-								type: entry.type,
-								file: entry.file,
-							},
-						});
-					}
+					if (running === null) continue;
+					results.push({
+						running: running,
+						ref: {
+							type: entry.type,
+							file: entry.file,
+						},
+					});
+
 					break;
 				}
 
@@ -419,19 +433,18 @@ export class TimekeepRegistry extends Component {
 					for (const timekeepWithPosition of entry.timekeeps) {
 						const timekeep = timekeepWithPosition.timekeep;
 						const running = getRunningEntry(timekeep.entries);
-						if (running !== null) {
-							results.push({
-								running: running,
-								ref: {
-									type: entry.type,
-									file: entry.file,
-									position: {
-										startLine: timekeepWithPosition.startLine,
-										endLine: timekeepWithPosition.endLine,
-									},
+						if (running === null) continue;
+						results.push({
+							running: running,
+							ref: {
+								type: entry.type,
+								file: entry.file,
+								position: {
+									startLine: timekeepWithPosition.startLine,
+									endLine: timekeepWithPosition.endLine,
 								},
-							});
-						}
+							},
+						});
 					}
 
 					break;
