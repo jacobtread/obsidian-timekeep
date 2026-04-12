@@ -15,7 +15,7 @@ import { createStore } from "@/store";
 
 import { TimesheetRowContentEditing } from "./TimesheetRowContentEditing";
 
-import type { TimeEntry, Timekeep } from "@/timekeep/schema";
+import { defaultTimekeep, type TimeEntry, type Timekeep } from "@/timekeep/schema";
 
 describe("TimesheetRowContentEditing", () => {
 	let containerEl: HTMLElement;
@@ -28,7 +28,7 @@ describe("TimesheetRowContentEditing", () => {
 	beforeEach(() => {
 		app = {} as App;
 		containerEl = createMockContainer();
-		timekeep = createStore({ entries: [] });
+		timekeep = createStore(defaultTimekeep());
 		settings = createStore(defaultSettings);
 		onFinishEditing = vi.fn();
 	});

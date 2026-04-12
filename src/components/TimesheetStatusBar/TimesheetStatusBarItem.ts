@@ -17,10 +17,6 @@ export class TimesheetStatusBarItem extends DomComponent {
 	registry: TimekeepRegistry;
 	/** The reference to the item */
 	ref: TimekeepRegistryItemRef;
-	/** Currently tracked background interval for content */
-	currentContentInterval: number | undefined;
-	/** Component for rendering the real time updating duration */
-	duration: TimesheetEntryDuration;
 
 	constructor(
 		containerEl: HTMLElement,

@@ -95,10 +95,11 @@ export class TimekeepRegistry extends Component {
 	constructor(vault: Vault, settings: Store<TimekeepSettings>) {
 		super();
 		this.#vault = vault;
-		this.entries = createStore([]);
+		this.entries = createStore<TimekeepRegistryEntry[]>([]);
 		this.settings = settings;
 		this.tasks = [];
 		this.events = [];
+		this.enabled = settings.getState().registryEnabled;
 	}
 
 	onload() {

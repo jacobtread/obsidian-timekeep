@@ -12,7 +12,7 @@ import { assert } from "@/utils/assert";
 
 import { TimesheetTable } from "./TimesheetTable";
 
-import type { Timekeep } from "@/timekeep/schema";
+import { defaultTimekeep, type Timekeep } from "@/timekeep/schema";
 
 describe("TimesheetTable", () => {
 	let containerEl: HTMLElement;
@@ -24,7 +24,7 @@ describe("TimesheetTable", () => {
 	beforeEach(() => {
 		containerEl = createMockContainer();
 		app = {} as App;
-		timekeep = createStore({ entries: [] });
+		timekeep = createStore(defaultTimekeep());
 		settings = createStore(defaultSettings);
 		component = new TimesheetTable(containerEl, app, timekeep, settings);
 	});

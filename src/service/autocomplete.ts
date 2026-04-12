@@ -26,7 +26,7 @@ export class TimekeepAutocomplete extends Component {
 		this.registry = registry;
 		this.settings = settings;
 
-		this.names = createStore([]);
+		this.names = createStore<string[]>([]);
 	}
 
 	onload() {

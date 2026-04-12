@@ -2,7 +2,7 @@
 
 import moment from "moment";
 import { v4 } from "uuid";
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach, assert } from "vitest";
 
 import { createMockContainer } from "@/__mocks__/obsidian";
 import { defaultSettings, TimekeepSettings } from "@/settings";
@@ -12,7 +12,7 @@ import { TimesheetCounters } from "./TimesheetCounters";
 import { TimesheetTimer } from "./TimesheetTimer";
 
 import * as queries from "@/timekeep/queries";
-import { Timekeep } from "@/timekeep/schema";
+import { defaultTimekeep, Timekeep } from "@/timekeep/schema";
 
 describe("TimesheetCounters", () => {
 	let container: HTMLElement;
@@ -26,7 +26,7 @@ describe("TimesheetCounters", () => {
 
 		container = createMockContainer();
 		settingsStore = createStore({ ...defaultSettings });
-		timekeepStore = createStore({ entries: [] });
+		timekeepStore = createStore(defaultTimekeep());
 
 		component = new TimesheetCounters(container, settingsStore, timekeepStore);
 	});
@@ -55,6 +55,8 @@ describe("TimesheetCounters", () => {
 
 	it("should set timer values using getEntryDuration and getTotalDuration", () => {
 		component.load();
+
+		assert(component.currentTimer && component.totalTimer);
 
 		const currentSetValues = vi.spyOn(component.currentTimer, "setValues");
 		const totalSetValues = vi.spyOn(component.totalTimer, "setValues");
@@ -102,6 +104,8 @@ describe("TimesheetCounters", () => {
 
 		component.load();
 
+		assert(component.currentTimer && component.totalTimer);
+
 		const currentSetValues = vi.spyOn(component.currentTimer, "setValues");
 		const totalSetValues = vi.spyOn(component.totalTimer, "setValues");
 		const setCurrentHidden = vi.spyOn(component.currentTimer, "setHidden");
@@ -131,6 +135,8 @@ describe("TimesheetCounters", () => {
 		vi.setSystemTime(oneHourLater.toDate());
 
 		component.load();
+
+		assert(component.currentTimer && component.totalTimer);
 
 		const currentSetValues = vi.spyOn(component.currentTimer, "setValues");
 		const totalSetValues = vi.spyOn(component.totalTimer, "setValues");

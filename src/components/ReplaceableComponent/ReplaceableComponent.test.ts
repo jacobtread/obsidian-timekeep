@@ -76,7 +76,7 @@ describe("ReplaceableComponent", () => {
 
 	it("load in with a previous element should cause a replace", () => {
 		class FirstComponent extends ReplaceableComponent {
-			testContainer: HTMLElement;
+			testContainer: HTMLElement | undefined;
 
 			constructor(containerEl: HTMLElement) {
 				super(containerEl);
@@ -93,7 +93,7 @@ describe("ReplaceableComponent", () => {
 		}
 
 		class SecondComponent extends ReplaceableComponent {
-			testContainer: HTMLElement;
+			testContainer: HTMLElement | undefined;
 
 			constructor(containerEl: HTMLElement) {
 				super(containerEl);
@@ -137,7 +137,7 @@ describe("ReplaceableComponent", () => {
 
 	it("unloading should be skipped when using a content component with two replaceable component", () => {
 		class FirstComponent extends ReplaceableComponent {
-			testContainer: HTMLElement;
+			testContainer: HTMLElement | undefined;
 
 			constructor(containerEl: HTMLElement) {
 				super(containerEl);
@@ -154,7 +154,7 @@ describe("ReplaceableComponent", () => {
 		}
 
 		class SecondComponent extends ReplaceableComponent {
-			testContainer: HTMLElement;
+			testContainer: HTMLElement | undefined;
 
 			constructor(containerEl: HTMLElement) {
 				super(containerEl);

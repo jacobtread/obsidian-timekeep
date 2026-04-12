@@ -14,7 +14,7 @@ export class TimesheetStatusBar extends Component {
 	#containerEl: HTMLElement;
 
 	/** Wrapper container element for entries */
-	wrapperEl: HTMLElement;
+	wrapperEl: HTMLElement | undefined;
 
 	/** Access to the app instance */
 	app: App;

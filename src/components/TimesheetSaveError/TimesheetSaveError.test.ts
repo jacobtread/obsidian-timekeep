@@ -7,7 +7,7 @@ import { createStore, Store } from "@/store";
 
 import { TimesheetSaveError } from "./TimesheetSaveError";
 
-import { stripTimekeepRuntimeData, Timekeep } from "@/timekeep/schema";
+import { defaultTimekeep, stripTimekeepRuntimeData, Timekeep } from "@/timekeep/schema";
 
 describe("TimesheetSaveError", () => {
 	let container: HTMLElement;
@@ -18,7 +18,7 @@ describe("TimesheetSaveError", () => {
 
 	beforeEach(() => {
 		container = createMockContainer();
-		timekeepStore = createStore({ entries: [] });
+		timekeepStore = createStore(defaultTimekeep());
 		component = new TimesheetSaveError(container, timekeepStore);
 
 		writeText = vi.fn().mockResolvedValue(undefined);

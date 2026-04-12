@@ -14,7 +14,7 @@ import { createStore, Store } from "@/store";
 
 import { TimesheetExportActions } from "./TimesheetExportActions";
 
-import { stripTimekeepRuntimeData, Timekeep } from "@/timekeep/schema";
+import { defaultTimekeep, stripTimekeepRuntimeData, Timekeep } from "@/timekeep/schema";
 
 describe("TimesheetExportActions", () => {
 	let container: HTMLElement;
@@ -28,7 +28,7 @@ describe("TimesheetExportActions", () => {
 	beforeEach(() => {
 		container = createMockContainer();
 		app = {} as App;
-		timekeep = createStore({ entries: [] });
+		timekeep = createStore(defaultTimekeep());
 		settings = createStore(defaultSettings);
 		customOutputFormats = createStore({});
 

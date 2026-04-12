@@ -35,7 +35,7 @@ describe("TimesheetRowContainer", () => {
 	beforeEach(() => {
 		containerEl = createMockContainer();
 		app = {} as App;
-		timekeep = createStore({ entries: [entry] });
+		timekeep = createStore<Timekeep>({ entries: [entry] });
 		settings = createStore(defaultSettings);
 		component = new TimesheetRow(containerEl, app, timekeep, settings, entry, 0);
 	});

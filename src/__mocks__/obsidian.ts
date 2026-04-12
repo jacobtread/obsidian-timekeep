@@ -240,7 +240,6 @@ export class MockVault {
 	}
 
 	asVault(): Vault {
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		return this as any as Vault;
 	}
 
@@ -251,7 +250,7 @@ export class MockVault {
 		if (!this._events[name]) return;
 
 		for (const callback of this._events[name]) {
-			callback.call(this, ...args);
+			(callback as Function).apply(undefined, args);
 		}
 	}
 
@@ -355,7 +354,7 @@ export class MockComponent {
 }
 
 abstract class MockBaseComponent {
-	disabled: boolean;
+	disabled: boolean = false;
 
 	// oxlint-disable-next-line unicorn/no-thenable
 	then(_cb: (component: this) => any): this {
@@ -580,7 +579,7 @@ export function setObsidianMockElementHelpers(node: Node) {
 	node.createSpan = vi
 		.fn()
 		.mockImplementation(
-			(o?: DomElementInfo | string, callback?: (el: HTMLDivElement) => void) =>
+			(o?: DomElementInfo | string, callback?: (el: HTMLSpanElement) => void) =>
 				node.createEl("span", o, callback)
 		);
 
@@ -621,7 +620,7 @@ export function setObsidianMockElementHelpersGlobal() {
 	globalThis.createSpan = vi
 		.fn()
 		.mockImplementation(
-			(o?: DomElementInfo | string, callback?: (el: HTMLDivElement) => void) =>
+			(o?: DomElementInfo | string, callback?: (el: HTMLSpanElement) => void) =>
 				globalThis.createEl("span", o, callback)
 		);
 }

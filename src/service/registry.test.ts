@@ -5,7 +5,7 @@ import { v4 } from "uuid";
 import { describe, vi, it, expect } from "vitest";
 
 import { MockMarkdownView, MockVault } from "@/__mocks__/obsidian";
-import { defaultSettings } from "@/settings";
+import { defaultSettings, TimekeepSettings } from "@/settings";
 import { createStore } from "@/store";
 import { createCodeBlock } from "@/utils/codeblock";
 
@@ -618,7 +618,7 @@ describe("TimekeepRegistry", () => {
 			const vault = new MockVault();
 			const registry = new TimekeepRegistry(
 				vault.asVault(),
-				createStore({ ...defaultSettings, registryEnabled: false })
+				createStore<TimekeepSettings>({ ...defaultSettings, registryEnabled: false })
 			);
 
 			registry.load();

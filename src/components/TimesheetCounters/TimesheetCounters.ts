@@ -3,6 +3,7 @@ import moment from "moment";
 import type { TimekeepSettings } from "@/settings";
 import type { Store } from "@/store";
 
+import { assert } from "@/utils/assert";
 import { formatDuration } from "@/utils/time";
 
 import { TimesheetTimer } from "./TimesheetTimer";
@@ -28,9 +29,9 @@ export class TimesheetCounters extends DomComponent {
 	settings: Store<TimekeepSettings>;
 
 	/** Timer for the current entry */
-	currentTimer: TimesheetTimer;
+	currentTimer: TimesheetTimer | undefined;
 	/** Timer for the total time */
-	totalTimer: TimesheetTimer;
+	totalTimer: TimesheetTimer | undefined;
 
 	/** Currently tracked background interval for content */
 	currentContentInterval: number | undefined;
@@ -95,6 +96,8 @@ export class TimesheetCounters extends DomComponent {
 	 * Updates the values of the timers using the current elapsed time
 	 */
 	updateTimers() {
+		assert(this.currentTimer && this.totalTimer, "Timers must be defined for updateTimers");
+
 		const timekeep = this.timekeep.getState();
 		const settings = this.settings.getState();
 

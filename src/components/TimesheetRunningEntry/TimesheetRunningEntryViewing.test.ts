@@ -10,7 +10,7 @@ import { createStore, type Store } from "@/store";
 
 import { TimesheetRunningEntryViewing } from "./TimesheetRunningEntryViewing";
 
-import type { TimeEntry, Timekeep } from "@/timekeep/schema";
+import { defaultTimekeep, type TimeEntry, type Timekeep } from "@/timekeep/schema";
 
 describe("TimesheetRunningEntry", () => {
 	let containerEl: HTMLElement;
@@ -38,7 +38,7 @@ describe("TimesheetRunningEntry", () => {
 
 	beforeEach(() => {
 		containerEl = createMockContainer();
-		timekeep = createStore({ entries: [] });
+		timekeep = createStore(defaultTimekeep());
 		settings = createStore(defaultSettings);
 		onStartEditing = vi.fn();
 	});

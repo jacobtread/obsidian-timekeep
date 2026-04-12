@@ -72,6 +72,10 @@ export const TIMEKEEP = z.object({
 	entries: z.array(TIME_ENTRY),
 });
 
+export function defaultTimekeep(): Timekeep {
+	return { entries: [] };
+}
+
 export function stripTimekeepRuntimeData(timekeep: Timekeep): unknown {
 	return {
 		...timekeep,

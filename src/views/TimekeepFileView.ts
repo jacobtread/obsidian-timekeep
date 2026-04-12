@@ -38,7 +38,7 @@ export default class TimekeepFileView extends EditableFileView {
 	) {
 		super(leaf);
 
-		this.loadResult = createStore(null);
+		this.loadResult = createStore<LoadResult | null>(null);
 		this.settings = settings;
 		this.customOutputFormats = customOutputFormats;
 		this.autocomplete = autocomplete;

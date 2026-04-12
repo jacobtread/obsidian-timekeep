@@ -12,7 +12,7 @@ import { createStore, type Store } from "@/store";
 
 import { Timesheet } from "./Timesheet";
 
-import type { Timekeep } from "@/timekeep/schema";
+import { defaultTimekeep, type Timekeep } from "@/timekeep/schema";
 
 import { TimekeepAutocomplete } from "@/service/autocomplete";
 import { TimekeepRegistry } from "@/service/registry";
@@ -30,7 +30,7 @@ describe("Timesheet", () => {
 
 	beforeEach(() => {
 		app = {} as App;
-		timekeep = createStore({ entries: [] });
+		timekeep = createStore(defaultTimekeep());
 		vault = new MockVault();
 		containerEl = createMockContainer();
 		settings = createStore(defaultSettings);

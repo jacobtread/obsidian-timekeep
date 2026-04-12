@@ -63,7 +63,7 @@ describe("ContentComponent", () => {
 
 	it("using two replaceable component should trigger the previous", () => {
 		class FirstComponent extends ReplaceableComponent {
-			testContainer: HTMLElement;
+			testContainer: HTMLElement | undefined;
 
 			constructor(containerEl: HTMLElement) {
 				super(containerEl);
@@ -80,7 +80,7 @@ describe("ContentComponent", () => {
 		}
 
 		class SecondComponent extends ReplaceableComponent {
-			testContainer: HTMLElement;
+			testContainer: HTMLElement | undefined;
 
 			constructor(containerEl: HTMLElement) {
 				super(containerEl);

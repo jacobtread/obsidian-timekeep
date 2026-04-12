@@ -49,7 +49,7 @@ describe("TimesheetStatusBar", () => {
 	});
 
 	it("should unload children items when re-rendering", () => {
-		const nestedItem = new DomComponent(component.wrapperEl);
+		const nestedItem = new DomComponent(component.wrapperEl!);
 		const unload = vi.spyOn(nestedItem, "unload");
 		component.items.push(nestedItem as TimesheetStatusBarItem);
 		component.load();

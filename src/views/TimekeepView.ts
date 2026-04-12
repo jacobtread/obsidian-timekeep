@@ -14,7 +14,7 @@ import { TimesheetLoadError } from "@/components/TimesheetLoadError";
 import { TimesheetSaveError } from "@/components/TimesheetSaveError";
 
 import type { LoadResult } from "@/timekeep/parser";
-import { stripTimekeepRuntimeData, type Timekeep } from "@/timekeep/schema";
+import { defaultTimekeep, stripTimekeepRuntimeData, type Timekeep } from "@/timekeep/schema";
 
 import { TimekeepAutocomplete } from "@/service/autocomplete";
 
@@ -57,7 +57,7 @@ export default class TimekeepView extends ContentComponent<
 		this.app = app;
 
 		this.loadResult = loadResult;
-		this.timekeep = createStore({ entries: [] });
+		this.timekeep = createStore(defaultTimekeep());
 		this.saveError = createStore(false);
 
 		this.settings = settings;

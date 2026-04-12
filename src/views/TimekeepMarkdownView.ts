@@ -44,7 +44,7 @@ export default class TimekeepMarkdownView extends MarkdownRenderChild {
 		customOutputFormats: Store<Record<string, CustomOutputFormat>>,
 		autocomplete: TimekeepAutocomplete,
 		context: MarkdownPostProcessorContext,
-		loadResult: LoadResult
+		loadResult: LoadResult | null
 	) {
 		super(containerEl);
 		this.app = app;

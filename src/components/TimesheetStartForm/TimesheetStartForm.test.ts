@@ -12,7 +12,7 @@ import { createStore } from "@/store";
 
 import { TimesheetStartForm } from "./TimesheetStartForm";
 
-import type { Timekeep } from "@/timekeep/schema";
+import { defaultTimekeep, type Timekeep } from "@/timekeep/schema";
 
 import { TimekeepAutocomplete } from "@/service/autocomplete";
 import { TimekeepRegistry } from "@/service/registry";
@@ -37,7 +37,7 @@ describe("TimesheetStart", () => {
 	beforeEach(() => {
 		vault = new MockVault();
 		containerEl = createMockContainer();
-		timekeep = createStore({ entries: [] });
+		timekeep = createStore(defaultTimekeep());
 		settings = createStore(defaultSettings);
 
 		registry = new TimekeepRegistry(vault.asVault(), settings);
