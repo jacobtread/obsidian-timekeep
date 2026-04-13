@@ -20,7 +20,7 @@ export async function createNewTimekeepFile(app: App, folder: TFolder) {
 		index += 1;
 	}
 
-	const filePath = `${folderPath}${name}`;
+	const filePath = `${folderPath}/${name}`;
 	const file = await app.vault.create(filePath, "");
 
 	// Open the created file
