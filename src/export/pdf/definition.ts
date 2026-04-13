@@ -1,19 +1,10 @@
 import type { Moment } from "moment";
-import type {
-	Content,
-	DynamicContent,
-	TableCell,
-	TDocumentDefinitions,
-	TFontDictionary,
-} from "pdfmake/interfaces";
+import type { Content, DynamicContent, TableCell, TDocumentDefinitions } from "pdfmake/interfaces";
 
-import moment from "moment";
-import { App, Notice, Platform } from "obsidian";
 import pdfMake from "pdfmake";
 
 import type { TimekeepSettings } from "@/settings";
 
-import { PdfExportBehavior } from "@/settings";
 import { NameSegmentType, parseNameSegments } from "@/utils/name";
 import {
 	formatDurationLong,
@@ -22,142 +13,18 @@ import {
 	formatPdfRowDate,
 } from "@/utils/time";
 
-import { FileNamePromptModal } from "@/modals/FileNamePromptModal";
-
 import { getEntryDuration, getTotalDuration } from "@/timekeep/queries";
 import type { TimeEntry, Timekeep } from "@/timekeep/schema";
 
-// Embedded fonts
-import RobotoBold from "@/fonts/Roboto-Bold.ttf";
-import RobotoRegular from "@/fonts/Roboto-Regular.ttf";
-import RubikBold from "@/fonts/Rubik-Bold.ttf";
-import RubikRegular from "@/fonts/Rubik-Regular.ttf";
-
-export async function exportPdf(app: App, timekeep: Timekeep, settings: TimekeepSettings) {
-	if (Platform.isMobileApp) {
-		return exportPdfMobile(app, timekeep, settings);
-	} else {
-		return exportPdfDesktop(timekeep, settings);
-	}
-}
-
-async function exportPdfMobile(app: App, timekeep: Timekeep, settings: TimekeepSettings) {
-	const currentTime = moment();
-	const blob = await createPdfExportBlob(timekeep, settings, currentTime);
-	const buffer = await blob.arrayBuffer();
-	const fileName = await FileNamePromptModal.pick(app);
-
-	if (!fileName) return;
-
-	const folder = settings.pdfMobileExportsFolder;
-	const path = `${folder}/${fileName}`;
-
-	if (!app.vault.getAbstractFileByPath(folder)) {
-		await app.vault.createFolder(folder);
-	}
-
-	await app.vault.createBinary(path, buffer);
-	new Notice("Saved exported PDF");
-}
-
-/** Required to handle mocking the imports during tests */
-export const desktopModuleLoader = {
-	importModule: (name: string): any => {
-		return require(name);
-	},
-};
-
-async function exportPdfDesktop(timekeep: Timekeep, settings: TimekeepSettings) {
-	// Dynamic imports to prevent them from causing errors when loaded (Because they are unsupported on mobile)
-	const electron = desktopModuleLoader.importModule("electron");
-	const { mkdir, writeFile } = desktopModuleLoader.importModule("fs/promises");
-	const { existsSync } = desktopModuleLoader.importModule("fs");
-	const path = desktopModuleLoader.importModule("path");
-
-	const currentTime = moment();
-
-	// Prompt user for save location
-	const result = await electron.remote.dialog.showSaveDialog({
-		title: "Save timesheet",
-		defaultPath: "Timesheet.pdf",
-		filters: [{ extensions: ["pdf"], name: "PDF" }],
-		properties: ["showOverwriteConfirmation", "createDirectory"],
-	});
-
-	if (result.canceled) {
-		return;
-	}
-
-	const outputPath = result.filePath;
-	if (outputPath === undefined) {
-		return;
-	}
-
-	const blob = await createPdfExportBlob(timekeep, settings, currentTime);
-	const buffer = await blob.arrayBuffer();
-
-	const fullOutputPath = path.normalize(outputPath);
-	const fullOutputDir = path.dirname(fullOutputPath);
-
-	// Create output directory if missing
-	if (!existsSync(fullOutputDir)) {
-		await mkdir(fullOutputDir);
-	}
-
-	try {
-		await writeFile(outputPath, new DataView(buffer));
-
-		new Notice("Export successful", 1500);
-
-		// Open the directory using the system explorer
-		if (settings.pdfExportBehavior == PdfExportBehavior.OPEN_PATH) {
-			electron.remote.shell.showItemInFolder(fullOutputPath);
-		}
-
-		// Open the exported file
-		if (settings.pdfExportBehavior == PdfExportBehavior.OPEN_FILE) {
-			await electron.remote.shell.openPath(fullOutputPath);
-		}
-	} catch (error) {
-		console.error("Failed to write pdf file", error);
-	}
-}
-
-const fonts: TFontDictionary = {
-	Roboto: {
-		normal: "Roboto-Regular.ttf",
-		bold: "Roboto-Bold.ttf",
-	},
-	Rubik: {
-		normal: "Rubik-Regular.ttf",
-		bold: "Rubik-Bold.ttf",
-	},
-};
-
-function stripDataUrlPrefix(text: string): string {
-	return text.substring("data:font/ttf;base64,".length);
-}
-
-pdfMake.addVirtualFileSystem({
-	"Roboto-Regular.ttf": stripDataUrlPrefix(RobotoRegular),
-	"Roboto-Bold.ttf": stripDataUrlPrefix(RobotoBold),
-	"Rubik-Regular.ttf": stripDataUrlPrefix(RubikRegular),
-	"Rubik-Bold.ttf": stripDataUrlPrefix(RubikBold),
-});
-
-pdfMake.addFonts(fonts);
-
-export async function createPdfExportBlob(
-	timekeep: Timekeep,
-	settings: TimekeepSettings,
-	currentTime: Moment
-): Promise<Blob> {
-	const definition = createPdfDefinition(timekeep, settings, currentTime);
-	const pdf = pdfMake.createPdf(definition, {});
-	return await pdf.getBlob();
-}
-
-function createPdfDefinition(
+/**
+ * Create the definition for rendering a timekeep PDF
+ *
+ * @param timekeep The timekeep to create the definition for
+ * @param settings The timekeep settings
+ * @param currentTime The current time
+ * @returns The timekeep PDF definition
+ */
+export function createPdfDefinition(
 	timekeep: Timekeep,
 	settings: TimekeepSettings,
 	currentTime: Moment
@@ -217,12 +84,29 @@ function createPdfDefinition(
 	};
 }
 
+/**
+ * Create the PDF header definition for the heading of the PDF
+ *
+ * @param pdfTitle Title to use in the PDF
+ * @param currentDate The current date for the PDF
+ * @param totalDuration The total timekeep duration
+ * @param totalDurationShort The total timekeep duration in short format
+ * @returns The header content definition
+ */
 function createPdfHeader(
 	pdfTitle: string,
 	currentDate: string,
 	totalDuration: string,
 	totalDurationShort: string
 ): pdfMake.Content {
+	const detail = (title: string, value: string): pdfMake.Content => ({
+		text: [
+			{ text: title + ": ", fontSize: 8, bold: true },
+			{ text: value, fontSize: 8 },
+		],
+		marginBottom: 8,
+	});
+
 	return [
 		{
 			columns: [
@@ -243,9 +127,9 @@ function createPdfHeader(
 		},
 		{
 			stack: [
-				createPdfHeaderDetailField("Date", currentDate),
-				createPdfHeaderDetailField("Total Duration", totalDuration),
-				createPdfHeaderDetailField("Total Duration (hours)", totalDurationShort),
+				detail("Date", currentDate),
+				detail("Total Duration", totalDuration),
+				detail("Total Duration (hours)", totalDurationShort),
 			],
 
 			style: "details",
@@ -253,38 +137,15 @@ function createPdfHeader(
 	];
 }
 
-function createPdfHeaderDetailField(title: string, value: string): pdfMake.Content {
-	return {
-		text: [
-			{ text: title + ": ", fontSize: 8, bold: true },
-			{ text: value, fontSize: 8 },
-		],
-		marginBottom: 8,
-	};
-}
-
-function createPdfFooter(settings: TimekeepSettings): DynamicContent {
-	return function (currentPage: number, pageCount: number) {
-		return {
-			columns: [
-				{
-					text: `${settings.pdfFootnote}`,
-					style: "footNote",
-					width: "50%",
-					alignment: "left",
-				},
-				{
-					text: `${currentPage} of ${pageCount}`,
-					style: "pageNumber",
-					width: "50%",
-					alignment: "right",
-				},
-			],
-			style: "footer",
-		};
-	};
-}
-
+/**
+ * Creates the timekeep PDF table
+ *
+ * @param timekeep The timekeep to create the table for
+ * @param totalDuration The total duration of all timekeep entries
+ * @param settings The timekeep settings
+ * @param currentTime The current time
+ * @returns The table definition
+ */
 function createPdfTable(
 	timekeep: Timekeep,
 	totalDuration: string,
@@ -292,6 +153,8 @@ function createPdfTable(
 	currentTime: Moment
 ): pdfMake.Content {
 	const rows = createPdfTableRows(timekeep.entries, settings, currentTime);
+
+	const cellPadding = () => 8;
 
 	return {
 		table: {
@@ -356,13 +219,8 @@ function createPdfTable(
 				return "#ffffff";
 			},
 
-			vLineColor: function (_columnIndex, _node, _rowIndex) {
-				return "#ececec";
-			},
-
-			hLineColor: function (_rowIndex, _node, _columnIndex) {
-				return "#ececec";
-			},
+			vLineColor: "#ececec",
+			hLineColor: "#ececec",
 			paddingBottom: cellPadding,
 			paddingLeft: cellPadding,
 			paddingTop: cellPadding,
@@ -371,14 +229,27 @@ function createPdfTable(
 	};
 }
 
-const cellPadding = () => 8;
-
+/**
+ * Rendered row within the table with additional describing metadata
+ */
 type TableEntryRow = {
+	/** The row cells content */
 	row: TableCell[];
+	/** Nesting depth of the row */
 	depth: number;
+	/** Whether the row is a group of entries */
 	group: boolean;
 };
 
+/**
+ * Creates the collection of timekeep entry table rows from the
+ * provided entries
+ *
+ * @param entries The entries to create rows from
+ * @param settings The timekeep settings
+ * @param currentTime The current time
+ * @returns The created rows
+ */
 function createPdfTableRows(
 	entries: TimeEntry[],
 	settings: TimekeepSettings,
@@ -411,6 +282,13 @@ function createPdfTableRows(
 	return rows;
 }
 
+/**
+ * Create the content for a table entry name ensuring
+ * links are marked as links
+ *
+ * @param name The name to parse and turn into content
+ * @returns The entry name content
+ */
 function createTableEntryName(name: string): Content {
 	const segments = parseNameSegments(name);
 	const content: Content = [];
@@ -433,6 +311,15 @@ function createTableEntryName(name: string): Content {
 	return content;
 }
 
+/**
+ * Create the definition for the table cells of an entry
+ *
+ * @param entry The entry
+ * @param depth The nesting depth of the entry
+ * @param settings The timekeep settings
+ * @param currentTime The current time to use for unfinished entries
+ * @returns The table cells definitions
+ */
 function createTableEntryCells(
 	entry: TimeEntry,
 	depth: number,
@@ -483,4 +370,33 @@ function createTableEntryCells(
 			border: [false, false, true, true],
 		},
 	];
+}
+
+/**
+ * Create the footer that should appear on
+ * every page of the exported PDF
+ *
+ * @param settings The timekeep settings
+ * @returns The footer content factory
+ */
+function createPdfFooter(settings: TimekeepSettings): DynamicContent {
+	return function (currentPage: number, pageCount: number) {
+		return {
+			columns: [
+				{
+					text: `${settings.pdfFootnote}`,
+					style: "footNote",
+					width: "50%",
+					alignment: "left",
+				},
+				{
+					text: `${currentPage} of ${pageCount}`,
+					style: "pageNumber",
+					width: "50%",
+					alignment: "right",
+				},
+			],
+			style: "footer",
+		};
+	};
 }

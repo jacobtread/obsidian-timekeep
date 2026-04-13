@@ -1,4 +1,4 @@
-import { afterEach, vi } from "vitest";
+import { afterEach, beforeEach, vi } from "vitest";
 
 import {
 	MockButtonComponent,
@@ -17,6 +17,11 @@ import {
 
 vi.mock("obsidian", () => {
 	setObsidianMockElementHelpersGlobal();
+
+	// Clear all old mock data for mock notices
+	beforeEach(() => {
+		MockNotice.mockClear();
+	});
 
 	// Ensure all mock modals are detached from the DOM after each test
 	afterEach(() => {
