@@ -132,6 +132,10 @@ export class TimesheetTable extends DomComponent {
 				depth: 0,
 			}));
 
+		// Need to reverse the order of the initial stack so that it's iterated in
+		// the correct order
+		stack.reverse();
+
 		while (stack.length > 0) {
 			const { entry, depth } = stack.pop()!;
 
