@@ -162,7 +162,7 @@ export class TimesheetRowContent extends ReplaceableComponent {
 	}
 
 	updateState() {
-		assert(this.containerEl, "Container should be defined");
+		assert(this.wrapperEl, "Wrapper element should be defined");
 
 		const entry = this.entry;
 
@@ -176,7 +176,7 @@ export class TimesheetRowContent extends ReplaceableComponent {
 			entry.endTime !== null &&
 			entry.endTime.isBefore(entry.startTime);
 
-		const rowEl = this.containerEl;
+		const rowEl = this.wrapperEl;
 		rowEl.setAttribute("data-running", String(isSelfRunning));
 		rowEl.setAttribute("data-running-within", String(isRunningWithin));
 		rowEl.setAttribute("data-sub-entries", String(this.entry.subEntries !== null));
