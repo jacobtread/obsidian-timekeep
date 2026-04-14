@@ -9,6 +9,7 @@ import {
 	getEntryDuration,
 	getTotalDuration,
 	getEntriesNames,
+	getStartTime,
 } from "./queries";
 import { TimeEntry } from "./schema";
 
@@ -29,9 +30,25 @@ describe("getEntryById", () => {
 		expect(output).toEqual(targetEntry);
 	});
 
+	it("find nested entry second element", async () => {
+		const { input, targetEntry, targetEntryId } =
+			await import("./__fixtures__/checking/findEntryByIdNestedSecond");
+
+		const output = getEntryById(targetEntryId, input);
+		expect(output).toEqual(targetEntry);
+	});
+
 	it("find entry non existent", async () => {
 		const { input, targetEntryId } =
 			await import("./__fixtures__/checking/findEntryByIdMissing");
+
+		const output = getEntryById(targetEntryId, input);
+		expect(output).toBeUndefined();
+	});
+
+	it("find entry non existent nested", async () => {
+		const { input, targetEntryId } =
+			await import("./__fixtures__/checking/findEntryByIdMissingNested");
 
 		const output = getEntryById(targetEntryId, input);
 		expect(output).toBeUndefined();
@@ -45,9 +62,31 @@ describe("getPathToEntry", () => {
 		expect(output).toEqual(expected);
 	});
 
-	it("top level path found", () => {});
+	it("top level path found", async () => {
+		const { targetEntry, entries, expected } = await import("./__fixtures__/path/pathTopLevel");
+		const output = getPathToEntry(entries, targetEntry);
+		expect(output).toEqual(expected);
+	});
 
-	it("deep path found", () => {});
+	it("child path found", async () => {
+		const { targetEntry, entries, expected } = await import("./__fixtures__/path/pathChild");
+		const output = getPathToEntry(entries, targetEntry);
+		expect(output).toEqual(expected);
+	});
+
+	it("deep child path found", async () => {
+		const { targetEntry, entries, expected } =
+			await import("./__fixtures__/path/pathDeepChild");
+		const output = getPathToEntry(entries, targetEntry);
+		expect(output).toEqual(expected);
+	});
+
+	it("deep child path not found", async () => {
+		const { targetEntry, entries, expected } =
+			await import("./__fixtures__/path/pathNotFoundDeep");
+		const output = getPathToEntry(entries, targetEntry);
+		expect(output).toEqual(expected);
+	});
 
 	it("should find running entry path", async () => {
 		const { input, runningEntry, path } =
@@ -201,5 +240,13 @@ describe("getEntriesNames", () => {
 		// Sort output for consistent result
 		const outputSet = Array.from(output).sort();
 		expect(outputSet).toEqual(expected);
+	});
+});
+
+describe("getStartTime", () => {
+	it("should pick the earliest start time", async () => {
+		const { entry, output } = await import("./__fixtures__/startTime/earlyStartTime");
+
+		expect(getStartTime(entry, false)).toEqual(output);
 	});
 });

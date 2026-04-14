@@ -1,0 +1,49 @@
+import moment from "moment";
+
+import { TimeEntry } from "@/timekeep/schema";
+
+export const currentTime = moment();
+
+export const targetEntryId = "9054dee3-8c15-493b-ad31-f070e08c2699";
+
+export const targetEntry: TimeEntry = {
+	id: "9054dee3-8c15-493b-ad31-f070e08c2699",
+	name: "Running Entry",
+	startTime: currentTime,
+	endTime: null,
+	subEntries: null,
+};
+
+export const input: TimeEntry[] = [
+	{
+		id: "8054dee3-8c15-493b-ad31-f070e08c2699",
+		name: "Block 1",
+		startTime: null,
+		endTime: null,
+		subEntries: [
+			{
+				id: "7054dee3-8c15-493b-ad31-f070e08c2699",
+				name: "Part 1",
+				startTime: currentTime,
+				endTime: currentTime,
+				subEntries: null,
+			},
+			{
+				id: "7054dee3-8c15-493b-ad31-f070e08c269a",
+				name: "Part 2",
+				startTime: null,
+				endTime: null,
+				subEntries: [
+					{
+						id: "dcd7dca3-2471-4855-a49b-397e388c3204",
+						name: "Part 1",
+						startTime: currentTime,
+						endTime: currentTime,
+						subEntries: null,
+					},
+					targetEntry,
+				],
+			},
+		],
+	},
+];

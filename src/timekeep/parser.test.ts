@@ -9,6 +9,7 @@ import {
 	LoadSuccess,
 	replaceTimekeepCodeblock,
 	extractTimekeepCodeblocks,
+	extractTimekeepCodeblocksWithPosition,
 } from "./parser";
 import { Timekeep, stripTimekeepRuntimeData } from "./schema";
 
@@ -37,6 +38,50 @@ describe("extracting code blocks", () => {
 			stripTimekeepRuntimeData(inputTimekeep1)
 		);
 		expect(output.length).toBe(1);
+	});
+});
+
+describe("extracting code blocks with position", () => {
+	it("should extract codeblock contents", async () => {
+		const { text, inputTimekeep1, inputTimekeep2 } =
+			await import("./__fixtures__/extracting/codeblockContentsPosition");
+
+		const output = extractTimekeepCodeblocksWithPosition(text);
+
+		expect(stripTimekeepRuntimeData(output[0].timekeep)).toStrictEqual(
+			stripTimekeepRuntimeData(inputTimekeep1)
+		);
+		expect(output[0].startLine).toEqual(7);
+		expect(output[0].endLine).toEqual(9);
+		expect(stripTimekeepRuntimeData(output[1].timekeep)).toStrictEqual(
+			stripTimekeepRuntimeData(inputTimekeep2)
+		);
+
+		expect(output[1].startLine).toEqual(21);
+		expect(output[1].endLine).toEqual(23);
+		expect(output.length).toBe(2);
+	});
+
+	it("should ignore codeblocks that are not closed", async () => {
+		const { text, inputTimekeep1 } =
+			await import("./__fixtures__/extracting/unclosedCodeBlockPosition");
+		const output = extractTimekeepCodeblocksWithPosition(text);
+
+		expect(stripTimekeepRuntimeData(output[0].timekeep)).toStrictEqual(
+			stripTimekeepRuntimeData(inputTimekeep1)
+		);
+		expect(output[0].startLine).toEqual(7);
+		expect(output[0].endLine).toEqual(9);
+		expect(output.length).toBe(1);
+	});
+
+	it("should ignore codeblocks that are not closed", async () => {
+		const consoleError = vi.spyOn(console, "error").mockImplementation(() => {});
+		const { text } = await import("./__fixtures__/extracting/invalidCodeBlockContentPosition");
+		const output = extractTimekeepCodeblocksWithPosition(text);
+
+		expect(output.length).toBe(0);
+		expect(consoleError).toHaveBeenCalled();
 	});
 });
 

@@ -170,8 +170,8 @@ function makeEntrySingle(target: TimeEntry): TimeEntry {
 		return target;
 	}
 
-	// Don't collapse if more than 1 entry
-	if (target.subEntries.length > 1) {
+	// Don't collapse if more than 1 entry or no entries at all
+	if (target.subEntries.length != 1) {
 		return target;
 	}
 
