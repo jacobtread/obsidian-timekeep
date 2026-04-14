@@ -342,10 +342,6 @@ function createTableEntryCells(
 
 	const marginLeft = depth * 5;
 
-	if (depth > 0) {
-		const _bg = "#999";
-	}
-
 	return [
 		{
 			text: createTableEntryName(entry.name),

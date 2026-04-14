@@ -280,6 +280,26 @@ describe("createPdfDefinition", () => {
 		expect(table.body.length).toBe(2);
 	});
 
+	it("padding should be defined", () => {
+		const timekeep: Timekeep = {
+			entries: [],
+		} as Timekeep;
+
+		const settings = createSettings();
+		const now = moment();
+
+		const result = createPdfDefinition(timekeep, settings, now);
+
+		const table = (result.content as Content[])[1] as any;
+
+		expect(table.layout.paddingBottom).toBeDefined();
+		expect(table.layout.paddingLeft).toBeDefined();
+		expect(table.layout.paddingTop).toBeDefined();
+		expect(table.layout.paddingRight).toBeDefined();
+		expect(table.layout.paddingRight).toBeDefined();
+		expect(table.layout.paddingRight()).toBe(8);
+	});
+
 	it("renders links correctly inside the entry name", () => {
 		const entry: TimeEntry = {
 			id: "1",
