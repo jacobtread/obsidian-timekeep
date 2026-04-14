@@ -77,7 +77,7 @@ export class TimesheetStartForm extends DomComponent {
 			title: "Start",
 		});
 		startButton.type = "submit";
-		createObsidianIcon(startButton, "play", "button-icon");
+		createObsidianIcon(startButton, "play", "timekeep-button-icon");
 		this.#startButtonEl = startButton;
 
 		const onUpdate = this.onUpdate.bind(this);

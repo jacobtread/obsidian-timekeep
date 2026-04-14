@@ -66,15 +66,15 @@ export class TimesheetRunningEntryViewing extends ReplaceableComponent {
 		this.registerDomEvent(formEl, "submit", this.onStop.bind(this));
 
 		const nameWrapperEl = formEl.createDiv({
-			cls: ["active-entry", "timekeep-name-wrapper"],
+			cls: ["timekeep-active-entry", "timekeep-name-wrapper"],
 		});
 
 		const runningSpanEl = nameWrapperEl.createSpan();
 		runningSpanEl.createEl("b", { text: "Currently Running: " });
 
-		const detailsEl = nameWrapperEl.createDiv({ cls: "active-entry__details" });
+		const detailsEl = nameWrapperEl.createDiv({ cls: "timekeep-active-entry__details" });
 		const detailsNameEl = detailsEl.createSpan({
-			cls: "active-entry__name",
+			cls: "timekeep-active-entry__name",
 		});
 		detailsNameEl.createEl("b", { text: "Name: " });
 		detailsNameEl.appendText(" ");
@@ -84,7 +84,7 @@ export class TimesheetRunningEntryViewing extends ReplaceableComponent {
 		});
 		this.#pathEl = pathEl;
 
-		const timeEl = detailsEl.createSpan({ cls: "active-entry__name" });
+		const timeEl = detailsEl.createSpan({ cls: "timekeep-active-entry__name" });
 		timeEl.createEl("b", { text: "Started at: " });
 
 		const timeValueEl = timeEl.createSpan();
@@ -95,7 +95,7 @@ export class TimesheetRunningEntryViewing extends ReplaceableComponent {
 			title: "Edit",
 		});
 		editButton.type = "button";
-		createObsidianIcon(editButton, "edit", "button-icon");
+		createObsidianIcon(editButton, "edit", "timekeep-button-icon");
 		this.registerDomEvent(editButton, "click", this.onStartEditing);
 
 		const stopButton = formEl.createEl("button", {
@@ -103,7 +103,7 @@ export class TimesheetRunningEntryViewing extends ReplaceableComponent {
 			title: "Stop",
 		});
 		stopButton.type = "submit";
-		createObsidianIcon(stopButton, "stop-circle", "button-icon");
+		createObsidianIcon(stopButton, "stop-circle", "timekeep-button-icon");
 
 		const onUpdate = this.onUpdate.bind(this);
 

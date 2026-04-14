@@ -83,14 +83,14 @@ export class TimesheetRunningEntryEditing extends ReplaceableComponent {
 			title: "Save",
 		});
 		saveButton.type = "submit";
-		createObsidianIcon(saveButton, "save", "button-icon");
+		createObsidianIcon(saveButton, "save", "timekeep-button-icon");
 
 		const cancelButton = formEl.createEl("button", {
 			cls: ["timekeep-start", "timekeep-start--close"],
 			title: "Cancel ",
 		});
 		cancelButton.type = "button";
-		createObsidianIcon(cancelButton, "x", "button-icon");
+		createObsidianIcon(cancelButton, "x", "timekeep-button-icon");
 		this.registerDomEvent(cancelButton, "click", this.onFinishEditing);
 	}
 

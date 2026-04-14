@@ -109,7 +109,7 @@ describe("TimesheetRowContentEditing", () => {
 		const onSubmit = vi.spyOn(component, "onSubmit");
 		component.load();
 
-		const form = containerEl.querySelector("form.timesheet-editing");
+		const form = containerEl.querySelector("form.timekeep-editing");
 		expect(form).not.toBeNull();
 		(form as HTMLFormElement).dispatchEvent(
 			new SubmitEvent("submit", { bubbles: true, cancelable: true })
@@ -142,7 +142,7 @@ describe("TimesheetRowContentEditing", () => {
 		const onSubmit = vi.spyOn(component, "onSubmit");
 		component.load();
 
-		const form = containerEl.querySelector("form.timesheet-editing");
+		const form = containerEl.querySelector("form.timekeep-editing");
 		expect(form).not.toBeNull();
 		(form as HTMLFormElement).dispatchEvent(
 			new SubmitEvent("submit", { bubbles: true, cancelable: true })
@@ -175,7 +175,7 @@ describe("TimesheetRowContentEditing", () => {
 		const onSubmit = vi.spyOn(component, "onSubmit");
 		component.load();
 
-		const form = containerEl.querySelector("form.timesheet-editing");
+		const form = containerEl.querySelector("form.timekeep-editing");
 		expect(form).not.toBeNull();
 		(form as HTMLFormElement).dispatchEvent(
 			new SubmitEvent("submit", { bubbles: true, cancelable: true })
@@ -368,7 +368,7 @@ describe("TimesheetRowContentEditing", () => {
 		(startTime as HTMLInputElement).value = "Test";
 		(endTime as HTMLInputElement).value = "Test";
 
-		const form = containerEl.querySelector("form.timesheet-editing");
+		const form = containerEl.querySelector("form.timekeep-editing");
 		expect(form).not.toBeNull();
 		(form as HTMLFormElement).dispatchEvent(
 			new SubmitEvent("submit", { bubbles: true, cancelable: true })

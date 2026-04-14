@@ -72,7 +72,7 @@ export class TimesheetRowContentEditing extends ReplaceableComponent {
 		const colEl = wrapperEl.createEl("td");
 		colEl.colSpan = 5;
 
-		const formEl = colEl.createEl("form", { cls: "timesheet-editing" });
+		const formEl = colEl.createEl("form", { cls: "timekeep-editing" });
 		this.registerDomEvent(formEl, "submit", this.onSubmit.bind(this));
 
 		const nameLabelEl = formEl.createEl("label", {
@@ -110,7 +110,7 @@ export class TimesheetRowContentEditing extends ReplaceableComponent {
 		this.#endTimeInputEl = endTimeInputEl;
 
 		const actionsEl = formEl.createDiv({
-			cls: "timesheet-editing-actions",
+			cls: "timekeep-editing-actions",
 		});
 
 		const saveButton = actionsEl.createEl("button", {
@@ -120,7 +120,7 @@ export class TimesheetRowContentEditing extends ReplaceableComponent {
 			},
 		});
 		saveButton.type = "submit";
-		createObsidianIcon(saveButton, "edit", "text-button-icon");
+		createObsidianIcon(saveButton, "edit", "timekeep-text-button-icon");
 		saveButton.appendText("Save");
 
 		const cancelButton = actionsEl.createEl("button", {
@@ -130,7 +130,7 @@ export class TimesheetRowContentEditing extends ReplaceableComponent {
 			},
 		});
 		cancelButton.type = "button";
-		createObsidianIcon(cancelButton, "x", "text-button-icon");
+		createObsidianIcon(cancelButton, "x", "timekeep-text-button-icon");
 		this.registerDomEvent(cancelButton, "click", this.onFinishEditing);
 		cancelButton.appendText("Cancel");
 
@@ -141,7 +141,7 @@ export class TimesheetRowContentEditing extends ReplaceableComponent {
 			},
 		});
 		deleteButton.type = "button";
-		createObsidianIcon(deleteButton, "trash", "text-button-icon");
+		createObsidianIcon(deleteButton, "trash", "timekeep-text-button-icon");
 		deleteButton.appendText("Delete");
 
 		this.registerDomEvent(deleteButton, "click", this.onConfirmDelete.bind(this));

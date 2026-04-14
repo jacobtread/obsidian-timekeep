@@ -1,10 +1,4 @@
-.timekeep-indent {
-	display: inline-block;
-	height: 1rem;
-	width: 0.2rem;
-	border-left: 0.2rem solid var(--color-base-40);
-}
-
+/* Main container around the timekeep codeblock content */
 .timekeep-container {
 	width: 100%;
 	display: flex;
@@ -12,10 +6,12 @@
 	border: 1px solid var(--color-base-30);
 }
 
+/* <table/> for the timekeep table */
 .timekeep-table {
 	width: 100%;
 }
 
+/* <thead/> for the timekeep table */
 .timekeep-table-head {
 	background-color: var(--color-base-30);
 	position: sticky;
@@ -23,19 +19,52 @@
 	z-index: 1;
 }
 
+/* <tr/> row within the timekeep table */
 .timekeep-row {
 	width: 100%;
 }
 
+/* underling for timekeep group rows */
 .timekeep-row[data-sub-entries="true"] {
 	border-bottom: 2px solid var(--color-base-40);
 }
 
+/* left error indicator line for invalid entries */
 .timekeep-row[data-invalid="true"] {
 	border-left: 2px solid var(--color-red);
 }
 
-.timesheet-editing {
+/* alternating row highlight color */
+.timekeep-row:nth-child(even) {
+	background-color: var(--color-base-20);
+}
+
+/* alternating row highlight hover color */
+.timekeep-row:nth-child(even):hover {
+	background-color: var(--color-base-20);
+}
+
+/* row running color */
+.timekeep-row[data-running="true"] {
+	background-color: var(--color-base-40) !important;
+}
+
+/* collapse row icon */
+.timekeep-collapse-icon {
+	margin-left: 0.5rem;
+	cursor: pointer;
+	vertical-align: middle;
+}
+
+/* row folder indicator icon */
+.timekeep-folder-icon {
+	margin-right: 0.5rem;
+	cursor: pointer;
+	vertical-align: middle;
+}
+
+/* <form/> for a timekeep row editing content */
+.timekeep-editing {
 	display: flex;
 	flex-flow: column;
 	gap: 0.5rem;
@@ -44,7 +73,8 @@
 	margin: 0.25rem 0;
 }
 
-.timesheet-editing-actions {
+/* container for the timekeep row editing actions */
+.timekeep-editing-actions {
 	display: flex;
 	flex-flow: row;
 	gap: 0.5rem;
@@ -52,50 +82,46 @@
 	margin-bottom: 0.5rem;
 }
 
+/* input within the timekeep editing row */
 .timekeep-input {
 	width: 100%;
 	margin-top: 0.5rem;
 }
 
-.timekeep-row:nth-child(even) {
-	background-color: var(--color-base-20);
-}
-
-.timekeep-row:nth-child(even):hover {
-	background-color: var(--color-base-20);
-}
-
-.timekeep-row[data-running="true"] {
-	background-color: var(--color-base-40) !important;
-}
-
+/* <td/> column within a timekeep row */
 .timekeep-col {
 	vertical-align: middle !important;
 }
 
+/* column for the timekeep row name */
 .timekeep-col--name {
 	width: 30%;
 	overflow: hidden;
 	overflow-wrap: anywhere;
 }
 
+/* column for the timekeep row timestamp */
 .timekeep-col--time {
 	width: 20%;
 }
 
-.timekeep-col--duration {
-	width: 10%;
-}
-
+/* text styling for the actual start / end timestamps within .timekeep-col--time  */
 .timekeep-time {
 	font-size: 0.8rem;
 }
 
+/* column for the timekeep row duration */
+.timekeep-col--duration {
+	width: 10%;
+}
+
+/* column for the timekeep row actions */
 .timekeep-col--actions {
 	width: 10%;
 	position: relative;
 }
 
+/* container for the timekeep row actions items */
 .timekeep-actions-wrapper {
 	display: flex;
 	flex-flow: row;
@@ -107,11 +133,13 @@
 	height: 100%;
 }
 
+/* action button on a timekeep row */
 .timekeep-action {
 	padding: 0.5rem;
 	font-size: 0.8rem;
 }
 
+/* container for the two timekeep timers at the top */
 .timekeep-timers {
 	display: flex;
 	flex-flow: row;
@@ -122,6 +150,7 @@
 	white-space: nowrap;
 }
 
+/* timer container */
 .timekeep-timer {
 	display: flex;
 	flex-flow: column;
@@ -134,10 +163,12 @@
 	border-bottom: 1px solid var(--color-base-30);
 }
 
+/* timer container hidden styling (required otherwise it won't be hidden when not in use) */
 .timekeep-timer[hidden] {
 	display: none;
 }
 
+/* timer primary value text */
 .timekeep-timer-value {
 	font-size: 2.5rem;
 	font-weight: bolder;
@@ -145,11 +176,13 @@
 	margin-bottom: 0.5rem;
 }
 
+/* timer secondary value text */
 .timekeep-timer-value-small {
 	font-size: 0.9rem;
 	font-weight: bold;
 }
 
+/* start / edit button for the timekeep */
 .timekeep-start {
 	align-self: center;
 	font-size: 2rem;
@@ -158,33 +191,7 @@
 	padding: 1rem;
 }
 
-.timekeep-name {
-	padding: 0.5rem;
-	flex: auto;
-}
-
-.timekeep-actions {
-	display: flex;
-	flex-flow: row;
-	flex-wrap: wrap;
-	gap: 1rem;
-	align-items: center;
-	padding: 1rem;
-}
-
-.active-entry {
-	display: flex;
-	flex-flow: column;
-	gap: 0.25rem;
-}
-
-.active-entry__details {
-	display: flex;
-	flex-wrap: wrap;
-	gap: 0.5rem;
-	font-size: 0.8rem;
-}
-
+/* container for the start timekeep form */
 .timekeep-start-area {
 	align-items: center;
 	display: flex;
@@ -193,122 +200,32 @@
 	border-bottom: 1px solid var(--color-base-30);
 }
 
-.timekeep-name-wrapper {
-	display: flex;
-	flex-flow: column;
-	flex: auto;
-	gap: 0.5rem;
-	overflow: visible;
-	overflow-wrap: anywhere;
-}
-
-.button-icon {
-	--icon-size: 1em;
-}
-
-.text-button-icon {
-	--icon-size: 1em;
-
-	margin-right: 0.25rem;
-	vertical-align: middle;
-}
-
-.timekeep-error {
-	padding: 2rem;
-}
-
-.timekeep-collapse-icon {
-	margin-left: 0.5rem;
-	cursor: pointer;
-	vertical-align: middle;
-}
-
-.timekeep-folder-icon {
-	margin-right: 0.5rem;
-	cursor: pointer;
-	vertical-align: middle;
-}
-
+/* note text warning about starting stopping the running entry */
 .timekeep-start-note {
 	font-size: 0.8rem;
 	color: #777;
 	margin-left: 0.5rem;
 }
 
+/* label for the path to the running entry */
 .timekeep-path-to-entry {
 	display: inline-flex;
 	gap: 0.5rem;
 }
 
-.timekeep-merge-select-container {
-	display: flex;
-	flex-direction: row;
-	align-items: center;
-	gap: 0.5rem;
-	padding-left: 0.75rem;
-	padding-top: 1rem;
-	font-weight: bold;
-}
-
-.timekeep-merge-list-container {
-	max-height: 400px;
-	overflow-y: auto;
-	margin-top: 0.25rem;
-	padding: 0.25rem;
-}
-
-.timekeep-merge-footer {
-	display: flex;
-	flex-flow: row;
-	gap: 1rem;
-	margin-top: 0.5rem;
-}
-
-.timekeep-merge-item {
-	display: flex;
-	align-items: center;
-	padding: 0.5rem;
-	gap: 0.5rem;
-}
-
-.timekeep-merge-item-checkbox {
-	margin-right: 0.5rem;
-}
-
-.timekeep-merge-item-label {
-	flex-grow: 1;
-
-	display: flex;
-	flex-flow: column;
-}
-
-.timekeep-merge-item-path {
-	opacity: 0.7;
-}
-
-.timekeep-pick-file-name-input {
-	width: 100%;
-	margin-bottom: 1rem;
-}
-
-.timekeep-status-item {
-	display: flex;
-	align-items: center;
-	gap: 0.5rem;
-}
-
-.timekeep-status-item__content {
-	display: flex;
-	align-items: center;
-	gap: 0.25rem;
-	cursor: pointer;
-}
-
-.timekeep-name-containers {
+/* container for the timekeep name input */
+.timekeep-name-container {
 	display: flex;
 	position: relative;
 }
 
+/* timekeep name input */
+.timekeep-name {
+	padding: 0.5rem;
+	flex: auto;
+}
+
+/* suggestions box for name suggestions */
 .timekeep-suggestions {
 	position: absolute;
 	top: 100%;
@@ -327,6 +244,7 @@
 	list-style: none;
 }
 
+/* name suggestion option */
 .timekeep-suggestion {
 	height: calc((var(--font-ui-small) * var(--line-height-normal)) + 0.5rem);
 	width: 100%;
@@ -338,22 +256,153 @@
 	font-size: var(--font-ui-small);
 }
 
+/* currently selected name suggestion option */
 .timekeep-suggestion[aria-selected="true"] {
 	background-color: var(--color-base-40);
 }
 
-.timekeep-status-item__button {
-	cursor: pointer;
-	width: 12px !important;
-	height: 12px !important;
+/* container for export actions*/
+.timekeep-actions {
+	display: flex;
+	flex-flow: row;
+	flex-wrap: wrap;
+	gap: 1rem;
+	align-items: center;
+	padding: 1rem;
 }
 
+/* active running entry container */
+.timekeep-active-entry {
+	display: flex;
+	flex-flow: column;
+	gap: 0.25rem;
+}
+
+/* active running entry details container */
+.timekeep-active-entry__details {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+	font-size: 0.8rem;
+}
+
+/* wrapper container for the start timekeep name input and label */
+.timekeep-name-wrapper {
+	display: flex;
+	flex-flow: column;
+	flex: auto;
+	gap: 0.5rem;
+	overflow: visible;
+	overflow-wrap: anywhere;
+}
+
+/* styling for button icons */
+.timekeep-button-icon {
+	--icon-size: 1em;
+}
+
+/* styling for button icons with text after */
+.timekeep-text-button-icon {
+	--icon-size: 1em;
+
+	margin-right: 0.25rem;
+	vertical-align: middle;
+}
+
+/* container for the timekeep save error container */
+.timekeep-error {
+	padding: 2rem;
+}
+
+/* container for the merge modal selection */
+.timekeep-merge-select-container {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	gap: 0.5rem;
+	padding-left: 0.75rem;
+	padding-top: 1rem;
+	font-weight: bold;
+}
+
+/* container for the list of mergeable timekeeps */
+.timekeep-merge-list-container {
+	max-height: 400px;
+	overflow-y: auto;
+	margin-top: 0.25rem;
+	padding: 0.25rem;
+}
+
+/* footer container for the merge modal */
+.timekeep-merge-footer {
+	display: flex;
+	flex-flow: row;
+	gap: 1rem;
+	margin-top: 0.5rem;
+}
+
+/* mergeable timekeep within the merge modal list */
+.timekeep-merge-item {
+	display: flex;
+	align-items: center;
+	padding: 0.5rem;
+	gap: 0.5rem;
+}
+
+/* checkbox for a merge item */
+.timekeep-merge-item-checkbox {
+	margin-right: 0.5rem;
+}
+
+/* label for a merge item (its name) */
+.timekeep-merge-item-label {
+	flex-grow: 1;
+
+	display: flex;
+	flex-flow: column;
+}
+
+/* file path for a timekeep merge item */
+.timekeep-merge-item-path {
+	opacity: 0.7;
+}
+
+/* input for choosing a file name */
+.timekeep-pick-file-name-input {
+	width: 100%;
+	margin-bottom: 1rem;
+}
+
+/* obsidian status bar container for timekeep items */
 .timekeep-status-bar {
 	display: flex;
 	gap: 0.5rem;
 	align-items: center;
 }
 
+/* status bar item for a timekeep */
+.timekeep-status-item {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+}
+
+/* running timekeep status bar item name text  */
+.timekeep-status-item__content {
+	display: flex;
+	align-items: center;
+	gap: 0.25rem;
+	cursor: pointer;
+}
+
+/* stop button for timekeep status bar item */
+.timekeep-status-item__button {
+	cursor: pointer;
+	width: 12px !important;
+	height: 12px !important;
+}
+
+/* container for file based timekeeps */
 .timekeep-file {
 	display: flex;
 	gap: 1rem;
@@ -364,12 +413,7 @@
 	margin-right: auto;
 }
 
-.timekeep-file-entries {
-	display: flex;
-	gap: 1rem;
-	flex-flow: column;
-}
-
+/* wrapper container for obsidian icons */
 .timekeep-icon-wrapper {
 	display: inline-block;
 	line-height: 1;

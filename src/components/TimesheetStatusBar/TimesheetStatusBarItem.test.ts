@@ -70,7 +70,7 @@ describe("TimesheetStatusBarItem", () => {
 		component.load();
 
 		// Simulate click on the stop icon
-		const stopIcon = containerEl.querySelector(".button-icon");
+		const stopIcon = containerEl.querySelector(".timekeep-button-icon");
 		const event = new MouseEvent("click", { bubbles: true, cancelable: true });
 		if (stopIcon) {
 			stopIcon.dispatchEvent(event);

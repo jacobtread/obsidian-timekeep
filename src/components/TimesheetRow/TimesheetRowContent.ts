@@ -117,7 +117,7 @@ export class TimesheetRowContent extends ReplaceableComponent {
 		this.addChild(duration);
 
 		const actionsColEl = wrapperEl.createEl("td", {
-			cls: ["timekeep-col", "timekeep-col-actions"],
+			cls: ["timekeep-col", "timekeep-col--actions"],
 		});
 
 		const actionsWrapper = actionsColEl.createDiv({ cls: "timekeep-actions-wrapper" });
@@ -128,7 +128,7 @@ export class TimesheetRowContent extends ReplaceableComponent {
 				"data-action": "start",
 			},
 		});
-		createObsidianIcon(startButton, "play", "button-icon");
+		createObsidianIcon(startButton, "play", "timekeep-button-icon");
 		this.registerDomEvent(startButton, "click", this.onClickStart.bind(this));
 
 		const editButton = actionsWrapper.createEl("button", {
@@ -137,7 +137,7 @@ export class TimesheetRowContent extends ReplaceableComponent {
 				"data-action": "edit",
 			},
 		});
-		createObsidianIcon(editButton, "edit", "button-icon");
+		createObsidianIcon(editButton, "edit", "timekeep-button-icon");
 		this.registerDomEvent(editButton, "click", this.onBeginEditing);
 
 		this.updateTimes();

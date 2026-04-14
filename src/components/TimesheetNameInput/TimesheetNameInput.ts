@@ -32,7 +32,7 @@ export class TimesheetNameInput extends DomComponent {
 	onload(): void {
 		super.onload();
 
-		const wrapperEl = this.containerEl.createDiv({ cls: "timekeep-name-containers" });
+		const wrapperEl = this.containerEl.createDiv({ cls: "timekeep-name-container" });
 		this.wrapperEl = wrapperEl;
 
 		const inputEl = wrapperEl.createEl("input", {

@@ -42,7 +42,7 @@ export class TimesheetStatusBarItem extends DomComponent {
 
 		const stopIcon = createObsidianIcon(wrapperEl, "stop-circle", [
 			"timekeep-status-item__button",
-			"button-icon",
+			"timekeep-button-icon",
 		]);
 		stopIcon.title = "Stop Entry";
 
