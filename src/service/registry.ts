@@ -126,9 +126,7 @@ export class TimekeepRegistry extends Component {
 		const deleteEvent = this.#vault.on("delete", this.onFileRemoved.bind(this));
 
 		// Register events for unloading
-		this.events.push(createEvent);
-		this.events.push(modifyEvent);
-		this.events.push(deleteEvent);
+		this.events.push(createEvent, modifyEvent, deleteEvent);
 
 		// Load the registry from the vault
 		this.registerTask("loadFromVault", this.loadFromVault());
@@ -160,7 +158,7 @@ export class TimekeepRegistry extends Component {
 	 *
 	 * @param file The file that was created
 	 */
-	private onFileCreated(file: TAbstractFile) {
+	onFileCreated(file: TAbstractFile) {
 		if (!this.enabled) return;
 		if (!(file instanceof TFile)) return;
 
@@ -174,7 +172,7 @@ export class TimekeepRegistry extends Component {
 	 *
 	 * @param file The modified file
 	 */
-	private onFileModified(file: TAbstractFile) {
+	onFileModified(file: TAbstractFile) {
 		if (!this.enabled) return;
 		if (!(file instanceof TFile)) return;
 
@@ -188,7 +186,7 @@ export class TimekeepRegistry extends Component {
 	 *
 	 * @param file The removed file
 	 */
-	private onFileRemoved(file: TAbstractFile) {
+	onFileRemoved(file: TAbstractFile) {
 		if (!this.enabled) return;
 		if (!(file instanceof TFile)) return;
 

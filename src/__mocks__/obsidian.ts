@@ -270,6 +270,10 @@ export class MockVault {
 			} as MockEventRef;
 		}
 	);
+
+	offref = vi.fn((ref: EventRef): void => {
+		(ref as MockEventRef).callback();
+	});
 }
 
 export class MockComponent {

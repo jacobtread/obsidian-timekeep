@@ -336,6 +336,41 @@ describe("TimekeepRegistry", () => {
 	});
 
 	describe("file creation", () => {
+		it("should do nothing when disabled", async () => {
+			const vault = new MockVault();
+			const settings = createStore({ ...defaultSettings, registryEnabled: true });
+			const registry = new TimekeepRegistry(vault.asVault(), settings);
+			const updateFromFile = vi.spyOn(registry, "updateFromFile");
+			registry.enabled = false;
+			const file = vault.addFile(
+				"a.timekeep",
+				JSON.stringify({
+					entries: [
+						{
+							id: v4(),
+							name: "Test",
+							startTime: moment("2020-01-01T00:00:00Z"),
+							endTime: null,
+							subEntries: null,
+						},
+					],
+				} satisfies Timekeep)
+			);
+
+			registry.onFileCreated(file);
+			expect(updateFromFile).not.toHaveBeenCalled();
+		});
+
+		it("should do nothing when dealing with a folder", async () => {
+			const vault = new MockVault();
+			const settings = createStore({ ...defaultSettings, registryEnabled: true });
+			const registry = new TimekeepRegistry(vault.asVault(), settings);
+			const updateFromFile = vi.spyOn(registry, "updateFromFile");
+			const file = vault.addFolder("a.timekeep");
+			registry.onFileCreated(file);
+			expect(updateFromFile).not.toHaveBeenCalled();
+		});
+
 		it("adding a valid timekeep file should update the entries", async () => {
 			const vault = new MockVault();
 			const registry = new TimekeepRegistry(vault.asVault(), createStore(defaultSettings));
@@ -426,6 +461,31 @@ describe("TimekeepRegistry", () => {
 	});
 
 	describe("file modification", () => {
+		it("updating a file when disabled should do nothing", async () => {
+			const vault = new MockVault();
+			const file = vault.addFile("a.timekeep", "");
+			const registry = new TimekeepRegistry(vault.asVault(), createStore(defaultSettings));
+			const updateFromFile = vi.spyOn(registry, "updateFromFile");
+			registry.enabled = false;
+
+			await registry.waitTasks();
+
+			registry.onFileModified(file);
+			expect(updateFromFile).not.toHaveBeenCalled();
+		});
+
+		it("updating a folder should do nothing", async () => {
+			const vault = new MockVault();
+			const file = vault.addFolder("a.timekeep");
+			const registry = new TimekeepRegistry(vault.asVault(), createStore(defaultSettings));
+			const updateFromFile = vi.spyOn(registry, "updateFromFile");
+
+			await registry.waitTasks();
+
+			registry.onFileModified(file);
+			expect(updateFromFile).not.toHaveBeenCalled();
+		});
+
 		it("updating a file should update entries", async () => {
 			const vault = new MockVault();
 			const file = vault.addFile("a.timekeep", "");
@@ -481,6 +541,31 @@ describe("TimekeepRegistry", () => {
 	});
 
 	describe("file removal", () => {
+		it("removing a file when disabled should do nothing", async () => {
+			const vault = new MockVault();
+			const file = vault.addFile("a.timekeep", "");
+			const registry = new TimekeepRegistry(vault.asVault(), createStore(defaultSettings));
+			const setState = vi.spyOn(registry.entries, "setState");
+			registry.enabled = false;
+
+			await registry.waitTasks();
+
+			registry.onFileRemoved(file);
+			expect(setState).not.toHaveBeenCalled();
+		});
+
+		it("removing a folder should do nothing", async () => {
+			const vault = new MockVault();
+			const file = vault.addFolder("a.timekeep");
+			const registry = new TimekeepRegistry(vault.asVault(), createStore(defaultSettings));
+			const setState = vi.spyOn(registry.entries, "setState");
+
+			await registry.waitTasks();
+
+			registry.onFileRemoved(file);
+			expect(setState).not.toHaveBeenCalled();
+		});
+
 		it("removes entry when file deleted", async () => {
 			const vault = new MockVault();
 			vault.addFile(
@@ -635,6 +720,21 @@ describe("TimekeepRegistry", () => {
 			expect(vault.on).toHaveBeenCalledTimes(3);
 		});
 
+		it("un-registers vault events when switching from enabled to disabled", () => {
+			const settings = createStore({ ...defaultSettings, registryEnabled: true });
+
+			const vault = new MockVault();
+			const registry = new TimekeepRegistry(vault.asVault(), settings);
+
+			registry.load();
+
+			expect(vault.on).toHaveBeenCalledTimes(3);
+
+			settings.setState({ ...defaultSettings, registryEnabled: false });
+
+			expect(vault.offref).toHaveBeenCalledTimes(3);
+		});
+
 		it("handle loading failure", async () => {
 			const spy = vi.spyOn(console, "error").mockImplementation(() => {});
 			const vault = new MockVault();
@@ -717,6 +817,7 @@ describe("TimekeepRegistry", () => {
 			const testFile = vault.addFile("test.md", "");
 			const testFile2 = vault.addFile("test2.md", "");
 			const testFile3 = vault.addFile("test3.md", "");
+			const testFile4 = vault.addFile("test4.md", "");
 
 			const start = moment();
 			const entry1: TimeEntry = {
@@ -748,6 +849,11 @@ describe("TimekeepRegistry", () => {
 				{
 					file: testFile3,
 					timekeep: { entries: [entry2] },
+					type: TimekeepEntryItemType.FILE,
+				},
+				{
+					file: testFile4,
+					timekeep: { entries: [] },
 					type: TimekeepEntryItemType.FILE,
 				},
 			];

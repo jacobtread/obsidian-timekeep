@@ -56,13 +56,25 @@ export class TimekeepAutocomplete extends Component {
 		const namesSet = new Set<string>();
 
 		for (const entry of entries) {
-			if (entry.type === TimekeepEntryItemType.MARKDOWN) {
-				for (const timekeep of entry.timekeeps) {
-					getEntriesNames(timekeep.timekeep.entries, namesSet);
+			switch (entry.type) {
+				case TimekeepEntryItemType.FILE: {
+					const timekeep = entry.timekeep;
+					getEntriesNames(timekeep.entries, namesSet);
+					break;
 				}
-			} else if (entry.type === TimekeepEntryItemType.FILE) {
-				const timekeep = entry.timekeep;
-				getEntriesNames(timekeep.entries, namesSet);
+
+				case TimekeepEntryItemType.MARKDOWN: {
+					for (const timekeep of entry.timekeeps) {
+						getEntriesNames(timekeep.timekeep.entries, namesSet);
+					}
+					break;
+				}
+
+				/* v8 ignore start -- @preserve */
+				default: {
+					throw new Error("unknown entry type");
+				}
+				/* v8 ignore stop -- @preserve */
 			}
 		}
 
