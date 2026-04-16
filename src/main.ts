@@ -10,23 +10,15 @@ import { defaultSettings, type TimekeepSettings, legacySettingsCompatibility } f
 import { TimekeepSettingsTab } from "@/settings-tab";
 import { createStore } from "@/store";
 
+import { TimekeepApi } from "./api";
+
 import { TimesheetStatusBar } from "@/components/TimesheetStatusBar";
 
 import TimekeepFileView from "@/views/TimekeepFileView";
 import TimekeepMarkdownView from "@/views/TimekeepMarkdownView";
 
 import { createNewTimekeepFile } from "@/timekeep/createNewTimekeepFile";
-import { replaceTimekeepCodeblock, extractTimekeepCodeblocks } from "@/timekeep/parser";
-import {
-	isKeepRunning,
-	isEntryRunning,
-	getRunningEntry,
-	getEntryDuration,
-	getTotalDuration,
-} from "@/timekeep/queries";
 import type { Timekeep, TimeEntry } from "@/timekeep/schema";
-import { stopAllTimekeeps } from "@/timekeep/stopAllTimekeeps";
-import { stopFileTimekeeps } from "@/timekeep/stopFileTimekeeps";
 
 import { TimekeepAutocomplete } from "@/service/autocomplete";
 import { TimekeepRegistry } from "@/service/registry";
@@ -45,6 +37,7 @@ export default class TimekeepPlugin extends Plugin {
 	/** Store containing custom output formats */
 	customOutputFormats: Store<Record<string, CustomOutputFormat>> = createStore({});
 
+	/* Legacy API functions prefer using .api to access these instead */
 	replaceTimekeepCodeblock: (
 		timekeep: Timekeep,
 		content: string,
@@ -59,9 +52,17 @@ export default class TimekeepPlugin extends Plugin {
 	getTotalDuration: (entries: TimeEntry[], currentTime: Moment) => number;
 	stopAllTimekeeps: (vault: Vault, currentTime: Moment) => Promise<number>;
 	stopFileTimekeeps: (vault: Vault, file: TFile, currentTime: Moment) => Promise<number>;
+	registerCustomOutputFormat: (id: string, format: CustomOutputFormat) => void;
+	unregisterCustomOutputFormat: (id: string) => void;
+
+	/** API access for plugin consumers */
+	api: TimekeepApi;
 
 	/** Registry of all timekeeps within the vault */
 	registry: TimekeepRegistry;
+
+	/** Name autocomplete service */
+	autocomplete: TimekeepAutocomplete;
 
 	/** Currently loaded status bar view if present */
 	#statusBarView: TimesheetStatusBar | null = null;
@@ -83,17 +84,29 @@ export default class TimekeepPlugin extends Plugin {
 		this.settingsStore = settingsStore;
 
 		this.registry = new TimekeepRegistry(app.vault, settingsStore);
+		this.autocomplete = new TimekeepAutocomplete(this.registry, settingsStore);
 
-		// Expose API functions
-		this.replaceTimekeepCodeblock = replaceTimekeepCodeblock;
-		this.extractTimekeepCodeblocks = extractTimekeepCodeblocks;
-		this.isKeepRunning = isKeepRunning;
-		this.isEntryRunning = isEntryRunning;
-		this.getRunningEntry = getRunningEntry;
-		this.getEntryDuration = getEntryDuration;
-		this.getTotalDuration = getTotalDuration;
-		this.stopAllTimekeeps = stopAllTimekeeps;
-		this.stopFileTimekeeps = stopFileTimekeeps;
+		// Expose new API
+		const api = new TimekeepApi(
+			settingsStore,
+			customOutputFormats,
+			this.registry,
+			this.autocomplete
+		);
+		this.api = api;
+
+		// Expose legacy API functions
+		this.registerCustomOutputFormat = api.registerCustomOutputFormat.bind(api);
+		this.unregisterCustomOutputFormat = api.unregisterCustomOutputFormat.bind(api);
+		this.replaceTimekeepCodeblock = api.parser.replaceTimekeepCodeblock;
+		this.extractTimekeepCodeblocks = api.parser.extractTimekeepCodeblocks;
+		this.isKeepRunning = api.queries.isKeepRunning;
+		this.isEntryRunning = api.queries.isEntryRunning;
+		this.getRunningEntry = api.queries.getRunningEntry;
+		this.getEntryDuration = api.queries.getEntryDuration;
+		this.getTotalDuration = api.queries.getTotalDuration;
+		this.stopAllTimekeeps = api.stopAllTimekeeps;
+		this.stopFileTimekeeps = api.stopFileTimekeeps;
 	}
 
 	async onload(): Promise<void> {
@@ -101,8 +114,7 @@ export default class TimekeepPlugin extends Plugin {
 		this.settingsStore.setState(loadedSettings);
 		this.addSettingTab(new TimekeepSettingsTab(this.app, this));
 
-		const autocomplete = new TimekeepAutocomplete(this.registry, this.settingsStore);
-		this.addChild(autocomplete);
+		this.addChild(this.autocomplete);
 
 		const onLoadStatusBar = this.onLoadStatusBar.bind(this);
 		this.settingsStore.subscribe(onLoadStatusBar);
@@ -116,7 +128,7 @@ export default class TimekeepPlugin extends Plugin {
 			this.app,
 			this.settingsStore,
 			this.customOutputFormats,
-			autocomplete
+			this.autocomplete
 		);
 		const markdownPostProcessor = this.registerMarkdownCodeBlockProcessor(
 			"timekeep",
@@ -141,7 +153,7 @@ export default class TimekeepPlugin extends Plugin {
 				leaf,
 				this.settingsStore,
 				this.customOutputFormats,
-				autocomplete
+				this.autocomplete
 			);
 		});
 
@@ -189,22 +201,5 @@ export default class TimekeepPlugin extends Plugin {
 		const statusBarView = new TimesheetStatusBar(containerEl, this.app, this.registry);
 		this.addChild(statusBarView);
 		this.#statusBarView = statusBarView;
-	}
-
-	registerCustomOutputFormat(id: string, format: CustomOutputFormat) {
-		this.customOutputFormats.setState((state) => {
-			return {
-				...state,
-				[id]: format,
-			};
-		});
-	}
-
-	unregisterCustomOutputFormat(id: string) {
-		this.customOutputFormats.setState((state) => {
-			const newState = { ...state };
-			delete newState[id];
-			return newState;
-		});
 	}
 }

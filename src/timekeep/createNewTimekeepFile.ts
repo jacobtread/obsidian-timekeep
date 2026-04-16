@@ -4,7 +4,7 @@ import type { App, TFolder } from "obsidian";
  * Create a new timekeep file within the provided folder
  *
  * @param app App to use for the vault and workspace
- * @param folder
+ * @param folder Folder to create the file within
  */
 export async function createNewTimekeepFile(app: App, folder: TFolder) {
 	const folderPath = folder.path;
@@ -26,4 +26,6 @@ export async function createNewTimekeepFile(app: App, folder: TFolder) {
 	// Open the created file
 	const leaf = app.workspace.getLeaf();
 	await leaf.openFile(file);
+
+	return file;
 }
