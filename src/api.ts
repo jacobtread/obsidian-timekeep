@@ -4,6 +4,9 @@ import type { App, TFile, TFolder, Vault, Workspace } from "obsidian";
 import { CustomOutputFormat } from "@/output";
 import { TimekeepSettings } from "@/settings";
 import { createStore, Store } from "@/store";
+import * as codeblock from "@/utils/codeblock";
+import * as name from "@/utils/name";
+import * as time from "@/utils/time";
 
 import * as create from "@/timekeep/create";
 import { createNewTimekeepFile } from "@/timekeep/createNewTimekeepFile";
@@ -25,6 +28,7 @@ import {
 } from "@/service/registry";
 
 export class TimekeepApi {
+	/** Core timekeep modules */
 	create: typeof create;
 	parser: typeof parser;
 	queries: typeof queries;
@@ -32,6 +36,13 @@ export class TimekeepApi {
 	sort: typeof sort;
 	start: typeof start;
 	update: typeof update;
+
+	/** Utility modules */
+	utils: {
+		time: typeof time;
+		name: typeof name;
+		codeblock: typeof codeblock;
+	};
 
 	stopAllTimekeeps: (vault: Vault, currentTime: Moment) => Promise<number>;
 	stopFileTimekeeps: (vault: Vault, file: TFile, currentTime: Moment) => Promise<number>;
@@ -43,7 +54,7 @@ export class TimekeepApi {
 	settings: Store<TimekeepSettings>;
 	customOutputFormats: Store<Record<string, CustomOutputFormat>>;
 
-	/** Sto */
+	/** Store creation */
 	createStore: <T>(initial: T) => Store<T>;
 
 	/** Registry static APIs */
@@ -76,6 +87,12 @@ export class TimekeepApi {
 		this.sort = sort;
 		this.start = start;
 		this.update = update;
+
+		this.utils = {
+			time,
+			name,
+			codeblock,
+		};
 
 		this.stopAllTimekeeps = stopAllTimekeeps;
 		this.stopFileTimekeeps = stopFileTimekeeps;
