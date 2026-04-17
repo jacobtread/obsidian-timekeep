@@ -3,7 +3,7 @@ import { v4 as uuid } from "uuid";
 
 import { exportPdf } from "@/export/pdf";
 import { TimekeepSettings } from "@/settings";
-import { Store } from "@/store";
+import { Store, Unsubscribe } from "@/store";
 import { assert } from "@/utils/assert";
 import { createCodeBlock } from "@/utils/codeblock";
 
@@ -27,6 +27,7 @@ export class TimekeepMergerModal extends Modal {
 	searchInput: TextComponent | undefined;
 	selectAll: HTMLInputElement | undefined;
 	selectContainer: HTMLDivElement | undefined;
+	loadingEl: HTMLDivElement | undefined;
 
 	registry: TimekeepRegistry;
 	settings: Store<TimekeepSettings>;
@@ -36,6 +37,9 @@ export class TimekeepMergerModal extends Modal {
 
 	/** Whether the dialog is exporting a merged PDF instead of creating a merged timekeep */
 	exportPdf: boolean;
+
+	unsubscribeSettings: Unsubscribe | undefined;
+	unsubscribeEntries: Unsubscribe | undefined;
 
 	constructor(
 		app: App,
@@ -56,11 +60,12 @@ export class TimekeepMergerModal extends Modal {
 		this.contentEl.empty();
 		this.contentEl.createEl("p", { text: "Select Timekeep Entries to Merge" });
 
-		const loadingEl = this.contentEl.createDiv({
+		this.loadingEl = this.contentEl.createDiv({
+			cls: "timekeep-merger-loading",
 			text: "Loading timekeep entries...",
 		});
-		loadingEl.style.marginBottom = "1rem";
-		loadingEl.style.opacity = "0.7";
+		this.loadingEl.style.marginBottom = "1rem";
+		this.loadingEl.style.opacity = "0.7";
 
 		this.searchInput = new TextComponent(this.contentEl);
 		this.searchInput.setPlaceholder("Search by file path...");
@@ -104,37 +109,57 @@ export class TimekeepMergerModal extends Modal {
 
 		new ButtonComponent(footer).setButtonText("Cancel").onClick(this.close.bind(this));
 
-		try {
-			await this.onLoad();
-			loadingEl.remove();
-			this.mergeButton.setDisabled(false);
-			this.searchInput.setDisabled(false);
-		} catch (err) {
-			console.error(err);
-			loadingEl.setText("Failed to load timekeep entries.");
-			loadingEl.style.opacity = "1";
-		}
+		await this.onLoad();
+
+		// Handle loading when settings or
+		this.unsubscribeSettings = this.settings.subscribe(this.onLoad.bind(this));
+		this.unsubscribeEntries = this.registry.entries.subscribe(this.onLoad.bind(this));
 	}
 
 	async onLoad() {
-		const settings = this.settings.getState();
+		assert(
+			this.loadingEl && this.mergeButton && this.searchInput,
+			"Required elements should be defined"
+		);
 
-		// When the registry is enabled source the entries from the registry
-		// as this is much faster than triggering a search
-		if (settings.registryEnabled) {
-			const entries = this.registry.entries.getState();
-			const results: TimekeepResult[] = TimekeepMergerModal.getResultsFromEntries(entries);
-			this.results = results;
+		this.loadingEl.style.opacity = "0.7";
+		this.loadingEl.hidden = false;
+		this.mergeButton.setDisabled(true);
+		this.searchInput.setDisabled(true);
+
+		try {
+			const settings = this.settings.getState();
+
+			// When the registry is enabled source the entries from the registry
+			// as this is much faster than triggering a search
+			if (settings.registryEnabled) {
+				const entries = this.registry.entries.getState();
+				const results: TimekeepResult[] =
+					TimekeepMergerModal.getResultsFromEntries(entries);
+
+				// Wait for registry load tasks if they aren't finished
+				await this.registry.waitTasks();
+
+				this.results = results;
+			}
+
+			// Fallback to searching using the registry logic without caching it if the
+			// registry is disabled
+			if (this.results === undefined) {
+				const entries = await TimekeepRegistry.getTimekeepsWithinVault(this.app.vault);
+				this.results = TimekeepMergerModal.getResultsFromEntries(entries);
+			}
+
+			this.loadingEl.hidden = true;
+		} catch (err) {
+			console.error(err);
+			this.loadingEl.setText("Failed to load timekeep entries.");
+			this.loadingEl.style.opacity = "1";
+		} finally {
+			this.mergeButton.setDisabled(false);
+			this.searchInput.setDisabled(false);
+			this.onUpdate();
 		}
-
-		// Fallback to searching using the registry logic without caching it if the
-		// registry is disabled
-		if (this.results === undefined) {
-			const entries = await TimekeepRegistry.getTimekeepsWithinVault(this.app.vault);
-			this.results = TimekeepMergerModal.getResultsFromEntries(entries);
-		}
-
-		this.onUpdate();
 	}
 
 	onMerge() {
@@ -306,6 +331,9 @@ export class TimekeepMergerModal extends Modal {
 		this.searchInput = undefined;
 		this.listContainer = undefined;
 		this.selectAll = undefined;
+
+		if (this.unsubscribeEntries) this.unsubscribeEntries();
+		if (this.unsubscribeSettings) this.unsubscribeSettings();
 	}
 
 	static getResultsFromEntries(entries: TimekeepRegistryEntry[]): TimekeepResult[] {

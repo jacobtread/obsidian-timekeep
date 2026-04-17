@@ -164,7 +164,8 @@
 }
 
 /* timer container hidden styling (required otherwise it won't be hidden when not in use) */
-.timekeep-timer[hidden] {
+.timekeep-timer[hidden],
+.timekeep-merger-loading[hidden] {
 	display: none;
 }
 
