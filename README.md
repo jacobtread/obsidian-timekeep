@@ -102,6 +102,15 @@ If you have frequently used entry names you can define them in your template by 
 
 This will create an entry that is not yet started; you can start it by clicking the play button without having to type out the name.
 
+## 👀 Status Bar Icons
+
+Timekeep will show running timers in the Obsidian status bar, allowing you to see whats happening at a glance, you can then quickly open the file or stop the timer
+right from the status bar.
+
+![Status Bar](images/status_bar.png)
+
+*Status bar icons are only available if the registry setting is enabled as well as the status bar setting 
+
 ## 🦾 API
 
 Timekeep exposes a JS API which can be used by other scripts such as with [Dataview](https://blacksmithgu.github.io/obsidian-dataview/api/intro/)
