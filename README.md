@@ -110,10 +110,10 @@ You can access the plugin API through:
 
 ```js
 // Get the timekeep plugin API
-const timekeepPlugin = this.app.plugins.plugins.timekeep;
+const timekeepPlugin = this.app.plugins.plugins.timekeep.api;
 
 // Extract the timekeeps from the file text
-const timekeeps = timekeepPlugin.extractTimekeepCodeblocks(text);
+const timekeeps = timekeepPlugin.parser.extractTimekeepCodeblocks(text);
 ```
 
 Below is a Dataview example for showing the total elapsed time for all timekeeps in the current file:
@@ -128,10 +128,10 @@ if(!activeFile || !activeFile.name) return;
 const text = await this.app.vault.read(activeFile);
 
 // Get the timekeep plugin API
-const timekeepPlugin = this.app.plugins.plugins.timekeep;
+const timekeepPlugin = this.app.plugins.plugins.timekeep.api;
 
 // Extract the timekeeps from the file text
-const timekeeps = timekeepPlugin.extractTimekeepCodeblocks(text);
+const timekeeps = timekeepPlugin.parser.extractTimekeepCodeblocks(text);
 
 // Current time is required for unfinished entries
 const currentTime = moment();
@@ -139,7 +139,7 @@ const currentTime = moment();
 let totalRunningDuration = 0;
 
 for (const timekeep of timekeeps) {
-  totalRunningDuration += timekeepPlugin.getTotalDuration(timekeep.entries, currentTime);
+  totalRunningDuration += timekeepPlugin.queries.getTotalDuration(timekeep.entries, currentTime);
 }
 
 // Total running duration is in milliseconds
