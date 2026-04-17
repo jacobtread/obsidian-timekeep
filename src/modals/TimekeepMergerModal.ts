@@ -4,6 +4,8 @@ import { v4 as uuid } from "uuid";
 import { exportPdf } from "@/export/pdf";
 import { TimekeepSettings } from "@/settings";
 import { Store } from "@/store";
+import { assert } from "@/utils/assert";
+import { createCodeBlock } from "@/utils/codeblock";
 
 import { Timekeep, stripTimekeepRuntimeData } from "@/timekeep/schema";
 
@@ -17,18 +19,23 @@ interface TimekeepResult {
 }
 
 export class TimekeepMergerModal extends Modal {
-	private results: TimekeepResult[] = [];
-	private filteredResults: TimekeepResult[] = [];
-	private selectedResults: TimekeepResult[] = [];
+	results: TimekeepResult[] = [];
+	filteredResults: TimekeepResult[] = [];
+	selectedResults: TimekeepResult[] = [];
 
-	private listContainer: HTMLElement | undefined;
-	private searchInput: TextComponent | undefined;
-	private selectAll: HTMLInputElement | undefined;
-	private selectContainer: HTMLDivElement | undefined;
-	private loadingEl: HTMLElement | undefined;
-	private exportPdf: boolean;
-	private registry: TimekeepRegistry;
-	private settings: Store<TimekeepSettings>;
+	listContainer: HTMLElement | undefined;
+	searchInput: TextComponent | undefined;
+	selectAll: HTMLInputElement | undefined;
+	selectContainer: HTMLDivElement | undefined;
+
+	registry: TimekeepRegistry;
+	settings: Store<TimekeepSettings>;
+
+	/** Button for confirming the merge */
+	mergeButton: ButtonComponent | undefined;
+
+	/** Whether the dialog is exporting a merged PDF instead of creating a merged timekeep */
+	exportPdf: boolean;
 
 	constructor(
 		app: App,
@@ -47,25 +54,19 @@ export class TimekeepMergerModal extends Modal {
 
 	async onOpen(): Promise<void> {
 		this.contentEl.empty();
-		this.contentEl.createEl("p", {
-			text: "Select Timekeep Entries to Merge",
-		});
+		this.contentEl.createEl("p", { text: "Select Timekeep Entries to Merge" });
 
-		this.loadingEl = this.contentEl.createDiv({
+		const loadingEl = this.contentEl.createDiv({
 			text: "Loading timekeep entries...",
 		});
-		this.loadingEl.style.marginBottom = "1rem";
-		this.loadingEl.style.opacity = "0.7";
+		loadingEl.style.marginBottom = "1rem";
+		loadingEl.style.opacity = "0.7";
 
 		this.searchInput = new TextComponent(this.contentEl);
 		this.searchInput.setPlaceholder("Search by file path...");
 		this.searchInput.inputEl.style.width = "100%";
 		this.searchInput.setDisabled(true);
-		this.searchInput.onChange(() => {
-			this.updateFilteredResults();
-			this.renderList();
-			this.updateSelectAll();
-		});
+		this.searchInput.onChange(this.onUpdate.bind(this));
 
 		const selectContainer = this.contentEl.createDiv({
 			cls: "timekeep-merge-select-container",
@@ -80,10 +81,7 @@ export class TimekeepMergerModal extends Modal {
 		});
 		selectAll.checked = this.isAllSelected();
 		selectAll.id = `merge-select-all`;
-		selectAll.onchange = () => {
-			this.toggleSelectAll(selectAll.checked);
-			this.renderList();
-		};
+		selectAll.onchange = () => this.toggleSelectAll(selectAll.checked);
 		this.selectAll = selectAll;
 
 		const selectAllLabel = selectContainer.createEl("label");
@@ -98,71 +96,76 @@ export class TimekeepMergerModal extends Modal {
 			cls: "timekeep-merge-footer",
 		});
 
-		const mergeButton = new ButtonComponent(footer)
+		this.mergeButton = new ButtonComponent(footer)
 			.setButtonText("Create")
 			.setCta()
 			.setDisabled(true)
-			.onClick(() => {
-				const timekeep: Timekeep = {
-					entries: [],
-				};
+			.onClick(this.onMerge.bind(this));
 
-				for (const result of this.selectedResults) {
-					timekeep.entries = [...timekeep.entries, ...result.timekeep.entries];
-				}
-
-				// Close after taking the results as closing resets the list
-				this.close();
-
-				if (this.exportPdf) {
-					// Export a pdf
-					void exportPdf(this.app, timekeep, this.settings.getState());
-				} else {
-					// Insert into editor
-					const editor = this.app.workspace.activeEditor?.editor;
-					if (editor) {
-						editor.replaceSelection(
-							`\n\`\`\`timekeep\n${JSON.stringify(stripTimekeepRuntimeData(timekeep))}\n\`\`\`\n`
-						);
-					}
-				}
-			});
-
-		new ButtonComponent(footer).setButtonText("Cancel").onClick(() => {
-			this.close();
-		});
+		new ButtonComponent(footer).setButtonText("Cancel").onClick(this.close.bind(this));
 
 		try {
-			const settings = this.settings.getState();
-
-			// When the registry is enabled source the entries from the registry
-			// as this is much faster than triggering a search
-			if (settings.registryEnabled) {
-				const entries = this.registry.entries.getState();
-				const results: TimekeepResult[] =
-					TimekeepMergerModal.getResultsFromEntries(entries);
-				this.results = results;
-			}
-
-			// Fallback to searching using the registry logic without caching it if the
-			// registry is disabled
-			if (this.results === undefined) {
-				const entries = await TimekeepRegistry.getTimekeepsWithinVault(this.app.vault);
-				this.results = TimekeepMergerModal.getResultsFromEntries(entries);
-			}
-
-			this.updateFilteredResults();
-			this.renderList();
-			this.updateSelectAll();
-
-			this.loadingEl.remove();
-			mergeButton.setDisabled(false);
+			await this.onLoad();
+			loadingEl.remove();
+			this.mergeButton.setDisabled(false);
 			this.searchInput.setDisabled(false);
 		} catch (err) {
 			console.error(err);
-			this.loadingEl.setText("Failed to load timekeep entries.");
-			this.loadingEl.style.opacity = "1";
+			loadingEl.setText("Failed to load timekeep entries.");
+			loadingEl.style.opacity = "1";
 		}
+	}
+
+	async onLoad() {
+		const settings = this.settings.getState();
+
+		// When the registry is enabled source the entries from the registry
+		// as this is much faster than triggering a search
+		if (settings.registryEnabled) {
+			const entries = this.registry.entries.getState();
+			const results: TimekeepResult[] = TimekeepMergerModal.getResultsFromEntries(entries);
+			this.results = results;
+		}
+
+		// Fallback to searching using the registry logic without caching it if the
+		// registry is disabled
+		if (this.results === undefined) {
+			const entries = await TimekeepRegistry.getTimekeepsWithinVault(this.app.vault);
+			this.results = TimekeepMergerModal.getResultsFromEntries(entries);
+		}
+
+		this.onUpdate();
+	}
+
+	onMerge() {
+		const timekeep: Timekeep = { entries: [] };
+
+		for (const result of this.selectedResults) {
+			timekeep.entries.push(...result.timekeep.entries);
+		}
+
+		// Close after taking the results as closing resets the list
+		this.close();
+
+		if (this.exportPdf) {
+			// Export a pdf
+			void exportPdf(this.app, timekeep, this.settings.getState());
+			return;
+		}
+
+		// Insert into editor
+		const editor = this.app.workspace.activeEditor?.editor;
+		if (!editor) return;
+
+		const stripped = stripTimekeepRuntimeData(timekeep);
+		const serialized = JSON.stringify(stripped);
+		editor.replaceSelection(createCodeBlock(serialized, 1, 1));
+	}
+
+	onUpdate() {
+		this.updateFilteredResults();
+		this.renderList();
+		this.updateSelectAll();
 	}
 
 	updateSelectAll() {
@@ -222,6 +225,9 @@ export class TimekeepMergerModal extends Modal {
 				return filtered === undefined;
 			});
 		}
+
+		// Re-render the list with the new selection
+		this.renderList();
 	}
 
 	/**
@@ -229,7 +235,7 @@ export class TimekeepMergerModal extends Modal {
 	 * search query
 	 */
 	updateFilteredResults() {
-		if (!this.searchInput) return;
+		assert(this.searchInput, "Search input should be defined");
 
 		const queryLower = this.searchInput.getValue().toLowerCase().trim();
 		if (queryLower.length < 1) {
@@ -245,10 +251,8 @@ export class TimekeepMergerModal extends Modal {
 	/**
 	 * Render the list of filtered results
 	 */
-	private renderList() {
-		if (!this.listContainer) {
-			return;
-		}
+	renderList() {
+		assert(this.listContainer, "List container should be defined for renderList");
 
 		this.listContainer.empty();
 		for (const result of this.filteredResults) {
@@ -301,7 +305,6 @@ export class TimekeepMergerModal extends Modal {
 
 		this.searchInput = undefined;
 		this.listContainer = undefined;
-		this.loadingEl = undefined;
 		this.selectAll = undefined;
 	}
 
