@@ -6,7 +6,11 @@ import { TimesheetEntryDuration } from "@/components/TimesheetEntryDuration";
 
 import { TimeEntry } from "@/timekeep/schema";
 
-import { TimekeepRegistry, TimekeepRegistryItemRef } from "@/service/registry";
+import {
+	TimekeepEntryItemType,
+	TimekeepRegistry,
+	TimekeepRegistryItemRef,
+} from "@/service/registry";
 
 export class TimesheetStatusBarItem extends DomComponent {
 	/** Access to the obsidian app */
@@ -15,15 +19,20 @@ export class TimesheetStatusBarItem extends DomComponent {
 	entry: TimeEntry;
 	/** The registry for timekeeps */
 	registry: TimekeepRegistry;
+
 	/** The reference to the item */
 	ref: TimekeepRegistryItemRef;
+
+	/** Whether to show the folder path in the name */
+	showFolderPath: boolean;
 
 	constructor(
 		containerEl: HTMLElement,
 		app: App,
 		registry: TimekeepRegistry,
 		entry: TimeEntry,
-		ref: TimekeepRegistryItemRef
+		ref: TimekeepRegistryItemRef,
+		showFolderPath: boolean
 	) {
 		super(containerEl);
 
@@ -31,6 +40,7 @@ export class TimesheetStatusBarItem extends DomComponent {
 		this.registry = registry;
 		this.entry = entry;
 		this.ref = ref;
+		this.showFolderPath = showFolderPath;
 	}
 
 	onload(): void {
@@ -53,13 +63,36 @@ export class TimesheetStatusBarItem extends DomComponent {
 
 		contentEl.createSpan({
 			cls: "timekeep-status-item__name",
-			text: entry.name + ":",
+			text: this.getFolderPath() + entry.name + ":",
+			title: this.getDisplayTitle(),
 		});
 
 		this.addChild(new TimesheetEntryDuration(contentEl, entry));
 
 		this.registerDomEvent(stopIcon, "click", this.onStop.bind(this));
 		this.registerDomEvent(contentEl, "click", this.onOpen.bind(this));
+	}
+
+	getDisplayTitle() {
+		switch (this.ref.type) {
+			case TimekeepEntryItemType.FILE:
+				return `${this.ref.file.path}`;
+			case TimekeepEntryItemType.MARKDOWN:
+				return `${this.ref.file.path} - ${this.ref.position.startLine}:${this.ref.position.endLine}`;
+			/* v8 ignore start -- @preserve */
+			default: {
+				throw new Error("unknown entry type");
+			}
+			/* v8 ignore stop -- @preserve */
+		}
+	}
+
+	getFolderPath() {
+		if (!this.showFolderPath) return "";
+		const path = this.ref.file.path;
+		const parts = path.split("/");
+		if (parts.length < 2) return "";
+		return parts.slice(0, parts.length - 1).join("/") + ": ";
 	}
 
 	async onStop() {

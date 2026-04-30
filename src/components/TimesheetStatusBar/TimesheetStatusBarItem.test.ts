@@ -51,20 +51,34 @@ describe("TimesheetStatusBarItem", () => {
 
 	it("should load without error", () => {
 		const file = vault.addFile("test.timekeep", "");
-		const component = new TimesheetStatusBarItem(containerEl, app, registry, entry, {
-			file,
-			type: TimekeepEntryItemType.FILE,
-		});
+		const component = new TimesheetStatusBarItem(
+			containerEl,
+			app,
+			registry,
+			entry,
+			{
+				file,
+				type: TimekeepEntryItemType.FILE,
+			},
+			false
+		);
 
 		expect(() => component.load()).not.toThrow();
 	});
 
 	it("should call onStop when the stop icon is clicked", () => {
 		const file = vault.addFile("test.timekeep", "");
-		const component = new TimesheetStatusBarItem(containerEl, app, registry, entry, {
-			file,
-			type: TimekeepEntryItemType.FILE,
-		});
+		const component = new TimesheetStatusBarItem(
+			containerEl,
+			app,
+			registry,
+			entry,
+			{
+				file,
+				type: TimekeepEntryItemType.FILE,
+			},
+			false
+		);
 
 		const onStop = vi.spyOn(component, "onStop");
 		component.load();
@@ -85,10 +99,17 @@ describe("TimesheetStatusBarItem", () => {
 			//
 			.mockRejectedValue(new Error("failed to stop"));
 
-		const component = new TimesheetStatusBarItem(containerEl, app, registry, entry, {
-			file,
-			type: TimekeepEntryItemType.FILE,
-		});
+		const component = new TimesheetStatusBarItem(
+			containerEl,
+			app,
+			registry,
+			entry,
+			{
+				file,
+				type: TimekeepEntryItemType.FILE,
+			},
+			false
+		);
 		const consoleError = vi.spyOn(console, "error").mockImplementation(() => {});
 		const onStop = vi.spyOn(component, "onStop");
 		component.load();
@@ -101,10 +122,17 @@ describe("TimesheetStatusBarItem", () => {
 
 	it("should call onOpen when the content area is clicked", () => {
 		const file = vault.addFile("test.timekeep", "");
-		const component = new TimesheetStatusBarItem(containerEl, app, registry, entry, {
-			file,
-			type: TimekeepEntryItemType.FILE,
-		});
+		const component = new TimesheetStatusBarItem(
+			containerEl,
+			app,
+			registry,
+			entry,
+			{
+				file,
+				type: TimekeepEntryItemType.FILE,
+			},
+			false
+		);
 
 		const onOpen = vi.spyOn(component, "onOpen");
 		component.load();
@@ -117,5 +145,49 @@ describe("TimesheetStatusBarItem", () => {
 		}
 
 		expect(onOpen).toHaveBeenCalledTimes(1);
+	});
+
+	it("nested file path should be included in name when showFolderPath is true", () => {
+		const file = vault.addFile("nested/path/test.timekeep", "");
+		const component = new TimesheetStatusBarItem(
+			containerEl,
+			app,
+			registry,
+			entry,
+			{
+				file,
+				type: TimekeepEntryItemType.FILE,
+			},
+			true
+		);
+
+		component.load();
+
+		const nameEl = component.containerEl.querySelector(".timekeep-status-item__name");
+		expect(nameEl).not.toBeNull();
+
+		expect(nameEl!.textContent.startsWith("nested/path: ")).toBeTruthy();
+	});
+
+	it("nested file path should not be included in name when showFolderPath is false", () => {
+		const file = vault.addFile("nested/path/test.timekeep", "");
+		const component = new TimesheetStatusBarItem(
+			containerEl,
+			app,
+			registry,
+			entry,
+			{
+				file,
+				type: TimekeepEntryItemType.FILE,
+			},
+			false
+		);
+
+		component.load();
+
+		const nameEl = component.containerEl.querySelector(".timekeep-status-item__name");
+		expect(nameEl).not.toBeNull();
+
+		expect(nameEl!.textContent.startsWith("nested/path: ")).not.toBeTruthy();
 	});
 });

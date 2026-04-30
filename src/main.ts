@@ -198,7 +198,12 @@ export default class TimekeepPlugin extends Plugin {
 		if (!settings.statusBarEnabled) return;
 
 		const containerEl = this.addStatusBarItem();
-		const statusBarView = new TimesheetStatusBar(containerEl, this.app, this.registry);
+		const statusBarView = new TimesheetStatusBar(
+			containerEl,
+			this.app,
+			this.registry,
+			this.settingsStore
+		);
 		this.addChild(statusBarView);
 		this.#statusBarView = statusBarView;
 	}

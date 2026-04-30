@@ -442,6 +442,21 @@ export class TimekeepSettingsTab extends PluginSettingTab {
 				});
 			});
 
+		new Setting(this.containerEl)
+			.setName("Show Folder Path")
+			.setDesc(
+				'Whether to include the folder path of the file in the status item (i.e "Path/To/Entry: Block 1: 3h 5min 30s").'
+			)
+			.addToggle((t) => {
+				t.setValue(settings.statusBarShowFolderPath);
+				t.onChange((v) => {
+					this.settingsStore.setState((currentValue) => ({
+						...currentValue,
+						statusBarShowFolderPath: v,
+					}));
+				});
+			});
+
 		// Autocomplete section
 		new Setting(this.containerEl)
 			.setName("Autocomplete")
