@@ -74,6 +74,7 @@ export interface TimekeepSettings {
 	registryConcurrencyLimit: number;
 
 	statusBarEnabled: boolean;
+	statusBarShowFolderPath: boolean;
 
 	autocompleteEnabled: boolean;
 }
@@ -104,6 +105,7 @@ export const defaultSettings: TimekeepSettings = {
 	registryConcurrencyLimit: 15,
 
 	statusBarEnabled: true,
+	statusBarShowFolderPath: true,
 
 	autocompleteEnabled: true,
 };

@@ -1,6 +1,8 @@
 import { type App } from "obsidian";
 import { Component } from "obsidian";
 
+import { TimekeepSettings } from "@/settings";
+import { Store } from "@/store";
 import { assert } from "@/utils/assert";
 
 import { TimesheetStatusBarItem } from "./TimesheetStatusBarItem";
@@ -20,17 +22,25 @@ export class TimesheetStatusBar extends Component {
 	app: App;
 	/** Access to the app registry */
 	registry: TimekeepRegistry;
+	/** Access to the timekeep settings */
+	settings: Store<TimekeepSettings>;
 
 	/** Currently rendered items */
 	items: TimesheetStatusBarItem[] = [];
 
-	constructor(containerEl: HTMLElement, app: App, registry: TimekeepRegistry) {
+	constructor(
+		containerEl: HTMLElement,
+		app: App,
+		registry: TimekeepRegistry,
+		settings: Store<TimekeepSettings>
+	) {
 		super();
 
 		this.#containerEl = containerEl;
 
 		this.app = app;
 		this.registry = registry;
+		this.settings = settings;
 	}
 
 	onload(): void {
@@ -51,6 +61,10 @@ export class TimesheetStatusBar extends Component {
 	}
 
 	render() {
+		// No need to subscribe to settings, this component is recreated when settings changes
+		const settings = this.settings.getState();
+
+
 		const entries = this.registry.entries.getState();
 		const runningEntries = TimekeepRegistry.getRunningEntries(entries);
 
@@ -61,14 +75,21 @@ export class TimesheetStatusBar extends Component {
 
 		// Load the new children
 		for (const runningEntry of runningEntries) {
-			this.renderEntry(runningEntry.running, runningEntry.ref);
+			this.renderEntry(runningEntry.running, runningEntry.ref, settings);
 		}
 	}
 
-	renderEntry(entry: TimeEntry, ref: TimekeepRegistryItemRef) {
+	renderEntry(entry: TimeEntry, ref: TimekeepRegistryItemRef, settings: TimekeepSettings) {
 		const wrapperEl = this.wrapperEl;
 		assert(wrapperEl, "Wrapper element should be defined on render");
-		const item = new TimesheetStatusBarItem(wrapperEl, this.app, this.registry, entry, ref);
+		const item = new TimesheetStatusBarItem(
+			wrapperEl,
+			this.app,
+			this.registry,
+			entry,
+			ref,
+			settings.statusBarShowFolderPath
+		);
 		this.items.push(item);
 		item.load();
 	}

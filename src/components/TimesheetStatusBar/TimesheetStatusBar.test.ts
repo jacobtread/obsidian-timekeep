@@ -35,7 +35,7 @@ describe("TimesheetStatusBar", () => {
 		settings = createStore(defaultSettings);
 		registry = new TimekeepRegistry(vault.asVault(), settings);
 
-		component = new TimesheetStatusBar(containerEl, app, registry);
+		component = new TimesheetStatusBar(containerEl, app, registry, settings);
 	});
 
 	it("should load without error", () => {
