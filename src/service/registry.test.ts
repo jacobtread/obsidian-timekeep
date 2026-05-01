@@ -717,7 +717,7 @@ describe("TimekeepRegistry", () => {
 
 			registry.load();
 
-			expect(vault.on).toHaveBeenCalledTimes(3);
+			expect(vault.on).toHaveBeenCalledTimes(4);
 		});
 
 		it("un-registers vault events when switching from enabled to disabled", () => {
@@ -728,11 +728,11 @@ describe("TimekeepRegistry", () => {
 
 			registry.load();
 
-			expect(vault.on).toHaveBeenCalledTimes(3);
+			expect(vault.on).toHaveBeenCalledTimes(4);
 
 			settings.setState({ ...defaultSettings, registryEnabled: false });
 
-			expect(vault.offref).toHaveBeenCalledTimes(3);
+			expect(vault.offref).toHaveBeenCalledTimes(4);
 		});
 
 		it("handle loading failure", async () => {

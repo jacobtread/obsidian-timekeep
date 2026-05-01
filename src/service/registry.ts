@@ -123,10 +123,11 @@ export class TimekeepRegistry extends Component {
 		// Attach vault events
 		const createEvent = this.#vault.on("create", this.onFileCreated.bind(this));
 		const modifyEvent = this.#vault.on("modify", this.onFileModified.bind(this));
+		const renameEvent = this.#vault.on("rename", this.onFileModified.bind(this));
 		const deleteEvent = this.#vault.on("delete", this.onFileRemoved.bind(this));
 
 		// Register events for unloading
-		this.events.push(createEvent, modifyEvent, deleteEvent);
+		this.events.push(createEvent, modifyEvent, renameEvent, deleteEvent);
 
 		// Load the registry from the vault
 		this.registerTask("loadFromVault", this.loadFromVault());
