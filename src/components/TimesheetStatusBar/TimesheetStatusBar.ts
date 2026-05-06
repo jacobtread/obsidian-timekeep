@@ -64,7 +64,6 @@ export class TimesheetStatusBar extends Component {
 		// No need to subscribe to settings, this component is recreated when settings changes
 		const settings = this.settings.getState();
 
-
 		const entries = this.registry.entries.getState();
 		const runningEntries = TimekeepRegistry.getRunningEntries(entries);
 
@@ -86,9 +85,9 @@ export class TimesheetStatusBar extends Component {
 			wrapperEl,
 			this.app,
 			this.registry,
+			settings,
 			entry,
-			ref,
-			settings.statusBarShowFolderPath
+			ref
 		);
 		this.items.push(item);
 		item.load();

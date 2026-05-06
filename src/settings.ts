@@ -75,6 +75,7 @@ export interface TimekeepSettings {
 
 	statusBarEnabled: boolean;
 	statusBarShowFolderPath: boolean;
+	statusBarItemOpenNewTab: boolean;
 
 	autocompleteEnabled: boolean;
 }
@@ -106,6 +107,7 @@ export const defaultSettings: TimekeepSettings = {
 
 	statusBarEnabled: true,
 	statusBarShowFolderPath: true,
+	statusBarItemOpenNewTab: false,
 
 	autocompleteEnabled: true,
 };

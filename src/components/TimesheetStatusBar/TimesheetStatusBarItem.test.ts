@@ -55,12 +55,12 @@ describe("TimesheetStatusBarItem", () => {
 			containerEl,
 			app,
 			registry,
+			{ ...defaultSettings, statusBarShowFolderPath: false },
 			entry,
 			{
 				file,
 				type: TimekeepEntryItemType.FILE,
-			},
-			false
+			}
 		);
 
 		expect(() => component.load()).not.toThrow();
@@ -72,12 +72,13 @@ describe("TimesheetStatusBarItem", () => {
 			containerEl,
 			app,
 			registry,
+			{ ...defaultSettings, statusBarShowFolderPath: false },
+
 			entry,
 			{
 				file,
 				type: TimekeepEntryItemType.FILE,
-			},
-			false
+			}
 		);
 
 		const onStop = vi.spyOn(component, "onStop");
@@ -103,12 +104,13 @@ describe("TimesheetStatusBarItem", () => {
 			containerEl,
 			app,
 			registry,
+			{ ...defaultSettings, statusBarShowFolderPath: false },
+
 			entry,
 			{
 				file,
 				type: TimekeepEntryItemType.FILE,
-			},
-			false
+			}
 		);
 		const consoleError = vi.spyOn(console, "error").mockImplementation(() => {});
 		const onStop = vi.spyOn(component, "onStop");
@@ -126,12 +128,13 @@ describe("TimesheetStatusBarItem", () => {
 			containerEl,
 			app,
 			registry,
+			{ ...defaultSettings, statusBarShowFolderPath: false },
+
 			entry,
 			{
 				file,
 				type: TimekeepEntryItemType.FILE,
-			},
-			false
+			}
 		);
 
 		const onOpen = vi.spyOn(component, "onOpen");
@@ -153,12 +156,13 @@ describe("TimesheetStatusBarItem", () => {
 			containerEl,
 			app,
 			registry,
+			{ ...defaultSettings, statusBarShowFolderPath: true },
+
 			entry,
 			{
 				file,
 				type: TimekeepEntryItemType.FILE,
-			},
-			true
+			}
 		);
 
 		component.load();
@@ -175,12 +179,12 @@ describe("TimesheetStatusBarItem", () => {
 			containerEl,
 			app,
 			registry,
+			{ ...defaultSettings, statusBarShowFolderPath: false },
 			entry,
 			{
 				file,
 				type: TimekeepEntryItemType.FILE,
-			},
-			false
+			}
 		);
 
 		component.load();

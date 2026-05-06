@@ -387,8 +387,12 @@ export class TimekeepRegistry extends Component {
 	 * @param workspace The workspace to open the file with
 	 * @param ref The reference to the timekeep
 	 */
-	static async openItemRef(workspace: Workspace, ref: TimekeepRegistryItemRef) {
-		const leaf = workspace.getLeaf();
+	static async openItemRef(
+		workspace: Workspace,
+		ref: TimekeepRegistryItemRef,
+		newTab: boolean = false
+	) {
+		const leaf = workspace.getLeaf(newTab ? "tab" : false);
 		await leaf.openFile(ref.file);
 
 		const view = leaf.view;

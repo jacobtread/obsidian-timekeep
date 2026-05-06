@@ -68,7 +68,11 @@ export class TimekeepApi {
 		file: TFile,
 		cached?: boolean
 	) => Promise<TimekeepRegistryEntry | null>;
-	openItemRef: (workspace: Workspace, ref: TimekeepRegistryItemRef) => Promise<void>;
+	openItemRef: (
+		workspace: Workspace,
+		ref: TimekeepRegistryItemRef,
+		newTab?: boolean
+	) => Promise<void>;
 	getRunningEntries: (entries: TimekeepRegistryEntry[]) => TimekeepRunningEntry[];
 
 	constructor(

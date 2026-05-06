@@ -776,6 +776,31 @@ describe("TimekeepRegistry", () => {
 			expect(openFile).toHaveBeenCalled();
 		});
 
+		it("should attempt to open the file in a new tab", async () => {
+			const vault = new MockVault();
+			const testFile = vault.addFile("test.md", "");
+			const ref: TimekeepRegistryItemRef = {
+				file: testFile,
+				type: TimekeepEntryItemType.FILE,
+			};
+
+			const openFile = vi.fn().mockResolvedValue(undefined);
+			const getLeaf = vi.fn(() => {
+				const view = new MockMarkdownView();
+				(view as any).openFile = openFile;
+				return view;
+			});
+
+			const workspace = {
+				getLeaf,
+			} as any as Workspace;
+
+			await TimekeepRegistry.openItemRef(workspace, ref, true);
+
+			expect(getLeaf).toHaveBeenCalledWith("tab");
+			expect(openFile).toHaveBeenCalled();
+		});
+
 		it("opening a markdown entry should scroll to the specific timekeep position", async () => {
 			const vault = new MockVault();
 			const testFile = vault.addFile("test.md", "");
