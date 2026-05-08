@@ -1,5 +1,7 @@
 import { App } from "obsidian";
 
+import { TimekeepSettings } from "@/settings";
+
 import { DomComponent } from "@/components/DomComponent";
 import { createObsidianIcon } from "@/components/obsidianIcon";
 import { TimesheetEntryDuration } from "@/components/TimesheetEntryDuration";
@@ -19,28 +21,27 @@ export class TimesheetStatusBarItem extends DomComponent {
 	entry: TimeEntry;
 	/** The registry for timekeeps */
 	registry: TimekeepRegistry;
+	/** The current timekeep settings */
+	settings: TimekeepSettings;
 
 	/** The reference to the item */
 	ref: TimekeepRegistryItemRef;
-
-	/** Whether to show the folder path in the name */
-	showFolderPath: boolean;
 
 	constructor(
 		containerEl: HTMLElement,
 		app: App,
 		registry: TimekeepRegistry,
+		settings: TimekeepSettings,
 		entry: TimeEntry,
-		ref: TimekeepRegistryItemRef,
-		showFolderPath: boolean
+		ref: TimekeepRegistryItemRef
 	) {
 		super(containerEl);
 
 		this.app = app;
 		this.registry = registry;
+		this.settings = settings;
 		this.entry = entry;
 		this.ref = ref;
-		this.showFolderPath = showFolderPath;
 	}
 
 	onload(): void {
@@ -88,7 +89,7 @@ export class TimesheetStatusBarItem extends DomComponent {
 	}
 
 	getFolderPath() {
-		if (!this.showFolderPath) return "";
+		if (!this.settings.statusBarShowFolderPath) return "";
 		const path = this.ref.file.path;
 		const parts = path.split("/");
 		if (parts.length < 2) return "";
@@ -104,6 +105,10 @@ export class TimesheetStatusBarItem extends DomComponent {
 	}
 
 	async onOpen() {
-		await TimekeepRegistry.openItemRef(this.app.workspace, this.ref);
+		await TimekeepRegistry.openItemRef(
+			this.app.workspace,
+			this.ref,
+			this.settings.statusBarItemOpenNewTab
+		);
 	}
 }

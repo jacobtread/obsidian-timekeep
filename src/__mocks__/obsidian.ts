@@ -523,7 +523,18 @@ export const MockNotice = vi.fn(
 	}
 );
 
-export class MockMarkdownView {
+export class MockWorkspaceLeaf {
+	view: unknown;
+	openFile = vi.fn().mockResolvedValue(undefined);
+}
+
+export class MockFileView {
+	file: TFile | null = null;
+}
+
+export class MockEditableFileView extends MockFileView {}
+
+export class MockMarkdownView extends MockEditableFileView {
 	editor = {
 		setCursor: vi.fn(),
 		scrollIntoView: vi.fn(),

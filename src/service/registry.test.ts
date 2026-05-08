@@ -4,7 +4,7 @@ import moment from "moment";
 import { v4 } from "uuid";
 import { describe, vi, it, expect } from "vitest";
 
-import { MockMarkdownView, MockVault } from "@/__mocks__/obsidian";
+import { MockMarkdownView, MockVault, MockWorkspaceLeaf } from "@/__mocks__/obsidian";
 import { defaultSettings, TimekeepSettings } from "@/settings";
 import { createStore } from "@/store";
 import { createCodeBlock } from "@/utils/codeblock";
@@ -761,19 +761,96 @@ describe("TimekeepRegistry", () => {
 				type: TimekeepEntryItemType.FILE,
 			};
 
-			const openFile = vi.fn().mockResolvedValue(undefined);
+			const leaf = new MockWorkspaceLeaf();
+			leaf.view = new MockMarkdownView();
 
 			const workspace = {
 				getLeaf() {
-					const view = new MockMarkdownView();
-					(view as any).openFile = openFile;
-					return view;
+					return leaf;
 				},
+				getLeavesOfType: vi.fn(() => []),
 			} as any as Workspace;
 
 			await TimekeepRegistry.openItemRef(workspace, ref);
 
-			expect(openFile).toHaveBeenCalled();
+			expect(leaf.openFile).toHaveBeenCalled();
+		});
+
+		it("should attempt to open the file in a new tab", async () => {
+			const vault = new MockVault();
+			const testFile = vault.addFile("test.md", "");
+			const ref: TimekeepRegistryItemRef = {
+				file: testFile,
+				type: TimekeepEntryItemType.FILE,
+			};
+
+			const leaf = new MockWorkspaceLeaf();
+			leaf.view = new MockMarkdownView();
+
+			const fakeLeaf = () => {
+				const leaf = new MockWorkspaceLeaf();
+				const view = new MockMarkdownView();
+				leaf.view = view;
+				return leaf;
+			};
+
+			const getLeavesOfType = vi.fn(() => {
+				return [fakeLeaf(), fakeLeaf(), fakeLeaf(), new MockMarkdownView()];
+			});
+
+			const getLeaf = vi.fn(() => {
+				return leaf;
+			});
+			const workspace = {
+				getLeaf,
+				getLeavesOfType,
+			} as any as Workspace;
+
+			await TimekeepRegistry.openItemRef(workspace, ref, true);
+
+			expect(getLeaf).toHaveBeenCalledWith("tab");
+			expect(leaf.openFile).toHaveBeenCalled();
+		});
+
+		it("should focus the existing file instead of opening a new tab if one is present", async () => {
+			const vault = new MockVault();
+			const testFile = vault.addFile("test.timekeep", "");
+			const ref: TimekeepRegistryItemRef = {
+				file: testFile,
+				type: TimekeepEntryItemType.FILE,
+			};
+
+			const existingLeaf = new MockWorkspaceLeaf();
+			const view = new MockMarkdownView();
+			view.file = testFile;
+			existingLeaf.view = view;
+
+			const revealLeaf = vi.fn().mockResolvedValue(undefined);
+			const setActiveLeaf = vi.fn().mockResolvedValue(undefined);
+			const getLeaf = vi.fn(() => {
+				const existingLeaf = new MockWorkspaceLeaf();
+				const view = new MockMarkdownView();
+				existingLeaf.view = view;
+				return existingLeaf;
+			});
+			const getLeavesOfType = vi.fn(() => {
+				return [existingLeaf];
+			});
+
+			const workspace = {
+				getLeaf,
+				getLeavesOfType,
+				revealLeaf,
+				setActiveLeaf,
+			} as any as Workspace;
+
+			await TimekeepRegistry.openItemRef(workspace, ref, true);
+
+			expect(getLeavesOfType).toHaveBeenCalledWith("timekeep");
+			expect(getLeaf).not.toHaveBeenCalled();
+			expect(existingLeaf.openFile).not.toHaveBeenCalled();
+			expect(revealLeaf).toHaveBeenCalledWith(existingLeaf);
+			expect(setActiveLeaf).toHaveBeenCalledWith(existingLeaf, { focus: true });
 		});
 
 		it("opening a markdown entry should scroll to the specific timekeep position", async () => {
@@ -785,18 +862,19 @@ describe("TimekeepRegistry", () => {
 				position: { startLine: 1, endLine: 2 },
 			};
 
-			const openFile = vi.fn().mockResolvedValue(undefined);
-
+			const leaf = new MockWorkspaceLeaf();
 			const view = new MockMarkdownView();
+			leaf.view = view;
 
 			const workspace = {
 				getLeaf() {
-					return { view, openFile };
+					return leaf;
 				},
+				getLeavesOfType: vi.fn(() => []),
 			} as any as Workspace;
 
 			await TimekeepRegistry.openItemRef(workspace, ref);
-			expect(openFile).toHaveBeenCalled();
+			expect(leaf.openFile).toHaveBeenCalled();
 
 			const line = ref.position.startLine;
 

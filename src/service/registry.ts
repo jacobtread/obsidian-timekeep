@@ -1,7 +1,7 @@
-import type { EventRef, TAbstractFile, Vault, Workspace } from "obsidian";
+import type { EventRef, TAbstractFile, Vault, Workspace, WorkspaceLeaf } from "obsidian";
 
 import moment from "moment";
-import { Component, MarkdownView, TFile } from "obsidian";
+import { EditableFileView, Component, MarkdownView, TFile } from "obsidian";
 import { limitFunction } from "p-limit";
 
 import type { TimekeepSettings } from "@/settings";
@@ -381,15 +381,51 @@ export class TimekeepRegistry extends Component {
 	}
 
 	/**
+	 * Checks the workspace leaves to see if the provided timekeep item
+	 * ref is already open in a file
+	 *
+	 * @param workspace The workspace to check within
+	 * @param ref The reference to the timekeep
+	 * @returns The existing leaf if found
+	 */
+	private static getExistingRefLeaf(workspace: Workspace, ref: TimekeepRegistryItemRef) {
+		const leavesType = ref.type === TimekeepEntryItemType.FILE ? "timekeep" : "markdown";
+		const leaves = workspace.getLeavesOfType(leavesType);
+
+		for (const leaf of leaves) {
+			const view = leaf.view;
+			if (view instanceof EditableFileView && view.file && view.file.path === ref.file.path) {
+				return leaf;
+			}
+		}
+
+		return null;
+	}
+
+	/**
 	 * Opens a timekeep by reference to the file and the
 	 * line within the file for markdown timekeep items
 	 *
 	 * @param workspace The workspace to open the file with
 	 * @param ref The reference to the timekeep
 	 */
-	static async openItemRef(workspace: Workspace, ref: TimekeepRegistryItemRef) {
-		const leaf = workspace.getLeaf();
-		await leaf.openFile(ref.file);
+	static async openItemRef(
+		workspace: Workspace,
+		ref: TimekeepRegistryItemRef,
+		newTab: boolean = false
+	) {
+		let leaf: WorkspaceLeaf | null = TimekeepRegistry.getExistingRefLeaf(workspace, ref);
+
+		// Focus and reveal the existing leaf if found
+		if (leaf !== null) {
+			workspace.setActiveLeaf(leaf, { focus: true });
+			await workspace.revealLeaf(leaf);
+		}
+		// Open a new leaf for the ref
+		else {
+			leaf = workspace.getLeaf(newTab ? "tab" : false);
+			await leaf.openFile(ref.file);
+		}
 
 		const view = leaf.view;
 

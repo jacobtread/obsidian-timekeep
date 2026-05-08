@@ -443,7 +443,7 @@ export class TimekeepSettingsTab extends PluginSettingTab {
 			});
 
 		new Setting(this.containerEl)
-			.setName("Show Folder Path")
+			.setName("Show folder path")
 			.setDesc(
 				'Whether to include the folder path of the file in the status item (i.e "Path/To/Entry: Block 1: 3h 5min 30s").'
 			)
@@ -453,6 +453,19 @@ export class TimekeepSettingsTab extends PluginSettingTab {
 					this.settingsStore.setState((currentValue) => ({
 						...currentValue,
 						statusBarShowFolderPath: v,
+					}));
+				});
+			});
+
+		new Setting(this.containerEl)
+			.setName("Open in new tab")
+			.setDesc('Whether to open the file in a new tab after clicking a status item").')
+			.addToggle((t) => {
+				t.setValue(settings.statusBarItemOpenNewTab);
+				t.onChange((v) => {
+					this.settingsStore.setState((currentValue) => ({
+						...currentValue,
+						statusBarItemOpenNewTab: v,
 					}));
 				});
 			});
