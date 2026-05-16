@@ -3,8 +3,13 @@ on:
     push:
         tags:
             - "*"
+
 permissions:
     contents: write
+    attestations: write
+    artifact-metadata: write
+    id-token: write
+
 jobs:
     build:
         runs-on: ubuntu-latest
@@ -25,16 +30,20 @@ jobs:
             - name: Build
               run: pnpm run build
 
+            - name: Generate artifact attestation
+              uses: actions/attest@v4
+              with:
+                  subject-path: |
+                      dist/main.js
+                      dist/manifest.json
+                      dist/styles.css
+
             - name: Create release
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               run: |
                   tag="${GITHUB_REF#refs/tags/}"
-                  fileName="obsidian-timekeep-$tag.zip"
-
-                  zip $fileName dist/main.js dist/manifest.json dist/styles.css
-
                   gh release create "$tag" \
                     --title="$tag" \
                     --draft \
-                    $fileName dist/main.js dist/manifest.json dist/styles.css
+                    dist/main.js dist/manifest.json dist/styles.css
