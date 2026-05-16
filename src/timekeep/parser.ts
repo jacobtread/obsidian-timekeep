@@ -1,3 +1,5 @@
+import { safeParse } from "valibot";
+
 import { isEmptyString } from "@/utils/text";
 
 import { TIMEKEEP, Timekeep, stripTimekeepRuntimeData } from "@/timekeep/schema";
@@ -33,15 +35,22 @@ export function load(value: string): LoadResult {
 	}
 
 	// Parse the data against the schema
-	const timekeepResult = TIMEKEEP.safeParse(parsedValue);
+	const timekeepResult = safeParse(TIMEKEEP, parsedValue);
 	if (!timekeepResult.success) {
+		const error = timekeepResult.issues
+			.map((issue) => {
+				const path = issue.path?.map((p) => p.key).join(".") ?? "root";
+				return `${path}: ${issue.message}`;
+			})
+			.join("\n");
+
 		return {
 			success: false,
-			error: timekeepResult.error.toString(),
+			error,
 		};
 	}
 
-	const timekeep = timekeepResult.data;
+	const timekeep = timekeepResult.output;
 	return { success: true, timekeep };
 }
 

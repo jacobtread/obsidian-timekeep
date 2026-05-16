@@ -1,5 +1,6 @@
 import moment from "moment";
 import { v4 as uuid } from "uuid";
+import { parse } from "valibot";
 import { expect, it, describe, vi } from "vitest";
 
 import { TIMEKEEP } from "@/timekeep/schema";
@@ -36,7 +37,7 @@ describe("schema transform", () => {
 				},
 			],
 		};
-		const result = TIMEKEEP.parse(input);
+		const result = parse(TIMEKEEP, input);
 
 		expect(result).toEqual({
 			entries: [

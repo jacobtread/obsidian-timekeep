@@ -1,75 +1,87 @@
-import moment from "moment";
+import moment, { Moment } from "moment";
 import { v4 as uuid } from "uuid";
-import { z } from "zod";
+import * as v from "valibot";
 
 /*
  * This file contains the strict schema for parsing timekeep data
  * it also contains the types for each timekeep structure.
  */
 
-type TimeEntryGroupBase = z.output<typeof TIME_ENTRY_GROUP_BASE>;
+type RawTimeEntrySingle = v.InferOutput<typeof TIME_ENTRY_SINGLE>;
+type RawTimeEntryGroupBase = v.InferOutput<typeof TIME_ENTRY_GROUP_BASE>;
 
 // Type aliases from inferred zod types
-export type TimeEntrySingle = z.output<typeof TIME_ENTRY_SINGLE>;
-export type TimeEntryGroup = TimeEntryGroupBase & {
+export type TimeEntrySingle = RawTimeEntrySingle;
+export type TimeEntryGroup = RawTimeEntryGroupBase & {
 	id: string;
 	subEntries: TimeEntry[];
 };
 export type TimeEntry = TimeEntrySingle | TimeEntryGroup;
-export type Timekeep = z.output<typeof TIMEKEEP>;
+
+export type Timekeep = v.InferOutput<typeof TIMEKEEP>;
+
+const strToMoment = (value: string | null): Moment | null =>
+	value === null ? null : moment(value);
 
 // Schema for a time entry with no children
-const TIME_ENTRY_SINGLE = z
-	.object({
+const TIME_ENTRY_SINGLE = v.pipe(
+	v.object({
 		// Name of the entry
-		name: z.string(),
+		name: v.string(),
+
 		// Start time for this entry
-		startTime: z
-			.string()
-			.nullable()
-			.transform((value) => (value === null ? null : moment(value))),
+		startTime: v.pipe(v.nullable(v.string()), v.transform(strToMoment)),
+
 		// End time for this entry, null when this entry is not finished
-		endTime: z
-			.string()
-			.nullable()
-			.transform((value) => (value === null ? null : moment(value))),
+		endTime: v.pipe(v.nullable(v.string()), v.transform(strToMoment)),
+
 		// Single entries have no children
-		subEntries: z.null(),
-	})
+		subEntries: v.null(),
+	}),
 	// At runtime a unique ID is inserted
-	.transform((entry) => ({
+	v.transform((entry) => ({
 		...entry,
 		id: uuid(),
-	}));
+	}))
+);
 
 // Schema for a time entry with children (Base portion, separate portion is required for recursion)
-const TIME_ENTRY_GROUP_BASE = z.object({
-	name: z.string(),
-	startTime: z.null(),
-	endTime: z.null(),
+const TIME_ENTRY_GROUP_BASE = v.object({
+	name: v.string(),
+	startTime: v.null(),
+	endTime: v.null(),
 	// Optional field to indicate the entry is collapsed
-	collapsed: z.boolean().optional(),
+	collapsed: v.optional(v.boolean()),
 	// Optional field to indicate the entry should stay as a group when non-started and should only create
 	// sub entries when starting
-	folder: z.boolean().optional(),
+	folder: v.optional(v.boolean()),
 });
 
-// Schema for a time entry group
-const TIME_ENTRY_GROUP: z.ZodType<TimeEntryGroup> = TIME_ENTRY_GROUP_BASE.extend({
-	subEntries: z.lazy(() => z.array(z.union([TIME_ENTRY_SINGLE, TIME_ENTRY_GROUP]))),
-})
+const TIME_ENTRY_GROUP = v.pipe(
+	v.object({
+		...TIME_ENTRY_GROUP_BASE.entries,
+		subEntries: v.lazy(() => TIME_ENTRY_ARRAY),
+	}),
 	// At runtime a unique ID is inserted
-	/* istanbul ignore next */
-	.transform((entry) => ({
+	v.transform((entry) => ({
 		...entry,
 		id: uuid(),
-	}));
+	}))
+);
 
 // Schema for time entries
-const TIME_ENTRY = z.union([TIME_ENTRY_SINGLE, TIME_ENTRY_GROUP]);
+const TIME_ENTRY: v.GenericSchema<TimeEntry> = v.union([
+	TIME_ENTRY_SINGLE,
+	TIME_ENTRY_GROUP,
+	// Forcefully cast to the type as the type inference is unable to
+	// properly type this recursive structure
+]) as unknown as v.GenericSchema<TimeEntry>;
+
+const TIME_ENTRY_ARRAY = v.array(TIME_ENTRY);
+
 // Schema for an entire timekeep
-export const TIMEKEEP = z.object({
-	entries: z.array(TIME_ENTRY),
+export const TIMEKEEP = v.object({
+	entries: TIME_ENTRY_ARRAY,
 });
 
 export function defaultTimekeep(): Timekeep {

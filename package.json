@@ -23,7 +23,7 @@
 		"p-limit": "^7.3.0",
 		"pdfmake": "^0.3.7",
 		"uuid": "^11.0.5",
-		"zod": "^4.3.6"
+		"valibot": "^1.4.0"
 	},
 	"devDependencies": {
 		"@types/node": "^20.19.37",
