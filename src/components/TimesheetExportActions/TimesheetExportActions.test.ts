@@ -2,7 +2,6 @@
 
 import moment from "moment";
 import { App } from "obsidian";
-import { v4 } from "uuid";
 import { beforeEach, describe, expect, it, Mock, vi } from "vitest";
 
 import { createMockContainer, MockNotice } from "@/__mocks__/obsidian";
@@ -185,7 +184,7 @@ describe("TimesheetExportActions", () => {
 		timekeep.setState({
 			entries: [
 				{
-					id: v4(),
+					id: 1,
 					name: "Test",
 					startTime: moment(systemTime),
 					endTime: null,
@@ -228,7 +227,7 @@ describe("TimesheetExportActions", () => {
 		timekeep.setState({
 			entries: [
 				{
-					id: v4(),
+					id: 1,
 					name: "Test",
 					startTime: moment(systemTime),
 					endTime: moment(systemTime).add(1, "h"),
@@ -282,7 +281,7 @@ describe("TimesheetExportActions", () => {
 		timekeep.setState({
 			entries: [
 				{
-					id: v4(),
+					id: 1,
 					name: "Test",
 					startTime: moment(systemTime),
 					endTime: moment(systemTime).add(1, "h"),
@@ -336,7 +335,7 @@ describe("TimesheetExportActions", () => {
 		timekeep.setState({
 			entries: [
 				{
-					id: v4(),
+					id: 1,
 					name: "Test",
 					startTime: moment(systemTime),
 					endTime: moment(systemTime).add(1, "h"),
@@ -376,7 +375,7 @@ describe("TimesheetExportActions", () => {
 		timekeep.setState({
 			entries: [
 				{
-					id: v4(),
+					id: 1,
 					name: "Test",
 					startTime: moment(systemTime),
 					endTime: moment(systemTime).add(1, "h"),
@@ -441,7 +440,7 @@ describe("TimesheetExportActions", () => {
 		timekeep.setState({
 			entries: [
 				{
-					id: v4(),
+					id: 1,
 					name: "Test",
 					startTime: moment(systemTime),
 					endTime: moment(systemTime).add(1, "h"),

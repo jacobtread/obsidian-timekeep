@@ -1,7 +1,6 @@
 // @vitest-environment happy-dom
 
 import moment from "moment";
-import { v4 } from "uuid";
 import { beforeEach, it, describe, expect, afterEach } from "vitest";
 
 import type { TimekeepSettings } from "@/settings";
@@ -50,7 +49,7 @@ describe("TimesheetRunningEntry", () => {
 		timekeep.setState({
 			entries: [
 				{
-					id: v4(),
+					id: 1,
 					name: "Test",
 					startTime: moment(start),
 					endTime: null,
@@ -70,7 +69,7 @@ describe("TimesheetRunningEntry", () => {
 		timekeep.setState({
 			entries: [
 				{
-					id: v4(),
+					id: 1,
 					name: "Test",
 					startTime: moment(start),
 					endTime: null,
@@ -93,7 +92,7 @@ describe("TimesheetRunningEntry", () => {
 		timekeep.setState({
 			entries: [
 				{
-					id: v4(),
+					id: 1,
 					name: "Test",
 					startTime: moment(start),
 					endTime: null,
@@ -120,7 +119,7 @@ describe("TimesheetRunningEntry", () => {
 		timekeep.setState({
 			entries: [
 				{
-					id: v4(),
+					id: 1,
 					name: "Test",
 					startTime: moment(start),
 					endTime: null,

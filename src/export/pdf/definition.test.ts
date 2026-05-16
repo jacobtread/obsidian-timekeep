@@ -1,6 +1,5 @@
 import moment from "moment";
 import { Content } from "pdfmake";
-import { v4 } from "uuid";
 import { describe, it, expect } from "vitest";
 
 import { defaultSettings, FontFamily, type TimekeepSettings } from "@/settings";
@@ -52,14 +51,14 @@ describe("createPdfDefinition", () => {
 		const timekeep: Timekeep = {
 			entries: [
 				{
-					id: v4(),
+					id: 1,
 					name: "Test Entry 1",
 					startTime: moment("2024-01-01T10:00:00"),
 					endTime: moment("2024-01-01T11:00:00"),
 					subEntries: null,
 				},
 				{
-					id: v4(),
+					id: 2,
 					name: "Test Entry 2",
 					startTime: moment("2024-01-01T10:00:00"),
 					endTime: moment("2024-01-01T11:00:00"),
@@ -84,7 +83,7 @@ describe("createPdfDefinition", () => {
 
 	it("handles nested subEntries with increased depth (margin)", () => {
 		const child = {
-			id: v4(),
+			id: 2,
 			name: "Child",
 			startTime: moment("2024-01-01T10:00:00"),
 			endTime: moment("2024-01-01T11:00:00"),
@@ -92,7 +91,7 @@ describe("createPdfDefinition", () => {
 		};
 
 		const parent = {
-			id: v4(),
+			id: 1,
 			name: "Test Entry 1",
 			startTime: null,
 			endTime: null,
@@ -124,7 +123,7 @@ describe("createPdfDefinition", () => {
 
 	it("handles entries ", () => {
 		const entry = {
-			id: v4(),
+			id: 1,
 			name: "Test Entry 1",
 			startTime: moment("2024-01-01T10:00:00"),
 			endTime: moment("2024-01-01T11:00:00"),
@@ -149,7 +148,7 @@ describe("createPdfDefinition", () => {
 
 	it("handles entries without startTime", () => {
 		const entry = {
-			id: v4(),
+			id: 1,
 			name: "Test Entry 1",
 			startTime: null,
 			endTime: null,
@@ -174,7 +173,7 @@ describe("createPdfDefinition", () => {
 
 	it("handles entries without endTime", () => {
 		const entry = {
-			id: v4(),
+			id: 1,
 			name: "Test Entry 1",
 			startTime: moment("2024-01-01T10:00:00"),
 			endTime: null,
@@ -217,20 +216,20 @@ describe("createPdfDefinition", () => {
 
 	it("applies alternating/group row background logic", () => {
 		const parent = {
-			id: v4(),
+			id: 1,
 			name: "Test Entry 1",
 			startTime: null,
 			endTime: null,
 			subEntries: [
 				{
-					id: v4(),
+					id: 2,
 					name: "Child",
 					startTime: moment("2024-01-01T10:00:00"),
 					endTime: moment("2024-01-01T11:00:00"),
 					subEntries: null,
 				},
 				{
-					id: v4(),
+					id: 3,
 					name: "Child",
 					startTime: moment("2024-01-01T10:00:00"),
 					endTime: moment("2024-01-01T11:00:00"),
@@ -302,7 +301,7 @@ describe("createPdfDefinition", () => {
 
 	it("renders links correctly inside the entry name", () => {
 		const entry: TimeEntry = {
-			id: "1",
+			id: 1,
 			name: "Check this [[https://example.com]]",
 			startTime: null,
 			endTime: null,

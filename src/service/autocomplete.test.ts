@@ -1,5 +1,4 @@
 import moment from "moment";
-import { v4 } from "uuid";
 import { describe, expect, it, vi } from "vitest";
 
 import { MockVault } from "@/__mocks__/obsidian";
@@ -35,7 +34,7 @@ describe("TimekeepAutocomplete", () => {
 				JSON.stringify({
 					entries: [
 						{
-							id: v4(),
+							id: 1,
 							name: "Test",
 							startTime: moment("2020-01-01T00:00:00Z"),
 							endTime: null,
@@ -64,7 +63,7 @@ describe("TimekeepAutocomplete", () => {
 				JSON.stringify({
 					entries: [
 						{
-							id: v4(),
+							id: 1,
 							name: "Test",
 							startTime: moment("2020-01-01T00:00:00Z"),
 							endTime: null,
@@ -93,7 +92,7 @@ describe("TimekeepAutocomplete", () => {
 				JSON.stringify({
 					entries: [
 						{
-							id: v4(),
+							id: 1,
 							name: "Test 2",
 							startTime: moment("2020-01-01T00:00:00Z"),
 							endTime: null,
@@ -116,7 +115,7 @@ describe("TimekeepAutocomplete", () => {
 				JSON.stringify({
 					entries: [
 						{
-							id: v4(),
+							id: 1,
 							name: "Test",
 							startTime: moment("2020-01-01T00:00:00Z"),
 							endTime: null,
@@ -131,7 +130,7 @@ describe("TimekeepAutocomplete", () => {
 				JSON.stringify({
 					entries: [
 						{
-							id: v4(),
+							id: 1,
 							name: "Test 2",
 							startTime: moment("2020-01-01T00:00:00Z"),
 							endTime: null,
@@ -170,35 +169,35 @@ describe("TimekeepAutocomplete", () => {
 				JSON.stringify({
 					entries: [
 						{
-							id: v4(),
+							id: 1,
 							name: "Test",
 							startTime: moment("2020-01-01T00:00:00Z"),
 							endTime: null,
 							subEntries: null,
 						},
 						{
-							id: v4(),
+							id: 2,
 							name: "Block 1",
 							startTime: moment("2020-01-01T00:00:00Z"),
 							endTime: null,
 							subEntries: null,
 						},
 						{
-							id: v4(),
+							id: 3,
 							name: "Part",
 							startTime: moment("2020-01-01T00:00:00Z"),
 							endTime: null,
 							subEntries: null,
 						},
 						{
-							id: v4(),
+							id: 4,
 							name: "Part X",
 							startTime: moment("2020-01-01T00:00:00Z"),
 							endTime: null,
 							subEntries: null,
 						},
 						{
-							id: v4(),
+							id: 5,
 							name: "",
 							startTime: moment("2020-01-01T00:00:00Z"),
 							endTime: null,
@@ -234,14 +233,14 @@ describe("TimekeepAutocomplete", () => {
 				JSON.stringify({
 					entries: [
 						{
-							id: v4(),
+							id: 1,
 							name: "Block 1",
 							startTime: moment("2020-01-01T00:00:00Z"),
 							endTime: null,
 							subEntries: null,
 						},
 						{
-							id: v4(),
+							id: 2,
 							name: "Block 2",
 							startTime: moment("2020-01-01T00:00:00Z"),
 							endTime: null,
@@ -293,7 +292,7 @@ describe("TimekeepAutocomplete", () => {
 				JSON.stringify({
 					entries: [
 						{
-							id: v4(),
+							id: 1,
 							name: "Test",
 							startTime: moment("2020-01-01T00:00:00Z"),
 							endTime: null,

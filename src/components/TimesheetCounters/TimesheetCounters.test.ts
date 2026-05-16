@@ -1,7 +1,6 @@
 // @vitest-environment happy-dom
 
 import moment from "moment";
-import { v4 } from "uuid";
 import { describe, it, expect, vi, beforeEach, afterEach, assert } from "vitest";
 
 import { createMockContainer } from "@/__mocks__/obsidian";
@@ -113,7 +112,7 @@ describe("TimesheetCounters", () => {
 		timekeepStore.setState({
 			entries: [
 				{
-					id: v4(),
+					id: 1,
 					name: "Test",
 					startTime: moment(start),
 					endTime: null,
@@ -146,7 +145,7 @@ describe("TimesheetCounters", () => {
 			entries: [
 				// 1h elapsed entry
 				{
-					id: v4(),
+					id: 1,
 					name: "Test",
 					startTime: moment(start),
 					endTime: null,
@@ -154,7 +153,7 @@ describe("TimesheetCounters", () => {
 				},
 				// 2h entry
 				{
-					id: v4(),
+					id: 2,
 					name: "Test",
 					startTime: moment(start).subtract(1, "hour"),
 					endTime: moment(oneHourLater),

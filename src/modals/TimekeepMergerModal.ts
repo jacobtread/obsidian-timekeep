@@ -1,5 +1,4 @@
 import { App, TFile, Modal, TextComponent, ButtonComponent } from "obsidian";
-import { v4 as uuid } from "uuid";
 
 import { exportPdf } from "@/export/pdf";
 import { TimekeepSettings } from "@/settings";
@@ -7,6 +6,7 @@ import { Store, Unsubscribe } from "@/store";
 import { assert } from "@/utils/assert";
 import { createCodeBlock } from "@/utils/codeblock";
 
+import { timekeepMergerEntries } from "@/timekeep/id";
 import { Timekeep, stripTimekeepRuntimeData } from "@/timekeep/schema";
 
 import { TimekeepEntryItemType, TimekeepRegistry, TimekeepRegistryEntry } from "@/service/registry";
@@ -15,7 +15,7 @@ interface TimekeepResult {
 	timekeep: Timekeep;
 	file: TFile;
 	index?: number;
-	id: string;
+	id: number;
 }
 
 export class TimekeepMergerModal extends Modal {
@@ -117,7 +117,7 @@ export class TimekeepMergerModal extends Modal {
 			this.loadingEl && this.mergeButton && this.searchInput,
 			"Required elements should be defined"
 		);
-		this.loadingEl.removeClass("timekeep-merger-loading--loaded")
+		this.loadingEl.removeClass("timekeep-merger-loading--loaded");
 		this.loadingEl.hidden = false;
 
 		this.mergeButton.setDisabled(true);
@@ -150,7 +150,7 @@ export class TimekeepMergerModal extends Modal {
 		} catch (err) {
 			console.error(err);
 			this.loadingEl.setText("Failed to load timekeep entries.");
-			this.loadingEl.addClass("timekeep-merger-loading--loaded")
+			this.loadingEl.addClass("timekeep-merger-loading--loaded");
 		} finally {
 			this.mergeButton.setDisabled(false);
 			this.searchInput.setDisabled(false);
@@ -191,7 +191,10 @@ export class TimekeepMergerModal extends Modal {
 
 	updateSelectAll() {
 		if (this.selectContainer) {
-			this.selectContainer.toggleClass('timekeep-merge-select-container--visible', this.filteredResults.length > 0);
+			this.selectContainer.toggleClass(
+				"timekeep-merge-select-container--visible",
+				this.filteredResults.length > 0
+			);
 		}
 
 		const isAllSelected = this.isAllSelected();
@@ -304,14 +307,14 @@ export class TimekeepMergerModal extends Modal {
 				cls: "timekeep-merge-item-label",
 			});
 
-			const title = label.createSpan( {
+			const title = label.createSpan({
 				cls: "timekeep-merge-item-title",
 			});
 			title.textContent = result.index
 				? `${result.file.basename}: Timekeep ${result.index + 1}`
 				: `${result.file.basename}`;
 
-			const path = label.createSpan( {
+			const path = label.createSpan({
 				cls: "timekeep-merge-item-path",
 			});
 			path.textContent = `${result.file.path}`;
@@ -338,7 +341,7 @@ export class TimekeepMergerModal extends Modal {
 			switch (entry.type) {
 				case TimekeepEntryItemType.FILE: {
 					const timekeep = entry.timekeep;
-					results.push({ id: uuid(), file: entry.file, timekeep });
+					results.push({ id: timekeepMergerEntries.next(), file: entry.file, timekeep });
 					break;
 				}
 				case TimekeepEntryItemType.MARKDOWN: {
@@ -347,7 +350,7 @@ export class TimekeepMergerModal extends Modal {
 						const timekeep = timekeepWithPosition.timekeep;
 
 						results.push({
-							id: uuid(),
+							id: timekeepMergerEntries.next(),
 							file: entry.file,
 							timekeep,
 							index: i,

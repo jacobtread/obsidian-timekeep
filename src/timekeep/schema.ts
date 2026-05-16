@@ -1,6 +1,7 @@
 import moment, { Moment } from "moment";
-import { v4 as uuid } from "uuid";
 import * as v from "valibot";
+
+import { timekeepId } from "@/timekeep/id";
 
 /*
  * This file contains the strict schema for parsing timekeep data
@@ -13,7 +14,7 @@ type RawTimeEntryGroupBase = v.InferOutput<typeof TIME_ENTRY_GROUP_BASE>;
 // Type aliases from inferred zod types
 export type TimeEntrySingle = RawTimeEntrySingle;
 export type TimeEntryGroup = RawTimeEntryGroupBase & {
-	id: string;
+	id: number;
 	subEntries: TimeEntry[];
 };
 export type TimeEntry = TimeEntrySingle | TimeEntryGroup;
@@ -41,7 +42,7 @@ const TIME_ENTRY_SINGLE = v.pipe(
 	// At runtime a unique ID is inserted
 	v.transform((entry) => ({
 		...entry,
-		id: uuid(),
+		id: timekeepId.next(),
 	}))
 );
 
@@ -65,7 +66,7 @@ const TIME_ENTRY_GROUP = v.pipe(
 	// At runtime a unique ID is inserted
 	v.transform((entry) => ({
 		...entry,
-		id: uuid(),
+		id: timekeepId.next(),
 	}))
 );
 

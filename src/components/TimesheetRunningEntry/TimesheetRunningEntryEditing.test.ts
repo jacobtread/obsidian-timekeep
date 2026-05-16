@@ -1,7 +1,6 @@
 // @vitest-environment happy-dom
 
 import moment from "moment";
-import { v4 } from "uuid";
 import { beforeEach, it, describe, vi, expect } from "vitest";
 
 import type { TimekeepSettings } from "@/settings";
@@ -65,7 +64,7 @@ describe("TimesheetRunningEntryEditing", () => {
 		vi.setSystemTime(end.toDate());
 
 		const entry = {
-			id: v4(),
+			id: 1,
 			name: "Test",
 			startTime: moment(start),
 			endTime: null,

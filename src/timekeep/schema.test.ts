@@ -1,19 +1,14 @@
 import moment from "moment";
-import { v4 as uuid } from "uuid";
 import { parse } from "valibot";
-import { expect, it, describe, vi } from "vitest";
+import { expect, it, describe, Mock } from "vitest";
 
+import { timekeepId } from "@/timekeep/id";
 import { TIMEKEEP } from "@/timekeep/schema";
-
-vi.mock(import("uuid"), async (importOriginal) => {
-	return {
-		...(await importOriginal()),
-		v4: vi.fn(() => "mocked-uuid"),
-	};
-});
 
 describe("schema transform", () => {
 	it("transforms input with an added id", () => {
+		(timekeepId.next as Mock).mockReturnValue(1);
+
 		const input = {
 			entries: [
 				{
@@ -42,20 +37,20 @@ describe("schema transform", () => {
 		expect(result).toEqual({
 			entries: [
 				{
-					id: "mocked-uuid",
+					id: 1,
 					name: "Block 2",
 					startTime: moment("2024-03-17T01:33:51.630Z"),
 					endTime: moment("2024-03-17T01:33:55.151Z"),
 					subEntries: null,
 				},
 				{
-					id: "mocked-uuid",
+					id: 1,
 					name: "Block 2",
 					startTime: null,
 					endTime: null,
 					subEntries: [
 						{
-							id: "mocked-uuid",
+							id: 1,
 							name: "Block 2",
 							startTime: moment("2024-03-17T01:33:51.630Z"),
 							endTime: moment("2024-03-17T01:33:55.151Z"),
@@ -66,6 +61,6 @@ describe("schema transform", () => {
 			],
 		});
 
-		expect(uuid).toHaveBeenCalled();
+		expect(timekeepId.next).toHaveBeenCalled();
 	});
 });
