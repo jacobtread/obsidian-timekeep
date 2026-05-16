@@ -64,7 +64,10 @@ export default defineConfig((env) => {
 		},
 
 		test: {
-			setupFiles: path.resolve(__dirname, "src", "__mocks__", "setupObsidianMocks.ts"),
+			setupFiles: [
+				path.resolve(__dirname, "src", "__mocks__", "setupObsidianMocks.ts"),
+				path.resolve(__dirname, "src", "__mocks__", "setupMocks.ts"),
+			],
 			coverage: {
 				// Exclude mocks and fixtures from coverage
 				exclude: [

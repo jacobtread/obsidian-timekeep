@@ -3,7 +3,6 @@
 import type { App } from "obsidian";
 
 import moment from "moment";
-import { v4 } from "uuid";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { createMockContainer } from "@/__mocks__/obsidian";
@@ -25,7 +24,7 @@ describe("TimesheetRowContainer", () => {
 
 	const start = moment();
 	const entry: TimeEntry = {
-		id: v4(),
+		id: 1,
 		name: "Test",
 		startTime: moment(start),
 		endTime: null,

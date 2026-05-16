@@ -2,7 +2,6 @@
 
 import moment from "moment";
 import { App } from "obsidian";
-import { v4 } from "uuid";
 import { describe, beforeEach, it, expect, vi, afterEach } from "vitest";
 
 import { createMockContainer, MockVault } from "@/__mocks__/obsidian";
@@ -20,7 +19,7 @@ describe("TimesheetStatusBarItem", () => {
 	const oneHourLater = start.add(1, "hour");
 
 	const entry: TimeEntry = {
-		id: v4(),
+		id: 1,
 		name: "Test",
 		startTime: moment(start),
 		endTime: null,

@@ -2,7 +2,6 @@
 
 import moment from "moment";
 import { App } from "obsidian";
-import { v4 } from "uuid";
 import { beforeEach, describe, expect, it, Mock, vi } from "vitest";
 
 import { createMockContainer } from "@/__mocks__/obsidian";
@@ -17,7 +16,7 @@ describe("TimesheetRowContent", () => {
 	const start = moment();
 
 	const entry: TimeEntry = {
-		id: v4(),
+		id: 1,
 		name: "Test",
 		startTime: moment(start),
 		endTime: null,
@@ -54,7 +53,7 @@ describe("TimesheetRowContent", () => {
 
 	it("folder row should have a folder icon", () => {
 		const entry: TimeEntry = {
-			id: v4(),
+			id: 1,
 			name: "Test",
 			startTime: null,
 			endTime: null,
@@ -79,7 +78,7 @@ describe("TimesheetRowContent", () => {
 
 	it("folder row or groups should be collapsible", () => {
 		const entry: TimeEntry = {
-			id: v4(),
+			id: 1,
 			name: "Test",
 			startTime: null,
 			endTime: null,
@@ -131,7 +130,7 @@ describe("TimesheetRowContent", () => {
 
 	it("folder row or groups should be expandable", () => {
 		const entry: TimeEntry = {
-			id: v4(),
+			id: 1,
 			name: "Test",
 			startTime: null,
 			endTime: null,
@@ -183,7 +182,7 @@ describe("TimesheetRowContent", () => {
 
 	it("item should be able to be started from clicking the start icon", () => {
 		const entry: TimeEntry = {
-			id: v4(),
+			id: 1,
 			name: "Test",
 			startTime: null,
 			endTime: null,

@@ -3,7 +3,6 @@
 import type { App } from "obsidian";
 
 import moment from "moment";
-import { v4 } from "uuid";
 import { beforeEach, it, describe, Mock, vi, expect, afterEach } from "vitest";
 
 import type { TimekeepSettings } from "@/settings";
@@ -41,7 +40,7 @@ describe("TimesheetRowContentEditing", () => {
 		const start = moment();
 
 		const entry: TimeEntry = {
-			id: v4(),
+			id: 1,
 			name: "Test",
 			startTime: moment(start),
 			endTime: null,
@@ -63,7 +62,7 @@ describe("TimesheetRowContentEditing", () => {
 		const start = moment();
 
 		const entry: TimeEntry = {
-			id: v4(),
+			id: 1,
 			name: "Test",
 			startTime: moment(start),
 			endTime: null,
@@ -89,7 +88,7 @@ describe("TimesheetRowContentEditing", () => {
 		const start = moment();
 
 		const entry: TimeEntry = {
-			id: v4(),
+			id: 1,
 			name: "Test",
 			startTime: moment(start),
 			endTime: moment(start),
@@ -122,7 +121,7 @@ describe("TimesheetRowContentEditing", () => {
 
 	it("clicking the save button on a group should update the timekeep state and call onFinishEditing", () => {
 		const entry: TimeEntry = {
-			id: v4(),
+			id: 1,
 			name: "Test",
 			startTime: null,
 			endTime: null,
@@ -155,7 +154,7 @@ describe("TimesheetRowContentEditing", () => {
 
 	it("clicking the save button on a unstarted entry should update the timekeep state and call onFinishEditing", () => {
 		const entry: TimeEntry = {
-			id: v4(),
+			id: 1,
 			name: "Test",
 			startTime: null,
 			endTime: null,
@@ -188,7 +187,7 @@ describe("TimesheetRowContentEditing", () => {
 
 	it("editing a group entry should hide the start and end time inputs", () => {
 		const entry: TimeEntry = {
-			id: v4(),
+			id: 1,
 			name: "Test",
 			startTime: null,
 			endTime: null,
@@ -218,7 +217,7 @@ describe("TimesheetRowContentEditing", () => {
 
 	it("clicking delete on an entry should open a modal for confirmation", () => {
 		const entry: TimeEntry = {
-			id: v4(),
+			id: 1,
 			name: "Test",
 			startTime: null,
 			endTime: null,
@@ -248,7 +247,7 @@ describe("TimesheetRowContentEditing", () => {
 
 	it("cancelling deletion should do nothing", () => {
 		const entry: TimeEntry = {
-			id: v4(),
+			id: 1,
 			name: "Test",
 			startTime: null,
 			endTime: null,
@@ -292,7 +291,7 @@ describe("TimesheetRowContentEditing", () => {
 
 	it("confirming deletion should remove the entry from the timekeep", () => {
 		const entry: TimeEntry = {
-			id: v4(),
+			id: 1,
 			name: "Test",
 			startTime: null,
 			endTime: null,
@@ -337,7 +336,7 @@ describe("TimesheetRowContentEditing", () => {
 	it("editing a group entry should hide the start and end time inputs", () => {
 		const start = moment();
 		const entry: TimeEntry = {
-			id: v4(),
+			id: 1,
 			name: "Test",
 			startTime: moment(start),
 			endTime: moment(start),

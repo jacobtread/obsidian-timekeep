@@ -1,7 +1,6 @@
 import type { Workspace } from "obsidian";
 
 import moment from "moment";
-import { v4 } from "uuid";
 import { describe, vi, it, expect } from "vitest";
 
 import { MockMarkdownView, MockVault, MockWorkspaceLeaf } from "@/__mocks__/obsidian";
@@ -264,7 +263,7 @@ describe("TimekeepRegistry", () => {
 			const inputTimekeep: Timekeep = {
 				entries: [
 					{
-						id: v4(),
+						id: 1,
 						name: "Test",
 						startTime: moment("2020-01-01T00:00:00Z"),
 						endTime: null,
@@ -294,7 +293,7 @@ describe("TimekeepRegistry", () => {
 			const inputTimekeep: Timekeep = {
 				entries: [
 					{
-						id: v4(),
+						id: 1,
 						name: "Test",
 						startTime: moment("2020-01-01T00:00:00Z"),
 						endTime: null,
@@ -347,7 +346,7 @@ describe("TimekeepRegistry", () => {
 				JSON.stringify({
 					entries: [
 						{
-							id: v4(),
+							id: 1,
 							name: "Test",
 							startTime: moment("2020-01-01T00:00:00Z"),
 							endTime: null,
@@ -386,7 +385,7 @@ describe("TimekeepRegistry", () => {
 				JSON.stringify({
 					entries: [
 						{
-							id: v4(),
+							id: 1,
 							name: "Test",
 							startTime: moment("2020-01-01T00:00:00Z"),
 							endTime: null,
@@ -503,7 +502,7 @@ describe("TimekeepRegistry", () => {
 				JSON.stringify({
 					entries: [
 						{
-							id: v4(),
+							id: 1,
 							name: "Test",
 							startTime: moment("2020-01-01T00:00:00Z"),
 							endTime: null,
@@ -573,7 +572,7 @@ describe("TimekeepRegistry", () => {
 				JSON.stringify({
 					entries: [
 						{
-							id: v4(),
+							id: 1,
 							name: "Test",
 							startTime: moment("2020-01-01T00:00:00Z"),
 							endTime: null,
@@ -602,7 +601,7 @@ describe("TimekeepRegistry", () => {
 				JSON.stringify({
 					entries: [
 						{
-							id: v4(),
+							id: 1,
 							name: "Test",
 							startTime: moment("2020-01-01T00:00:00Z"),
 							endTime: null,
@@ -617,7 +616,7 @@ describe("TimekeepRegistry", () => {
 				JSON.stringify({
 					entries: [
 						{
-							id: v4(),
+							id: 1,
 							name: "Test",
 							startTime: moment("2020-01-01T00:00:00Z"),
 							endTime: null,
@@ -650,7 +649,7 @@ describe("TimekeepRegistry", () => {
 				JSON.stringify({
 					entries: [
 						{
-							id: v4(),
+							id: 1,
 							name: "Test",
 							startTime: moment("2020-01-01T00:00:00Z"),
 							endTime: null,
@@ -677,7 +676,7 @@ describe("TimekeepRegistry", () => {
 				JSON.stringify({
 					entries: [
 						{
-							id: v4(),
+							id: 1,
 							name: "Test",
 							startTime: moment("2020-01-01T00:00:00Z"),
 							endTime: null,
@@ -899,14 +898,14 @@ describe("TimekeepRegistry", () => {
 
 			const start = moment();
 			const entry1: TimeEntry = {
-				id: v4(),
+				id: 1,
 				name: "Test 1",
 				startTime: moment(start),
 				endTime: null,
 				subEntries: null,
 			};
 			const entry2: TimeEntry = {
-				id: v4(),
+				id: 2,
 				name: "Test 2",
 				startTime: moment(start),
 				endTime: null,

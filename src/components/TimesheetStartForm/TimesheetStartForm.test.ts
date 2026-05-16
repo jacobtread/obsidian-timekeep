@@ -17,13 +17,6 @@ import { defaultTimekeep, type Timekeep } from "@/timekeep/schema";
 import { TimekeepAutocomplete } from "@/service/autocomplete";
 import { TimekeepRegistry } from "@/service/registry";
 
-vi.mock(import("uuid"), async (importOriginal) => {
-	return {
-		...(await importOriginal()),
-		v4: vi.fn(() => "mocked-uuid"),
-	};
-});
-
 describe("TimesheetStart", () => {
 	let containerEl: HTMLElement;
 	let vault: MockVault;
@@ -73,7 +66,7 @@ describe("TimesheetStart", () => {
 		expect(timekeep.getState()).toEqual({
 			entries: [
 				{
-					id: "mocked-uuid",
+					id: 1,
 					name: "Test",
 					startTime: moment(start),
 					endTime: null,

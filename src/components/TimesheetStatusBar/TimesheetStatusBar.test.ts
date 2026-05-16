@@ -3,7 +3,6 @@
 import type { App } from "obsidian";
 
 import moment from "moment";
-import { v4 } from "uuid";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { createMockContainer, MockVault } from "@/__mocks__/obsidian";
@@ -59,7 +58,7 @@ describe("TimesheetStatusBar", () => {
 	it("should be able to render a file based status item", () => {
 		const start = moment();
 		const entry: TimeEntry = {
-			id: v4(),
+			id: 1,
 			name: "Test",
 			startTime: moment(start),
 			endTime: null,
@@ -77,7 +76,7 @@ describe("TimesheetStatusBar", () => {
 	it("should be able to render a markdown based status item", () => {
 		const start = moment();
 		const entry: TimeEntry = {
-			id: v4(),
+			id: 1,
 			name: "Test",
 			startTime: moment(start),
 			endTime: null,

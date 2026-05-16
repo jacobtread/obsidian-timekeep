@@ -1,7 +1,6 @@
 // @vitest-environment happy-dom
 
 import moment from "moment";
-import { v4 } from "uuid";
 import { describe, it, vi, beforeEach, afterEach, expect } from "vitest";
 
 import { createMockContainer } from "@/__mocks__/obsidian";
@@ -21,13 +20,13 @@ describe("TimesheetRunningEntry", () => {
 
 	const start = moment();
 	const entry: TimeEntry = {
-		id: v4(),
+		id: 1,
 		name: "Group",
 		startTime: null,
 		endTime: null,
 		subEntries: [
 			{
-				id: v4(),
+				id: 2,
 				name: "Test",
 				startTime: moment(start),
 				endTime: null,
@@ -63,7 +62,7 @@ describe("TimesheetRunningEntry", () => {
 		const end = moment().add(1, "hour");
 		vi.setSystemTime(end.toDate());
 
-		const id = v4();
+		const id = 1;
 
 		timekeep.setState({
 			entries: [
@@ -116,7 +115,7 @@ describe("TimesheetRunningEntry", () => {
 		vi.setSystemTime(end.toDate());
 
 		const entry = {
-			id: v4(),
+			id: 3,
 			name: "Test",
 			startTime: moment(start),
 			endTime: null,
@@ -126,13 +125,13 @@ describe("TimesheetRunningEntry", () => {
 		timekeep.setState({
 			entries: [
 				{
-					id: v4(),
+					id: 1,
 					name: "Outer",
 					startTime: null,
 					endTime: null,
 					subEntries: [
 						{
-							id: v4(),
+							id: 2,
 							name: "Inner",
 							startTime: null,
 							endTime: null,

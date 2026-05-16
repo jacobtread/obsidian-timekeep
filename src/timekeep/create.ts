@@ -1,9 +1,8 @@
 import type { Moment } from "moment";
 
-import { v4 as uuid } from "uuid";
-
 import { isEmptyString } from "@/utils/text";
 
+import { timekeepId } from "@/timekeep/id";
 import { TimeEntry, TimeEntryGroup } from "@/timekeep/schema";
 
 /**
@@ -15,7 +14,7 @@ import { TimeEntry, TimeEntryGroup } from "@/timekeep/schema";
  */
 export function createEntry(name: string, startTime: Moment): TimeEntry {
 	return {
-		id: uuid(),
+		id: timekeepId.next(),
 		name,
 		startTime,
 		endTime: null,
@@ -112,7 +111,7 @@ function makeGroupEntry(entry: TimeEntry): TimeEntryGroup {
 	}
 
 	return {
-		id: uuid(),
+		id: timekeepId.next(),
 		name: entry.name,
 		subEntries: [{ ...entry, name: "Part 1" }],
 		startTime: null,

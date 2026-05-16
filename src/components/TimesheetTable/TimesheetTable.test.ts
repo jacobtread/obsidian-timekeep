@@ -2,7 +2,6 @@
 
 import moment from "moment";
 import { type App } from "obsidian";
-import { v4 } from "uuid";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { createMockContainer } from "@/__mocks__/obsidian";
@@ -38,7 +37,7 @@ describe("TimesheetTable", () => {
 		timekeep.setState({
 			entries: [
 				{
-					id: v4(),
+					id: 1,
 					name: "Test",
 					startTime: moment(start),
 					endTime: moment(start),
@@ -54,13 +53,13 @@ describe("TimesheetTable", () => {
 		timekeep.setState({
 			entries: [
 				{
-					id: v4(),
+					id: 1,
 					name: "Test",
 					startTime: null,
 					endTime: null,
 					subEntries: [
 						{
-							id: v4(),
+							id: 2,
 							name: "Test",
 							startTime: moment(start),
 							endTime: moment(start),
@@ -89,13 +88,13 @@ describe("TimesheetTable", () => {
 		timekeep.setState({
 			entries: [
 				{
-					id: v4(),
+					id: 1,
 					name: "Test",
 					startTime: null,
 					endTime: null,
 					subEntries: [
 						{
-							id: v4(),
+							id: 2,
 							name: "Test",
 							startTime: moment(start),
 							endTime: moment(start),
@@ -112,7 +111,7 @@ describe("TimesheetTable", () => {
 		timekeep.setState({
 			entries: [
 				{
-					id: v4(),
+					id: 1,
 					name: "Test",
 					startTime: null,
 					endTime: null,
