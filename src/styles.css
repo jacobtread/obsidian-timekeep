@@ -1,3 +1,7 @@
+.timekeep-container {
+	--timekeep-running-row-color:  var(--color-base-30);
+}
+
 /* Main container around the timekeep codeblock content */
 .timekeep-container {
 	width: 100%;
@@ -50,8 +54,10 @@
 }
 
 /* row running color */
-.timekeep-row[data-running="true"] {
-	background-color: var(--color-base-40) !important;
+.timekeep-row[data-running="true"],
+.timekeep-row:nth-child(even)[data-running="true"],
+.timekeep-row:nth-child(odd)[data-running="true"]  {
+	background-color: var(--timekeep-running-row-color);
 }
 
 /* collapse row icon */
@@ -95,7 +101,7 @@
 
 /* <td/> column within a timekeep row */
 .timekeep-col {
-	vertical-align: middle !important;
+	--table-cell-vertical-alignment: middle;
 }
 
 /* column for the timekeep row name */
@@ -421,10 +427,11 @@
 }
 
 /* stop button for timekeep status bar item */
-.timekeep-status-item__button {
+.timekeep-button-icon.timekeep-status-item__button {
 	cursor: pointer;
-	width: 12px !important;
-	height: 12px !important;
+
+	/* Override the default button size for the smaller available space */
+	--icon-size: 12px;
 }
 
 /* container for file based timekeeps */
