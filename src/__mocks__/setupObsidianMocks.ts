@@ -46,6 +46,6 @@ vi.mock("obsidian", () => {
 		MarkdownView: MockMarkdownView,
 		Platform: MockPlatform,
 		FileView: MockFileView,
-		EditableFileView: MockEditableFileView
+		EditableFileView: MockEditableFileView,
 	};
 });

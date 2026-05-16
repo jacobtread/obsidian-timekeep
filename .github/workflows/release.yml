@@ -16,11 +16,14 @@ jobs:
               with:
                   node-version: "20"
 
+            - name: setup pnpm and caching
+              uses: pnpm/action-setup@v6
+
             - name: Install Dependencies
-              run: npm install
+              run: pnpm install --frozen-lockfile
 
             - name: Build
-              run: npm run build
+              run: pnpm run build
 
             - name: Create release
               env:
