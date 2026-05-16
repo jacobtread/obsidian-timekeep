@@ -88,7 +88,7 @@ export function stripEntriesRuntimeData(entries: TimeEntry[]): unknown[] {
 }
 
 export function stripEntryRuntimeData(entry: TimeEntry): unknown {
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars -- we are intentionally discarding the id
 	const { id, ...entryWithoutId } = entry;
 
 	if (entryWithoutId.subEntries !== null) {

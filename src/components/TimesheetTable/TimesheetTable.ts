@@ -92,14 +92,7 @@ export class TimesheetTable extends DomComponent {
 		assert(wrapperEl, "Wrapper element should be defined");
 
 		const settings = this.settings.getState();
-
-		if (settings.limitTableSize) {
-			wrapperEl.style.maxHeight = "600px";
-			wrapperEl.style.overflowY = "auto";
-		} else {
-			wrapperEl.style.removeProperty("maxHeight");
-			wrapperEl.style.removeProperty("overflowY");
-		}
+		wrapperEl.toggleClass("timekeep-table--fixed-size", settings.limitTableSize);
 	}
 
 	/**

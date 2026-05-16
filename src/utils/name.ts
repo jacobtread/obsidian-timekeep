@@ -25,7 +25,7 @@ export function parseNameSegments(input: string): NameSegment[] {
 	let lastIndex = 0;
 
 	for (const match of input.matchAll(LINK_REGEX)) {
-		const index = (match as RegExpExecArray).index;
+		const index = match.index;
 
 		// Handle the text before the current link
 		const beforeLink = input.slice(lastIndex, index);

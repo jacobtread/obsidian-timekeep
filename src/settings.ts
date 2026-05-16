@@ -114,7 +114,7 @@ export const defaultSettings: TimekeepSettings = {
 
 export function legacySettingsCompatibility(settings: TimekeepSettings): void {
 	// Compatibility with old reverse segment order
-	if (settings.hasOwnProperty("reverseSegmentOrder")) {
+	if (Object.prototype.hasOwnProperty.call(settings, "reverseSegmentOrder")) {
 		settings.sortOrder = settings.reverseSegmentOrder
 			? SortOrder.REVERSE_INSERTION
 			: SortOrder.INSERTION;
@@ -122,7 +122,7 @@ export function legacySettingsCompatibility(settings: TimekeepSettings): void {
 	}
 
 	// Compatibility with old show decimal hours
-	if (settings.hasOwnProperty("showDecimalHours")) {
+	if (Object.prototype.hasOwnProperty.call(settings, "showDecimalHours")) {
 		settings.secondaryDurationFormat = settings.showDecimalHours
 			? DurationFormat.SHORT
 			: DurationFormat.NONE;

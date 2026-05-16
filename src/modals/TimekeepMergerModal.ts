@@ -64,20 +64,16 @@ export class TimekeepMergerModal extends Modal {
 			cls: "timekeep-merger-loading",
 			text: "Loading timekeep entries...",
 		});
-		this.loadingEl.style.marginBottom = "1rem";
-		this.loadingEl.style.opacity = "0.7";
 
 		this.searchInput = new TextComponent(this.contentEl);
 		this.searchInput.setPlaceholder("Search by file path...");
-		this.searchInput.inputEl.style.width = "100%";
+		this.searchInput.inputEl.addClass("timekeep-merge-search-input");
 		this.searchInput.setDisabled(true);
 		this.searchInput.onChange(this.onUpdate.bind(this));
 
 		const selectContainer = this.contentEl.createDiv({
 			cls: "timekeep-merge-select-container",
 		});
-
-		selectContainer.style.display = "none";
 
 		this.selectContainer = selectContainer;
 
@@ -121,9 +117,9 @@ export class TimekeepMergerModal extends Modal {
 			this.loadingEl && this.mergeButton && this.searchInput,
 			"Required elements should be defined"
 		);
-
-		this.loadingEl.style.opacity = "0.7";
+		this.loadingEl.removeClass("timekeep-merger-loading--loaded")
 		this.loadingEl.hidden = false;
+
 		this.mergeButton.setDisabled(true);
 		this.searchInput.setDisabled(true);
 
@@ -154,7 +150,7 @@ export class TimekeepMergerModal extends Modal {
 		} catch (err) {
 			console.error(err);
 			this.loadingEl.setText("Failed to load timekeep entries.");
-			this.loadingEl.style.opacity = "1";
+			this.loadingEl.addClass("timekeep-merger-loading--loaded")
 		} finally {
 			this.mergeButton.setDisabled(false);
 			this.searchInput.setDisabled(false);
@@ -195,7 +191,7 @@ export class TimekeepMergerModal extends Modal {
 
 	updateSelectAll() {
 		if (this.selectContainer) {
-			this.selectContainer.style.display = this.filteredResults.length > 0 ? "flex" : "none";
+			this.selectContainer.toggleClass('timekeep-merge-select-container--visible', this.filteredResults.length > 0);
 		}
 
 		const isAllSelected = this.isAllSelected();
@@ -308,14 +304,14 @@ export class TimekeepMergerModal extends Modal {
 				cls: "timekeep-merge-item-label",
 			});
 
-			const title = label.createEl("span", {
+			const title = label.createSpan( {
 				cls: "timekeep-merge-item-title",
 			});
 			title.textContent = result.index
 				? `${result.file.basename}: Timekeep ${result.index + 1}`
 				: `${result.file.basename}`;
 
-			const path = label.createEl("span", {
+			const path = label.createSpan( {
 				cls: "timekeep-merge-item-path",
 			});
 			path.textContent = `${result.file.path}`;

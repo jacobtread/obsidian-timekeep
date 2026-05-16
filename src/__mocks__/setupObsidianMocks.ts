@@ -9,6 +9,7 @@ import {
 	MockModal,
 	MockNotice,
 	MockPlatform,
+	mockRequireApiVersion,
 	MockSetting,
 	MockTAbstractFile,
 	MockTFile,
@@ -47,5 +48,6 @@ vi.mock("obsidian", () => {
 		Platform: MockPlatform,
 		FileView: MockFileView,
 		EditableFileView: MockEditableFileView,
+		requireApiVersion: mockRequireApiVersion
 	};
 });

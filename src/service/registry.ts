@@ -1,7 +1,7 @@
 import type { EventRef, TAbstractFile, Vault, Workspace, WorkspaceLeaf } from "obsidian";
 
 import moment from "moment";
-import { EditableFileView, Component, MarkdownView, TFile } from "obsidian";
+import { EditableFileView, Component, MarkdownView, TFile, requireApiVersion } from "obsidian";
 import { limitFunction } from "p-limit";
 
 import type { TimekeepSettings } from "@/settings";
@@ -150,7 +150,9 @@ export class TimekeepRegistry extends Component {
 	async waitTasks() {
 		try {
 			await Promise.allSettled(this.tasks);
-		} catch {}
+		} catch {
+			//
+		}
 	}
 
 	/**
@@ -417,7 +419,7 @@ export class TimekeepRegistry extends Component {
 		let leaf: WorkspaceLeaf | null = TimekeepRegistry.getExistingRefLeaf(workspace, ref);
 
 		// Focus and reveal the existing leaf if found
-		if (leaf !== null) {
+		if (leaf !== null && requireApiVersion("1.7.2")) {
 			workspace.setActiveLeaf(leaf, { focus: true });
 			await workspace.revealLeaf(leaf);
 		}

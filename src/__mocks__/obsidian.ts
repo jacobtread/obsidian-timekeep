@@ -16,6 +16,8 @@ import type {
 
 import { Mock, vi } from "vitest";
 
+export const mockRequireApiVersion = vi.fn(() => true);
+
 export const MockPlatform = vi.mockObject({
 	isDesktop: true,
 	isMobile: false,
@@ -616,6 +618,52 @@ export function setObsidianMockElementHelpers(node: Node) {
 			parent.removeChild(node);
 		}
 	});
+
+	(node as Element).addClass = vi.fn().mockImplementation((...classes: any[]) => {
+		const classList = (node as Element).classList;
+
+		classes
+			.flat(Infinity)
+			.filter((c): c is string => typeof c === 'string')
+			.flatMap(c => c.split(' '))
+			.filter(Boolean)
+			.forEach(c => classList.add(c));
+	});
+
+	(node as Element).addClasses = vi.fn().mockImplementation((classes: string[]) => {
+			(node as Element).addClass(...classes);
+	});
+
+	(node as Element).removeClass = vi.fn().mockImplementation((...classes: any[]) => {
+			const classList = (node as Element).classList;
+
+			classes
+				.flat(Infinity)
+				.filter((c): c is string => typeof c === 'string')
+				.flatMap(c => c.split(' '))
+				.filter(Boolean)
+				.forEach(c => classList.remove(c));
+	});
+
+	(node as Element).removeClasses = vi.fn().mockImplementation((classes: string[]) => {
+			(node as Element).removeClass(...classes);
+	});
+
+	(node as Element).toggleClass = vi.fn().mockImplementation(
+			(classes: string | string[], value: boolean) => {
+				const classList = (node as Element).classList;
+
+				const normalized = [classes]
+					.flat(Infinity)
+					.filter((c): c is string => typeof c === 'string')
+					.flatMap(c => c.split(' '))
+					.filter(Boolean);
+
+				normalized.forEach(c => {
+					classList.toggle(c, value);
+				});
+			}
+	);
 }
 
 /**

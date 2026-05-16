@@ -9,17 +9,14 @@ export class ConfirmModal extends Modal {
 	// The choice that the user made
 	value: boolean | null;
 
+	// Callback for the result
+	callback: (choice: boolean) => void;
+
 	constructor(app: App, message: string, callback: (choice: boolean) => void) {
 		super(app);
 		this.message = message;
 		this.value = null;
-
-		// Set the close callback to invoke with the users selection if they made one
-		this.setCloseCallback(() => {
-			if (this.value !== null) {
-				callback(this.value);
-			}
-		});
+		this.callback = callback;
 	}
 
 	onOpen(): void {
@@ -44,10 +41,12 @@ export class ConfirmModal extends Modal {
 	onOk() {
 		this.value = true;
 		this.close();
+		this.callback(this.value);
 	}
 
 	onCancel() {
 		this.value = false;
 		this.close();
+		this.callback(this.value);
 	}
 }

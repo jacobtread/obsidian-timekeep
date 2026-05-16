@@ -11,6 +11,11 @@
 	width: 100%;
 }
 
+.timekeep-table--fixed-size {
+	max-height: 600px;
+	overflow-y: auto;
+}
+
 /* <thead/> for the timekeep table */
 .timekeep-table-head {
 	background-color: var(--color-base-30);
@@ -169,6 +174,15 @@
 	display: none;
 }
 
+.timekeep-merger-loading {
+	margin-bottom: 1rem;
+	opacity: 0.7;
+}
+
+.timekeep-merger-loading--loaded {
+	opacity: 1;
+}
+
 /* timer primary value text */
 .timekeep-timer-value {
 	font-size: 2.5rem;
@@ -204,7 +218,7 @@
 /* note text warning about starting stopping the running entry */
 .timekeep-start-note {
 	font-size: 0.8rem;
-	color: #777;
+	color: #777777;
 	margin-left: 0.5rem;
 }
 
@@ -317,7 +331,7 @@
 
 /* container for the merge modal selection */
 .timekeep-merge-select-container {
-	display: flex;
+	display: none;
 	flex-direction: row;
 	align-items: center;
 	gap: 0.5rem;
@@ -326,12 +340,22 @@
 	font-weight: bold;
 }
 
+/* container for the merge modal selection when there is results  */
+.timekeep-merge-select-container--visible {
+	display: flex;
+}
+
 /* container for the list of mergeable timekeeps */
 .timekeep-merge-list-container {
 	max-height: 400px;
 	overflow-y: auto;
 	margin-top: 0.25rem;
 	padding: 0.25rem;
+}
+
+/* search input for the merger modal */
+.timekeep-merge-search-input {
+	width: 100%;
 }
 
 /* footer container for the merge modal */
