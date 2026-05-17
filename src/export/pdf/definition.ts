@@ -1,8 +1,6 @@
 import type { Moment } from "moment";
 import type { Content, DynamicContent, TableCell, TDocumentDefinitions } from "pdfmake/interfaces";
 
-import pdfMake from "pdfmake";
-
 import type { TimekeepSettings } from "@/settings";
 
 import { NameSegmentType, parseNameSegments } from "@/utils/name";
@@ -98,8 +96,8 @@ function createPdfHeader(
 	currentDate: string,
 	totalDuration: string,
 	totalDurationShort: string
-): pdfMake.Content {
-	const detail = (title: string, value: string): pdfMake.Content => ({
+): Content {
+	const detail = (title: string, value: string): Content => ({
 		text: [
 			{ text: title + ": ", fontSize: 8, bold: true },
 			{ text: value, fontSize: 8 },
@@ -151,7 +149,7 @@ function createPdfTable(
 	totalDuration: string,
 	settings: TimekeepSettings,
 	currentTime: Moment
-): pdfMake.Content {
+): Content {
 	const rows = createPdfTableRows(timekeep.entries, settings, currentTime);
 
 	const cellPadding = () => 8;

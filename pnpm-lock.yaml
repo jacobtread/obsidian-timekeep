@@ -4,6 +4,11 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+patchedDependencies:
+  pdfmake:
+    hash: 6d54e252a007864832feb784df02f056f9ea1b527c0d79fc05b23b31db3c6e73
+    path: patches/pdfmake.patch
+
 importers:
 
   .:
@@ -19,7 +24,7 @@ importers:
         version: 7.3.0
       pdfmake:
         specifier: ^0.3.7
-        version: 0.3.8
+        version: 0.3.8(patch_hash=6d54e252a007864832feb784df02f056f9ea1b527c0d79fc05b23b31db3c6e73)
       valibot:
         specifier: ^1.4.0
         version: 1.4.0(typescript@6.0.2)
@@ -1657,7 +1662,7 @@ snapshots:
       linebreak: 1.1.0
       png-js: 1.1.0
 
-  pdfmake@0.3.8:
+  pdfmake@0.3.8(patch_hash=6d54e252a007864832feb784df02f056f9ea1b527c0d79fc05b23b31db3c6e73):
     dependencies:
       linebreak: 1.1.0
       pdfkit: 0.18.0
