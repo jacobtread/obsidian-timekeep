@@ -14,7 +14,7 @@ importers:
   .:
     dependencies:
       fuse.js:
-        specifier: ^7.1.0
+        specifier: ^7.3.0
         version: 7.3.0
       moment:
         specifier: ^2.30.1
@@ -23,23 +23,23 @@ importers:
         specifier: ^7.3.0
         version: 7.3.0
       pdfmake:
-        specifier: ^0.3.7
+        specifier: ^0.3.8
         version: 0.3.8(patch_hash=6d54e252a007864832feb784df02f056f9ea1b527c0d79fc05b23b31db3c6e73)
       valibot:
         specifier: ^1.4.0
         version: 1.4.0(typescript@6.0.2)
     devDependencies:
       '@types/node':
-        specifier: ^20.19.37
+        specifier: ^20.19.41
         version: 20.19.41
       '@types/pdfmake':
-        specifier: ^0.3.2
-        version: 0.3.2
+        specifier: ^0.3.3
+        version: 0.3.3
       '@vitest/coverage-v8':
-        specifier: ^4.1.4
+        specifier: ^4.1.6
         version: 4.1.6(vitest@4.1.6)
       happy-dom:
-        specifier: ^20.8.9
+        specifier: ^20.9.0
         version: 20.9.0
       obsidian:
         specifier: latest
@@ -57,10 +57,10 @@ importers:
         specifier: 6.0.2
         version: 6.0.2
       vite:
-        specifier: ^8.0.8
+        specifier: ^8.0.13
         version: 8.0.13(@types/node@20.19.41)
       vitest:
-        specifier: ^4.1.4
+        specifier: ^4.1.6
         version: 4.1.6(@types/node@20.19.41)(@vitest/coverage-v8@4.1.6)(happy-dom@20.9.0)(vite@8.0.13(@types/node@20.19.41))
 
 packages:
@@ -530,8 +530,8 @@ packages:
   '@types/pdfkit@0.17.6':
     resolution: {integrity: sha512-tIwzxk2uWKp0Cq9JIluQXJid77lYhF52EsIOwhsMF4iWLA6YneoBR1xVKYYdAysHuepUB0OX4tdwMiUDdGKmig==}
 
-  '@types/pdfmake@0.3.2':
-    resolution: {integrity: sha512-2TZSL8puKJs/rHvMV1b8BhHD+qYyV9da8mVY83/x7ZR/NaEPXbm3+t5SwkwaH6QAIhY1zQVAaFDhHWL0haMstA==}
+  '@types/pdfmake@0.3.3':
+    resolution: {integrity: sha512-ufbceB4Q3dKpmFUMKEbZvJcfLi8+C5b1+rTFVG6urtkS3FHwaTQH6NCh/iEEDINlApCxH/W3/rsq99pP5E9/JA==}
 
   '@types/tern@0.23.9':
     resolution: {integrity: sha512-ypzHFE/wBzh+BlH6rrBgS5I/Z7RD21pGhZ2rltb/+ZrVM1awdZwjx7hE5XfuYgHWk9uvV5HLZN3SloevCAp3Bw==}
@@ -1336,7 +1336,7 @@ snapshots:
     dependencies:
       '@types/node': 20.19.41
 
-  '@types/pdfmake@0.3.2':
+  '@types/pdfmake@0.3.3':
     dependencies:
       '@types/node': 20.19.41
       '@types/pdfkit': 0.17.6

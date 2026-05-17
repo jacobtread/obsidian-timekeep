@@ -1,6 +1,6 @@
 {
 	"name": "obsidian-timekeep",
-	"version": "2.1.1",
+	"version": "2.1.2",
 	"description": "Obsidian plugin for time tracking",
 	"keywords": [],
 	"license": "MIT",
@@ -18,24 +18,24 @@
 		"test": "vitest run --coverage"
 	},
 	"dependencies": {
-		"fuse.js": "^7.1.0",
+		"fuse.js": "^7.3.0",
 		"moment": "^2.30.1",
 		"p-limit": "^7.3.0",
-		"pdfmake": "^0.3.7",
+		"pdfmake": "^0.3.8",
 		"valibot": "^1.4.0"
 	},
 	"devDependencies": {
-		"@types/node": "^20.19.37",
-		"@types/pdfmake": "^0.3.2",
-		"@vitest/coverage-v8": "^4.1.4",
-		"happy-dom": "^20.8.9",
+		"@types/node": "^20.19.41",
+		"@types/pdfmake": "^0.3.3",
+		"@vitest/coverage-v8": "^4.1.6",
+		"happy-dom": "^20.9.0",
 		"obsidian": "latest",
 		"oxfmt": "^0.50.0",
 		"oxlint": "^1.65.0",
 		"oxlint-tsgolint": "^0.22.1",
 		"typescript": "6.0.2",
-		"vite": "^8.0.8",
-		"vitest": "^4.1.4"
+		"vite": "^8.0.13",
+		"vitest": "^4.1.6"
 	},
 	"packageManager": "pnpm@10.33.4+sha512.1c67b3b359b2d408119ba1ed289f34b8fc3c6873412bec6fd264fbdc82489e510fcbecb9ce9d22dae7f3b76269d8441046014bdca53b9979cd7a561ad631b800"
 }

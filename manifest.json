@@ -1,7 +1,7 @@
 {
 	"id": "timekeep",
 	"name": "Timekeep",
-	"version": "2.1.1",
+	"version": "2.1.2",
 	"minAppVersion": "1.5.12",
 	"description": "Time tracking.",
 	"author": "Jacobtread",
