@@ -22,7 +22,7 @@ export const input2 = createCodeBlock(
 export const inputTimekeep1: Timekeep = {
 	entries: [
 		{
-			id: "9054dee3-8c15-493b-ad31-f070e08c2699",
+			id: 1,
 			name: "Block 1",
 			startTime: moment("2024-03-17T01:33:51.630Z"),
 			endTime: moment("2024-03-17T01:33:55.151Z"),
@@ -35,7 +35,7 @@ export const inputTimekeep1: Timekeep = {
 export const inputTimekeep2: Timekeep = {
 	entries: [
 		{
-			id: "9054dee3-8c15-493b-ad31-f070e08c2699",
+			id: 2,
 			name: "Block 2",
 			startTime: moment("2024-03-17T01:33:51.630Z"),
 			endTime: moment("2024-03-17T01:33:55.151Z"),

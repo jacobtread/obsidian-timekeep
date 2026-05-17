@@ -13,7 +13,7 @@ import { TimeEntry, Timekeep } from "@/timekeep/schema";
  */
 export function updateEntry(
 	entries: TimeEntry[],
-	previousEntryId: string,
+	previousEntryId: number,
 	newEntry: TimeEntry
 ): TimeEntry[] {
 	return entries.map((entry) => {

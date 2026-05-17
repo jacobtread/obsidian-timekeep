@@ -5,7 +5,7 @@ import { TimeEntry } from "@/timekeep/schema";
 const currentTime = moment();
 
 export const running: TimeEntry = {
-	id: "9054dee3-8c15-493b-ad31-f070e08c2699",
+	id: 1,
 	name: "Running Entry",
 	startTime: currentTime,
 	endTime: null,
@@ -13,7 +13,7 @@ export const running: TimeEntry = {
 };
 
 export const notRunning: TimeEntry = {
-	id: "8054dee3-8c15-493b-ad31-f070e08c2699",
+	id: 2,
 	name: "Stopped Entry",
 	startTime: currentTime,
 	endTime: currentTime,
@@ -21,13 +21,13 @@ export const notRunning: TimeEntry = {
 };
 
 export const runningNested: TimeEntry = {
-	id: "9054dee3-8c15-493b-ad31-f070e08c2699",
+	id: 1,
 	name: "Running Entry",
 	startTime: null,
 	endTime: null,
 	subEntries: [
 		{
-			id: "8054dee3-8c15-493b-ad31-f070e08c2699",
+			id: 2,
 			name: "Running Entry",
 			startTime: currentTime,
 			endTime: null,
@@ -37,13 +37,13 @@ export const runningNested: TimeEntry = {
 };
 
 export const stoppedNested: TimeEntry = {
-	id: "9054dee3-8c15-493b-ad31-f070e08c2699",
+	id: 1,
 	name: "Stopped Entry",
 	startTime: null,
 	endTime: null,
 	subEntries: [
 		{
-			id: "8054dee3-8c15-493b-ad31-f070e08c2699",
+			id: 2,
 			name: "Stopped Entry",
 			startTime: currentTime,
 			endTime: currentTime,

@@ -8,20 +8,20 @@ export const endTime = moment().add(15, "hours");
 export const input: Timekeep = {
 	entries: [
 		{
-			id: "9054dee3-8c15-493b-ad31-f070e08c2699",
+			id: 1,
 			name: "Entry",
 			startTime: null,
 			endTime: null,
 			subEntries: [
 				{
-					id: "8054dee3-8c15-493b-ad31-f070e08c2699",
+					id: 2,
 					name: "Part 1",
 					startTime: currentTime,
 					endTime: currentTime,
 					subEntries: null,
 				},
 				{
-					id: "7054dee3-8c15-493b-ad31-f070e08c2699",
+					id: 3,
 					name: "Running Entry",
 					startTime: currentTime,
 					endTime: null,
@@ -30,7 +30,7 @@ export const input: Timekeep = {
 			],
 		},
 		{
-			id: "6054dee3-8c15-493b-ad31-f070e08c2699",
+			id: 4,
 			name: "Running Entry",
 			startTime: currentTime,
 			endTime: null,
@@ -42,20 +42,20 @@ export const input: Timekeep = {
 export const expected: Timekeep = {
 	entries: [
 		{
-			id: "9054dee3-8c15-493b-ad31-f070e08c2699",
+			id: 1,
 			name: "Entry",
 			startTime: null,
 			endTime: null,
 			subEntries: [
 				{
-					id: "8054dee3-8c15-493b-ad31-f070e08c2699",
+					id: 2,
 					name: "Part 1",
 					startTime: currentTime,
 					endTime: currentTime,
 					subEntries: null,
 				},
 				{
-					id: "7054dee3-8c15-493b-ad31-f070e08c2699",
+					id: 3,
 					name: "Running Entry",
 					startTime: currentTime,
 					endTime: endTime,
@@ -64,7 +64,7 @@ export const expected: Timekeep = {
 			],
 		},
 		{
-			id: "6054dee3-8c15-493b-ad31-f070e08c2699",
+			id: 4,
 			name: "Running Entry",
 			startTime: currentTime,
 			endTime: endTime,

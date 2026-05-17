@@ -8,48 +8,48 @@ const futureStartTime = currentTime.clone().add(5000, "ms");
 
 export const input: TimeEntry[] = [
 	{
-		id: "9054dee3-8c15-493b-ad31-f070e08c2699",
+		id: 1,
 		name: "Part 1",
 		startTime: currentTime,
 		endTime: currentTime,
 		subEntries: null,
 	},
 	{
-		id: "8054dee3-8c15-493b-ad31-f070e08c2699",
+		id: 2,
 		name: "Part 1 null",
 		startTime: null,
 		endTime: null,
 		subEntries: null,
 	},
 	{
-		id: "7054dee3-8c15-493b-ad31-f070e08c2699",
+		id: 3,
 		name: "Part 2 null",
 		startTime: null,
 		endTime: null,
 		subEntries: null,
 	},
 	{
-		id: "6054dee3-8c15-493b-ad31-f070e08c2699",
+		id: 4,
 		name: "Part 2",
 		startTime: futureStartTime,
 		endTime: futureStartTime,
 		subEntries: null,
 	},
 	{
-		id: "5054dee3-8c15-493b-ad31-f070e08c2699",
+		id: 5,
 		name: "Part 3",
 		startTime: null,
 		endTime: null,
 		subEntries: [
 			{
-				id: "4054dee3-8c15-493b-ad31-f070e08c2699",
+				id: 6,
 				name: "Part 3 1",
 				startTime: currentTime,
 				endTime: currentTime,
 				subEntries: null,
 			},
 			{
-				id: "3054dee3-8c15-493b-ad31-f070e08c2699",
+				id: 7,
 				name: "Part 3 2",
 				startTime: futureStartTime,
 				endTime: futureStartTime,
@@ -61,34 +61,34 @@ export const input: TimeEntry[] = [
 
 export const expected: TimeEntry[] = [
 	{
-		id: "6054dee3-8c15-493b-ad31-f070e08c2699",
+		id: 4,
 		name: "Part 2",
 		startTime: futureStartTime,
 		endTime: futureStartTime,
 		subEntries: null,
 	},
 	{
-		id: "9054dee3-8c15-493b-ad31-f070e08c2699",
+		id: 1,
 		name: "Part 1",
 		startTime: currentTime,
 		endTime: currentTime,
 		subEntries: null,
 	},
 	{
-		id: "5054dee3-8c15-493b-ad31-f070e08c2699",
+		id: 5,
 		name: "Part 3",
 		startTime: null,
 		endTime: null,
 		subEntries: [
 			{
-				id: "3054dee3-8c15-493b-ad31-f070e08c2699",
+				id: 7,
 				name: "Part 3 2",
 				startTime: futureStartTime,
 				endTime: futureStartTime,
 				subEntries: null,
 			},
 			{
-				id: "4054dee3-8c15-493b-ad31-f070e08c2699",
+				id: 6,
 				name: "Part 3 1",
 				startTime: currentTime,
 				endTime: currentTime,
@@ -97,14 +97,14 @@ export const expected: TimeEntry[] = [
 		],
 	},
 	{
-		id: "8054dee3-8c15-493b-ad31-f070e08c2699",
+		id: 2,
 		name: "Part 1 null",
 		startTime: null,
 		endTime: null,
 		subEntries: null,
 	},
 	{
-		id: "7054dee3-8c15-493b-ad31-f070e08c2699",
+		id: 3,
 		name: "Part 2 null",
 		startTime: null,
 		endTime: null,

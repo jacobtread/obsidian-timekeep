@@ -5,7 +5,7 @@ import { TimeEntry } from "@/timekeep/schema";
 export const currentTime = moment();
 
 export const runningEntry: TimeEntry = {
-	id: "9054dee3-8c15-493b-ad31-f070e08c2699",
+	id: 4,
 	name: "Running Entry",
 	startTime: currentTime,
 	endTime: null,
@@ -14,20 +14,20 @@ export const runningEntry: TimeEntry = {
 
 export const input: TimeEntry[] = [
 	{
-		id: "8054dee3-8c15-493b-ad31-f070e08c2699",
+		id: 1,
 		name: "Block 1",
 		startTime: null,
 		endTime: null,
 		subEntries: [
 			{
-				id: "7054dee3-8c15-493b-ad31-f070e08c2699",
+				id: 2,
 				name: "Part 1",
 				startTime: currentTime,
 				endTime: currentTime,
 				subEntries: null,
 			},
 			{
-				id: "7054dee3-8c15-493b-ad31-f070e08c269a",
+				id: 3,
 				name: "Part 2",
 				startTime: null,
 				endTime: null,
@@ -39,15 +39,15 @@ export const input: TimeEntry[] = [
 
 export const path = [
 	{
-		id: "8054dee3-8c15-493b-ad31-f070e08c2699",
+		id: 1,
 		name: "Block 1",
 	},
 	{
-		id: "7054dee3-8c15-493b-ad31-f070e08c269a",
+		id: 3,
 		name: "Part 2",
 	},
 	{
-		id: "9054dee3-8c15-493b-ad31-f070e08c2699",
+		id: 4,
 		name: "Running Entry",
 	},
 ];

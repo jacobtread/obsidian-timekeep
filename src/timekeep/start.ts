@@ -38,7 +38,7 @@ export function startNewEntry(
  */
 export function startNewNestedEntry(
 	currentTime: Moment,
-	targetEntryId: string,
+	targetEntryId: number,
 	entries: TimeEntry[]
 ): TimeEntry[] {
 	// Stop any already running entries

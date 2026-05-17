@@ -9,7 +9,7 @@ import { Timekeep, TimeEntry } from "@/timekeep/schema";
  * @param entries List of entries to search
  * @returns The found entry or undefined
  */
-export function getEntryById(entryId: string, entries: TimeEntry[]): TimeEntry | undefined {
+export function getEntryById(entryId: number, entries: TimeEntry[]): TimeEntry | undefined {
 	for (const entry of entries) {
 		if (entry.id === entryId) {
 			return entry;
@@ -37,8 +37,8 @@ export function getEntryById(entryId: string, entries: TimeEntry[]): TimeEntry |
 export function getPathToEntry(
 	entries: TimeEntry[],
 	target: TimeEntry
-): { id: string; name: string }[] {
-	const path: { id: string; name: string }[] = [];
+): { id: number; name: string }[] {
+	const path: { id: number; name: string }[] = [];
 
 	function dfs(entry: TimeEntry): boolean {
 		path.push({ id: entry.id, name: entry.name });

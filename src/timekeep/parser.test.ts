@@ -101,7 +101,7 @@ describe("replacing content", () => {
 		const inputTimekeep: Timekeep = {
 			entries: [
 				{
-					id: "49b99108-b1ad-4355-baa9-89c49c342be2",
+					id: 1,
 					name: "Block 2",
 					startTime: moment("2024-03-17T01:33:51.630Z"),
 					endTime: moment("2024-03-17T01:33:55.151Z"),

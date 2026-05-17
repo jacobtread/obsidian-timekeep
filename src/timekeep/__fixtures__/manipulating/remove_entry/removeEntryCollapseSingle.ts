@@ -4,7 +4,7 @@ import { TimeEntry } from "@/timekeep/schema";
 
 export const currentTime = moment();
 export const entryToRemove: TimeEntry = {
-	id: "9054dee3-8c15-493b-ad31-f070e08c2699",
+	id: 4,
 	name: "Block 1",
 	startTime: currentTime,
 	endTime: currentTime,
@@ -13,19 +13,19 @@ export const entryToRemove: TimeEntry = {
 
 export const entries: TimeEntry[] = [
 	{
-		id: "8054dee3-8c15-493b-ad31-f070e08c2699",
+		id: 1,
 		name: "Block 3",
 		startTime: null,
 		endTime: null,
 		subEntries: [
 			{
-				id: "7054dee3-8c15-493b-ad31-f070e08c2699",
+				id: 2,
 				name: "Part 1",
 				startTime: null,
 				endTime: null,
 				subEntries: [
 					{
-						id: "6054dee3-8c15-493b-ad31-f070e08c2699",
+						id: 3,
 						name: "Part 1 A",
 						startTime: currentTime,
 						endTime: currentTime,
@@ -35,7 +35,7 @@ export const entries: TimeEntry[] = [
 				],
 			},
 			{
-				id: "5054dee3-8c15-493b-ad31-f070e08c2699",
+				id: 5,
 				name: "Part 1",
 				startTime: currentTime,
 				endTime: currentTime,
@@ -47,20 +47,20 @@ export const entries: TimeEntry[] = [
 
 export const expectedEntries: TimeEntry[] = [
 	{
-		id: "8054dee3-8c15-493b-ad31-f070e08c2699",
+		id: 1,
 		name: "Block 3",
 		startTime: null,
 		endTime: null,
 		subEntries: [
 			{
-				id: "7054dee3-8c15-493b-ad31-f070e08c2699",
+				id: 2,
 				name: "Part 1",
 				startTime: currentTime,
 				endTime: currentTime,
 				subEntries: null,
 			},
 			{
-				id: "5054dee3-8c15-493b-ad31-f070e08c2699",
+				id: 5,
 				name: "Part 1",
 				startTime: currentTime,
 				endTime: currentTime,

@@ -10,8 +10,13 @@ vi.mock(import("@/timekeep/id"), () => {
 			return value;
 		}
 
+		function reset() {
+			nextId = 1;
+		}
+
 		return {
 			next: vi.fn().mockImplementation(next),
+			reset,
 		};
 	};
 
@@ -20,8 +25,8 @@ vi.mock(import("@/timekeep/id"), () => {
 
 	// Reset IDs for every test
 	beforeEach(() => {
-		timekeepId = mockStore();
-		timekeepMergerEntries = mockStore();
+		timekeepId.reset();
+		timekeepMergerEntries.reset();
 	});
 
 	return {

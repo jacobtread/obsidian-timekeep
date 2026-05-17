@@ -15,7 +15,7 @@ export const input1 = createCodeBlock(
 export const inputTimekeep1: Timekeep = {
 	entries: [
 		{
-			id: "9054dee3-8c15-493b-ad31-f070e08c2699",
+			id: 1,
 			name: "Block 1",
 			startTime: moment("2024-03-17T01:33:51.630Z"),
 			endTime: moment("2024-03-17T01:33:55.151Z"),
