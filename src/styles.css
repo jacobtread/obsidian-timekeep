@@ -1,9 +1,7 @@
-.timekeep-container {
-	--timekeep-running-row-color:  var(--color-base-30);
-}
-
 /* Main container around the timekeep codeblock content */
 .timekeep-container {
+	--timekeep-running-row-color: var(--color-base-30);
+
 	width: 100%;
 	display: flex;
 	flex-flow: column;
@@ -56,7 +54,7 @@
 /* row running color */
 .timekeep-row[data-running="true"],
 .timekeep-row:nth-child(even)[data-running="true"],
-.timekeep-row:nth-child(odd)[data-running="true"]  {
+.timekeep-row:nth-child(odd)[data-running="true"] {
 	background-color: var(--timekeep-running-row-color);
 }
 
