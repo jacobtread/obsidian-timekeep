@@ -47,7 +47,7 @@ export class TimesheetExportActions extends DomComponent {
 	onload(): void {
 		super.onload();
 
-		const actionsEl = this.containerEl.createDiv( {
+		const actionsEl = this.containerEl.createDiv({
 			cls: "timekeep-actions",
 		});
 

@@ -624,46 +624,46 @@ export function setObsidianMockElementHelpers(node: Node) {
 
 		classes
 			.flat(Infinity)
-			.filter((c): c is string => typeof c === 'string')
-			.flatMap(c => c.split(' '))
+			.filter((c): c is string => typeof c === "string")
+			.flatMap((c) => c.split(" "))
 			.filter(Boolean)
-			.forEach(c => classList.add(c));
+			.forEach((c) => classList.add(c));
 	});
 
 	(node as Element).addClasses = vi.fn().mockImplementation((classes: string[]) => {
-			(node as Element).addClass(...classes);
+		(node as Element).addClass(...classes);
 	});
 
 	(node as Element).removeClass = vi.fn().mockImplementation((...classes: any[]) => {
-			const classList = (node as Element).classList;
+		const classList = (node as Element).classList;
 
-			classes
-				.flat(Infinity)
-				.filter((c): c is string => typeof c === 'string')
-				.flatMap(c => c.split(' '))
-				.filter(Boolean)
-				.forEach(c => classList.remove(c));
+		classes
+			.flat(Infinity)
+			.filter((c): c is string => typeof c === "string")
+			.flatMap((c) => c.split(" "))
+			.filter(Boolean)
+			.forEach((c) => classList.remove(c));
 	});
 
 	(node as Element).removeClasses = vi.fn().mockImplementation((classes: string[]) => {
-			(node as Element).removeClass(...classes);
+		(node as Element).removeClass(...classes);
 	});
 
-	(node as Element).toggleClass = vi.fn().mockImplementation(
-			(classes: string | string[], value: boolean) => {
-				const classList = (node as Element).classList;
+	(node as Element).toggleClass = vi
+		.fn()
+		.mockImplementation((classes: string | string[], value: boolean) => {
+			const classList = (node as Element).classList;
 
-				const normalized = [classes]
-					.flat(Infinity)
-					.filter((c): c is string => typeof c === 'string')
-					.flatMap(c => c.split(' '))
-					.filter(Boolean);
+			const normalized = [classes]
+				.flat(Infinity)
+				.filter((c): c is string => typeof c === "string")
+				.flatMap((c) => c.split(" "))
+				.filter(Boolean);
 
-				normalized.forEach(c => {
-					classList.toggle(c, value);
-				});
-			}
-	);
+			normalized.forEach((c) => {
+				classList.toggle(c, value);
+			});
+		});
 }
 
 /**

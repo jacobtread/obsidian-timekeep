@@ -1,2 +1,2 @@
 patchedDependencies:
-  pdfmake: patches/pdfmake.patch
+    pdfmake: patches/pdfmake.patch

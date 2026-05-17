@@ -48,6 +48,6 @@ vi.mock("obsidian", () => {
 		Platform: MockPlatform,
 		FileView: MockFileView,
 		EditableFileView: MockEditableFileView,
-		requireApiVersion: mockRequireApiVersion
+		requireApiVersion: mockRequireApiVersion,
 	};
 });

@@ -46,11 +46,11 @@ export class TimekeepLocatorModal extends SuggestModal<TimekeepRunningEntry> {
 	}
 
 	renderSuggestion(value: TimekeepRunningEntry, el: HTMLElement) {
-		el.createDiv( { text: value.running.name });
+		el.createDiv({ text: value.running.name });
 		el.createEl("small", { text: value.ref.file.path });
 	}
 
-	 onChooseSuggestion(item: TimekeepRunningEntry, _evt: MouseEvent | KeyboardEvent) {
+	onChooseSuggestion(item: TimekeepRunningEntry, _evt: MouseEvent | KeyboardEvent) {
 		void TimekeepRegistry.openItemRef(this.app.workspace, item.ref);
 	}
 }
