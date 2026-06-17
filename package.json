@@ -28,13 +28,13 @@
 		"@types/node": "^20.19.41",
 		"@types/pdfmake": "^0.3.3",
 		"@vitest/coverage-v8": "^4.1.6",
-		"happy-dom": "^20.9.0",
+		"happy-dom": "^20.10.5",
 		"obsidian": "latest",
 		"oxfmt": "^0.50.0",
 		"oxlint": "^1.65.0",
 		"oxlint-tsgolint": "^0.22.1",
 		"typescript": "6.0.2",
-		"vite": "^8.0.13",
+		"vite": "^8.0.16",
 		"vitest": "^4.1.6"
 	},
 	"packageManager": "pnpm@10.33.4+sha512.1c67b3b359b2d408119ba1ed289f34b8fc3c6873412bec6fd264fbdc82489e510fcbecb9ce9d22dae7f3b76269d8441046014bdca53b9979cd7a561ad631b800"
