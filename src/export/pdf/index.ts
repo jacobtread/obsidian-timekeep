@@ -25,22 +25,30 @@ export const desktopModuleLoader = {
 	/* v8 ignore stop -- @preserve */
 };
 
+// ... [Keep your existing imports at the top]
+
 /**
  * Export the timekeep as a PDF
  *
  * @param app
  * @param timekeep
  * @param settings
+ * @param sourceFilename The basename of the original .timekeep file
  * @returns
  */
-export async function exportPdf(app: App, timekeep: Timekeep, settings: TimekeepSettings) {
+export async function exportPdf(
+	app: App,
+	timekeep: Timekeep,
+	settings: TimekeepSettings,
+	sourceFilename: string
+) {
 	const currentTime = moment();
 
 	try {
 		if (Platform.isMobileApp) {
-			await exportPdfMobile(app, timekeep, settings, currentTime);
+			await exportPdfMobile(app, timekeep, settings, currentTime, sourceFilename);
 		} else {
-			await exportPdfDesktop(timekeep, settings, currentTime);
+			await exportPdfDesktop(timekeep, settings, currentTime, sourceFilename);
 		}
 		new Notice("PDF export successful", 1500);
 	} catch (error) {
@@ -51,17 +59,13 @@ export async function exportPdf(app: App, timekeep: Timekeep, settings: Timekeep
 
 /**
  * Export the timekeep as a PDF on a mobile device
- *
- * @param app
- * @param timekeep
- * @param settings
- * @returns
  */
 async function exportPdfMobile(
 	app: App,
 	timekeep: Timekeep,
 	settings: TimekeepSettings,
-	currentTime: Moment
+	currentTime: Moment,
+	sourceFilename: string
 ) {
 	const fileName = await FileNamePromptModal.pick(app);
 	if (!fileName) return;
@@ -69,7 +73,7 @@ async function exportPdfMobile(
 	const folder = settings.pdfMobileExportsFolder;
 	const path = `${folder}/${fileName}`;
 
-	const blob = await createPdfExportBlob(timekeep, settings, currentTime);
+	const blob = await createPdfExportBlob(timekeep, settings, currentTime, sourceFilename);
 	const buffer = await blob.arrayBuffer();
 
 	if (app.vault.getAbstractFileByPath(folder) === null) {
@@ -81,15 +85,12 @@ async function exportPdfMobile(
 
 /**
  * Export the timekeep as a PDF on a desktop device
- *
- * @param timekeep The timekeep to export
- * @param settings The timekeep settings
- * @returns Promise for when the export is complete
  */
 async function exportPdfDesktop(
 	timekeep: Timekeep,
 	settings: TimekeepSettings,
-	currentTime: Moment
+	currentTime: Moment,
+	sourceFilename: string
 ): Promise<void> {
 	// Dynamic imports to prevent them from causing errors when loaded (Because they are unsupported on mobile)
 	const {
@@ -102,10 +103,10 @@ async function exportPdfDesktop(
 	const { existsSync } = desktopModuleLoader.importModule("fs");
 	const { normalize, dirname } = desktopModuleLoader.importModule("path");
 
-	// Prompt user for save location
+	// Prompt user for save location - Now defaults to the source filename!
 	const result = await showSaveDialog({
 		title: "Save timesheet",
-		defaultPath: "Timesheet.pdf",
+		defaultPath: `${sourceFilename}.pdf`, 
 		filters: [{ extensions: ["pdf"], name: "PDF" }],
 		properties: ["showOverwriteConfirmation", "createDirectory"],
 	});
@@ -115,7 +116,7 @@ async function exportPdfDesktop(
 	const outputPath = result.filePath;
 	if (outputPath === undefined) return;
 
-	const blob = await createPdfExportBlob(timekeep, settings, currentTime);
+	const blob = await createPdfExportBlob(timekeep, settings, currentTime, sourceFilename);
 	const buffer = await blob.arrayBuffer();
 
 	const fullOutputPath = normalize(outputPath);
@@ -140,18 +141,14 @@ async function exportPdfDesktop(
 
 /**
  * Create a timekeep PDF export as a Blob
- *
- * @param timekeep The timekeep to export
- * @param settings The timekeep settings
- * @param currentTime The current time
- * @returns The timekeep PDF blob for exporting
  */
 async function createPdfExportBlob(
 	timekeep: Timekeep,
 	settings: TimekeepSettings,
-	currentTime: Moment
+	currentTime: Moment,
+	sourceFilename: string
 ): Promise<Blob> {
-	const definition = createPdfDefinition(timekeep, settings, currentTime);
+	const definition = createPdfDefinition(timekeep, settings, currentTime, sourceFilename);
 	const pdf = pdfMake.createPdf(definition, {});
 	return await pdf.getBlob();
 }

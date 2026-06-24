@@ -50,7 +50,7 @@ export interface TimekeepSettings {
 	editableTimestampFormat: string;
 	limitTableSize: boolean;
 	pdfFootnote: string;
-	pdfTitle: string;
+	pdfHeader: string;
 	pdfExportBehavior: PdfExportBehavior;
 	pdfDateFormat: string;
 	pdfRowDateFormat: string;
@@ -81,7 +81,7 @@ export interface TimekeepSettings {
 }
 
 export const defaultSettings: TimekeepSettings = {
-	pdfTitle: "Example Timesheet",
+	pdfHeader: "{{filename}} Timesheet",
 	pdfFootnote:
 		"Information present in this timesheet should be considered Commercial in Confidence.",
 	pdfExportBehavior: PdfExportBehavior.OPEN_PATH,
@@ -112,7 +112,13 @@ export const defaultSettings: TimekeepSettings = {
 	autocompleteEnabled: true,
 };
 
-export function legacySettingsCompatibility(settings: TimekeepSettings): void {
+export function legacySettingsCompatibility(settings: any): void {
+	// Auto-migrate legacy 'pdfTitle' to the new 'pdfHeader' key
+	if (Object.prototype.hasOwnProperty.call(settings, "pdfTitle")) {
+		settings.pdfHeader = settings.pdfTitle;
+		delete settings.pdfTitle;
+	}
+
 	// Compatibility with old reverse segment order
 	if (Object.prototype.hasOwnProperty.call(settings, "reverseSegmentOrder")) {
 		settings.sortOrder = settings.reverseSegmentOrder

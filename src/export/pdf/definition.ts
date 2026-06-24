@@ -20,21 +20,30 @@ import type { TimeEntry, Timekeep } from "@/timekeep/schema";
  * @param timekeep The timekeep to create the definition for
  * @param settings The timekeep settings
  * @param currentTime The current time
+ * @param sourceFilename The basename of the exported file
  * @returns The timekeep PDF definition
  */
 export function createPdfDefinition(
 	timekeep: Timekeep,
 	settings: TimekeepSettings,
-	currentTime: Moment
+	currentTime: Moment,
+	sourceFilename: string
 ): TDocumentDefinitions {
 	const duration = getTotalDuration(timekeep.entries, currentTime);
 	const currentDate = formatPdfDate(currentTime, settings);
 	const totalDuration = formatDurationLong(duration);
 	const totalDurationShort = formatDurationShort(duration);
 
+	// Dynamically inject the filename into the visual header string
+	const visualHeader = settings.pdfHeader.replace(/{{filename}}/g, sourceFilename);
+
 	return {
+		// Set the actual PDF metadata title to strictly match the filename
+		info: {
+			title: sourceFilename,
+		},
 		content: [
-			createPdfHeader(settings.pdfTitle, currentDate, totalDuration, totalDurationShort),
+			createPdfHeader(visualHeader, currentDate, totalDuration, totalDurationShort),
 			createPdfTable(timekeep, totalDuration, settings, currentTime),
 		],
 		footer: createPdfFooter(settings),

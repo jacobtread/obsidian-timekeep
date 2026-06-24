@@ -184,9 +184,10 @@ export class TimesheetExportActions extends DomComponent {
 	async onSavePDF() {
 		const timekeep = this.timekeep.getState();
 		const settings = this.settings.getState();
+		const sourceFilename = this.app.workspace.getActiveFile()?.basename ?? "Timesheet";
 
 		try {
-			await exportPdf(this.app, timekeep, settings);
+			await exportPdf(this.app, timekeep, settings, sourceFilename);
 		} catch (error) {
 			console.error("Failed to export to PDF", error);
 			new Notice("Failed to export to PDF", 1500);

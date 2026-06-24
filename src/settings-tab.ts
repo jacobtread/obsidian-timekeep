@@ -180,21 +180,16 @@ export class TimekeepSettingsTab extends PluginSettingTab {
 		new Setting(this.containerEl).setName("PDF Export").setHeading();
 
 		new Setting(this.containerEl)
-			.setName("PDF title")
-			.setDesc("The title to include on generated PDFs")
-
-			.addText((t) => {
-				t.setValue(String(settings.pdfTitle));
-				t.onChange((v) => {
-					// Only use a custom format if the value is not blank
-					const newPdfTitle = v.length ? v : defaultSettings.pdfTitle;
-
-					this.settingsStore.setState((currentValue) => ({
-						...currentValue,
-						pdfTitle: newPdfTitle,
-					}));
-				});
-			});
+			.setName("PDF header")
+			.setDesc("The text displayed at the top of exported PDFs. Use the {{filename}} template variable to dynamically insert the current file's name.")
+			.addText((t) =>
+				t
+					.setPlaceholder("{{filename}} Timesheet")
+					.setValue(settings.pdfHeader)
+					.onChange(async (v) => {
+						settings.pdfHeader = v;
+					})
+			);
 
 		new Setting(this.containerEl)
 			.setName("PDF footnote")
