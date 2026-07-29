@@ -18,24 +18,24 @@
 		"test": "vitest run --coverage"
 	},
 	"dependencies": {
-		"fuse.js": "^7.3.0",
+		"fuse.js": "^7.5.0",
 		"moment": "^2.30.1",
-		"p-limit": "^7.3.0",
-		"pdfmake": "^0.3.8",
-		"valibot": "^1.4.0"
+		"p-limit": "^7.3.1",
+		"pdfmake": "^0.3.11",
+		"valibot": "^1.4.2"
 	},
 	"devDependencies": {
-		"@types/node": "^20.19.41",
+		"@types/node": "^20.19.43",
 		"@types/pdfmake": "^0.3.3",
-		"@vitest/coverage-v8": "^4.1.6",
-		"happy-dom": "^20.10.5",
+		"@vitest/coverage-v8": "^4.1.10",
+		"happy-dom": "^20.11.1",
 		"obsidian": "latest",
 		"oxfmt": "^0.50.0",
-		"oxlint": "^1.65.0",
+		"oxlint": "^1.76.0",
 		"oxlint-tsgolint": "^0.22.1",
 		"typescript": "6.0.2",
-		"vite": "^8.0.16",
-		"vitest": "^4.1.6"
+		"vite": "^8.1.5",
+		"vitest": "^4.1.10"
 	},
 	"packageManager": "pnpm@10.33.4+sha512.1c67b3b359b2d408119ba1ed289f34b8fc3c6873412bec6fd264fbdc82489e510fcbecb9ce9d22dae7f3b76269d8441046014bdca53b9979cd7a561ad631b800"
 }

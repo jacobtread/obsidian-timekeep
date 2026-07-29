@@ -165,18 +165,18 @@ describe("TimesheetNameInput", () => {
 					break;
 				case "Before Test After":
 					expect(suggestion.innerHTML).toBe(
-						"Before <mark>Test</mark> Af<mark>te</mark>r"
+						"Before <mark>Test</mark> After"
 					);
 					break;
 				case "Before Test":
 					expect(suggestion.innerHTML).toBe("Before <mark>Test</mark>");
 					break;
 				case "Test After":
-					expect(suggestion.innerHTML).toBe("<mark>Test</mark> Af<mark>te</mark>r");
+					expect(suggestion.innerHTML).toBe("<mark>Test</mark> After");
 					break;
 				case "Test After Test":
 					expect(suggestion.innerHTML).toBe(
-						"<mark>Test</mark> Af<mark>te</mark>r <mark>Test</mark>"
+						"<mark>Test</mark> After <mark>Test</mark>"
 					);
 					break;
 				default:
