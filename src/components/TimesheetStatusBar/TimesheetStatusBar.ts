@@ -7,7 +7,7 @@ import { assert } from "@/utils/assert";
 
 import { TimesheetStatusBarItem } from "./TimesheetStatusBarItem";
 
-import { TimeEntry } from "@/timekeep/schema";
+import { TimeEntry, Timekeep } from "@/timekeep/schema";
 
 import { TimekeepRegistry, TimekeepRegistryItemRef } from "@/service/registry";
 
@@ -74,11 +74,21 @@ export class TimesheetStatusBar extends Component {
 
 		// Load the new children
 		for (const runningEntry of runningEntries) {
-			this.renderEntry(runningEntry.running, runningEntry.ref, settings);
+			this.renderEntry(
+				runningEntry.running,
+				runningEntry.ref,
+				runningEntry.timekeep,
+				settings
+			);
 		}
 	}
 
-	renderEntry(entry: TimeEntry, ref: TimekeepRegistryItemRef, settings: TimekeepSettings) {
+	renderEntry(
+		entry: TimeEntry,
+		ref: TimekeepRegistryItemRef,
+		timekeep: Timekeep,
+		settings: TimekeepSettings
+	) {
 		const wrapperEl = this.wrapperEl;
 		assert(wrapperEl, "Wrapper element should be defined on render");
 		const item = new TimesheetStatusBarItem(
@@ -87,6 +97,7 @@ export class TimesheetStatusBar extends Component {
 			this.registry,
 			settings,
 			entry,
+			timekeep,
 			ref
 		);
 		this.items.push(item);

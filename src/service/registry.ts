@@ -28,6 +28,7 @@ export type TimekeepRegistryEntry = TimekeepRegistryEntryFile | TimekeepRegistry
 export type TimekeepRunningEntry = {
 	running: TimeEntry;
 	ref: TimekeepRegistryItemRef;
+	timekeep: Timekeep;
 };
 
 /** Types of entries */
@@ -462,6 +463,7 @@ export class TimekeepRegistry extends Component {
 							type: entry.type,
 							file: entry.file,
 						},
+						timekeep,
 					});
 
 					break;
@@ -482,6 +484,7 @@ export class TimekeepRegistry extends Component {
 									endLine: timekeepWithPosition.endLine,
 								},
 							},
+							timekeep,
 						});
 					}
 

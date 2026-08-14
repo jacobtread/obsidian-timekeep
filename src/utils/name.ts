@@ -1,3 +1,5 @@
+import { isNumberText } from "@/utils/number";
+
 export enum NameSegmentType {
 	Text,
 	Link,
@@ -60,4 +62,32 @@ export function parseNameSegments(input: string): NameSegment[] {
 	}
 
 	return segments;
+}
+
+/**
+ * Checks if a name is a generic "Part 1", "Block 1" style
+ * naming convention
+ *
+ * @param name The name
+ * @returns Whether it matches the naming convention
+ */
+export function isGenericPartName(name: string): boolean {
+	if (name.length < 1) {
+		return true;
+	}
+
+	// Ignore "Part 1" "Part 2", "Block 1" ...etc
+	if (name.startsWith("Part") || name.startsWith("Block")) {
+		const parts = name.split(" ");
+		if (parts.length !== 2) {
+			return false;
+		}
+
+		const numericPart = parts[1];
+		if (isNumberText(numericPart)) {
+			return true;
+		}
+	}
+
+	return false;
 }

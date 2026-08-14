@@ -164,9 +164,7 @@ describe("TimesheetNameInput", () => {
 					expect(suggestion.innerHTML).toBe("<mark>Test</mark>");
 					break;
 				case "Before Test After":
-					expect(suggestion.innerHTML).toBe(
-						"Before <mark>Test</mark> After"
-					);
+					expect(suggestion.innerHTML).toBe("Before <mark>Test</mark> After");
 					break;
 				case "Before Test":
 					expect(suggestion.innerHTML).toBe("Before <mark>Test</mark>");
@@ -175,9 +173,7 @@ describe("TimesheetNameInput", () => {
 					expect(suggestion.innerHTML).toBe("<mark>Test</mark> After");
 					break;
 				case "Test After Test":
-					expect(suggestion.innerHTML).toBe(
-						"<mark>Test</mark> After <mark>Test</mark>"
-					);
+					expect(suggestion.innerHTML).toBe("<mark>Test</mark> After <mark>Test</mark>");
 					break;
 				default:
 					throw new Error("unexpected text content");

@@ -1,6 +1,6 @@
 import { expect, it, describe } from "vitest";
 
-import { NameSegmentType, parseNameSegments } from "./name";
+import { isGenericPartName, NameSegmentType, parseNameSegments } from "./name";
 
 describe("parseNameSegments", () => {
 	it("should parse plain text without modification", () => {
@@ -138,5 +138,25 @@ describe("parseNameSegments", () => {
 		const input = "[Text]()";
 		const result = parseNameSegments(input);
 		expect(result).toEqual([{ type: NameSegmentType.Text, text: "[Text]()" }]);
+	});
+});
+
+describe("isGenericPartName", () => {
+	it.for(["Block 1", "Part 1", "Part 2", "Block 2", "Block 999999999", "Part 9999999999"])(
+		"'%s' should be a detected as a generic part name",
+		(name) => {
+			expect(isGenericPartName(name)).toBeTruthy();
+		}
+	);
+
+	it.for([
+		"Custom Block",
+		"Custom Part",
+		"Part with a number 1",
+		"Some random text thats definitely not generic",
+		"Part 1___1",
+		"Block_1",
+	])("'%s' should not be a detected as a generic part name", (name) => {
+		expect(isGenericPartName(name)).toBeFalsy();
 	});
 });

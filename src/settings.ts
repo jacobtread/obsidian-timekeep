@@ -74,6 +74,7 @@ export interface TimekeepSettings {
 	registryConcurrencyLimit: number;
 
 	statusBarEnabled: boolean;
+	statusBarPreferNonGenericParent: boolean;
 	statusBarShowFolderPath: boolean;
 	statusBarItemOpenNewTab: boolean;
 
@@ -107,6 +108,7 @@ export const defaultSettings: TimekeepSettings = {
 
 	statusBarEnabled: true,
 	statusBarShowFolderPath: true,
+	statusBarPreferNonGenericParent: true,
 	statusBarItemOpenNewTab: false,
 
 	autocompleteEnabled: true,
