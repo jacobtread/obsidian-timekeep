@@ -226,17 +226,17 @@ export class TimesheetRowContentEditing extends ReplaceableComponent {
 		const startTimeValue = this.#startTimeInputEl.value;
 		const endTimeValue = this.#endTimeInputEl.value;
 
-		let valid = true;
-
 		let startTime: Moment | null = null;
 		let endTime: Moment | null = null;
+
+		let startTimeError: string | null = null;
+		let endTimeError: string | null = null;
 
 		if (entry.startTime !== null) {
 			startTime = parseDateInputValue(startTimeValue);
 			if (!startTime.isValid()) {
 				startTime = null;
-				startTimeEl.setCustomValidity("Invalid start time provided");
-				valid = false;
+				startTimeError = "Invalid start time provided";
 			}
 		}
 
@@ -244,20 +244,18 @@ export class TimesheetRowContentEditing extends ReplaceableComponent {
 			endTime = parseDateInputValue(endTimeValue);
 			if (!endTime.isValid()) {
 				endTime = null;
-				endTimeEl.setCustomValidity("Invalid end time provided");
-				valid = false;
+				endTimeError = "Invalid end time provided";
 			}
 		}
 
 		if (startTime !== null && endTime !== null && startTime.isAfter(endTime)) {
-			startTimeEl.setCustomValidity("Start time cannot be after the end time");
-			valid = false;
+			startTimeError = "Start time cannot be after the end time";
 		}
 
-		if (!valid) {
-			startTimeEl.reportValidity();
-			endTimeEl.reportValidity();
-		}
+		startTimeEl.setCustomValidity(startTimeError ?? "");
+		endTimeEl.setCustomValidity(endTimeError ?? "");
+
+		const valid = startTimeError === null && endTimeError === null;
 
 		return { valid, startTime, endTime };
 	}
