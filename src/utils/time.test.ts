@@ -11,8 +11,6 @@ import {
 	formatDurationLong,
 	formatDurationShort,
 	formatDurationDecimal,
-	parseEditableTimestamp,
-	formatEditableTimestamp,
 } from "./time";
 
 describe("formatTimestamp", () => {
@@ -26,34 +24,6 @@ describe("formatTimestamp", () => {
 		const output = formatTimestamp(input, settings);
 
 		expect(output).toBe(expected);
-	});
-});
-
-describe("formatEditableTimestamp", () => {
-	it("should format editable time", () => {
-		const input = moment("2024-03-31T02:34:45.413Z").utc();
-		const expected = "2024-03-31 02:34:45";
-
-		const settings: TimekeepSettings = defaultSettings;
-		settings.editableTimestampFormat = "YYYY-MM-DD HH:mm:ss";
-
-		const output = formatEditableTimestamp(input, settings);
-
-		expect(output).toBe(expected);
-	});
-});
-
-describe("parseEditableTimestamp", () => {
-	it("should parse editable time", () => {
-		const input = "2024-03-31 02:34:45";
-		const expected = moment("2024-03-31 02:34:45", "YYYY-MM-DD HH:mm:ss");
-
-		const settings: TimekeepSettings = defaultSettings;
-		settings.editableTimestampFormat = "YYYY-MM-DD HH:mm:ss";
-
-		const output = parseEditableTimestamp(input, settings).utc();
-
-		expect(output.toDate()).toStrictEqual(expected.toDate());
 	});
 });
 

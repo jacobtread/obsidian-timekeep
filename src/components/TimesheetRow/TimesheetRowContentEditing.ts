@@ -1,10 +1,11 @@
+import type { Moment } from "moment";
 import type { App } from "obsidian";
 
 import type { TimekeepSettings } from "@/settings";
 import type { Store } from "@/store";
 
 import { assert } from "@/utils/assert";
-import { formatEditableTimestamp, parseEditableTimestamp } from "@/utils/time";
+import { parseDateInputValue } from "@/utils/time";
 
 import { createObsidianIcon } from "@/components/obsidianIcon";
 import { ReplaceableComponent } from "@/components/ReplaceableComponent";
@@ -86,16 +87,20 @@ export class TimesheetRowContentEditing extends ReplaceableComponent {
 		nameInputEl.name = "name";
 		this.#nameInputEl = nameInputEl;
 
+		const onValidateDates = this.onValidateDates.bind(this);
+
 		const startTimeLabelEl = formEl.createEl("label", {
 			text: "Start Time",
 		});
 		this.#startTimeLabelEl = startTimeLabelEl;
 		const startTimeInputEl = startTimeLabelEl.createEl("input", {
 			cls: "timekeep-input",
-			type: "text",
+			type: "datetime-local",
 		});
 		startTimeInputEl.name = "start-time";
+		startTimeInputEl.step = "0.001";
 		this.#startTimeInputEl = startTimeInputEl;
+		this.registerDomEvent(startTimeInputEl, "input", onValidateDates);
 
 		const endTimeLabelEl = formEl.createEl("label", {
 			cls: "timekeep-input-label",
@@ -104,10 +109,12 @@ export class TimesheetRowContentEditing extends ReplaceableComponent {
 		this.#endTimeLabelEl = endTimeLabelEl;
 		const endTimeInputEl = endTimeLabelEl.createEl("input", {
 			cls: "timekeep-input",
-			type: "text",
+			type: "datetime-local",
 		});
 		endTimeInputEl.name = "end-time";
+		endTimeInputEl.step = "0.001";
 		this.#endTimeInputEl = endTimeInputEl;
+		this.registerDomEvent(endTimeInputEl, "input", onValidateDates);
 
 		const actionsEl = formEl.createDiv({
 			cls: "timekeep-editing-actions",
@@ -162,20 +169,17 @@ export class TimesheetRowContentEditing extends ReplaceableComponent {
 			"Elements expected to be defined"
 		);
 
-		const settings = this.settings.getState();
 		const entry = this.entry;
 
 		this.#nameInputEl.value = entry.name;
 
+		const inputFormat = "YYYY-MM-DDTHH:mm:ss";
+
 		this.#startTimeLabelEl.hidden = entry.startTime === null;
-		this.#startTimeInputEl.value = entry.startTime
-			? formatEditableTimestamp(entry.startTime, settings)
-			: "";
+		this.#startTimeInputEl.value = entry.startTime ? entry.startTime.format(inputFormat) : "";
 
 		this.#endTimeLabelEl.hidden = entry.endTime === null;
-		this.#endTimeInputEl.value = entry.endTime
-			? formatEditableTimestamp(entry.endTime, settings)
-			: "";
+		this.#endTimeInputEl.value = entry.endTime ? entry.endTime.format(inputFormat) : "";
 	}
 
 	onConfirmDelete() {
@@ -200,38 +204,82 @@ export class TimesheetRowContentEditing extends ReplaceableComponent {
 		}));
 	}
 
-	onSubmit(event: Event) {
+	/**
+	 * Validates that the start and end dates are valid if they are
+	 * present, also applies the validation error messages
+	 *
+	 * @returns Whether the validation succeeded
+	 */
+	onValidateDates() {
 		assert(
 			this.#nameInputEl && this.#startTimeInputEl && this.#endTimeInputEl,
 			"Expected inputs to be defined"
 		);
 
+		const startTimeEl = this.#startTimeInputEl;
+		const endTimeEl = this.#endTimeInputEl;
+
+		const entry = this.entry;
+
+		if (entry.subEntries !== null) return { valid: true, startTime: null, endTime: null };
+
+		const startTimeValue = this.#startTimeInputEl.value;
+		const endTimeValue = this.#endTimeInputEl.value;
+
+		let startTime: Moment | null = null;
+		let endTime: Moment | null = null;
+
+		let startTimeError: string | null = null;
+		let endTimeError: string | null = null;
+
+		if (entry.startTime !== null) {
+			startTime = parseDateInputValue(startTimeValue);
+			if (!startTime.isValid()) {
+				startTime = null;
+				startTimeError = "Invalid start time provided";
+			}
+		}
+
+		if (entry.endTime !== null) {
+			endTime = parseDateInputValue(endTimeValue);
+			if (!endTime.isValid()) {
+				endTime = null;
+				endTimeError = "Invalid end time provided";
+			}
+		}
+
+		if (startTime !== null && endTime !== null && startTime.isAfter(endTime)) {
+			startTimeError = "Start time cannot be after the end time";
+		}
+
+		startTimeEl.setCustomValidity(startTimeError ?? "");
+		endTimeEl.setCustomValidity(endTimeError ?? "");
+
+		const valid = startTimeError === null && endTimeError === null;
+
+		return { valid, startTime, endTime };
+	}
+
+	async onSubmit(event: Event) {
+		assert(this.#nameInputEl, "Expected inputs to be defined");
+
 		event.preventDefault();
 		event.stopPropagation();
 
-		const name = this.#nameInputEl.value;
-		const startTime = this.#startTimeInputEl.value;
-		const endTime = this.#endTimeInputEl.value;
+		const { valid, startTime, endTime } = this.onValidateDates();
+		if (!valid) return;
 
-		const settings = this.settings.getState();
+		const name = this.#nameInputEl.value;
 		const entry = this.entry;
 
 		const newEntry = { ...entry, name };
-
-		// Update the start and end times for non groups
 		if (newEntry.subEntries === null) {
-			if (entry.startTime !== null) {
-				const startTimeValue = parseEditableTimestamp(startTime, settings);
-				if (startTimeValue.isValid()) {
-					newEntry.startTime = startTimeValue;
-				}
+			if (startTime !== null) {
+				newEntry.startTime = startTime;
 			}
 
-			if (entry.endTime !== null) {
-				const endTimeValue = parseEditableTimestamp(endTime, settings);
-				if (endTimeValue.isValid()) {
-					newEntry.endTime = endTimeValue;
-				}
+			if (endTime !== null) {
+				newEntry.endTime = endTime;
 			}
 		}
 
