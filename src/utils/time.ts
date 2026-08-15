@@ -36,6 +36,23 @@ export function parseEditableTimestamp(formatted: string, settings: TimekeepSett
 	return moment(formatted, settings.editableTimestampFormat, true);
 }
 
+/** Formats the HTML <input/> with type datetime-local may use */
+const BROWSER_INPUT_DATETIME_FORMATS = [
+	"YYYY-MM-DDTHH:mm:ss.SSS",
+	"YYYY-MM-DDTHH:mm:ss",
+	"YYYY-MM-DDTHH:mm",
+];
+
+/**
+ * Parses a date from a HTML <input/> datetime-local value
+ *
+ * @param value The input value
+ * @returns The parsed date
+ */
+export function parseDateInputValue(value: string): Moment {
+	return moment(value, BROWSER_INPUT_DATETIME_FORMATS, true);
+}
+
 /**
  * Formats a duration using the provided duration format
  *

@@ -333,7 +333,7 @@ describe("TimesheetRowContentEditing", () => {
 		expect(timekeep.getState()).toEqual({ entries: [] });
 	});
 
-	it("editing a group entry should hide the start and end time inputs", () => {
+	it("trying to save an entry with invalid times should be stopped and produce validation errors", () => {
 		const start = moment();
 		const entry: TimeEntry = {
 			id: 1,
@@ -364,6 +364,13 @@ describe("TimesheetRowContentEditing", () => {
 		expect(startTime).not.toBeNull();
 		expect(endTime).not.toBeNull();
 
+		const startTimeSetCustomValidity = vi.spyOn(
+			startTime as HTMLInputElement,
+			"setCustomValidity"
+		);
+		const endTimeSetCustomValidity = vi.spyOn(endTime as HTMLInputElement, "setCustomValidity");
+
+		// Set random dates to ensure the date is not persisted for group edits
 		(startTime as HTMLInputElement).value = "Test";
 		(endTime as HTMLInputElement).value = "Test";
 
@@ -374,8 +381,74 @@ describe("TimesheetRowContentEditing", () => {
 		);
 
 		expect(onSubmit).toHaveBeenCalledOnce();
-		expect(onFinishEditing).toHaveBeenCalledOnce();
-		expect(setState).toHaveBeenCalledOnce();
+		expect(onFinishEditing).not.toHaveBeenCalled();
+		expect(setState).not.toHaveBeenCalledOnce();
+
+		expect(startTimeSetCustomValidity).toHaveBeenCalledWith("Invalid start time provided");
+		expect(endTimeSetCustomValidity).toHaveBeenCalledWith("Invalid end time provided");
+
+		// Entry should not have changed if the input values were not valid timestamps
+		expect(timekeep.getState()).toEqual({ entries: [entry] });
+	});
+
+	it("trying to save an entry with a start time after the end time should be stopped and produce validation errors", () => {
+		const start = moment();
+		const entry: TimeEntry = {
+			id: 1,
+			name: "Test",
+			startTime: moment(start),
+			endTime: moment(start),
+			subEntries: null,
+		};
+
+		timekeep.setState({ entries: [entry] });
+
+		const setState = vi.spyOn(timekeep, "setState");
+
+		component = new TimesheetRowContentEditing(
+			containerEl,
+			app,
+			timekeep,
+			settings,
+			entry,
+			onFinishEditing
+		);
+		const onSubmit = vi.spyOn(component, "onSubmit");
+		component.load();
+
+		const startTime = containerEl.querySelector('.timekeep-input[name="start-time"]');
+		const endTime = containerEl.querySelector('.timekeep-input[name="end-time"]');
+
+		expect(startTime).not.toBeNull();
+		expect(endTime).not.toBeNull();
+
+		const dateInputFormat = "YYYY-MM-DDTHH:mm:ss";
+
+		const newStartTime = moment();
+		const newEndTime = moment(newStartTime).subtract(5, "d");
+
+		const startTimeSetCustomValidity = vi.spyOn(
+			startTime as HTMLInputElement,
+			"setCustomValidity"
+		);
+
+		// Set random dates to ensure the date is not persisted for group edits
+		(startTime as HTMLInputElement).value = newStartTime.format(dateInputFormat);
+		(endTime as HTMLInputElement).value = newEndTime.format(dateInputFormat);
+
+		const form = containerEl.querySelector("form.timekeep-editing");
+		expect(form).not.toBeNull();
+		(form as HTMLFormElement).dispatchEvent(
+			new SubmitEvent("submit", { bubbles: true, cancelable: true })
+		);
+
+		expect(onSubmit).toHaveBeenCalledOnce();
+		expect(onFinishEditing).not.toHaveBeenCalled();
+		expect(setState).not.toHaveBeenCalledOnce();
+
+		expect(startTimeSetCustomValidity).toHaveBeenCalledWith(
+			"Start time cannot be after the end time"
+		);
 
 		// Entry should not have changed if the input values were not valid timestamps
 		expect(timekeep.getState()).toEqual({ entries: [entry] });
