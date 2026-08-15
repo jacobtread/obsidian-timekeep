@@ -13,29 +13,6 @@ export function formatTimestamp(timestamp: Moment, settings: TimekeepSettings): 
 	return timestamp.format(settings.timestampFormat);
 }
 
-/**
- * Formats the provided timestamp in the way its expected to be
- * edited by the user
- *
- * @param timestamp The timestamp to format
- * @param settings The timekeep settings
- * @returns The formatted timestamp
- */
-export function formatEditableTimestamp(timestamp: Moment, settings: TimekeepSettings): string {
-	return timestamp.format(settings.editableTimestampFormat);
-}
-
-/**
- * Converts the user edited format back into a timestamp
- *
- * @param formatted The user edited formatted timestamp
- * @param settings The timekeep settings
- * @returns The timestamp
- */
-export function parseEditableTimestamp(formatted: string, settings: TimekeepSettings): Moment {
-	return moment(formatted, settings.editableTimestampFormat, true);
-}
-
 /** Formats the HTML <input/> with type datetime-local may use */
 const BROWSER_INPUT_DATETIME_FORMATS = [
 	"YYYY-MM-DDTHH:mm:ss.SSS",

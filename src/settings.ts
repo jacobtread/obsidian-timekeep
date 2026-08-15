@@ -47,7 +47,6 @@ export enum UnstartedOrder {
 export interface TimekeepSettings {
 	csvDelimiter: string;
 	csvTitle: boolean;
-	editableTimestampFormat: string;
 	limitTableSize: boolean;
 	pdfFootnote: string;
 	pdfTitle: string;
@@ -91,7 +90,6 @@ export const defaultSettings: TimekeepSettings = {
 	pdfFontFamily: FontFamily.ROBOTO,
 	pdfMobileExportsFolder: "TimekeepExports",
 	timestampFormat: "YY-MM-DD HH:mm:ss",
-	editableTimestampFormat: "YYYY-MM-DD HH:mm:ss",
 	csvTitle: true,
 	csvDelimiter: ",",
 	limitTableSize: true,
