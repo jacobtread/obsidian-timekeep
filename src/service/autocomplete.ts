@@ -2,7 +2,7 @@ import { Component } from "obsidian";
 
 import { TimekeepSettings } from "@/settings";
 import { createStore, Store } from "@/store";
-import { isNumberText } from "@/utils/number";
+import { isGenericPartName } from "@/utils/name";
 
 import { TimekeepEntryItemType, TimekeepRegistry } from "./registry";
 
@@ -80,37 +80,10 @@ export class TimekeepAutocomplete extends Component {
 
 		const names = Array.from(namesSet)
 			//
-			.filter((name) => !TimekeepAutocomplete.isIgnoredName(name));
+			.filter((name) => !isGenericPartName(name));
 
 		names.sort();
 
 		this.names.setState(names);
-	}
-
-	/**
-	 * Checks if a name should be ignored from autocomplete
-	 *
-	 * @param name The name to check
-	 * @returns Whether the name should be ignored
-	 */
-	static isIgnoredName(name: string) {
-		if (name.length < 1) {
-			return true;
-		}
-
-		// Ignore "Part 1" "Part 2", "Block 1" ...etc
-		if (name.startsWith("Part") || name.startsWith("Block")) {
-			const parts = name.split(" ");
-			if (parts.length !== 2) {
-				return false;
-			}
-
-			const numericPart = parts[1];
-			if (isNumberText(numericPart)) {
-				return true;
-			}
-		}
-
-		return false;
 	}
 }

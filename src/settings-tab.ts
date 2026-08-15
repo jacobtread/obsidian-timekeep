@@ -458,6 +458,21 @@ export class TimekeepSettingsTab extends PluginSettingTab {
 			});
 
 		new Setting(this.containerEl)
+			.setName("Show non generic entry parent name")
+			.setDesc(
+				'Whether to include the name of the nearest of the parent entry for generic "Part 1" style entries (i.e if "Part 1" is running within "Example Entry" it will be displayed as "Example Entry / Part 1: 3h 5min 30s").'
+			)
+			.addToggle((t) => {
+				t.setValue(settings.statusBarPreferNonGenericParent);
+				t.onChange((v) => {
+					this.settingsStore.setState((currentValue) => ({
+						...currentValue,
+						statusBarPreferNonGenericParent: v,
+					}));
+				});
+			});
+
+		new Setting(this.containerEl)
 			.setName("Open in new tab")
 			.setDesc('Whether to open the file in a new tab after clicking a status item").')
 			.addToggle((t) => {

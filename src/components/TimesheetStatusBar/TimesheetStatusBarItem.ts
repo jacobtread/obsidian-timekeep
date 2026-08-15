@@ -1,12 +1,14 @@
 import { App } from "obsidian";
 
 import { TimekeepSettings } from "@/settings";
+import { isGenericPartName } from "@/utils/name";
 
 import { DomComponent } from "@/components/DomComponent";
 import { createObsidianIcon } from "@/components/obsidianIcon";
 import { TimesheetEntryDuration } from "@/components/TimesheetEntryDuration";
 
-import { TimeEntry } from "@/timekeep/schema";
+import { getPathToEntry } from "@/timekeep/queries";
+import { TimeEntry, Timekeep } from "@/timekeep/schema";
 
 import {
 	TimekeepEntryItemType,
@@ -23,7 +25,8 @@ export class TimesheetStatusBarItem extends DomComponent {
 	registry: TimekeepRegistry;
 	/** The current timekeep settings */
 	settings: TimekeepSettings;
-
+	/** The full timekeep */
+	timekeep: Timekeep;
 	/** The reference to the item */
 	ref: TimekeepRegistryItemRef;
 
@@ -33,6 +36,7 @@ export class TimesheetStatusBarItem extends DomComponent {
 		registry: TimekeepRegistry,
 		settings: TimekeepSettings,
 		entry: TimeEntry,
+		timekeep: Timekeep,
 		ref: TimekeepRegistryItemRef
 	) {
 		super(containerEl);
@@ -41,6 +45,7 @@ export class TimesheetStatusBarItem extends DomComponent {
 		this.registry = registry;
 		this.settings = settings;
 		this.entry = entry;
+		this.timekeep = timekeep;
 		this.ref = ref;
 	}
 
@@ -64,7 +69,7 @@ export class TimesheetStatusBarItem extends DomComponent {
 
 		contentEl.createSpan({
 			cls: "timekeep-status-item__name",
-			text: this.getFolderPath() + entry.name + ":",
+			text: this.getFolderPath() + this.getEntryNearestName() + entry.name + ":",
 			title: this.getDisplayTitle(),
 		});
 
@@ -86,6 +91,21 @@ export class TimesheetStatusBarItem extends DomComponent {
 			}
 			/* v8 ignore stop -- @preserve */
 		}
+	}
+
+	getEntryNearestName() {
+		if (!this.settings.statusBarPreferNonGenericParent) return "";
+
+		const path = getPathToEntry(this.timekeep.entries, this.entry);
+		if (path.length < 2) return "";
+
+		for (let i = path.length - 2; i >= 0; i -= 1) {
+			const segment = path[i];
+			if (isGenericPartName(segment.name)) continue;
+			return `${segment.name} / `;
+		}
+
+		return "";
 	}
 
 	getFolderPath() {

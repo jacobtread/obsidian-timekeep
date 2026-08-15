@@ -944,6 +944,7 @@ describe("TimekeepRegistry", () => {
 						type: TimekeepEntryItemType.MARKDOWN,
 						position: { startLine: 0, endLine: 1 },
 					},
+					timekeep: { entries: [entry1] },
 				},
 				{
 					running: entry2,
@@ -951,6 +952,7 @@ describe("TimekeepRegistry", () => {
 						file: testFile3,
 						type: TimekeepEntryItemType.FILE,
 					},
+					timekeep: { entries: [entry2] },
 				},
 			] satisfies TimekeepRunningEntry[]);
 		});
