@@ -56,10 +56,10 @@ export interface TimekeepSettings {
 	pdfFontFamily: FontFamily;
 	pdfMobileExportsFolder: string;
 
-	/**@deprecated use {@link sortOrder} instead */
+	/** deprecated use {@link sortOrder} instead */
 	reverseSegmentOrder?: boolean;
 	timestampFormat: string;
-	/**@deprecated use {@link secondaryDurationFormat} instead */
+	/** deprecated use {@link secondaryDurationFormat} instead */
 	showDecimalHours?: boolean;
 	primaryDurationFormat: DurationFormat;
 	secondaryDurationFormat: DurationFormat;
