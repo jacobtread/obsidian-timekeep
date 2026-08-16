@@ -8,21 +8,19 @@ const normalizeLineEndings = (s: string) => s.replace(/\r\n?/g, "\n");
 
 describe("createCSV", () => {
 	it("should create entry table rows", async () => {
-		const { entries, currentTime, output } = await import("./__fixtures__/csv/tableRows");
+		const { entries, currentTime, output } = await import("@fixtures/csv/tableRows");
 		const csv = createCSV({ entries }, defaultSettings, currentTime);
 		expect(csv).toEqual(normalizeLineEndings(output));
 	});
 
 	it("should flatten group entries", async () => {
-		const { entries, currentTime, output } =
-			await import("./__fixtures__/csv/flattenGroupEntries");
+		const { entries, currentTime, output } = await import("@fixtures/csv/flattenGroupEntries");
 		const csv = createCSV({ entries }, defaultSettings, currentTime);
 		expect(csv).toEqual(normalizeLineEndings(output));
 	});
 
 	it("should use current time for unfinished entries", async () => {
-		const { entries, currentTime, output } =
-			await import("./__fixtures__/csv/flattenGroupEntries");
+		const { entries, currentTime, output } = await import("@fixtures/csv/flattenGroupEntries");
 
 		const csv = createCSV({ entries }, defaultSettings, currentTime);
 		expect(csv).toEqual(normalizeLineEndings(output));
