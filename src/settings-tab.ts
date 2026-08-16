@@ -42,7 +42,7 @@ export class TimekeepSettingsTab extends PluginSettingTab {
 
 		for (const item of definitions) {
 			if ("type" in item && item.type === "page") {
-				this.displayPage(settings, item as SettingDefinitionPage<keyof TimekeepSettings>);
+				this.displayPage(settings, item);
 			} else if ("control" in item) {
 				this.displaySettingControl(
 					settings,
@@ -99,7 +99,7 @@ export class TimekeepSettingsTab extends PluginSettingTab {
 		switch (control.type) {
 			case "number":
 				setting.addText((t) => {
-					t.setValue(String(settings[control.key] as string));
+					t.setValue(String(settings[control.key]));
 					t.onChange((v) => {
 						const value = Number(v);
 						// Only use a custom format if the value is not blank
@@ -123,7 +123,7 @@ export class TimekeepSettingsTab extends PluginSettingTab {
 			case "dropdown":
 				setting.addDropdown((t) => {
 					t.addOptions(control.options);
-					t.setValue(String(settings[control.key] as string));
+					t.setValue(String(settings[control.key]));
 					t.onChange((v) => {
 						this.setControlValue(control.key, v);
 					});
@@ -134,7 +134,7 @@ export class TimekeepSettingsTab extends PluginSettingTab {
 			case "textarea":
 			case "text":
 				setting.addText((t) => {
-					t.setValue(String(settings[control.key] as string));
+					t.setValue(String(settings[control.key]));
 					t.onChange((v) => {
 						// Only use a custom format if the value is not blank
 						const newValue = v.length ? v : (defaultSettings[control.key] as string);
