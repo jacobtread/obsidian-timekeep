@@ -111,7 +111,7 @@ export class TimekeepSettingsTab extends PluginSettingTab {
 						this.setControlValue(control.key, newValue);
 					});
 				});
-
+				break;
 			case "toggle":
 				setting.addToggle((t) => {
 					t.setValue(settings[control.key] as boolean);
