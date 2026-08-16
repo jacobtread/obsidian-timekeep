@@ -19,7 +19,7 @@ import "./fonts";
 /** Required to handle mocking the imports during tests */
 export const desktopModuleLoader = {
 	/* v8 ignore start -- @preserve */
-	importModule: (name: string): any => {
+	importModule: (name: string): ReturnType<typeof require> => {
 		return require(name);
 	},
 	/* v8 ignore stop -- @preserve */
