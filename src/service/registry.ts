@@ -1,6 +1,5 @@
 import type { EventRef, TAbstractFile, Vault, Workspace, WorkspaceLeaf } from "obsidian";
 
-import moment from "moment";
 import { EditableFileView, Component, MarkdownView, TFile, requireApiVersion } from "obsidian";
 import { limitFunction } from "p-limit";
 
@@ -8,6 +7,7 @@ import type { TimekeepSettings } from "@/settings";
 import type { Store } from "@/store";
 
 import { createStore } from "@/store";
+import { moment } from "@/utils/time";
 
 import {
 	extractTimekeepCodeblocksWithPosition,

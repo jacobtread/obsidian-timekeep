@@ -1,6 +1,5 @@
-import moment from "moment";
-
 import { assert } from "@/utils/assert";
+import { moment } from "@/utils/time";
 import { formatDurationLong } from "@/utils/time";
 
 import { DomComponent } from "@/components/DomComponent";

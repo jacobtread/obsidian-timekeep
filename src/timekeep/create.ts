@@ -1,5 +1,3 @@
-import type { Moment } from "moment";
-
 import { isEmptyString } from "@/utils/text";
 
 import { timekeepId } from "@/timekeep/id";
@@ -12,7 +10,7 @@ import { TimeEntry, TimeEntryGroup } from "@/timekeep/schema";
  * @param startTime The start time for the entry
  * @returns The created entry
  */
-export function createEntry(name: string, startTime: Moment): TimeEntry {
+export function createEntry(name: string, startTime: moment.Moment): TimeEntry {
 	return {
 		id: timekeepId.next(),
 		name,
@@ -31,7 +29,11 @@ export function createEntry(name: string, startTime: Moment): TimeEntry {
  * @param startTime The start time of the new entry
  * @returns The new collection of entries
  */
-export function withEntry(entries: TimeEntry[], name: string, startTime: Moment): TimeEntry[] {
+export function withEntry(
+	entries: TimeEntry[],
+	name: string,
+	startTime: moment.Moment
+): TimeEntry[] {
 	const entryName = getEntryName(name, entries);
 	return [...entries, createEntry(entryName, startTime)];
 }
@@ -64,7 +66,7 @@ function getEntryName(name: string, entries: TimeEntry[]) {
  * @param startTime The start time for the new entry
  * @returns The updated/created entry
  */
-export function withSubEntry(parent: TimeEntry, name: string, startTime: Moment): TimeEntry {
+export function withSubEntry(parent: TimeEntry, name: string, startTime: moment.Moment): TimeEntry {
 	const groupEntry = makeGroupEntry(parent);
 	const entryName = getSubEntryName(name, groupEntry);
 	const newEntry = createEntry(entryName, startTime);

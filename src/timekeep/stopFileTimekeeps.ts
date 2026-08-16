@@ -1,4 +1,3 @@
-import type { Moment } from "moment";
 import type { TFile, Vault } from "obsidian";
 
 import { replaceTimekeepCodeblock, extractTimekeepCodeblocksWithPosition } from "@/timekeep/parser";
@@ -17,7 +16,7 @@ import { stopTimekeep } from "@/timekeep/update";
  * @param currentTime The current time to use as the stopped time
  * @returns The total number of stopped timekeeps
  */
-export async function stopFileTimekeeps(vault: Vault, file: TFile, currentTime: Moment) {
+export async function stopFileTimekeeps(vault: Vault, file: TFile, currentTime: moment.Moment) {
 	const content = await vault.cachedRead(file);
 	const initialTimekeeps = extractTimekeepCodeblocksWithPosition(content);
 

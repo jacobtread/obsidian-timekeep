@@ -1,3 +1,4 @@
+import moment from "moment";
 import { afterEach, beforeEach, vi } from "vitest";
 
 import {
@@ -49,5 +50,6 @@ vi.mock("obsidian", () => {
 		FileView: MockFileView,
 		EditableFileView: MockEditableFileView,
 		requireApiVersion: mockRequireApiVersion,
+		moment,
 	};
 });

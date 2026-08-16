@@ -1,5 +1,3 @@
-import type { Moment } from "moment";
-
 import { withEntry, createEntry, withSubEntry } from "./create";
 import { getEntryById } from "./queries";
 import { updateEntry, stopRunningEntries } from "./update";
@@ -16,7 +14,7 @@ import { TimeEntry } from "@/timekeep/schema";
  */
 export function startNewEntry(
 	name: string,
-	currentTime: Moment,
+	currentTime: moment.Moment,
 	entries: TimeEntry[]
 ): TimeEntry[] {
 	// Stop any already running entries
@@ -37,7 +35,7 @@ export function startNewEntry(
  * @returns The updated entries set
  */
 export function startNewNestedEntry(
-	currentTime: Moment,
+	currentTime: moment.Moment,
 	targetEntryId: number,
 	entries: TimeEntry[]
 ): TimeEntry[] {

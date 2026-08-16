@@ -1,4 +1,3 @@
-import type { Moment } from "moment";
 import type { App, TFile, TFolder, Vault, Workspace } from "obsidian";
 
 import { CustomOutputFormat } from "@/output";
@@ -44,8 +43,8 @@ export class TimekeepApi {
 		codeblock: typeof codeblock;
 	};
 
-	stopAllTimekeeps: (vault: Vault, currentTime: Moment) => Promise<number>;
-	stopFileTimekeeps: (vault: Vault, file: TFile, currentTime: Moment) => Promise<number>;
+	stopAllTimekeeps: (vault: Vault, currentTime: moment.Moment) => Promise<number>;
+	stopFileTimekeeps: (vault: Vault, file: TFile, currentTime: moment.Moment) => Promise<number>;
 	createNewTimekeepFile: (app: App, folder: TFolder) => Promise<TFile>;
 
 	registry: TimekeepRegistry;

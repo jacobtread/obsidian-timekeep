@@ -1,6 +1,10 @@
-import moment, { Moment } from "moment";
+import { moment as obsidianMoment } from "obsidian";
 
 import { DurationFormat, TimekeepSettings } from "@/settings";
+
+export const moment = ("default" in obsidianMoment
+	? obsidianMoment.default
+	: obsidianMoment) as unknown as typeof window.moment;
 
 /**
  * Formats a timestamp for tables and generated output
@@ -9,12 +13,12 @@ import { DurationFormat, TimekeepSettings } from "@/settings";
  * @param settings The timekeep settings
  * @returns The formatted timestamp
  */
-export function formatTimestamp(timestamp: Moment, settings: TimekeepSettings): string {
+export function formatTimestamp(timestamp: moment.Moment, settings: TimekeepSettings): string {
 	return timestamp.format(settings.timestampFormat);
 }
 
 /** Formats the HTML <input/> with type datetime-local may use */
-const BROWSER_INPUT_DATETIME_FORMATS = [
+const BROWSER_INPUT_DATETIME_FORMATS: moment.MomentFormatSpecification = [
 	"YYYY-MM-DDTHH:mm:ss.SSS",
 	"YYYY-MM-DDTHH:mm:ss",
 	"YYYY-MM-DDTHH:mm",
@@ -26,7 +30,7 @@ const BROWSER_INPUT_DATETIME_FORMATS = [
  * @param value The input value
  * @returns The parsed date
  */
-export function parseDateInputValue(value: string): Moment {
+export function parseDateInputValue(value: string): moment.Moment {
 	return moment(value, BROWSER_INPUT_DATETIME_FORMATS, true);
 }
 
@@ -107,7 +111,7 @@ export function formatDurationDecimal(durationMS: number): string {
  * @param settings The settings
  * @returns The formatted date
  */
-export function formatPdfDate(value: Moment, settings: TimekeepSettings): string {
+export function formatPdfDate(value: moment.Moment, settings: TimekeepSettings): string {
 	return value.format(settings.pdfDateFormat);
 }
 
@@ -120,6 +124,6 @@ export function formatPdfDate(value: Moment, settings: TimekeepSettings): string
  * @param settings The settings
  * @returns The formatted timestamp
  */
-export function formatPdfRowDate(value: Moment, settings: TimekeepSettings): string {
+export function formatPdfRowDate(value: moment.Moment, settings: TimekeepSettings): string {
 	return value.format(settings.pdfRowDateFormat);
 }

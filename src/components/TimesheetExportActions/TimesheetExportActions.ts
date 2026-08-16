@@ -1,4 +1,3 @@
-import moment from "moment";
 import { type App, Notice } from "obsidian";
 
 import type { CustomOutputFormat } from "@/output";
@@ -8,6 +7,7 @@ import type { Store } from "@/store";
 import { createCSV, createMarkdownTable } from "@/export";
 import { exportPdf } from "@/export/pdf";
 import { assert } from "@/utils/assert";
+import { moment } from "@/utils/time";
 
 import { DomComponent } from "@/components/DomComponent";
 

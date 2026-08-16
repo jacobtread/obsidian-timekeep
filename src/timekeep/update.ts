@@ -1,5 +1,3 @@
-import type { Moment } from "moment";
-
 import { TimeEntry, Timekeep } from "@/timekeep/schema";
 
 /**
@@ -63,7 +61,7 @@ export function setEntryCollapsed(entry: TimeEntry, collapsed: boolean): TimeEnt
  * @param currentTime Current time to use as the stop time
  * @return The stopped timekeep
  */
-export function stopTimekeep(timekeep: Timekeep, currentTime: Moment): Timekeep {
+export function stopTimekeep(timekeep: Timekeep, currentTime: moment.Moment): Timekeep {
 	return {
 		...timekeep,
 		entries: stopRunningEntries(timekeep.entries, currentTime),
@@ -77,7 +75,7 @@ export function stopTimekeep(timekeep: Timekeep, currentTime: Moment): Timekeep 
  * @param entries The entries to stop
  * @returns The new list of stopped entries
  */
-export function stopRunningEntries(entries: TimeEntry[], endTime: Moment): TimeEntry[] {
+export function stopRunningEntries(entries: TimeEntry[], endTime: moment.Moment): TimeEntry[] {
 	return entries.map((entry) => {
 		// Stop the sub entries
 		if (entry.subEntries) {

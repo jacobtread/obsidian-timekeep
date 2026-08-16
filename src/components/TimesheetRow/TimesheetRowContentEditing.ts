@@ -1,4 +1,3 @@
-import type { Moment } from "moment";
 import type { App } from "obsidian";
 
 import type { TimekeepSettings } from "@/settings";
@@ -226,8 +225,8 @@ export class TimesheetRowContentEditing extends ReplaceableComponent {
 		const startTimeValue = this.#startTimeInputEl.value;
 		const endTimeValue = this.#endTimeInputEl.value;
 
-		let startTime: Moment | null = null;
-		let endTime: Moment | null = null;
+		let startTime: moment.Moment | null = null;
+		let endTime: moment.Moment | null = null;
 
 		let startTimeError: string | null = null;
 		let endTimeError: string | null = null;

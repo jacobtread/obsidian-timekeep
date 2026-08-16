@@ -1,5 +1,3 @@
-import type { Moment } from "moment";
-
 import { TimekeepSettings } from "@/settings";
 import { formatDuration, formatTimestamp } from "@/utils/time";
 
@@ -26,7 +24,7 @@ export const TOTAL_COLUMNS = 4;
 export function createRawTable(
 	entries: TimeEntry[],
 	settings: TimekeepSettings,
-	currentTime: Moment
+	currentTime: moment.Moment
 ): RawTableRow[] {
 	return entries.flatMap((entry) => createRawTableEntries(entry, settings, currentTime));
 }
@@ -43,7 +41,7 @@ export function createRawTable(
 function createRawTableEntries(
 	entry: TimeEntry,
 	settings: TimekeepSettings,
-	currentTime: Moment
+	currentTime: moment.Moment
 ): RawTableRow[] {
 	const rows: RawTableRow[] = [
 		[

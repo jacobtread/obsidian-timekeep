@@ -1,4 +1,3 @@
-import moment from "moment";
 import { Notice, type App } from "obsidian";
 
 import type { CustomOutputFormat } from "@/output";
@@ -6,6 +5,7 @@ import type { TimesheetSaveAdapter } from "@/save/TimesheetSaveAdapter";
 import type { TimekeepSettings } from "@/settings";
 
 import { createStore, type Store } from "@/store";
+import { moment } from "@/utils/time";
 
 import { ContentComponent } from "@/components/ContentComponent";
 import { EmptyComponent } from "@/components/EmptyComponent";
