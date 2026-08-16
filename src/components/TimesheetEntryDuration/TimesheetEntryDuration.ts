@@ -36,7 +36,7 @@ export class TimesheetEntryDuration extends DomComponent {
 
 		// Clear the current background task
 		if (this.currentContentInterval) {
-			clearInterval(this.currentContentInterval);
+			window.clearInterval(this.currentContentInterval);
 		}
 
 		// Only schedule further updates if we are running

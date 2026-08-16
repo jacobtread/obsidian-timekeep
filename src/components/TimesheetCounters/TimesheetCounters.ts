@@ -78,7 +78,7 @@ export class TimesheetCounters extends DomComponent {
 		this.updateTimers();
 
 		if (this.currentContentInterval) {
-			clearInterval(this.currentContentInterval);
+			window.clearInterval(this.currentContentInterval);
 		}
 
 		// Only schedule further updates if we are running
