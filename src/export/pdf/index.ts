@@ -20,6 +20,12 @@ import "./fonts";
 export const desktopModuleLoader = {
 	/* v8 ignore start -- @preserve */
 	importModule: (name: string): ReturnType<typeof require> => {
+		/**
+		 * Against what the linter wants require() is required here otherwise
+		 * the imported module will not load properly, i've tried to use import()
+		 * and it fails
+		 */
+		// eslint-disable-next-line @typescript-eslint/no-require-imports
 		return require(name);
 	},
 	/* v8 ignore stop -- @preserve */
