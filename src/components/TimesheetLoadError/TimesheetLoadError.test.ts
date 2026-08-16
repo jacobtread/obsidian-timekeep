@@ -1,5 +1,3 @@
-// @vitest-environment happy-dom
-
 import { describe, it, expect, beforeEach } from "vitest";
 
 import { createMockContainer } from "@/__mocks__/obsidian";

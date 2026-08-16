@@ -1,5 +1,3 @@
-// @vitest-environment happy-dom
-
 import { App, TFolder } from "obsidian";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 

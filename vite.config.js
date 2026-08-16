@@ -64,6 +64,7 @@ export default defineConfig((env) => {
 		},
 
 		test: {
+			environment: "happy-dom",
 			setupFiles: [
 				path.resolve(__dirname, "src", "__mocks__", "setupObsidianMocks.ts"),
 				path.resolve(__dirname, "src", "__mocks__", "setupMocks.ts"),

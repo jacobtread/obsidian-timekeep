@@ -1,5 +1,3 @@
-// @vitest-environment happy-dom
-
 import { beforeEach, describe, expect, it, Mock, vi } from "vitest";
 
 import type { Store } from "@/store";
