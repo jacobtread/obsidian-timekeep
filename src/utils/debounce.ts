@@ -6,11 +6,11 @@ export function debounced<T extends unknown[], V>(
 
 	return function (...args: T): void {
 		if (timer) {
-			clearTimeout(timer);
+			window.clearTimeout(timer);
 		}
 
-		timer = setTimeout(() => {
+		timer = window.setTimeout(() => {
 			cb(...args);
-		}, timeout) as any;
+		}, timeout);
 	};
 }
