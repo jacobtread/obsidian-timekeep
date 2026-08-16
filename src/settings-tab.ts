@@ -37,14 +37,17 @@ export class TimekeepSettingsTab extends PluginSettingTab {
 	display(): void {
 		this.containerEl.empty();
 
-		const settings = this.getUntypedSettings();
+		const settings = this.settingsStore.getState();
 		const definitions = this.getSettingDefinitions();
 
 		for (const item of definitions) {
 			if ("type" in item && item.type === "page") {
-				this.displayPage(settings, item as SettingDefinitionPage);
+				this.displayPage(settings, item as SettingDefinitionPage<keyof TimekeepSettings>);
 			} else if ("control" in item) {
-				this.displaySettingControl(settings, item as SettingDefinitionControl);
+				this.displaySettingControl(
+					settings,
+					item as SettingDefinitionControl<keyof TimekeepSettings>
+				);
 			}
 		}
 	}
@@ -56,7 +59,7 @@ export class TimekeepSettingsTab extends PluginSettingTab {
 	 * @param settings The current settings data
 	 * @param group The settings group definition
 	 */
-	displayPage(settings: Record<string, unknown>, group: SettingDefinitionPage) {
+	displayPage(settings: TimekeepSettings, group: SettingDefinitionPage<keyof TimekeepSettings>) {
 		if (group.name) {
 			const setting = new Setting(this.containerEl).setName(group.name).setHeading();
 			if ("desc" in group && typeof group.desc === "string") {
@@ -67,7 +70,10 @@ export class TimekeepSettingsTab extends PluginSettingTab {
 		if (group.items) {
 			for (const item of group.items) {
 				if ("control" in item) {
-					this.displaySettingControl(settings, item as SettingDefinitionControl);
+					this.displaySettingControl(
+						settings,
+						item as SettingDefinitionControl<keyof TimekeepSettings>
+					);
 				}
 			}
 		}
@@ -81,8 +87,8 @@ export class TimekeepSettingsTab extends PluginSettingTab {
 	 * @param controlSetting The settings control definition
 	 */
 	displaySettingControl(
-		settings: Record<string, unknown>,
-		controlSetting: SettingDefinitionControl
+		settings: TimekeepSettings,
+		controlSetting: SettingDefinitionControl<keyof TimekeepSettings>
 	) {
 		const setting = new Setting(this.containerEl);
 		const { name, desc, control } = controlSetting;
@@ -100,7 +106,7 @@ export class TimekeepSettingsTab extends PluginSettingTab {
 						const newValue =
 							Number.isFinite(value) && Number.isSafeInteger(value)
 								? v
-								: ((defaultSettings as Record<string, any>)[control.key] as number);
+								: (defaultSettings[control.key] as number);
 
 						this.setControlValue(control.key, newValue);
 					});
@@ -131,9 +137,7 @@ export class TimekeepSettingsTab extends PluginSettingTab {
 					t.setValue(String(settings[control.key] as string));
 					t.onChange((v) => {
 						// Only use a custom format if the value is not blank
-						const newValue = v.length
-							? v
-							: ((defaultSettings as Record<string, any>)[control.key] as string);
+						const newValue = v.length ? v : (defaultSettings[control.key] as string);
 
 						this.setControlValue(control.key, newValue);
 					});
