@@ -1,9 +1,9 @@
 import type { App, Command } from "obsidian";
 
-import moment from "moment";
 import { Notice } from "obsidian";
 
 import { getErrorMessage } from "@/utils/error";
+import { moment } from "@/utils/time";
 
 import { stopFileTimekeeps } from "@/timekeep/stopFileTimekeeps";
 

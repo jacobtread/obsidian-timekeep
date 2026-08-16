@@ -1,4 +1,11 @@
-import { type App, Setting, PluginSettingTab } from "obsidian";
+import {
+	type App,
+	Setting,
+	PluginSettingTab,
+	SettingDefinitionItem,
+	SettingDefinitionControl,
+	SettingDefinitionPage,
+} from "obsidian";
 
 import type { Store } from "@/store";
 
@@ -22,15 +29,143 @@ export class TimekeepSettingsTab extends PluginSettingTab {
 		this.settingsStore = plugin.settingsStore;
 	}
 
+	/**
+	 * Legacy display implementation used by obsidian versions <1.13.0 to display
+	 * the settings menu, post 1.13.0 this is ignored, this function maps the modern
+	 * settings definitions to the legacy components
+	 */
 	display(): void {
 		this.containerEl.empty();
-		const settings = this.settingsStore.getState();
 
-		// General settings section
-		new Setting(this.containerEl)
-			.setName("Timestamp display format")
-			.setDesc(
-				createFragment((f) => {
+		const settings = this.getUntypedSettings();
+		const definitions = this.getSettingDefinitions();
+
+		for (const item of definitions) {
+			if ("type" in item && item.type === "page") {
+				this.displayPage(settings, item as SettingDefinitionPage);
+			} else if ("control" in item) {
+				this.displaySettingControl(settings, item as SettingDefinitionControl);
+			}
+		}
+	}
+
+	/**
+	 * Display a settings group in a <1.13.0 version of obsidian. Takes the modern
+	 * settings group definition and transforms it to match the legacy format
+	 *
+	 * @param settings The current settings data
+	 * @param group The settings group definition
+	 */
+	displayPage(settings: Record<string, unknown>, group: SettingDefinitionPage) {
+		if (group.name) {
+			const setting = new Setting(this.containerEl).setName(group.name).setHeading();
+			if ("desc" in group && typeof group.desc === "string") {
+				setting.setDesc(group.desc);
+			}
+		}
+
+		if (group.items) {
+			for (const item of group.items) {
+				if ("control" in item) {
+					this.displaySettingControl(settings, item as SettingDefinitionControl);
+				}
+			}
+		}
+	}
+
+	/**
+	 * Displays a settings control for a <1.13.0 version of obsidian. Takes the modern
+	 * settings control definition and maps it for the legacy format
+	 *
+	 * @param settings The current settings data
+	 * @param controlSetting The settings control definition
+	 */
+	displaySettingControl(
+		settings: Record<string, unknown>,
+		controlSetting: SettingDefinitionControl
+	) {
+		const setting = new Setting(this.containerEl);
+		const { name, desc, control } = controlSetting;
+
+		if (name) setting.setName(name);
+		if (desc) setting.setDesc(desc);
+
+		switch (control.type) {
+			case "number":
+				setting.addText((t) => {
+					t.setValue(String(settings[control.key] as string));
+					t.onChange((v) => {
+						const value = Number(v);
+						// Only use a custom format if the value is not blank
+						const newValue =
+							Number.isFinite(value) && Number.isSafeInteger(value)
+								? v
+								: ((defaultSettings as Record<string, any>)[control.key] as number);
+
+						this.setControlValue(control.key, newValue);
+					});
+				});
+
+			case "toggle":
+				setting.addToggle((t) => {
+					t.setValue(settings[control.key] as boolean);
+					t.onChange((v) => {
+						this.setControlValue(control.key, v);
+					});
+				});
+				break;
+			case "dropdown":
+				setting.addDropdown((t) => {
+					t.addOptions(control.options);
+					t.setValue(String(settings[control.key] as string));
+					t.onChange((v) => {
+						this.setControlValue(control.key, v);
+					});
+				});
+				break;
+			case "folder":
+			case "file":
+			case "textarea":
+			case "text":
+				setting.addText((t) => {
+					t.setValue(String(settings[control.key] as string));
+					t.onChange((v) => {
+						// Only use a custom format if the value is not blank
+						const newValue = v.length
+							? v
+							: ((defaultSettings as Record<string, any>)[control.key] as string);
+
+						this.setControlValue(control.key, newValue);
+					});
+				});
+				break;
+			default:
+				throw new Error("unsupported control type");
+		}
+	}
+
+	setControlValue(key: string, value: unknown): void {
+		this.settingsStore.setState((currentValue) => ({
+			...currentValue,
+			[key]: value,
+		}));
+	}
+
+	getControlValue(key: string): unknown {
+		const settings = this.getUntypedSettings();
+		return settings[key];
+	}
+
+	getUntypedSettings() {
+		const settings = this.settingsStore.getState();
+		return settings as unknown as Record<string, unknown>;
+	}
+
+	getSettingDefinitions(): SettingDefinitionItem<keyof TimekeepSettings>[] {
+		return [
+			{
+				name: "Timestamp display format",
+				desc: createFragment((f) => {
 					f.createSpan({
 						text: "The way that timestamps in time tracker tables should be displayed. Uses ",
 					});
@@ -39,471 +174,344 @@ export class TimekeepSettingsTab extends PluginSettingTab {
 						href: "https://momentjs.com/docs/#/parsing/string-format/",
 					});
 					f.createSpan({ text: " syntax." });
-				})
-			)
-			.addText((t) => {
-				t.setValue(String(settings.timestampFormat));
-				t.onChange((v) => {
-					// Only use a custom format if the value is not blank
-					const newFormat = v.length ? v : defaultSettings.timestampFormat;
-
-					this.settingsStore.setState((currentValue) => ({
-						...currentValue,
-						timestampFormat: newFormat,
-					}));
-				});
-			});
-
-		new Setting(this.containerEl)
-			.setName("Primary duration format")
-			.setDesc("Format to show durations for the current and total timers")
-
-			.addDropdown((t) => {
-				t.addOptions({
-					[DurationFormat.LONG]: "Long - Format including all units (1h 30m 25s)",
-					[DurationFormat.SHORT]: "Short - Format just including hours (1.5h)",
-					[DurationFormat.DECIMAL]: "Decimal - Short format without units (1.5)",
-				});
-				t.setValue(String(settings.primaryDurationFormat));
-				t.onChange((v) => {
-					this.settingsStore.setState((currentValue) => ({
-						...currentValue,
-						primaryDurationFormat: v as DurationFormat,
-					}));
-				});
-			});
-
-		new Setting(this.containerEl)
-			.setName("Secondary duration format")
-			.setDesc("Format to show a second durations under the current and total timers")
-
-			.addDropdown((t) => {
-				t.addOptions({
-					[DurationFormat.LONG]: "Long - Format including all units (1h 30m 25s)",
-					[DurationFormat.SHORT]: "Short - Format just including hours (1.5h)",
-					[DurationFormat.DECIMAL]: "Decimal - Short format without units (1.5)",
-					[DurationFormat.NONE]: "None - No time is displayed",
-				});
-				t.setValue(String(settings.secondaryDurationFormat));
-				t.onChange((v) => {
-					this.settingsStore.setState((currentValue) => ({
-						...currentValue,
-						secondaryDurationFormat: v as DurationFormat,
-					}));
-				});
-			});
-
-		new Setting(this.containerEl)
-			.setName("Sort order")
-			.setDesc("How entries should be sorted both when viewing and exporting")
-
-			.addDropdown((t) => {
-				t.addOptions({
-					[SortOrder.INSERTION]:
-						"Insertion - Don't sort, leave entries in the order they were created",
-					[SortOrder.REVERSE_INSERTION]:
-						"Reverse Insertion - Opposite order to how entries were inserted",
-					[SortOrder.NEWEST_START]:
-						"Newest First - Sort most recently started entries to the start",
-					[SortOrder.OLDEST_START]:
-						"Newest Last - Sort most recently started entries to the end",
-				});
-				t.setValue(String(settings.sortOrder));
-				t.onChange((v) => {
-					this.settingsStore.setState((currentValue) => ({
-						...currentValue,
-						sortOrder: v as SortOrder,
-					}));
-				});
-			});
-
-		new Setting(this.containerEl)
-			.setName("Unstarted sort order")
-			.setDesc(
-				"Where in the order should unstarted entries be put (Only applied when using 'Newest First' or 'Newest Last' sort order)"
-			)
-
-			.addDropdown((t) => {
-				t.addOptions({
-					[UnstartedOrder.FIRST]:
-						"First - Put non started entries at the top of the list",
-					[UnstartedOrder.LAST]:
-						"Last - Put non started entries at the bottom of the list",
-				});
-				t.setValue(String(settings.unstartedOrder));
-				t.onChange((v) => {
-					this.settingsStore.setState((currentValue) => ({
-						...currentValue,
-						unstartedOrder: v as UnstartedOrder,
-					}));
-				});
-			});
-
-		new Setting(this.containerEl)
-			.setName("Limit table height")
-			.setDesc(
-				"Whether to limit the height of the table, will clamp the height and make the table scrollable"
-			)
-			.addToggle((t) => {
-				t.setValue(settings.limitTableSize);
-				t.onChange((v) => {
-					this.settingsStore.setState((currentValue) => ({
-						...currentValue,
-						limitTableSize: v,
-					}));
-				});
-			});
-
-		// General Export settings section
-		new Setting(this.containerEl).setName("Export").setHeading();
-
-		new Setting(this.containerEl)
-			.setName("CSV/Markdown duration format")
-			.setDesc("Format to show durations as when copying as CSV/Markdown")
-
-			.addDropdown((t) => {
-				t.addOptions({
-					[DurationFormat.LONG]: "Long - Format including all units (1h 30m 25s)",
-					[DurationFormat.SHORT]: "Short - Format just including hours (1.5h)",
-					[DurationFormat.DECIMAL]: "Decimal - Short format without units (1.5)",
-				});
-				t.setValue(String(settings.exportDurationFormat));
-				t.onChange((v) => {
-					this.settingsStore.setState((currentValue) => ({
-						...currentValue,
-						exportDurationFormat: v as DurationFormat,
-					}));
-				});
-			});
-
-		// PDF Export settings section
-		new Setting(this.containerEl).setName("PDF Export").setHeading();
-
-		new Setting(this.containerEl)
-			.setName("PDF title")
-			.setDesc("The title to include on generated PDFs")
-
-			.addText((t) => {
-				t.setValue(String(settings.pdfTitle));
-				t.onChange((v) => {
-					// Only use a custom format if the value is not blank
-					const newPdfTitle = v.length ? v : defaultSettings.pdfTitle;
-
-					this.settingsStore.setState((currentValue) => ({
-						...currentValue,
-						pdfTitle: newPdfTitle,
-					}));
-				});
-			});
-
-		new Setting(this.containerEl)
-			.setName("PDF footnote")
-			.setDesc("The footnote to include PDFs")
-
-			.addTextArea((t) => {
-				t.setValue(String(settings.pdfFootnote));
-				t.onChange((v) => {
-					// Only use a custom format if the value is not blank
-					const newPdfFootnote = v.length ? v : defaultSettings.pdfFootnote;
-
-					this.settingsStore.setState((currentValue) => ({
-						...currentValue,
-						pdfFootnote: newPdfFootnote,
-					}));
-				});
-			});
-
-		new Setting(this.containerEl)
-			.setName("PDF export behavior")
-			.setDesc("What to do after a pdf file has been exported")
-
-			.addDropdown((t) => {
-				t.addOptions({
-					[PdfExportBehavior.NONE]: "Do nothing",
-					[PdfExportBehavior.OPEN_FILE]: "Open exported file with default app",
-					[PdfExportBehavior.OPEN_PATH]: "Open directory containing the exported file",
-				});
-				t.setValue(String(settings.pdfExportBehavior));
-				t.onChange((v) => {
-					this.settingsStore.setState((currentValue) => ({
-						...currentValue,
-						pdfExportBehavior: v as PdfExportBehavior,
-					}));
-				});
-			});
-
-		new Setting(this.containerEl)
-			.setName("Pdf date format")
-			.setDesc(
-				createFragment((f) => {
-					f.createSpan({
-						text: "The way the date at the top of the pdf is formatted. Uses ",
-					});
-					f.createEl("a", {
-						text: "moment.js",
-						href: "https://momentjs.com/docs/#/parsing/string-format/",
-					});
-					f.createSpan({ text: " syntax." });
-				})
-			)
-			.addText((t) => {
-				t.setValue(String(settings.pdfDateFormat));
-				t.onChange((v) => {
-					// Only use a custom format if the value is not blank
-					const newPdfDateFormat = v.length ? v : defaultSettings.pdfDateFormat;
-
-					this.settingsStore.setState((currentValue) => ({
-						...currentValue,
-						pdfDateFormat: newPdfDateFormat,
-					}));
-				});
-			});
-
-		new Setting(this.containerEl)
-			.setName("Pdf row date format")
-			.setDesc(
-				createFragment((f) => {
-					f.createSpan({
-						text: "The way the date for each row of the pdf is formatted. Uses ",
-					});
-					f.createEl("a", {
-						text: "moment.js",
-						href: "https://momentjs.com/docs/#/parsing/string-format/",
-					});
-					f.createSpan({ text: " syntax." });
-				})
-			)
-			.addText((t) => {
-				t.setValue(String(settings.pdfRowDateFormat));
-				t.onChange((v) => {
-					// Only use a custom format if the value is not blank
-					const newPdfRowDateFormat = v.length ? v : defaultSettings.pdfRowDateFormat;
-
-					this.settingsStore.setState((currentValue) => ({
-						...currentValue,
-						pdfRowDateFormat: newPdfRowDateFormat,
-					}));
-				});
-			});
-
-		new Setting(this.containerEl)
-			.setName("Pdf font family")
-			.setDesc(
-				"Font family to use when exporting to pdf, the Rubik font family is recommended if you use Arabic characters"
-			)
-
-			.addDropdown((t) => {
-				t.addOptions({
-					[FontFamily.ROBOTO]: "Roboto",
-					[FontFamily.RUBIK]: "Rubik",
-				});
-				t.setValue(String(settings.pdfFontFamily));
-				t.onChange((v) => {
-					this.settingsStore.setState((currentValue) => ({
-						...currentValue,
-						pdfFontFamily: v as FontFamily,
-					}));
-				});
-			});
-
-		new Setting(this.containerEl)
-			.setName("Pdf mobile exports folder")
-			.setDesc(
-				createFragment((f) => {
-					f.createSpan({
-						text: "Where to store exported PDF files on mobile devices (The regular prompt doesn't work here)",
-					});
-				})
-			)
-			.addText((t) => {
-				t.setValue(String(settings.pdfMobileExportsFolder));
-				t.onChange((v) => {
-					// Only use a custom format if the value is not blank
-					const newExportsFolder = v.length ? v : defaultSettings.pdfMobileExportsFolder;
-
-					this.settingsStore.setState((currentValue) => ({
-						...currentValue,
-						pdfMobileExportsFolder: newExportsFolder,
-					}));
-				});
-			});
-
-		// CSV Export settings section
-		new Setting(this.containerEl).setName("CSV Export").setHeading();
-
-		new Setting(this.containerEl)
-			.setName("CSV heading row")
-			.setDesc("Whether to use the first row of generated CSV as a title row")
-			.addToggle((t) => {
-				t.setValue(settings.csvTitle);
-				t.onChange((v) => {
-					this.settingsStore.setState((currentValue) => ({
-						...currentValue,
-						csvTitle: v,
-					}));
-				});
-			});
-
-		new Setting(this.containerEl)
-			.setName("CSV delimiter")
-			.setDesc(
-				"The delimiter character that should be used when copying a tracker table as CSV. For example, some languages use a semicolon instead of a comma."
-			)
-			.addText((t) => {
-				t.setValue(String(settings.csvDelimiter));
-				t.onChange((v) => {
-					const newCsvDelimiter = v.length ? v : defaultSettings.csvDelimiter;
-
-					this.settingsStore.setState((currentValue) => ({
-						...currentValue,
-						csvDelimiter: newCsvDelimiter,
-					}));
-				});
-			});
-
-		// JSON Export settings section
-		new Setting(this.containerEl).setName("JSON Export").setHeading();
-
-		new Setting(this.containerEl)
-			.setName("Format copied JSON")
-			.setDesc("Whether to format the JSON contents before copying them to clipboard.")
-			.addToggle((t) => {
-				t.setValue(settings.formatCopiedJSON);
-				t.onChange((v) => {
-					this.settingsStore.setState((currentValue) => ({
-						...currentValue,
-						formatCopiedJSON: v,
-					}));
-				});
-			});
-
-		// Registry settings section
-		new Setting(this.containerEl)
-			.setName("Registry")
-			.setDesc(
-				"Timekeep uses an internal registry to track timekeep instances within your vault for functionality like autocomplete"
-			)
-			.setHeading();
-
-		new Setting(this.containerEl)
-			.setName("Enabled")
-			.setDesc(
-				"Whether to enable the registry, this can be disabled to reduce memory usage if you don't need the features that depend on it."
-			)
-			.addToggle((t) => {
-				t.setValue(settings.registryEnabled);
-				t.onChange((v) => {
-					this.settingsStore.setState((currentValue) => ({
-						...currentValue,
-						registryEnabled: v,
-					}));
-				});
-			});
-
-		new Setting(this.containerEl)
-			.setName("Index concurrency")
-			.setDesc(
-				"Maximum files to read concurrently on initialization (decrease this if you find you are lagging when opening your vault because of timekeep)"
-			)
-
-			.addText((t) => {
-				t.setValue(String(settings.registryConcurrencyLimit));
-				t.onChange((v) => {
-					const value = Number(v);
-
-					this.settingsStore.setState((currentValue) => ({
-						...currentValue,
-						registryConcurrencyLimit:
-							Number.isFinite(value) && Number.isSafeInteger(value)
-								? value
-								: defaultSettings.registryConcurrencyLimit,
-					}));
-				});
-			});
-
-		// Status bar section
-		new Setting(this.containerEl)
-			.setName("Status Bar")
-			.setDesc(
-				"Timekeep can show status bar entries for running timers within your vault. This requires that the registry option above is enabled"
-			)
-			.setHeading();
-
-		new Setting(this.containerEl)
-			.setName("Enabled")
-			.setDesc("Whether to enable status bar entries.")
-			.addToggle((t) => {
-				t.setValue(settings.statusBarEnabled);
-				t.onChange((v) => {
-					this.settingsStore.setState((currentValue) => ({
-						...currentValue,
-						statusBarEnabled: v,
-					}));
-				});
-			});
-
-		new Setting(this.containerEl)
-			.setName("Show folder path")
-			.setDesc(
-				'Whether to include the folder path of the file in the status item (i.e "Path/To/Entry: Block 1: 3h 5min 30s").'
-			)
-			.addToggle((t) => {
-				t.setValue(settings.statusBarShowFolderPath);
-				t.onChange((v) => {
-					this.settingsStore.setState((currentValue) => ({
-						...currentValue,
-						statusBarShowFolderPath: v,
-					}));
-				});
-			});
-
-		new Setting(this.containerEl)
-			.setName("Show non generic entry parent name")
-			.setDesc(
-				'Whether to include the name of the nearest of the parent entry for generic "Part 1" style entries (i.e if "Part 1" is running within "Example Entry" it will be displayed as "Example Entry / Part 1: 3h 5min 30s").'
-			)
-			.addToggle((t) => {
-				t.setValue(settings.statusBarPreferNonGenericParent);
-				t.onChange((v) => {
-					this.settingsStore.setState((currentValue) => ({
-						...currentValue,
-						statusBarPreferNonGenericParent: v,
-					}));
-				});
-			});
-
-		new Setting(this.containerEl)
-			.setName("Open in new tab")
-			.setDesc('Whether to open the file in a new tab after clicking a status item").')
-			.addToggle((t) => {
-				t.setValue(settings.statusBarItemOpenNewTab);
-				t.onChange((v) => {
-					this.settingsStore.setState((currentValue) => ({
-						...currentValue,
-						statusBarItemOpenNewTab: v,
-					}));
-				});
-			});
-
-		// Autocomplete section
-		new Setting(this.containerEl)
-			.setName("Autocomplete")
-			.setDesc(
-				"Timekeep can autocomplete entry names from existing timekeeps. This requires that the registry option above is enabled"
-			)
-			.setHeading();
-
-		new Setting(this.containerEl)
-			.setName("Enabled")
-			.setDesc("Whether to enable autocomplete.")
-			.addToggle((t) => {
-				t.setValue(settings.autocompleteEnabled);
-				t.onChange((v) => {
-					this.settingsStore.setState((currentValue) => ({
-						...currentValue,
-						autocompleteEnabled: v,
-					}));
-				});
-			});
+				}),
+				control: {
+					key: "timestampFormat",
+					type: "text",
+					defaultValue: defaultSettings.timestampFormat,
+				},
+			},
+			{
+				name: "Primary duration format",
+				desc: "Format to show durations for the current and total timers",
+				control: {
+					key: "primaryDurationFormat",
+					type: "dropdown",
+					options: {
+						[DurationFormat.LONG]: "Long - Format including all units (1h 30m 25s)",
+						[DurationFormat.SHORT]: "Short - Format just including hours (1.5h)",
+						[DurationFormat.DECIMAL]: "Decimal - Short format without units (1.5)",
+					},
+					defaultValue: defaultSettings.primaryDurationFormat,
+				},
+			},
+			{
+				name: "Secondary duration format",
+				desc: "Format to show durations for the current and total timers",
+				control: {
+					key: "secondaryDurationFormat",
+					type: "dropdown",
+					options: {
+						[DurationFormat.LONG]: "Long - Format including all units (1h 30m 25s)",
+						[DurationFormat.SHORT]: "Short - Format just including hours (1.5h)",
+						[DurationFormat.DECIMAL]: "Decimal - Short format without units (1.5)",
+						[DurationFormat.NONE]: "None - No time is displayed",
+					},
+					defaultValue: defaultSettings.secondaryDurationFormat,
+				},
+			},
+			{
+				name: "Sort order",
+				desc: "How entries should be sorted both when viewing and exporting",
+				control: {
+					key: "sortOrder",
+					type: "dropdown",
+					options: {
+						[SortOrder.INSERTION]:
+							"Insertion - Don't sort, leave entries in the order they were created",
+						[SortOrder.REVERSE_INSERTION]:
+							"Reverse Insertion - Opposite order to how entries were inserted",
+						[SortOrder.NEWEST_START]:
+							"Newest First - Sort most recently started entries to the start",
+						[SortOrder.OLDEST_START]:
+							"Newest Last - Sort most recently started entries to the end",
+					},
+					defaultValue: defaultSettings.sortOrder,
+				},
+			},
+			{
+				name: "Unstarted sort order",
+				desc: "Where in the order should unstarted entries be put (Only applied when using 'Newest First' or 'Newest Last' sort order)",
+				control: {
+					key: "unstartedOrder",
+					type: "dropdown",
+					options: {
+						[UnstartedOrder.FIRST]:
+							"First - Put non started entries at the top of the list",
+						[UnstartedOrder.LAST]:
+							"Last - Put non started entries at the bottom of the list",
+					},
+					defaultValue: defaultSettings.unstartedOrder,
+				},
+			},
+			{
+				name: "Limit table height",
+				desc: "Whether to limit the height of the table, will clamp the height and make the table scrollable",
+				control: {
+					key: "limitTableSize",
+					type: "toggle",
+					defaultValue: defaultSettings.limitTableSize,
+				},
+			},
+			// General Export settings section
+			{
+				type: "page",
+				name: "Export",
+				desc: "General non file format specific exporting options",
+				items: [
+					{
+						name: "CSV/Markdown duration format",
+						desc: "Format to show durations as when copying as CSV/Markdown",
+						control: {
+							key: "exportDurationFormat",
+							type: "dropdown",
+							options: {
+								[DurationFormat.LONG]:
+									"Long - Format including all units (1h 30m 25s)",
+								[DurationFormat.SHORT]:
+									"Short - Format just including hours (1.5h)",
+								[DurationFormat.DECIMAL]:
+									"Decimal - Short format without units (1.5)",
+							},
+							defaultValue: defaultSettings.exportDurationFormat,
+						},
+					},
+				],
+			},
+			// PDF Export settings section
+			{
+				type: "page",
+				name: "PDF Export",
+				desc: " Options when exporting to PDF",
+				items: [
+					{
+						name: "PDF title",
+						desc: "The title to include on generated PDFs",
+						control: {
+							key: "pdfTitle",
+							type: "text",
+							defaultValue: defaultSettings.pdfTitle,
+						},
+					},
+					{
+						name: "PDF footnote",
+						desc: "The footnote to include PDFs",
+						control: {
+							key: "pdfFootnote",
+							type: "text",
+							defaultValue: defaultSettings.pdfFootnote,
+						},
+					},
+					{
+						name: "PDF export behavior",
+						desc: "What to do after a pdf file has been exported",
+						control: {
+							key: "pdfExportBehavior",
+							type: "dropdown",
+							options: {
+								[PdfExportBehavior.NONE]: "Do nothing",
+								[PdfExportBehavior.OPEN_FILE]:
+									"Open exported file with default app",
+								[PdfExportBehavior.OPEN_PATH]:
+									"Open directory containing the exported file",
+							},
+							defaultValue: defaultSettings.pdfExportBehavior,
+						},
+					},
+					{
+						name: "Pdf date format",
+						desc: createFragment((f) => {
+							f.createSpan({
+								text: "The way the date at the top of the pdf is formatted. Uses ",
+							});
+							f.createEl("a", {
+								text: "moment.js",
+								href: "https://momentjs.com/docs/#/parsing/string-format/",
+							});
+							f.createSpan({ text: " syntax." });
+						}),
+						control: {
+							key: "pdfDateFormat",
+							type: "text",
+							defaultValue: defaultSettings.pdfDateFormat,
+						},
+					},
+					{
+						name: "Pdf row date format",
+						desc: createFragment((f) => {
+							f.createSpan({
+								text: "The way the date for each row of the pdf is formatted. Uses ",
+							});
+							f.createEl("a", {
+								text: "moment.js",
+								href: "https://momentjs.com/docs/#/parsing/string-format/",
+							});
+							f.createSpan({ text: " syntax." });
+						}),
+						control: {
+							key: "pdfRowDateFormat",
+							type: "text",
+							defaultValue: defaultSettings.pdfRowDateFormat,
+						},
+					},
+					{
+						name: "Pdf font family",
+						desc: "Font family to use when exporting to pdf, the Rubik font family is recommended if you use Arabic characters",
+						control: {
+							key: "pdfFontFamily",
+							type: "dropdown",
+							options: {
+								[FontFamily.ROBOTO]: "Roboto",
+								[FontFamily.RUBIK]: "Rubik",
+							},
+							defaultValue: defaultSettings.pdfFontFamily,
+						},
+					},
+					{
+						name: "Pdf mobile exports folder",
+						desc: "Where to store exported PDF files on mobile devices (The regular prompt doesn't work here)",
+						control: {
+							key: "pdfMobileExportsFolder",
+							type: "text",
+							defaultValue: defaultSettings.pdfMobileExportsFolder,
+						},
+					},
+				],
+			},
+			// CSV Export settings section
+			{
+				type: "page",
+				name: "CSV Export",
+				desc: "Options when exporting to CSV",
+				items: [
+					{
+						name: "CSV heading row",
+						desc: "Whether to use the first row of generated CSV as a title row",
+						control: {
+							key: "csvTitle",
+							type: "toggle",
+							defaultValue: defaultSettings.csvTitle,
+						},
+					},
+					{
+						name: "CSV delimiter",
+						desc: "The delimiter character that should be used when copying a tracker table as CSV. For example, some languages use a semicolon instead of a comma.",
+						control: {
+							key: "csvDelimiter",
+							type: "text",
+							defaultValue: defaultSettings.csvDelimiter,
+						},
+					},
+				],
+			},
+			// JSON Export settings section
+			{
+				type: "page",
+				name: "JSON Export",
+				desc: "Options when exporting to JSON",
+				items: [
+					{
+						name: "Format copied JSON",
+						desc: "Whether to format the JSON contents before copying them to clipboard.",
+						control: {
+							key: "formatCopiedJSON",
+							type: "toggle",
+							defaultValue: defaultSettings.formatCopiedJSON,
+						},
+					},
+				],
+			},
+			// Registry settings section
+			{
+				type: "page",
+				name: "Registry",
+				desc: "Timekeep uses an internal registry to track timekeep instances within your vault for functionality like autocomplete",
+				items: [
+					{
+						name: "Enabled",
+						desc: "Whether to enable the registry, this can be disabled to reduce memory usage if you don't need the features that depend on it.",
+						control: {
+							key: "registryEnabled",
+							type: "toggle",
+							defaultValue: defaultSettings.registryEnabled,
+						},
+					},
+					{
+						name: "Index concurrency",
+						desc: "Maximum files to read concurrently on initialization (decrease this if you find you are lagging when opening your vault because of timekeep)",
+						control: {
+							key: "registryConcurrencyLimit",
+							type: "number",
+							defaultValue: defaultSettings.registryConcurrencyLimit,
+							validate: (value) => {
+								if (Number.isFinite(value) && Number.isSafeInteger(value)) return;
+								return "Must be a valid integer";
+							},
+						},
+					},
+				],
+			},
+			// Status bar section
+			{
+				type: "page",
+				name: "Status Bar",
+				desc: "Timekeep can show status bar entries for running timers within your vault. This requires that the registry option above is enabled",
+				items: [
+					{
+						name: "Enabled",
+						desc: "Whether to enable status bar entries.",
+						control: {
+							key: "statusBarEnabled",
+							type: "toggle",
+							defaultValue: defaultSettings.statusBarEnabled,
+						},
+					},
+					{
+						name: "Show folder path",
+						desc: 'Whether to include the folder path of the file in the status item (i.e "Path/To/Entry: Block 1: 3h 5min 30s").',
+						control: {
+							key: "statusBarShowFolderPath",
+							type: "toggle",
+							defaultValue: defaultSettings.statusBarShowFolderPath,
+						},
+					},
+					{
+						name: "Show non generic entry parent name",
+						desc: 'Whether to include the name of the nearest of the parent entry for generic "Part 1" style entries (i.e if "Part 1" is running within "Example Entry" it will be displayed as "Example Entry / Part 1: 3h 5min 30s").',
+						control: {
+							key: "statusBarPreferNonGenericParent",
+							type: "toggle",
+							defaultValue: defaultSettings.statusBarPreferNonGenericParent,
+						},
+					},
+					{
+						name: "Open in new tab",
+						desc: 'Whether to open the file in a new tab after clicking a status item").',
+						control: {
+							key: "statusBarItemOpenNewTab",
+							type: "toggle",
+							defaultValue: defaultSettings.statusBarItemOpenNewTab,
+						},
+					},
+				],
+			},
+			// Autocomplete section
+			{
+				type: "page",
+				name: "Autocomplete",
+				desc: "Timekeep can autocomplete entry names from existing timekeeps. This requires that the registry option above is enabled",
+				items: [
+					{
+						name: "Enabled",
+						desc: "Whether to enable autocomplete.",
+						control: {
+							key: "autocompleteEnabled",
+							type: "toggle",
+							defaultValue: defaultSettings.autocompleteEnabled,
+						},
+					},
+				],
+			},
+		];
 	}
 }

@@ -7,7 +7,7 @@ import type { App } from "obsidian";
 export class EditorScrollTracker {
 	app: App;
 
-	restoreScrollTimeout: ReturnType<typeof setTimeout> | null = null;
+	restoreScrollTimeout: number | null = null;
 	restoreScrollInfo: { top: number; left: number } | null = null;
 
 	constructor(app: App) {
@@ -40,9 +40,9 @@ export class EditorScrollTracker {
 	 */
 	queueRestore(delayMs: number = 50) {
 		if (this.restoreScrollTimeout) {
-			clearTimeout(this.restoreScrollTimeout);
+			window.clearTimeout(this.restoreScrollTimeout);
 		}
 
-		this.restoreScrollTimeout = setTimeout(this.restore.bind(this), delayMs);
+		this.restoreScrollTimeout = window.setTimeout(this.restore.bind(this), delayMs);
 	}
 }

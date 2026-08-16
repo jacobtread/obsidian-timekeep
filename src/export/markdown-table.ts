@@ -1,5 +1,3 @@
-import type { Moment } from "moment";
-
 import { RawTableRow, TOTAL_COLUMNS, createRawTable } from "@/export";
 import { DurationFormat, TimekeepSettings } from "@/settings";
 import { formatDuration } from "@/utils/time";
@@ -26,7 +24,7 @@ function createHeader(): RawTableRow {
  */
 function createFooter(
 	entries: TimeEntry[],
-	currentTime: Moment,
+	currentTime: moment.Moment,
 	durationFormat: DurationFormat
 ): RawTableRow {
 	const total: string = formatDuration(durationFormat, getTotalDuration(entries, currentTime));
@@ -64,7 +62,7 @@ function getColumnMaxWidth(table: RawTableRow[], columnIndex: number): number {
 export function createMarkdownTable(
 	timekeep: Timekeep,
 	settings: TimekeepSettings,
-	currentTime: Moment
+	currentTime: moment.Moment
 ): string {
 	const rawTable: RawTableRow[] = [
 		// Markdown header row

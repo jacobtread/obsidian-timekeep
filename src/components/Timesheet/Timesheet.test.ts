@@ -1,5 +1,3 @@
-// @vitest-environment happy-dom
-
 import type { App } from "obsidian";
 
 import { beforeEach, describe, expect, it } from "vitest";

@@ -1,4 +1,3 @@
-import type { Moment } from "moment";
 import type { TFile, Vault } from "obsidian";
 
 import { stopFileTimekeeps } from "./stopFileTimekeeps";
@@ -10,7 +9,7 @@ import { stopFileTimekeeps } from "./stopFileTimekeeps";
  * @param currentTime The current time to use as the stopped time
  * @returns The total number of stopped timekeeps
  */
-export async function stopAllTimekeeps(vault: Vault, currentTime: Moment) {
+export async function stopAllTimekeeps(vault: Vault, currentTime: moment.Moment) {
 	const markdownFiles = vault.getMarkdownFiles();
 	const batchSize = 10;
 

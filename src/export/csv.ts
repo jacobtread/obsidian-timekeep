@@ -1,5 +1,3 @@
-import type { Moment } from "moment";
-
 import { RawTableRow, createRawTable } from "@/export";
 import { TimekeepSettings } from "@/settings";
 
@@ -25,7 +23,7 @@ function createHeader(): RawTableRow {
 export function createCSV(
 	timekeep: Timekeep,
 	settings: TimekeepSettings,
-	currentTime: Moment
+	currentTime: moment.Moment
 ): string {
 	const rawTable: RawTableRow[] = [
 		// CSV header row

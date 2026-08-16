@@ -1,5 +1,3 @@
-// @vitest-environment happy-dom
-
 import moment from "moment";
 import { beforeEach, it, describe, afterEach, vi, expect } from "vitest";
 

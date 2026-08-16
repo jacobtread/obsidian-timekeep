@@ -1,5 +1,3 @@
-// @vitest-environment happy-dom
-
 import { Component } from "obsidian";
 import { describe, it, expect, beforeEach, vi } from "vitest";
 

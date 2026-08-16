@@ -52,6 +52,7 @@ export default defineConfig((env) => {
 		resolve: {
 			alias: {
 				"@": path.resolve(__dirname, "src"),
+				"@fixtures": path.resolve(__dirname, "tests", "fixtures"),
 				pdfmake: "pdfmake/build/pdfmake",
 				...(env.mode === "test"
 					? {
@@ -64,6 +65,7 @@ export default defineConfig((env) => {
 		},
 
 		test: {
+			environment: "happy-dom",
 			setupFiles: [
 				path.resolve(__dirname, "src", "__mocks__", "setupObsidianMocks.ts"),
 				path.resolve(__dirname, "src", "__mocks__", "setupMocks.ts"),
@@ -72,7 +74,7 @@ export default defineConfig((env) => {
 				// Exclude mocks and fixtures from coverage
 				exclude: [
 					"**/__mocks__/**",
-					"**/__fixtures__/**",
+					"tests/fixtures/**",
 					"*.ttf",
 					"**/components/**/index.ts",
 				],

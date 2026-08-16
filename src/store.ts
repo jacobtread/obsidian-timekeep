@@ -5,10 +5,12 @@ export type Store<T> = {
 	setState: (value: StateUpdate<T>) => void;
 
 	// Subscribe to state changes on this store
-	subscribe: (callback: VoidFunction) => Unsubscribe;
+	subscribe: (callback: SubscribeCallback) => Unsubscribe;
 	// Unsubscribe from a specific callback
-	unsubscribe: (callback: VoidFunction) => void;
+	unsubscribe: (callback: SubscribeCallback) => void;
 };
+
+type SubscribeCallback = () => void | Promise<void>;
 
 type StateUpdate<T> = T | ((value: T) => T);
 
@@ -18,7 +20,7 @@ type StoreState<T> = {
 	// The current state
 	state: T;
 	// Listeners to invoke when state changes
-	listeners: VoidFunction[];
+	listeners: SubscribeCallback[];
 };
 
 export function derived<T, V>(store: Store<T>, derive: (value: T) => V): Store<V> {
@@ -49,11 +51,11 @@ export function createStore<T>(initial: T): Store<T> {
 
 		// Execute all the listeners
 		store.listeners.forEach((listener) => {
-			listener();
+			void listener();
 		});
 	};
 
-	const subscribe = (callback: VoidFunction) => {
+	const subscribe = (callback: SubscribeCallback) => {
 		store.listeners.push(callback);
 
 		return () => {
@@ -61,7 +63,7 @@ export function createStore<T>(initial: T): Store<T> {
 		};
 	};
 
-	const unsubscribe = (callback: VoidFunction) => {
+	const unsubscribe = (callback: SubscribeCallback) => {
 		const index = store.listeners.indexOf(callback);
 		if (index !== -1) {
 			store.listeners.splice(index, 1);

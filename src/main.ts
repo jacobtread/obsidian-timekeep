@@ -1,4 +1,3 @@
-import type { Moment } from "moment";
 import type { Vault, TFile, PluginManifest, App, TAbstractFile, Menu } from "obsidian";
 
 import { Plugin, TFolder } from "obsidian";
@@ -48,10 +47,10 @@ export default class TimekeepPlugin extends Plugin {
 	isKeepRunning: (timekeep: Timekeep) => boolean;
 	isEntryRunning: (entry: TimeEntry) => boolean;
 	getRunningEntry: (entries: TimeEntry[]) => TimeEntry | null;
-	getEntryDuration: (entry: TimeEntry, currentTime: Moment) => number;
-	getTotalDuration: (entries: TimeEntry[], currentTime: Moment) => number;
-	stopAllTimekeeps: (vault: Vault, currentTime: Moment) => Promise<number>;
-	stopFileTimekeeps: (vault: Vault, file: TFile, currentTime: Moment) => Promise<number>;
+	getEntryDuration: (entry: TimeEntry, currentTime: moment.Moment) => number;
+	getTotalDuration: (entries: TimeEntry[], currentTime: moment.Moment) => number;
+	stopAllTimekeeps: (vault: Vault, currentTime: moment.Moment) => Promise<number>;
+	stopFileTimekeeps: (vault: Vault, file: TFile, currentTime: moment.Moment) => Promise<number>;
 	registerCustomOutputFormat: (id: string, format: CustomOutputFormat) => void;
 	unregisterCustomOutputFormat: (id: string) => void;
 

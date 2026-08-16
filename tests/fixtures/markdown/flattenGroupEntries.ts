@@ -1,7 +1,7 @@
 import fs from "fs/promises";
 import moment from "moment";
 
-export const output = await fs.readFile("src/export/__fixtures__/markdown/tableRows.md", "utf-8");
+export const output = await fs.readFile("tests/fixtures/markdown/flattenGroupEntries.md", "utf-8");
 
 export const currentTime = moment("2020-01-01T00:00:00Z");
 
@@ -19,5 +19,20 @@ export const entries = [
 		startTime: moment(currentTime),
 		endTime: moment(currentTime).add(2, "hour"),
 		subEntries: null,
+	},
+	{
+		id: 3,
+		name: "Test Group",
+		startTime: null,
+		endTime: null,
+		subEntries: [
+			{
+				id: 4,
+				name: "Test 3",
+				startTime: moment(currentTime),
+				endTime: moment(currentTime).add(2, "hour"),
+				subEntries: null,
+			},
+		],
 	},
 ];

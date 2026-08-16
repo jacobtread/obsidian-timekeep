@@ -1,12 +1,10 @@
-import type { Moment } from "moment";
-
-import moment from "moment";
 import { App, Notice, Platform } from "obsidian";
 import pdfMake from "pdfmake";
 
 import type { TimekeepSettings } from "@/settings";
 
 import { PdfExportBehavior } from "@/settings";
+import { moment } from "@/utils/time";
 
 import { createPdfDefinition } from "./definition";
 
@@ -19,7 +17,13 @@ import "./fonts";
 /** Required to handle mocking the imports during tests */
 export const desktopModuleLoader = {
 	/* v8 ignore start -- @preserve */
-	importModule: (name: string): any => {
+	importModule: (name: string): ReturnType<typeof require> => {
+		/**
+		 * Against what the linter wants require() is required here otherwise
+		 * the imported module will not load properly, i've tried to use import()
+		 * and it fails
+		 */
+		// eslint-disable-next-line @typescript-eslint/no-require-imports
 		return require(name);
 	},
 	/* v8 ignore stop -- @preserve */
@@ -61,7 +65,7 @@ async function exportPdfMobile(
 	app: App,
 	timekeep: Timekeep,
 	settings: TimekeepSettings,
-	currentTime: Moment
+	currentTime: moment.Moment
 ) {
 	const fileName = await FileNamePromptModal.pick(app);
 	if (!fileName) return;
@@ -89,7 +93,7 @@ async function exportPdfMobile(
 async function exportPdfDesktop(
 	timekeep: Timekeep,
 	settings: TimekeepSettings,
-	currentTime: Moment
+	currentTime: moment.Moment
 ): Promise<void> {
 	// Dynamic imports to prevent them from causing errors when loaded (Because they are unsupported on mobile)
 	const {
@@ -149,7 +153,7 @@ async function exportPdfDesktop(
 async function createPdfExportBlob(
 	timekeep: Timekeep,
 	settings: TimekeepSettings,
-	currentTime: Moment
+	currentTime: moment.Moment
 ): Promise<Blob> {
 	const definition = createPdfDefinition(timekeep, settings, currentTime);
 	const pdf = pdfMake.createPdf(definition, {});

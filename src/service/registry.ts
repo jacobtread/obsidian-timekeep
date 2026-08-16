@@ -1,6 +1,5 @@
 import type { EventRef, TAbstractFile, Vault, Workspace, WorkspaceLeaf } from "obsidian";
 
-import moment from "moment";
 import { EditableFileView, Component, MarkdownView, TFile, requireApiVersion } from "obsidian";
 import { limitFunction } from "p-limit";
 
@@ -8,6 +7,7 @@ import type { TimekeepSettings } from "@/settings";
 import type { Store } from "@/store";
 
 import { createStore } from "@/store";
+import { moment } from "@/utils/time";
 
 import {
 	extractTimekeepCodeblocksWithPosition,
@@ -422,6 +422,12 @@ export class TimekeepRegistry extends Component {
 		// Focus and reveal the existing leaf if found
 		if (leaf !== null && requireApiVersion("1.7.2")) {
 			workspace.setActiveLeaf(leaf, { focus: true });
+
+			/**
+			 * The obsidianmd/no-unsupported-api lint is incorrect here as the requireApiVersion
+			 * check above correctly blocks of this piece of code on older versions
+			 */
+			/* eslint-disable-next-line obsidianmd/no-unsupported-api */
 			await workspace.revealLeaf(leaf);
 		}
 		// Open a new leaf for the ref

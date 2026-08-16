@@ -11,7 +11,6 @@ import type {
 	TFolder,
 	TooltipOptions,
 	Vault,
-	CloseableComponent,
 } from "obsidian";
 
 import { Mock, vi } from "vitest";
@@ -431,12 +430,12 @@ export class MockSetting {
 
 	addButton(cb: (component: ButtonComponent) => any): this {
 		const component = new MockButtonComponent(this.containerEl);
-		cb(component);
+		cb(component as ButtonComponent);
 		return this;
 	}
 }
 
-export class MockModal implements CloseableComponent {
+export class MockModal {
 	static instances: Set<MockModal> = new Set();
 
 	app: App;

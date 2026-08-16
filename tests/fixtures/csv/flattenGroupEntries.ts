@@ -1,10 +1,7 @@
 import fs from "fs/promises";
 import moment from "moment";
 
-export const output = await fs.readFile(
-	"src/export/__fixtures__/markdown/flattenGroupEntries.md",
-	"utf-8"
-);
+export const output = await fs.readFile("tests/fixtures/csv/flattenGroupEntries.csv", "utf-8");
 
 export const currentTime = moment("2020-01-01T00:00:00Z");
 

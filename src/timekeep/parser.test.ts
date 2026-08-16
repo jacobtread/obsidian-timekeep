@@ -16,7 +16,7 @@ import { Timekeep, stripTimekeepRuntimeData } from "./schema";
 describe("extracting code blocks", () => {
 	it("should extract codeblock contents", async () => {
 		const { text, inputTimekeep1, inputTimekeep2 } =
-			await import("./__fixtures__/extracting/codeblockContents");
+			await import("@fixtures/extracting/codeblockContents");
 
 		const output = extractTimekeepCodeblocks(text);
 
@@ -30,8 +30,7 @@ describe("extracting code blocks", () => {
 	});
 
 	it("should ignore codeblocks that are not closed", async () => {
-		const { text, inputTimekeep1 } =
-			await import("./__fixtures__/extracting/unclosedCodeBlock");
+		const { text, inputTimekeep1 } = await import("@fixtures/extracting/unclosedCodeBlock");
 		const output = extractTimekeepCodeblocks(text);
 
 		expect(stripTimekeepRuntimeData(output[0])).toStrictEqual(
@@ -44,7 +43,7 @@ describe("extracting code blocks", () => {
 describe("extracting code blocks with position", () => {
 	it("should extract codeblock contents", async () => {
 		const { text, inputTimekeep1, inputTimekeep2 } =
-			await import("./__fixtures__/extracting/codeblockContentsPosition");
+			await import("@fixtures/extracting/codeblockContentsPosition");
 
 		const output = extractTimekeepCodeblocksWithPosition(text);
 
@@ -64,7 +63,7 @@ describe("extracting code blocks with position", () => {
 
 	it("should ignore codeblocks that are not closed", async () => {
 		const { text, inputTimekeep1 } =
-			await import("./__fixtures__/extracting/unclosedCodeBlockPosition");
+			await import("@fixtures/extracting/unclosedCodeBlockPosition");
 		const output = extractTimekeepCodeblocksWithPosition(text);
 
 		expect(stripTimekeepRuntimeData(output[0].timekeep)).toStrictEqual(
@@ -77,7 +76,7 @@ describe("extracting code blocks with position", () => {
 
 	it("should ignore codeblocks that are not closed", async () => {
 		const consoleError = vi.spyOn(console, "error").mockImplementation(() => {});
-		const { text } = await import("./__fixtures__/extracting/invalidCodeBlockContentPosition");
+		const { text } = await import("@fixtures/extracting/invalidCodeBlockContentPosition");
 		const output = extractTimekeepCodeblocksWithPosition(text);
 
 		expect(output.length).toBe(0);

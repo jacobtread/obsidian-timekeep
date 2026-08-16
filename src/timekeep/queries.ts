@@ -1,5 +1,3 @@
-import type { Moment } from "moment";
-
 import { Timekeep, TimeEntry } from "@/timekeep/schema";
 
 /**
@@ -126,7 +124,7 @@ export function isKeepRunning(timekeep: Timekeep): boolean {
  * @param currentTime The current time to use for unfinished entries
  * @returns The duration in milliseconds
  */
-export function getEntryDuration(entry: TimeEntry, currentTime: Moment): number {
+export function getEntryDuration(entry: TimeEntry, currentTime: moment.Moment): number {
 	if (entry.subEntries !== null) {
 		return getTotalDuration(entry.subEntries, currentTime);
 	}
@@ -149,7 +147,7 @@ export function getEntryDuration(entry: TimeEntry, currentTime: Moment): number 
  * @param currentTime The current time to use for unfinished entries
  * @returns The total duration in milliseconds
  */
-export function getTotalDuration(entries: TimeEntry[], currentTime: Moment): number {
+export function getTotalDuration(entries: TimeEntry[], currentTime: moment.Moment): number {
 	return entries.reduce(
 		(totalDuration, entry) => totalDuration + getEntryDuration(entry, currentTime),
 		0
@@ -165,7 +163,7 @@ export function getTotalDuration(entries: TimeEntry[], currentTime: Moment): num
  * @param newest Whether to get the newest or oldest
  * @returns The start time or null if none were available
  */
-export function getStartTime(entry: TimeEntry, newest: boolean): Moment | null {
+export function getStartTime(entry: TimeEntry, newest: boolean): moment.Moment | null {
 	// Find the latest start time from entry
 	if (entry.subEntries !== null) {
 		return entry.subEntries.reduce(
@@ -187,7 +185,7 @@ export function getStartTime(entry: TimeEntry, newest: boolean): Moment | null {
 
 				return previousValue;
 			},
-			null as Moment | null
+			null as moment.Moment | null
 		);
 	}
 

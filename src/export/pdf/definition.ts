@@ -1,4 +1,3 @@
-import type { Moment } from "moment";
 import type { Content, DynamicContent, TableCell, TDocumentDefinitions } from "pdfmake/interfaces";
 
 import type { TimekeepSettings } from "@/settings";
@@ -25,7 +24,7 @@ import type { TimeEntry, Timekeep } from "@/timekeep/schema";
 export function createPdfDefinition(
 	timekeep: Timekeep,
 	settings: TimekeepSettings,
-	currentTime: Moment
+	currentTime: moment.Moment
 ): TDocumentDefinitions {
 	const duration = getTotalDuration(timekeep.entries, currentTime);
 	const currentDate = formatPdfDate(currentTime, settings);
@@ -148,7 +147,7 @@ function createPdfTable(
 	timekeep: Timekeep,
 	totalDuration: string,
 	settings: TimekeepSettings,
-	currentTime: Moment
+	currentTime: moment.Moment
 ): Content {
 	const rows = createPdfTableRows(timekeep.entries, settings, currentTime);
 
@@ -251,7 +250,7 @@ type TableEntryRow = {
 function createPdfTableRows(
 	entries: TimeEntry[],
 	settings: TimekeepSettings,
-	currentTime: Moment
+	currentTime: moment.Moment
 ): TableEntryRow[] {
 	type StackEntry = { entry: TimeEntry; depth: number };
 
@@ -322,7 +321,7 @@ function createTableEntryCells(
 	entry: TimeEntry,
 	depth: number,
 	settings: TimekeepSettings,
-	currentTime: Moment
+	currentTime: moment.Moment
 ): TableCell[] {
 	const duration = getEntryDuration(entry, currentTime);
 	const durationFormatted = formatDurationLong(duration);

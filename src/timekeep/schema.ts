@@ -1,5 +1,6 @@
-import moment, { Moment } from "moment";
 import * as v from "valibot";
+
+import { moment } from "@/utils/time";
 
 import { timekeepId } from "@/timekeep/id";
 
@@ -21,7 +22,7 @@ export type TimeEntry = TimeEntrySingle | TimeEntryGroup;
 
 export type Timekeep = v.InferOutput<typeof TIMEKEEP>;
 
-const strToMoment = (value: string | null): Moment | null =>
+const strToMoment = (value: string | null): moment.Moment | null =>
 	value === null ? null : moment(value);
 
 // Schema for a time entry with no children

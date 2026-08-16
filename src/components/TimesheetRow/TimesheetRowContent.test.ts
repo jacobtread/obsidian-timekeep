@@ -1,5 +1,3 @@
-// @vitest-environment happy-dom
-
 import moment from "moment";
 import { App } from "obsidian";
 import { beforeEach, describe, expect, it, Mock, vi } from "vitest";

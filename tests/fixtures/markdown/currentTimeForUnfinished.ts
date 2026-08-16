@@ -1,7 +1,7 @@
 import fs from "fs/promises";
 import moment from "moment";
 
-export const output = await fs.readFile("src/export/__fixtures__/csv/tableRows.csv", "utf-8");
+export const output = await fs.readFile("tests/fixtures/markdown/tableRows.md", "utf-8");
 
 export const start = moment("2020-01-01T00:00:00Z");
 export const currentTime = moment(start).add(2, "hours");

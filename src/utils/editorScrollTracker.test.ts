@@ -118,7 +118,7 @@ describe("EditorScrollTracker", () => {
 			const tracker = new EditorScrollTracker(mockApp);
 			tracker.restoreScrollInfo = { top: 400, left: 200 };
 
-			const clearSpy = vi.spyOn(global, "clearTimeout");
+			const clearSpy = vi.spyOn(window, "clearTimeout");
 
 			tracker.queueRestore(100);
 			tracker.queueRestore(200);

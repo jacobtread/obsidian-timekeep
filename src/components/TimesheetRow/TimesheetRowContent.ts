@@ -1,11 +1,10 @@
 import type { App } from "obsidian";
 
-import moment from "moment";
-
 import type { TimekeepSettings } from "@/settings";
 import type { Store } from "@/store";
 
 import { assert } from "@/utils/assert";
+import { moment } from "@/utils/time";
 import { formatTimestamp } from "@/utils/time";
 
 import { createObsidianIcon } from "@/components/obsidianIcon";
