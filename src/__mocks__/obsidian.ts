@@ -326,7 +326,7 @@ export class MockComponent {
 
 	registerInterval(intervalID: number) {
 		this.callbacks.push(() => {
-			clearInterval(intervalID);
+			window.clearInterval(intervalID);
 		});
 	}
 

@@ -427,7 +427,6 @@ export class TimekeepRegistry extends Component {
 			 * The obsidianmd/no-unsupported-api lint is incorrect here as the requireApiVersion
 			 * check above correctly blocks of this piece of code on older versions
 			 */
-			/* eslint-disable-next-line obsidianmd/no-unsupported-api */
 			await workspace.revealLeaf(leaf);
 		}
 		// Open a new leaf for the ref

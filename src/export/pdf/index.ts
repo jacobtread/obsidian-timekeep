@@ -23,7 +23,7 @@ export const desktopModuleLoader = {
 		 * the imported module will not load properly, i've tried to use import()
 		 * and it fails
 		 */
-		// eslint-disable-next-line @typescript-eslint/no-require-imports
+		// eslint-disable-next-line @typescript-eslint/no-require-imports -- See comment above
 		return require(name);
 	},
 	/* v8 ignore stop -- @preserve */

@@ -2,9 +2,7 @@ import { moment as obsidianMoment } from "obsidian";
 
 import { DurationFormat, TimekeepSettings } from "@/settings";
 
-export const moment = ("default" in obsidianMoment
-	? obsidianMoment.default
-	: obsidianMoment) as unknown as typeof window.moment;
+export const moment = "default" in obsidianMoment ? obsidianMoment.default : obsidianMoment;
 
 /**
  * Formats a timestamp for tables and generated output
