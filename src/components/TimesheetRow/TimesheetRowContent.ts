@@ -5,7 +5,7 @@ import type { Store } from "@/store";
 
 import { assert } from "@/utils/assert";
 import { moment } from "@/utils/time";
-import { formatTimestamp } from "@/utils/time";
+import { formatTimestamp, parseDateInputValue } from "@/utils/time";
 
 import { createObsidianIcon } from "@/components/obsidianIcon";
 import { ReplaceableComponent } from "@/components/ReplaceableComponent";
@@ -16,6 +16,7 @@ import { getRunningEntry, isEntryRunning } from "@/timekeep/queries";
 import type { TimeEntry, Timekeep } from "@/timekeep/schema";
 import { startNewNestedEntry } from "@/timekeep/start";
 import { setEntryCollapsed, updateEntry } from "@/timekeep/update";
+import { hasEntryOverlap, hasInvalidSameDayMeridiem } from "@/timekeep/intervals";
 
 /**
  * Component for the contents of a timesheet row
@@ -81,15 +82,27 @@ export class TimesheetRowContent extends ReplaceableComponent {
 		}
 
 		if (entry.subEntries !== null && entry.folder) {
-			createObsidianIcon(nameEl, "folder", "timekeep-folder-icon");
+			createObsidianIcon(
+				this.settings.getState().editableCells ? nameColEl : nameEl,
+				"folder",
+				"timekeep-folder-icon"
+			);
 		}
 
-		const name = new TimesheetEntryName(nameEl, this.app, entry.name);
-		this.addChild(name);
+		if (this.settings.getState().editableCells) {
+			const input = nameColEl.createEl("input", { cls: "timekeep-cell-input", type: "text" });
+			input.value = entry.name;
+			this.registerDomEvent(input, "click", (event) => event.stopPropagation());
+			this.registerDomEvent(input, "change", () => this.updateField("name", input.value));
+			nameEl.hidden = true;
+		} else {
+			const name = new TimesheetEntryName(nameEl, this.app, entry.name);
+			this.addChild(name);
+		}
 
 		if (entry.subEntries !== null) {
 			createObsidianIcon(
-				nameEl,
+				this.settings.getState().editableCells ? nameColEl : nameEl,
 				entry.collapsed ? "chevron-down" : "chevron-up",
 				"timekeep-collapse-icon"
 			);
@@ -100,12 +113,20 @@ export class TimesheetRowContent extends ReplaceableComponent {
 		});
 		const startTimeEl = startTimeColEl.createSpan({ cls: "timekeep-time" });
 		this.#startTimeEl = startTimeEl;
+		if (this.settings.getState().editableCells && entry.subEntries === null && entry.startTime) {
+			this.createTimeInput(startTimeColEl, entry.startTime, "startTime");
+			startTimeEl.hidden = true;
+		}
 
 		const endTimeColEl = wrapperEl.createEl("td", {
 			cls: ["timekeep-col", "timekeep-col--time"],
 		});
 		const endTimeEl = endTimeColEl.createSpan({ cls: "timekeep-time" });
 		this.#endTimeEl = endTimeEl;
+		if (this.settings.getState().editableCells && entry.subEntries === null && entry.endTime) {
+			this.createTimeInput(endTimeColEl, entry.endTime, "endTime", isEntryRunning(entry));
+			endTimeEl.hidden = true;
+		}
 
 		const durationColEl = wrapperEl.createEl("td", {
 			cls: ["timekeep-col", "timekeep-col--duration"],
@@ -114,6 +135,17 @@ export class TimesheetRowContent extends ReplaceableComponent {
 		const duration = new TimesheetEntryDuration(durationColEl, entry);
 
 		this.addChild(duration);
+
+		if (this.settings.getState().showNotes) {
+			const notesColEl = wrapperEl.createEl("td", { cls: ["timekeep-col", "timekeep-col--notes"] });
+			if (this.settings.getState().editableCells) {
+				const notesInput = notesColEl.createEl("input", { cls: "timekeep-cell-input", type: "text" });
+				notesInput.value = entry.notes ?? "";
+				this.registerDomEvent(notesInput, "change", () => this.updateField("notes", notesInput.value));
+			} else {
+				notesColEl.createSpan({ text: entry.notes ?? "" });
+			}
+		}
 
 		const actionsColEl = wrapperEl.createEl("td", {
 			cls: ["timekeep-col", "timekeep-col--actions"],
@@ -145,6 +177,39 @@ export class TimesheetRowContent extends ReplaceableComponent {
 		const unsubscribeSettings = this.settings.subscribe(this.updateTimes.bind(this));
 
 		this.register(unsubscribeSettings);
+	}
+
+	createTimeInput(
+		containerEl: HTMLElement,
+		value: moment.Moment,
+		field: "startTime" | "endTime",
+		disabled = false
+	) {
+		const input = containerEl.createEl("input", { cls: "timekeep-cell-input", type: "datetime-local" });
+		input.value = value.format("YYYY-MM-DDTHH:mm:ss");
+		input.disabled = disabled;
+		this.registerDomEvent(input, "change", () => this.updateField(field, input.value));
+	}
+
+	updateField(field: "name" | "notes" | "startTime" | "endTime", value: string) {
+		this.timekeep.setState((timekeep) => {
+			const current = timekeep.entries;
+			const newEntry = { ...this.entry };
+			if (field === "name" || field === "notes") newEntry[field] = value;
+			if (field === "startTime" || field === "endTime") {
+				const parsed = parseDateInputValue(value);
+				if (!parsed.isValid() || newEntry.subEntries !== null) return timekeep;
+				if (field === "startTime") newEntry.startTime = parsed;
+				else if (!isEntryRunning(newEntry)) newEntry.endTime = parsed;
+				if (
+					newEntry.startTime &&
+					newEntry.endTime &&
+					(newEntry.endTime.isBefore(newEntry.startTime) ||
+						hasInvalidSameDayMeridiem(newEntry.startTime, newEntry.endTime))
+				) return timekeep;
+			}
+			return { ...timekeep, entries: updateEntry(current, this.entry.id, newEntry) };
+		});
 	}
 
 	updateTimes() {
@@ -180,6 +245,10 @@ export class TimesheetRowContent extends ReplaceableComponent {
 		rowEl.setAttribute("data-running-within", String(isRunningWithin));
 		rowEl.setAttribute("data-sub-entries", String(this.entry.subEntries !== null));
 		rowEl.setAttribute("data-invalid", String(isInvalidEntry));
+		const leaves: TimeEntry[] = [];
+		const collect = (entries: TimeEntry[]) => entries.forEach((item) => item.subEntries ? collect(item.subEntries) : leaves.push(item));
+		collect(this.timekeep.getState().entries);
+		rowEl.setAttribute("data-overlap", String(hasEntryOverlap(entry, leaves, this.settings.getState().overlapToleranceMinutes, moment())));
 	}
 
 	onToggleCollapsed() {

@@ -10,6 +10,7 @@ import { TimesheetRow } from "@/components/TimesheetRow";
 
 import type { Timekeep } from "@/timekeep/schema";
 import { getEntriesSorted } from "@/timekeep/sort";
+import { withGapEntries } from "@/timekeep/intervals";
 
 /**
  * Table component for rendering the contents of the timekeep
@@ -24,6 +25,8 @@ export class TimesheetTable extends DomComponent {
 
 	/** Table body for row content */
 	#bodyEl: HTMLElement | undefined;
+	/** Optional notes header */
+	#notesHeadEl: HTMLTableCellElement | undefined;
 
 	/** Currently mounted row children */
 	#rows: TimesheetRow[] = [];
@@ -57,6 +60,7 @@ export class TimesheetTable extends DomComponent {
 		tableHeadRowEl.createEl("th", { text: "Start time" });
 		tableHeadRowEl.createEl("th", { text: "End time" });
 		tableHeadRowEl.createEl("th", { text: "Duration" });
+		this.#notesHeadEl = tableHeadRowEl.createEl("th", { text: "Notes" });
 		tableHeadRowEl.createEl("th", { text: "Actions" });
 
 		const bodyEl = tableEl.createEl("tbody");
@@ -79,6 +83,7 @@ export class TimesheetTable extends DomComponent {
 	 */
 	onUpdate() {
 		this.clearRows();
+		if (this.#notesHeadEl) this.#notesHeadEl.hidden = !this.settings.getState().showNotes;
 		this.updateWrapperSize();
 		this.renderRows();
 	}
@@ -118,7 +123,8 @@ export class TimesheetTable extends DomComponent {
 		const timekeep = this.timekeep.getState();
 		const settings = this.settings.getState();
 
-		const stack = getEntriesSorted(timekeep.entries, settings)
+		const visibleEntries = settings.insertGapEntries ? withGapEntries(timekeep.entries) : timekeep.entries;
+		const stack = getEntriesSorted(visibleEntries, settings)
 			//
 			.map((entry) => ({
 				entry,
@@ -145,7 +151,8 @@ export class TimesheetTable extends DomComponent {
 			this.#rows.push(row);
 
 			if (entry.subEntries && !entry.collapsed && entry.subEntries.length > 0) {
-				const sortedEntries = getEntriesSorted(entry.subEntries, settings);
+				const childEntries = settings.insertGapEntries ? withGapEntries(entry.subEntries) : entry.subEntries;
+				const sortedEntries = getEntriesSorted(childEntries, settings);
 
 				for (let i = sortedEntries.length - 1; i >= 0; i--) {
 					stack.push({

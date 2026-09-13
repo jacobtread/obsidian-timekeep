@@ -12,6 +12,7 @@ import { moment } from "@/utils/time";
 import { DomComponent } from "@/components/DomComponent";
 
 import { stripTimekeepRuntimeData, Timekeep } from "@/timekeep/schema";
+import { ConfirmModal } from "@/modals/ConfirmModal";
 
 /**
  * Export actions section component
@@ -84,15 +85,29 @@ export class TimesheetExportActions extends DomComponent {
 				"data-format": "pdf",
 			},
 		});
+		const resetButton = actionsEl.createEl("button", {
+			cls: "timekeep-export-button",
+			text: "Reset",
+			attr: { "data-format": "reset" },
+		});
 
 		this.registerDomEvent(copyMarkdownButton, "click", this.onCopyMarkdown.bind(this));
 		this.registerDomEvent(copyCSVButton, "click", this.onCopyCSV.bind(this));
 		this.registerDomEvent(copyJSONButton, "click", this.onCopyJSON.bind(this));
 		this.registerDomEvent(savePdfButton, "click", this.onSavePDF.bind(this));
+		this.registerDomEvent(resetButton, "click", this.onReset.bind(this));
 
 		const createCustomButtons = this.createCustomOutputFormatButtons.bind(this);
 		this.register(this.customOutputFormats.subscribe(createCustomButtons));
 		createCustomButtons();
+	}
+
+	onReset() {
+		const modal = new ConfirmModal(this.app, "Delete all entries from this timekeep?", (confirmed) => {
+			if (confirmed) this.timekeep.setState({ entries: [] });
+		});
+		modal.setTitle("Reset Timekeep");
+		modal.open();
 	}
 
 	removeCustomFormatButtons() {

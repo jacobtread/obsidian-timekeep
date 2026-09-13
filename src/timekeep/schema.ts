@@ -30,6 +30,8 @@ const TIME_ENTRY_SINGLE = v.pipe(
 	v.object({
 		// Name of the entry
 		name: v.string(),
+		// Optional user notes for the entry
+		notes: v.optional(v.string()),
 
 		// Start time for this entry
 		startTime: v.pipe(v.nullable(v.string()), v.transform(strToMoment)),
@@ -50,6 +52,7 @@ const TIME_ENTRY_SINGLE = v.pipe(
 // Schema for a time entry with children (Base portion, separate portion is required for recursion)
 const TIME_ENTRY_GROUP_BASE = v.object({
 	name: v.string(),
+	notes: v.optional(v.string()),
 	startTime: v.null(),
 	endTime: v.null(),
 	// Optional field to indicate the entry is collapsed

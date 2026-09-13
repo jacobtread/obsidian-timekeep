@@ -257,6 +257,30 @@ export class TimekeepSettingsTab extends PluginSettingTab {
 					defaultValue: defaultSettings.limitTableSize,
 				},
 			},
+			{
+				name: "Show notes column",
+				desc: "Show a notes column for each time entry and include it in exports",
+				control: { key: "showNotes", type: "toggle", defaultValue: defaultSettings.showNotes },
+			},
+			{
+				name: "Editable table cells",
+				desc: "Allow entry names, notes, and timestamps to be edited directly in the table",
+				control: { key: "editableCells", type: "toggle", defaultValue: defaultSettings.editableCells },
+			},
+			{
+				name: "Insert gap entries",
+				desc: "Insert an empty entry between consecutive entries with a gap",
+				control: { key: "insertGapEntries", type: "toggle", defaultValue: defaultSettings.insertGapEntries },
+			},
+			{
+				name: "Overlap tolerance (minutes)",
+				desc: "Overlaps shorter than this duration are ignored",
+				control: {
+					key: "overlapToleranceMinutes",
+					type: "number",
+					defaultValue: defaultSettings.overlapToleranceMinutes,
+				},
+			},
 			// General Export settings section
 			{
 				type: "page",

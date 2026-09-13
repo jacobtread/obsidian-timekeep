@@ -8,7 +8,7 @@ import { getEntriesSorted } from "@/timekeep/sort";
 export { createCSV } from "./csv";
 export { createMarkdownTable } from "./markdown-table";
 
-export type RawTableRow = [string, string, string, string];
+export type RawTableRow = [string, string, string, string, ...string[]];
 
 export const TOTAL_COLUMNS = 4;
 
@@ -54,6 +54,7 @@ function createRawTableEntries(
 				: "",
 			// Duration of the entry
 			formatDuration(settings.exportDurationFormat, getEntryDuration(entry, currentTime)),
+			...(settings.showNotes ? [entry.notes ?? ""] : []),
 		],
 	];
 

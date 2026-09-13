@@ -66,15 +66,19 @@ export function createMarkdownTable(
 ): string {
 	const rawTable: RawTableRow[] = [
 		// Markdown header row
-		createHeader(),
+		settings.showNotes
+			? ["Block", "Start Time", "End time", "Duration", "Notes"]
+			: createHeader(),
 		// Markdown raw table contents
 		...createRawTable(timekeep.entries, settings, currentTime),
 		// Markdown footer row
-		createFooter(timekeep.entries, currentTime, settings.exportDurationFormat),
+		settings.showNotes
+			? ["**Total**", "", "", `**${formatDuration(settings.exportDurationFormat, getTotalDuration(timekeep.entries, currentTime))}**`, ""]
+			: createFooter(timekeep.entries, currentTime, settings.exportDurationFormat),
 	];
 
 	// Array of indexes for all the columns (0 - TOTAL_COLUMNS)
-	const columnIndexes = Array.from(Array(TOTAL_COLUMNS).keys());
+	const columnIndexes = Array.from(Array(settings.showNotes ? TOTAL_COLUMNS + 1 : TOTAL_COLUMNS).keys());
 
 	// Widths of each column
 	const columnWidths = columnIndexes.map((columnIndex) =>

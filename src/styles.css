@@ -41,6 +41,10 @@
 	border-left: 2px solid var(--color-red);
 }
 
+.timekeep-row[data-overlap="true"] {
+	color: var(--color-red);
+}
+
 /* alternating row highlight color */
 .timekeep-row:nth-child(even) {
 	background-color: var(--color-base-20);
@@ -122,6 +126,16 @@
 /* column for the timekeep row duration */
 .timekeep-col--duration {
 	width: 10%;
+}
+
+.timekeep-col--notes {
+	width: 20%;
+	overflow-wrap: anywhere;
+}
+
+.timekeep-cell-input {
+	max-width: 100%;
+	width: 100%;
 }
 
 /* column for the timekeep row actions */

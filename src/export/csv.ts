@@ -8,8 +8,8 @@ import { Timekeep } from "@/timekeep/schema";
  *
  * @returns The created row
  */
-function createHeader(): RawTableRow {
-	return ["Block", "Start Time", "End time", "Duration"];
+function createHeader(showNotes: boolean): RawTableRow {
+	return ["Block", "Start Time", "End time", "Duration", ...(showNotes ? ["Notes"] : [])];
 }
 
 /**
@@ -27,7 +27,7 @@ export function createCSV(
 ): string {
 	const rawTable: RawTableRow[] = [
 		// CSV header row
-		createHeader(),
+		createHeader(settings.showNotes),
 		// CSV raw table contents
 		...createRawTable(timekeep.entries, settings, currentTime),
 	];

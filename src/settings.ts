@@ -45,6 +45,10 @@ export enum UnstartedOrder {
 }
 
 export interface TimekeepSettings {
+	showNotes: boolean;
+	editableCells: boolean;
+	insertGapEntries: boolean;
+	overlapToleranceMinutes: number;
 	csvDelimiter: string;
 	csvTitle: boolean;
 	limitTableSize: boolean;
@@ -81,6 +85,10 @@ export interface TimekeepSettings {
 }
 
 export const defaultSettings: TimekeepSettings = {
+	showNotes: false,
+	editableCells: false,
+	insertGapEntries: false,
+	overlapToleranceMinutes: 0,
 	pdfTitle: "Example Timesheet",
 	pdfFootnote:
 		"Information present in this timesheet should be considered Commercial in Confidence.",

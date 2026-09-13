@@ -156,7 +156,7 @@ function createPdfTable(
 	return {
 		table: {
 			headerRows: 1,
-			widths: ["*", 70, 70, 50],
+			widths: settings.showNotes ? ["*", 70, 70, 50, "*"] : ["*", 70, 70, 50],
 			body: [
 				[
 					{
@@ -182,6 +182,9 @@ function createPdfTable(
 						alignment: "right",
 						border: [false, false, true, true],
 					},
+					...(settings.showNotes
+						? [{ text: "Notes", style: ["tableCell", "tableCellHeader"] }]
+						: []),
 				],
 				...rows.map((row) => row.row),
 				[
@@ -194,6 +197,7 @@ function createPdfTable(
 						bold: true,
 						alignment: "right",
 					},
+					...(settings.showNotes ? [{ text: "", style: "tableCell" }] : []),
 				],
 			],
 		},
@@ -362,6 +366,7 @@ function createTableEntryCells(
 			alignment: "right",
 			border: [false, false, true, true],
 		},
+		...(settings.showNotes ? [{ text: entry.notes ?? "", style: "tableCell" }] : []),
 	];
 }
 

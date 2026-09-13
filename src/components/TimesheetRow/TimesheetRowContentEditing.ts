@@ -13,6 +13,7 @@ import { ConfirmModal } from "@/modals/ConfirmModal";
 
 import type { TimeEntry, Timekeep } from "@/timekeep/schema";
 import { removeEntry, updateEntry } from "@/timekeep/update";
+import { hasInvalidSameDayMeridiem } from "@/timekeep/intervals";
 
 /**
  * Component for a timesheet row entry that is currently
@@ -70,7 +71,7 @@ export class TimesheetRowContentEditing extends ReplaceableComponent {
 
 	render(wrapperEl: HTMLElement): void {
 		const colEl = wrapperEl.createEl("td");
-		colEl.colSpan = 5;
+		colEl.colSpan = this.settings.getState().showNotes ? 6 : 5;
 
 		const formEl = colEl.createEl("form", { cls: "timekeep-editing" });
 		this.registerDomEvent(formEl, "submit", this.onSubmit.bind(this));
@@ -245,6 +246,14 @@ export class TimesheetRowContentEditing extends ReplaceableComponent {
 				endTime = null;
 				endTimeError = "Invalid end time provided";
 			}
+		}
+
+		if (
+			startTime !== null &&
+			endTime !== null &&
+			hasInvalidSameDayMeridiem(startTime, endTime)
+		) {
+			startTimeError = "Start and end time must use the same AM or PM period unless crossing days";
 		}
 
 		if (startTime !== null && endTime !== null && startTime.isAfter(endTime)) {
