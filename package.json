@@ -21,21 +21,21 @@
 		"fuse.js": "^7.5.0",
 		"moment": "^2.31.0",
 		"p-limit": "^7.3.3",
-		"pdfmake": "^0.3.11",
+		"pdfmake": "^0.3.12",
 		"valibot": "^1.5.0"
 	},
 	"devDependencies": {
 		"@types/node": "^20.19.43",
 		"@types/pdfmake": "^0.3.3",
-		"@vitest/coverage-v8": "^4.1.11",
-		"happy-dom": "^20.14.5",
+		"@vitest/coverage-v8": "^4.1.12",
+		"happy-dom": "^21.0.4",
 		"obsidian": "latest",
 		"oxfmt": "^0.50.0",
-		"oxlint": "^1.86.0",
-		"oxlint-tsgolint": "^0.22.1",
+		"oxlint": "^1.89.0",
+		"oxlint-tsgolint": "^7.0.2005",
 		"typescript": "6.0.2",
-		"vite": "^8.3.2",
-		"vitest": "^4.1.11"
+		"vite": "^8.3.5",
+		"vitest": "^5.0.5"
 	},
 	"packageManager": "pnpm@10.33.4+sha512.1c67b3b359b2d408119ba1ed289f34b8fc3c6873412bec6fd264fbdc82489e510fcbecb9ce9d22dae7f3b76269d8441046014bdca53b9979cd7a561ad631b800"
 }
