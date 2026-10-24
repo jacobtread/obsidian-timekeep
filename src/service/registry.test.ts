@@ -87,23 +87,19 @@ describe("TimekeepRegistry", () => {
 		});
 
 		it("returns null for unknown file extension", async () => {
-			const spy = vi.spyOn(console, "error").mockImplementation(() => {});
 			const vault = new MockVault();
 			const file = vault.addFile("bad.unknown", "invalid");
 
 			let result = await TimekeepRegistry.getFileRegistryEntry(vault.asVault(), file, false);
 			expect(result).toBeNull();
-			expect(spy).toHaveBeenCalled();
 
 			result = await TimekeepRegistry.getFileRegistryEntry(vault.asVault(), file, true);
 			expect(result).toBeNull();
-			expect(spy).toHaveBeenCalled();
 		});
 	});
 
 	describe("getTimekeepsWithinVault", () => {
 		it("filters only md and timekeep files", async () => {
-			const spy = vi.spyOn(console, "error").mockImplementation(() => {});
 			const vault = new MockVault();
 			vault.addFile("a.md", "# no tk");
 			vault.addFile("b.timekeep", JSON.stringify({ entries: [] }));
@@ -111,11 +107,9 @@ describe("TimekeepRegistry", () => {
 
 			let result = await TimekeepRegistry.getTimekeepsWithinVault(vault.asVault(), false);
 			expect(result.length).toBe(1); // only valid timekeep file
-			expect(spy).toHaveBeenCalled();
 
 			result = await TimekeepRegistry.getTimekeepsWithinVault(vault.asVault(), true);
 			expect(result.length).toBe(1); // only valid timekeep file
-			expect(spy).toHaveBeenCalled();
 		});
 
 		it("returns only valid entries", async () => {

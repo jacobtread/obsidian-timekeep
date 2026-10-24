@@ -27,7 +27,7 @@
 	"devDependencies": {
 		"@types/node": "^20.19.43",
 		"@types/pdfmake": "^0.3.3",
-		"@vitest/coverage-v8": "^4.1.12",
+		"@vitest/coverage-v8": "^5.0.5",
 		"happy-dom": "^21.0.4",
 		"obsidian": "latest",
 		"oxfmt": "^0.50.0",
