@@ -142,7 +142,7 @@ function stripEntriesIndex(entries: TimeEntryWithIndex[]) {
 	return (
 		entries
 			// Map entries to recursively sort the subEntries
-			.map(({ index: _, ...entry }): TimeEntry => {
+			.map(({ index: _index, ...entry }): TimeEntry => {
 				if (entry.subEntries !== null) {
 					return {
 						...entry,
